@@ -33,7 +33,4 @@ environment:
   sdk: ">=1.12.0 <2.0.0"
 
 executables:
-  # Similar to "analyzer.dart" and its command line "dartanalyzer" we use
-  # "dartdevc".
-  dartdevc: dartdevc
-  dev_compiler: dartdevc
+  dart2java: dart2java
