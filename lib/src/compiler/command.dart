@@ -2,14 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:convert' show JSON;
 import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:analyzer/src/generated/source.dart' show Source;
 import 'package:analyzer/src/summary/package_bundle_reader.dart'
     show InSummarySource;
 import 'compiler.dart'
-    show BuildUnit, CompilerOptions, JSModuleFile, ModuleCompiler;
+    show BuildUnit, CompilerOptions, JavaFile, ModuleCompiler;
 import '../analyzer/context.dart' show AnalyzerOptions;
 import 'package:path/path.dart' as path;
 
@@ -70,22 +69,12 @@ class CompileCommand extends Command {
     var unit = new BuildUnit(modulePath, buildRoot, argResults.rest,
         (source) => _moduleForLibrary(moduleRoot, source));
 
-    JSModuleFile module = compiler.compile(unit, compilerOptions);
+    JavaFile module = compiler.compile(unit, compilerOptions);
     module.errors.forEach(messageHandler);
 
     if (!module.isValid) throw new CompileErrorException();
 
-    // Write JS file, as well as source map and summary (if requested).
     new File(outPath).writeAsStringSync(module.code);
-    if (module.sourceMap != null) {
-      var mapPath = outPath + '.map';
-      new File(mapPath)
-          .writeAsStringSync(JSON.encode(module.placeSourceMap(mapPath)));
-    }
-    if (module.summaryBytes != null) {
-      var summaryPath = path.withoutExtension(outPath) + '.sum';
-      new File(summaryPath).writeAsBytesSync(module.summaryBytes);
-    }
   }
 
   String _moduleForLibrary(String moduleRoot, Source source) {

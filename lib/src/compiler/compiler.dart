@@ -19,7 +19,6 @@ import 'package:path/path.dart' as path;
 
 import '../analyzer/context.dart'
     show AnalyzerOptions, createAnalysisContextWithSources;
-import 'extension_types.dart' show ExtensionTypeSet;
 import 'code_generator.dart' show CodeGenerator;
 import 'error_helpers.dart' show errorSeverity, formatError, sortErrors;
 
@@ -42,11 +41,8 @@ import 'error_helpers.dart' show errorSeverity, formatError, sortErrors;
 /// about them.
 class ModuleCompiler {
   final AnalysisContext context;
-  final ExtensionTypeSet _extensionTypes;
 
-  ModuleCompiler.withContext(AnalysisContext context)
-      : context = context,
-        _extensionTypes = new ExtensionTypeSet(context) {
+  ModuleCompiler.withContext(AnalysisContext context) : context = context {
     if (!context.analysisOptions.strongMode) {
       throw new ArgumentError('AnalysisContext must be strong mode');
     }
@@ -58,12 +54,8 @@ class ModuleCompiler {
   ModuleCompiler(AnalyzerOptions analyzerOptions)
       : this.withContext(createAnalysisContextWithSources(analyzerOptions));
 
-  /// Compiles a single Dart build unit into a JavaScript module.
-  ///
-  /// *Warning* - this may require resolving the entire world.
-  /// If that is not desired, the analysis context must be pre-configured using
-  /// summaries before calling this method.
-  JSModuleFile compile(BuildUnit unit, CompilerOptions options) {
+  // TODO (stanm):
+  JavaFile compile(BuildUnit unit, CompilerOptions options) {
     var trees = <CompilationUnit>[];
     var errors = <AnalysisError>[];
 
@@ -118,10 +110,11 @@ class ModuleCompiler {
 
     if (!options.unsafeForceCompile &&
         errors.any((e) => errorSeverity(context, e) == ErrorSeverity.ERROR)) {
-      return new JSModuleFile.invalid(unit.name, messages);
+      return new JavaFile.invalid(messages);
     }
 
-    var codeGenerator = new CodeGenerator(context, options, _extensionTypes);
+    // TODO (stanm): see if we need context and options.
+    var codeGenerator = new CodeGenerator();
     return codeGenerator.compile(unit, trees, messages);
   }
 }
@@ -285,6 +278,21 @@ class BuildUnit {
   final Func1<Source, String> libraryToModule;
 
   BuildUnit(this.name, this.buildRoot, this.sources, this.libraryToModule);
+}
+
+/// TODO(stanm): Designed after the [JSModuleFile].
+class JavaFile {
+  /// The list of messages (errors and warnings)
+  final List<String> errors;
+
+  /// The Java code for this module.
+  final String code;
+
+  JavaFile(this.errors, this.code);
+  JavaFile.invalid(this.errors) : code = null;
+
+  /// True if this library was successfully compiled.
+  bool get isValid => code != null;
 }
 
 /// The output of Dart->JS compilation.
