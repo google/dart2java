@@ -9,7 +9,6 @@ import 'package:analyzer/src/summary/package_bundle_reader.dart'
     show InSummarySource;
 import 'compiler.dart'
     show BuildUnit, CompilerOptions, JavaFile, ModuleCompiler;
-import '../analyzer/context.dart' show AnalyzerOptions;
 import 'package:path/path.dart' as path;
 
 typedef void MessageHandler(Object message);
@@ -22,78 +21,59 @@ class CompileCommand extends Command {
 
   CompileCommand({MessageHandler messageHandler})
       : this.messageHandler = messageHandler ?? print {
-    argParser.addOption('out', abbr: 'o', help: 'Output file (required)');
-    argParser.addOption('module-root',
-        help: 'Root module directory. '
-            'Generated module paths are relative to this root.');
-    argParser.addOption('build-root',
-        help: 'Root of source files. '
-            'Generated library names are relative to this root.');
+    argParser.addOption('output-dir', abbr: 'o',
+        help: 'Output directory.\n'
+            'Generated source files are relative to this root.');
+    argParser.addOption('package-name', abbr: 'p',
+        help: 'Package name (e.g. "com.google.foo.bar").\n'
+            'Generated Java classes are placed in this package.\n'
+            'Source files are placed in a subdirectory like\n'
+            '"\${output-dir}/\${package-name}/" as per Java conventions.');
     CompilerOptions.addArguments(argParser);
-    AnalyzerOptions.addArguments(argParser);
   }
 
   @override
   void run() {
-    var compiler =
-        new ModuleCompiler(new AnalyzerOptions.fromArguments(argResults));
     var compilerOptions = new CompilerOptions.fromArguments(argResults);
-    var outPath = argResults['out'];
+    var compiler = new ModuleCompiler(compilerOptions);
 
-    if (outPath == null) {
-      usageException('Please include the output file location. For example:\n'
-          '    -o PATH/TO/OUTPUT_FILE.js');
-    }
-
-    var buildRoot = argResults['build-root'] as String;
-    if (buildRoot != null) {
-      buildRoot = path.absolute(buildRoot);
+    var outputDir = argResults['output-dir'] as String;
+    if (outputDir != null) {
+      outputDir = path.absolute(outputDir);
     } else {
-      buildRoot = Directory.current.path;
+      outputDir = Directory.current.path;
     }
-    var moduleRoot = argResults['module-root'] as String;
-    String modulePath;
-    if (moduleRoot != null) {
-      moduleRoot = path.absolute(moduleRoot);
-      if (!path.isWithin(moduleRoot, outPath)) {
-        usageException('Output file $outPath must be within the module root '
-            'directory $moduleRoot');
+
+    // Technically, Java allows any Unicode letter as part of an identifier,
+    // including as part of a package name. For now, we only allow ASCII.
+    RegExp javaIdentifier = new RegExp(r"^[A-Za-z_$][A-Za-z_$0-9]*$");
+
+    var packageName = argResults['package-name'] as String;
+    if (packageName != null) {
+      var packageParts = packageName.split('.');
+
+      // Validate the package parts
+      for (var part in packageParts) {
+        if (!javaIdentifier.hasMatch(part)) {
+          usageException('package-name invalid - each part must start with a '
+              'letter or underscore and should contain only letters, digits, '
+              'and underscores (only ASCII letters and digits are supported)');
+        }
+        outputDir = path.join(outputDir, part);
       }
-      modulePath =
-          path.withoutExtension(path.relative(outPath, from: moduleRoot));
-    } else {
-      moduleRoot = path.dirname(outPath);
-      modulePath = path.basenameWithoutExtension(outPath);
     }
 
-    var unit = new BuildUnit(modulePath, buildRoot, argResults.rest,
-        (source) => _moduleForLibrary(moduleRoot, source));
+    var unit = new BuildUnit(packageName, argResults.rest);
 
-    JavaFile module = compiler.compile(unit, compilerOptions);
-    module.errors.forEach(messageHandler);
+    var files = compiler.compile(unit);
+    new Directory(outputDir).createSync(recursive: true);
+    for (var file in files) {
+      file.errors.forEach(messageHandler);
 
-    if (!module.isValid) throw new CompileErrorException();
+      if (!file.isValid) throw new CompileErrorException();
 
-    new File(outPath).writeAsStringSync(module.code);
-  }
-
-  String _moduleForLibrary(String moduleRoot, Source source) {
-    if (source is InSummarySource) {
-      var summaryPath = source.summaryPath;
-      if (path.isWithin(moduleRoot, summaryPath)) {
-        return path
-            .withoutExtension(path.relative(summaryPath, from: moduleRoot));
-      }
-
-      throw usageException(
-          'Imported file ${source.uri} is not within the module root '
-          'directory $moduleRoot');
+      new File(path.join(outputDir, file.name)).writeAsStringSync(file.code);
     }
-
-    throw usageException(
-        'Imported file "${source.uri}" was not found as a summary or source '
-        'file. Please pass in either the summary or the source file '
-        'for this import.');
   }
 }
 

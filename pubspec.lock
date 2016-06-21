@@ -6,7 +6,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.4-alpha.12"
+    version: "0.27.4-alpha.9"
   args:
     description:
       name: args
@@ -60,13 +60,13 @@ packages:
       name: convert
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "1.1.1"
   crypto:
     description:
       name: crypto
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "1.1.1"
   csslib:
     description:
       name: csslib
@@ -121,6 +121,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0"
+  kernel:
+    description:
+      ref: HEAD
+      resolved-ref: "2a30306e20f048c0cdfb06317a14ab65e20a851b"
+      url: "ssh://git@github.com/dart-lang/kernel.git"
+    source: git
+    version: "0.0.0"
   logging:
     description:
       name: logging
@@ -289,4 +296,4 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.9"
-sdk: ">=1.17.0-dev.6.2 <1.19.0"
+sdk: ">=1.16.0 <1.19.0"

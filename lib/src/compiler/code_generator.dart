@@ -1,13 +1,20 @@
-import 'package:analyzer/dart/ast/ast.dart';
+import 'compiler.dart' show JavaFile, CompilerOptions;
 
-import 'compiler.dart' show BuildUnit, JavaFile;
+
+import 'package:kernel/kernel.dart' show Repository;
+import 'package:kernel/ast.dart' as dart_ast;
 
 // TODO(stanm):
 class CodeGenerator {
-  // TODO(stanm): change type (1 file per class, right?).
-  JavaFile compile(BuildUnit unit, List<CompilationUnit> compilationUnits,
-      List<String> errors) {
-    // TODO(stanm): really compile :)
-    return new JavaFile(errors, "");
+  final CompilerOptions options;
+
+  CodeGenerator(this.options);
+
+  Iterable<JavaFile> compile(Repository repository, List<String> errors) {
+    for (var library in repository.libraries) {
+      print('Got library "${library.name}"');
+    }
+
+    return <JavaFile>[];
   }
 }
