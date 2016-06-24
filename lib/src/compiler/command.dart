@@ -4,12 +4,10 @@
 
 import 'dart:io';
 import 'package:args/command_runner.dart';
-import 'package:analyzer/src/generated/source.dart' show Source;
-import 'package:analyzer/src/summary/package_bundle_reader.dart'
-    show InSummarySource;
+import 'package:path/path.dart' as path;
+
 import 'compiler.dart'
     show BuildUnit, CompilerOptions, JavaFile, ModuleCompiler;
-import 'package:path/path.dart' as path;
 
 typedef void MessageHandler(Object message);
 
@@ -21,14 +19,16 @@ class CompileCommand extends Command {
 
   CompileCommand({MessageHandler messageHandler})
       : this.messageHandler = messageHandler ?? print {
-    argParser.addOption('output-dir', abbr: 'o',
+    argParser.addOption('output-dir',
+        abbr: 'o',
         help: 'Output directory.\n'
             'Generated source files are relative to this root.');
-    argParser.addOption('package-name', abbr: 'p',
+    argParser.addOption('package-name',
+        abbr: 'p',
         help: 'Package name (e.g. "com.google.foo.bar").\n'
             'Generated Java classes are placed in this package.\n'
             'Source files are placed in a subdirectory like\n'
-            '"\${output-dir}/\${package-name}/" as per Java conventions.');
+            '"<output-dir>/<package-name>" as per Java conventions.');
     CompilerOptions.addArguments(argParser);
   }
 
@@ -55,9 +55,9 @@ class CompileCommand extends Command {
       // Validate the package parts
       for (var part in packageParts) {
         if (!javaIdentifier.hasMatch(part)) {
-          usageException('package-name invalid - each part must start with a '
+          usageException('Invalid package name. Each part must start with a '
               'letter or underscore and should contain only letters, digits, '
-              'and underscores (only ASCII letters and digits are supported)');
+              'and underscores (only ASCII letters and digits are supported.)');
         }
         outputDir = path.join(outputDir, part);
       }
@@ -65,14 +65,15 @@ class CompileCommand extends Command {
 
     var unit = new BuildUnit(packageName, argResults.rest);
 
-    var files = compiler.compile(unit);
-    new Directory(outputDir).createSync(recursive: true);
-    for (var file in files) {
-      file.errors.forEach(messageHandler);
-
-      if (!file.isValid) throw new CompileErrorException();
-
-      new File(path.join(outputDir, file.name)).writeAsStringSync(file.code);
+    Iterable<JavaFile> files = compiler.compile(unit);
+    if (files.every((file) => file.isValid)) {
+      new Directory(outputDir).createSync(recursive: true);
+      for (var file in files) {
+        file.errors.forEach(messageHandler);
+        new File(path.join(outputDir, file.name)).writeAsStringSync(file.code);
+      }
+    } else {
+      throw new CompileErrorException();
     }
   }
 }
