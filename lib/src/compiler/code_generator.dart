@@ -1,18 +1,27 @@
-import 'compiler.dart' show JavaFile, CompilerOptions;
+import 'compiler.dart' show CompilerOptions;
 
 import 'package:kernel/ast.dart' as dart_ast;
 
-import 'debug_printer.dart';
+import 'writer.dart';
 
-// TODO(stanm):
 class CodeGenerator {
   final CompilerOptions options;
+  final FileWriter writer;
 
-  CodeGenerator(this.options);
+  CodeGenerator(this.options, this.writer);
 
-  Iterable<JavaFile> compile(dart_ast.Library library, List<String> errors) {
-    library.accept(new DebugPrinter());
-
-    return <JavaFile>[];
+  void compile(dart_ast.Library library) {
+    String package = 'com.google.ddc_java';
+    String className = 'HelloWorld';
+    writer.writeJavaFile(
+        package,
+        className,
+        'package $package;\n'
+        '\n'
+        'public class $className {\n'
+        '  public static void main(String[] args) {\n'
+        '    System.out.println("Hello, world!");\n'
+        '  }\n'
+        '}\n');
   }
 }
