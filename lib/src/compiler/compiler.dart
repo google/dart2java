@@ -88,13 +88,28 @@ class CompilerOptions {
   /// Where to generate Java output files.
   final String outputDir;
 
+  /// The base directory for source code.
+  ///
+  /// The Java package to use for generated classes is based (in part) on the
+  /// relative path of the original dart source file under this directory.
+  final String buildRoot;
+
+  /// Added to the package of each generated Java class.
+  final String packagePrefix;
+
   const CompilerOptions(
-      {this.unsafeForceCompile: false, this.dartSdkPath, this.outputDir: '.'});
+      {this.unsafeForceCompile: false,
+      this.dartSdkPath,
+      this.outputDir: '.',
+      this.buildRoot: '.',
+      this.packagePrefix: ''});
 
   CompilerOptions.fromArguments(ArgResults args)
       : unsafeForceCompile = args['unsafe-force-compile'],
         dartSdkPath = args['dart-sdk'] ?? getSdkDir().path,
-        outputDir = args['output-dir'];
+        outputDir = args['output-dir'],
+        buildRoot = args['build-root'],
+        packagePrefix = args['package-prefix'];
 
   static ArgParser addArguments(ArgParser parser) {
     return parser
@@ -104,6 +119,17 @@ class CompilerOptions {
               'This has undefined behavior!',
           defaultsTo: false)
       ..addOption('output-dir',
-          abbr: 'o', help: 'Output directory.', defaultsTo: '.');
+          abbr: 'o', help: 'Output directory.', defaultsTo: '.')
+      ..addOption('build-root',
+          abbr: 'r',
+          help: 'Build root (usually the lib/ directory of a pub package).\n'
+              'The relative path of a Dart source file under this directory\n'
+              'is used to determine the package of generated Java classes.',
+          defaultsTo: '.')
+      ..addOption('package-prefix',
+          abbr: 'p',
+          help: 'Prefix added to the package of each generated Java class.\n'
+              'For example: --package-prefix="org.example.my_project"',
+          defaultsTo: '');
   }
 }
