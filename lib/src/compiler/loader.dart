@@ -8,6 +8,7 @@ import 'package:kernel/analyzer/analyzer_repository.dart'
     show AnalyzerRepository;
 import 'package:kernel/analyzer/loader.dart' show AnalyzerLoader;
 import 'package:kernel/kernel.dart' show Library;
+import 'package:path/path.dart' as path;
 
 /// The results returned by loader: a Kernel IR [Library] and a list of Analyzer
 /// [AnalysisError]s.
@@ -26,17 +27,23 @@ class Loader {
   final AnalyzerRepository repository;
   final AnalyzerLoader _loader;
 
+  /// Initializes an instance of [Loader] which loads libraries into an
+  /// [AnalyzerRepository].
+  ///
+  /// This involves loading the Dart core libraries. The current implementation
+  /// takes several seconds to parse and load these core libraries.
   Loader(AnalyzerRepository repository)
       : repository = repository,
-        _loader = repository.getAnalyzerLoader();
-
-  AnalysisContext get context => _loader.context;
-
-  void loadDartCoreLibrary() {
+        _loader = repository.getAnalyzerLoader() {
+    // Load the core libraries
     _loader.ensureLibraryIsLoaded(
         _loader.getLibraryReference(_loader.getDartCoreLibrary()));
   }
 
+  /// Provides access to the underlying [AnalyzerLoader]'s [AnalysisContext].
+  AnalysisContext get context => _loader.context;
+
+  /// Loads a library by URI.
   LoaderResult load(Uri sourceUri) {
     Library library = repository.getLibraryReference(sourceUri);
     _loader.ensureLibraryIsLoaded(library);
@@ -46,6 +53,12 @@ class Loader {
     var source = context.sourceFactory.forUri2(sourceUri);
     List<AnalysisError> errors = context.computeErrors(source);
     return new LoaderResult(library, errors);
+  }
+
+  /// Loads a Dart source file.
+  LoaderResult loadSource(String sourcePath) {
+    Uri sourceUri = path.toUri(path.absolute(sourcePath));
+    return load(sourceUri);
   }
 
   /// Recursively loads everything referenced by the libraries that have already

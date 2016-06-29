@@ -8,12 +8,11 @@ import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:cli_util/cli_util.dart' show getSdkDir;
 import 'package:kernel/analyzer/analyzer_repository.dart'
     show AnalyzerRepository;
-import 'package:kernel/analyzer/loader.dart' show AnalyzerLoader;
 import 'package:kernel/ast.dart' show Library;
-import 'package:path/path.dart' as path;
 
 import 'code_generator.dart' show CodeGenerator;
 import 'error_helpers.dart' show errorSeverity, formatError, sortErrors;
+import 'loader.dart' show Loader;
 
 /// Compiles a set of Dart files into Java source files.
 ///
@@ -25,12 +24,12 @@ import 'error_helpers.dart' show errorSeverity, formatError, sortErrors;
 /// this class gathers the results of code generation and writes the resulting
 /// [JavaFile]s to the proper directories.
 ///
-/// This class is tightly coupled to the kernel analyzer frontend. Until kernel
-/// implements strong mode in its IR, it will be helpful to have access to the
-/// Analyzer AST through an [AnalyzerLoader].
+/// This class has access to an [AnalysisContext] through a [Loader]. This might
+/// be useful during early development. But, we should try to only interact with
+/// analyzer through [Loader] to keep the interactions in one place.
 class ModuleCompiler {
   final AnalyzerRepository repository;
-  final AnalyzerLoader loader;
+  final Loader loader;
   final CompilerOptions options;
 
   factory ModuleCompiler(CompilerOptions options) {
@@ -42,7 +41,7 @@ class ModuleCompiler {
   ModuleCompiler.withRepository(
       AnalyzerRepository repository, CompilerOptions options)
       : repository = repository,
-        loader = repository.getAnalyzerLoader(),
+        loader = new Loader(repository),
         options = options;
 
   Iterable<JavaFile> compile(BuildUnit unit) {
@@ -50,22 +49,11 @@ class ModuleCompiler {
     var errors = <AnalysisError>[];
     var librariesToCompile = <Library>[];
 
-    loader.ensureLibraryIsLoaded(
-        loader.getLibraryReference(loader.getDartCoreLibrary()));
     for (var sourcePath in unit.sources) {
-      var sourceUri = Uri.parse(sourcePath);
-      if (sourceUri.scheme == '') {
-        sourceUri = path.toUri(path.absolute(sourcePath));
-      }
-      Library library = repository.getLibraryReference(sourceUri);
-      loader.ensureLibraryIsLoaded(library);
-      librariesToCompile.add(library);
-      var source = context.sourceFactory.forUri2(sourceUri);
-      errors.addAll(context.computeErrors(source));
+      var loaderResult = loader.loadSource(sourcePath);
+      librariesToCompile.add(loaderResult.library);
+      errors.addAll(loaderResult.errors);
     }
-    // TODO(andrewkrieger): Ask kernel team if we can speed this up and reduce
-    // memory by only loading kernel references for other libraries instead of
-    // fully loading them.
     loader.loadEverything();
 
     sortErrors(context, errors);
