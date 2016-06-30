@@ -32,7 +32,8 @@ Future<int> _runCommand(List<String> args,
       // still supported for backwards compatibility.
       args.insert(0, 'compile');
     }
-    var runner = new CommandRunner('dartdevc', 'Dart Development Compiler');
+    var runner =
+        new CommandRunner('dart2java', 'Dart To Java Development Compiler');
     runner.addCommand(new CompileCommand(messageHandler: messageHandler));
     await runner.run(args);
   } catch (e, s) {

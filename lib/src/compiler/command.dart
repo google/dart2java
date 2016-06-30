@@ -11,7 +11,7 @@ typedef void MessageHandler(Object message);
 /// The command for invoking the modular compiler.
 class CompileCommand extends Command {
   get name => 'compile';
-  get description => 'Compile a set of Dart files into a JavaScript module.';
+  get description => 'Compile a set of Dart files into a Java module.';
   final MessageHandler messageHandler;
 
   CompileCommand({MessageHandler messageHandler})
@@ -24,6 +24,9 @@ class CompileCommand extends Command {
     var compilerOptions = new CompilerOptions.fromArguments(argResults);
     var compiler = new ModuleCompiler(compilerOptions);
     List<String> sources = argResults.rest;
+    if (sources.isEmpty) {
+      usageException('Please pass at least one input file as an argument.');
+    }
     compiler.compile(sources);
   }
 }
