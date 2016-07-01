@@ -12,12 +12,12 @@ import 'visitor.dart' as java;
 /// Clients should only call static methods on this class. The fact that
 /// this class is a [dart.Visitor] is an implementation detail that callers must
 /// not rely on.
-class JavaAstBuilder extends dart.Visitor<java.Node> {
+class JavaAstBuilder extends java.Visitor<java.Node> {
   /// Builds a Java class that contains the top-level procedures and fields in
   /// a Dart [Library].
-  static java.Class buildWrapperClass(
+  static java.ClassDecl buildWrapperClass(
       String package, String className, dart.Library library) {
-    java.Class result = new java.Class(package, className, java.Access.Public);
+    java.ClassDecl result = new java.ClassDecl(package, className, java.Access.Public);
     // TODO(andrewkrieger): visit the Dart library's procedures and fields;
     // add corresponding methods and fields to the Java class.
     return result;

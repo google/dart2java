@@ -26,7 +26,7 @@ class JavaAstEmitter extends Visitor<String> {
   ///
   /// This inludes a package delcaration, imports, and a full Java class
   /// definition.
-  static String emitClass(Class cls) {
+  static String emitClassDecl(ClassDecl cls) {
     var sb = new StringBuffer();
     sb.write('package ');
     sb.write(cls.package);
@@ -37,7 +37,7 @@ class JavaAstEmitter extends Visitor<String> {
   }
 
   @override
-  String visitClass(Class cls) {
+  String visitClassDecl(ClassDecl cls) {
     var sb = new StringBuffer();
     sb.write(accessToString(cls.access));
     sb.write('class ');
