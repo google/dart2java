@@ -8,7 +8,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:analyzer/src/generated/engine.dart' show AnalysisEngine;
-import 'package:args/command_runner.dart';
+import 'package:args/src/usage_exception.dart' show UsageException;
 import 'package:bazel_worker/bazel_worker.dart';
 import 'package:dev_compiler/src/compiler/command.dart';
 
@@ -19,12 +19,12 @@ Future main(List<String> args) async {
   if (args.contains('--persistent_worker')) {
     new _CompilerWorker(args..remove('--persistent_worker')).run();
   } else {
-    exitCode = await _runCommand(args);
+    exitCode = await _compile(args);
   }
 }
 
 /// Runs a single compile command, and returns an exit code.
-Future<int> _runCommand(List<String> args,
+Future<int> _compile(List<String> args,
     {MessageHandler messageHandler}) async {
   try {
     if (args.isEmpty || args.first != 'compile' && args.first != 'help') {
@@ -54,7 +54,7 @@ class _CompilerWorker extends AsyncWorkerLoop {
     var args = _startupArgs.toList()..addAll(request.arguments);
 
     var output = new StringBuffer();
-    var exitCode = await _runCommand(args, messageHandler: output.writeln);
+    var exitCode = await _compile(args, messageHandler: output.writeln);
     AnalysisEngine.instance.clearCaches();
     return new WorkResponse()
       ..exitCode = exitCode
