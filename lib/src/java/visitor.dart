@@ -12,6 +12,8 @@ abstract class Visitor<R> {
   R visitBlock(Block node) => null;
   R visitIfStmt(IfStmt node) => null;
   R visitVariableDeclStmt(VariableDeclStmt node) => null;
+  R visitReturnStmt(ReturnStmt node) => null;
+  R visitExpressionStmt(ExpressionStmt node) => null;
   R visitIdentifierExpr(IdentifierExpr node) => null;
   R visitAssignmentExpr(AssignmentExpr node) => null;
   R visitMethodInvocation(MethodInvocation node) => null;
@@ -22,4 +24,6 @@ abstract class Visitor<R> {
   R visitDoubleLiteral(DoubleLiteral node) => null;
   R visitStringLiteral(StringLiteral node) => null;
   R visitNullLiteral(NullLiteral node) => null;
+  R visitVariableDecl(VariableDecl node) => null;
+  R visitFieldDecl(FieldDecl node) => null;
 }

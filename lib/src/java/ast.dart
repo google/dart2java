@@ -9,37 +9,23 @@
 import 'visitor.dart';
 
 /// Java access specifier
-enum Access {
-  Public,
-  Protected,
-  Private,
+class Access {
+  static const Access Public = const Access("public");
+  static const Access Protected = const Access("protected");
+  static const Access Private = const Access("private");
 
   /// Package-private or default access. In Java code, this is written by
   /// omitting a specifier (e.g. `static void foo() {}` instead of
   /// `public static void foo() {}`).
-  Package,
-}
+  static const Access Package = const Access("");
 
-/// Convert access specifier to string.
-///
-/// Since this will often be inserted into a list of modifiers (along with
-/// keywords like `abstract` or `static`, the default behavior is to add a
-/// single space at the end (like "public "), except for the value
-/// `Access.Package` which is always converted to the empty string. To override
-/// this behavior (so that the return value never ends with a space, e.g.
-/// "public"), pass `trailingSpace: false`.
-String accessToString(Access access, {bool trailingSpace: true}) {
-  switch (access) {
-    case Access.Public:
-      return trailingSpace ? "public " : "public";
-    case Access.Protected:
-      return trailingSpace ? "protected " : "protected";
-    case Access.Private:
-      return trailingSpace ? "private " : "private";
-    case Access.Package:
-      return "";
-    default:
-      throw new Exception("Unrecognized Access value: $access");
+  final String modifier;
+
+  const Access(this.modifier);
+
+  @override
+  String toString() {
+    return modifier;
   }
 }
 
@@ -73,14 +59,15 @@ class ClassDecl extends Node {
 
   List<MethodDef> methods;
 
-  List<VariableDecl> variables;
+  List<VariableDecl> fields;
 
-  ClassDecl(this.package, this.name, this.access);
+  ClassDecl(this.package, this.name, 
+    [this.access, this.fields = const [], this.methods = const []]);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassDecl(this);
 
-  String toString() => '${accessToString(access)} class $name';
+  String toString() => '${access} class $name';
 }
 
 /// A Java method.
@@ -103,27 +90,43 @@ class MethodDef extends Node {
 
   Access access;
 
-  MethodDef(this.name, this.body,
-      [this.parameters = const [],
-      this.returnType = "void",
-      this.isStatic = false,
-      this.isFinal = false,
-      this.access = Access.Public]);
+  MethodDef(this.name, this.body, this.parameters, {
+    this.returnType: "void",
+    this.isStatic: false,
+    this.isFinal: false,
+    this.access: Access.Public});
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDef(this);
 }
 
-/// A variable declaration. Can also be used for parameter defintions in method
-/// signatures, in which case the access modifiers will be ignored.
-class VariableDecl {
+/// A instance variable declaration for fields.
+class FieldDecl extends Node {
   String name;
   String type;
   Access access;
   bool isStatic;
   bool isFinal;
 
-  VariableDecl(this.name, this.type,
-      [this.access, this.isStatic = false, this.isFinal = false]);
+  FieldDecl(this.name, this.type, {
+    this.access: Access.Private, 
+    this.isStatic: false,
+    this.isFinal: false});
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldDecl(this);
+}
+
+/// A variable declaration for parameters and local variables.
+class VariableDecl extends Node {
+  String name;
+  String type;
+  bool isFinal;
+
+  VariableDecl(this.name, this.type, {this.isFinal: false});
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitVariableDecl(this);
 }
 
 /// Abstract class for statements.
@@ -135,6 +138,7 @@ class Block extends Statement {
 
   Block([this.statements = const []]);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitBlock(this);
 }
 
@@ -142,14 +146,16 @@ class Block extends Statement {
 class IfStmt extends Statement {
   Expression condition;
 
-  Statement thenBody;
+  // Allow only blocks to avoid ambiguous else part in nested if statements
+  Block thenBody;
 
-  Statement elseBody;
+  Block elseBody;
 
   /// TODO(springerm) Add support for "else if"
 
   IfStmt(this.condition, this.thenBody, [this.elseBody]);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitIfStmt(this);
 }
 
@@ -169,13 +175,34 @@ class VariableDeclStmt extends Statement {
     }
   }
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitVariableDeclStmt(this);
 }
 
-/// Abstract class for expressions.
-abstract class Expression extends Statement {}
+/// A method return statement.
+class ReturnStmt extends Statement {
+  Expression value;
 
-/// A method invocation (method invocation).
+  ReturnStmt([this.value]);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitReturnStmt(this);
+}
+
+/// An expression that acts as a statement.
+class ExpressionStmt extends Statement {
+  Expression expression;
+
+  ExpressionStmt(this.expression);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitExpressionStmt(this);
+}
+
+/// Abstract class for expressions.
+abstract class Expression extends Node {}
+
+/// A method invocation.
 class MethodInvocation extends Expression {
   Expression receiver;
 
@@ -183,8 +210,10 @@ class MethodInvocation extends Expression {
 
   List<Expression> arguments;
 
-  MethodInvocation(this.receiver, this.methodName, [this.arguments = const []]);
+  MethodInvocation(this.receiver, this.methodName, 
+    [this.arguments = const []]);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodInvocation(this);
 }
 
@@ -198,6 +227,7 @@ class BinaryExpr extends Expression {
 
   BinaryExpr(this.leftOperand, this.rightOperand, this.operatorSymbol);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitBinaryExpr(this);
 }
 
@@ -209,6 +239,7 @@ class UnaryExpr extends Expression {
 
   UnaryExpr(this.operand, this.operatorSymbol);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitUnaryExpr(this);
 }
 
@@ -218,6 +249,7 @@ class IdentifierExpr extends Expression {
 
   IdentifierExpr(this.identifier);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitIdentifierExpr(this);
 }
 
@@ -229,6 +261,7 @@ class AssignmentExpr extends Expression {
 
   AssignmentExpr(this.identifier, this.value);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitAssignmentExpr(this);
 }
 
@@ -239,6 +272,7 @@ class ClassRefExpr extends Expression {
 
   ClassRefExpr(this.className);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassRefExpr(this);
 }
 
@@ -251,6 +285,7 @@ class IntLiteral extends Literal {
 
   IntLiteral(this.value);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitIntLiteral(this);
 }
 
@@ -260,6 +295,7 @@ class DoubleLiteral extends Literal {
 
   DoubleLiteral(this.value);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitDoubleLiteral(this);
 }
 
@@ -269,6 +305,7 @@ class StringLiteral extends Literal {
 
   StringLiteral(this.value);
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitStringLiteral(this);
 }
 
@@ -276,6 +313,7 @@ class NullLiteral extends Literal {
   static final instance = new NullLiteral._();
   NullLiteral._();
 
+  @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitNullLiteral(this);
 
   factory NullLiteral() {
