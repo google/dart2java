@@ -10,32 +10,25 @@ import 'dart:io';
 import 'package:analyzer/src/generated/engine.dart' show AnalysisEngine;
 import 'package:args/src/usage_exception.dart' show UsageException;
 import 'package:bazel_worker/bazel_worker.dart';
-import 'package:dev_compiler/src/compiler/command.dart';
+import 'package:dev_compiler/src/compiler/runner.dart';
 
-Future main(List<String> args) async {
+void main(List<String> args) {
   // Always returns a new modifiable list.
   args = _preprocessArgs(args);
 
   if (args.contains('--persistent_worker')) {
     new _CompilerWorker(args..remove('--persistent_worker')).run();
   } else {
-    exitCode = await _compile(args);
+    exitCode = _compile(args);
   }
 }
 
+typedef void MessageHandler(Object message);
+
 /// Runs a single compile command, and returns an exit code.
-Future<int> _compile(List<String> args,
-    {MessageHandler messageHandler}) async {
+int _compile(List<String> args, {MessageHandler messageHandler}) {
   try {
-    if (args.isEmpty || args.first != 'compile' && args.first != 'help') {
-      // TODO(jmesserly): we should deprecate the commands. For now they are
-      // still supported for backwards compatibility.
-      args.insert(0, 'compile');
-    }
-    var runner =
-        new CommandRunner('dart2java', 'Dart To Java Development Compiler');
-    runner.addCommand(new CompileCommand(messageHandler: messageHandler));
-    await runner.run(args);
+    Runner.run(args);
   } catch (e, s) {
     return _handleError(e, s, args, messageHandler: messageHandler);
   }
@@ -50,15 +43,16 @@ class _CompilerWorker extends AsyncWorkerLoop {
   _CompilerWorker(this._startupArgs) : super();
 
   /// Performs each individual work request.
-  Future<WorkResponse> performRequest(WorkRequest request) async {
+  @override
+  Future<WorkResponse> performRequest(WorkRequest request) {
     var args = _startupArgs.toList()..addAll(request.arguments);
 
     var output = new StringBuffer();
-    var exitCode = await _compile(args, messageHandler: output.writeln);
+    var exitCode = _compile(args, messageHandler: output.writeln);
     AnalysisEngine.instance.clearCaches();
-    return new WorkResponse()
+    return new Future.value(new WorkResponse()
       ..exitCode = exitCode
-      ..output = output.toString();
+      ..output = output.toString());
   }
 }
 

@@ -11,7 +11,7 @@ import 'package:kernel/analyzer/analyzer_repository.dart'
 import 'package:kernel/ast.dart' show Library;
 
 import 'code_generator.dart' show CodeGenerator;
-import 'command.dart' show CompileErrorException;
+import 'runner.dart' show CompileErrorException;
 import 'error_helpers.dart' show errorSeverity, formatError, sortErrors;
 import 'loader.dart' show Loader;
 import 'writer.dart' show FileWriter;
@@ -72,7 +72,6 @@ class ModuleCompiler {
           '\nPlease fix all errors before compiling (warnings are okay).');
     }
 
-    // TODO (stanm): see if we need context and options.
     var codeGenerator = new CodeGenerator(options, new FileWriter(options));
     for (var library in librariesToCompile) {
       codeGenerator.compile(library);

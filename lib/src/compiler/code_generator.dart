@@ -6,7 +6,7 @@ import 'package:path/path.dart' as path;
 import '../java/ast.dart' as java;
 import '../java/java_builder.dart' show JavaAstBuilder;
 import '../java/java_emitter.dart' show JavaAstEmitter;
-import 'command.dart' show CompileErrorException;
+import 'runner.dart' show CompileErrorException;
 import 'writer.dart' show FileWriter;
 
 class CodeGenerator {
