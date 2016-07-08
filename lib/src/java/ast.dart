@@ -59,7 +59,7 @@ class ClassDecl extends Node {
 
   List<MethodDef> methods;
 
-  List<VariableDecl> fields;
+  List<FieldDecl> fields;
 
   ClassDecl(this.package, this.name, 
     [this.access, this.fields = const [], this.methods = const []]);
@@ -107,8 +107,10 @@ class FieldDecl extends Node {
   Access access;
   bool isStatic;
   bool isFinal;
+  Expression initializer;   // may be null
 
   FieldDecl(this.name, this.type, {
+    this.initializer,
     this.access: Access.Private, 
     this.isStatic: false,
     this.isFinal: false});

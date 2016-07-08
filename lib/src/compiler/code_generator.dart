@@ -21,9 +21,16 @@ class CodeGenerator {
     if (library.procedures.isNotEmpty || library.fields.isNotEmpty) {
       // TODO(andrewkrieger): Check for name collisions.
       String className = package.split('.').last;
-      java.Class cls =
+      java.ClassDecl cls =
           JavaAstBuilder.buildWrapperClass(package, className, library);
-      writer.writeJavaFile(package, className, JavaAstEmitter.emitClass(cls));
+      writer.writeJavaFile(
+          package, className, JavaAstEmitter.emitClassDecl(cls));
+    }
+
+    for (var dartCls in library.classes) {
+      java.ClassDecl cls = JavaAstBuilder.buildClass(package, dartCls);
+      writer.writeJavaFile(
+          package, cls.name, JavaAstEmitter.emitClassDecl(cls));
     }
   }
 }

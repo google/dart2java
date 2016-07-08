@@ -49,6 +49,11 @@ class JavaAstEmitter extends Visitor<String> {
     parts.add(decl.type);
     parts.add(decl.name);
 
+    if (decl.initializer != null) {
+      parts.add("=");
+      parts.add(decl.initializer.accept(this));
+    }
+    
     return parts.join(" ");
   }
 
@@ -142,7 +147,7 @@ class JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitAssignmentExpr(AssignmentExpr expr) {
-    return "${expr.identifier} = ${expr.value.accept(this)}";
+    return "${expr.identifier.accept(this)} = ${expr.value.accept(this)}";
   }
 
   @override

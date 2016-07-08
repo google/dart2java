@@ -12,14 +12,152 @@ import 'visitor.dart' as java;
 /// Clients should only call static methods on this class. The fact that
 /// this class is a [dart.Visitor] is an implementation detail that callers must
 /// not rely on.
-class JavaAstBuilder extends java.Visitor<java.Node> {
+class JavaAstBuilder extends dart.Visitor {
   /// Builds a Java class that contains the top-level procedures and fields in
   /// a Dart [Library].
   static java.ClassDecl buildWrapperClass(
       String package, String className, dart.Library library) {
-    java.ClassDecl result = new java.ClassDecl(package, className, java.Access.Public);
+    java.ClassDecl result =
+        new java.ClassDecl(package, className, java.Access.Public);
     // TODO(andrewkrieger): visit the Dart library's procedures and fields;
     // add corresponding methods and fields to the Java class.
     return result;
+  }
+
+  /// Builds a Java class AST from a kernel class AST.
+  static java.ClassDecl buildClass(String package, dart.Class node) {
+    var instance = new JavaAstBuilder(package);
+    return node.accept(instance);
+  }
+
+  JavaAstBuilder(this.package);
+
+  final String package;
+
+  /// Visits a non-mixin class.
+  @override
+  java.ClassDecl visitNormalClass(dart.NormalClass node) {
+    List<java.FieldDecl> fields =
+        node.fields.map((f) => f.accept(this)).toList();
+    List<java.MethodDef> methods =
+        node.procedures.map((m) => m.accept(this)).toList();
+
+    return new java.ClassDecl(
+        package, node.name, java.Access.Public, fields, methods);
+  }
+
+  @override
+  java.FieldDecl visitField(dart.Field node) {
+    return new java.FieldDecl(node.name.name, node.type.accept(this),
+        initializer: node.initializer?.accept(this),
+        access: java.Access.Public,
+        isStatic: node.isStatic,
+        isFinal: node.isFinal);
+  }
+
+  @override
+  java.MethodDef visitProcedure(dart.Procedure node) {
+    // TODO: handle other kinds (e.g., getters)
+    assert(node.kind == dart.ProcedureKind.Method);
+
+    dart.FunctionNode functionNode = node.function;
+    String returnType = functionNode.returnType.accept(this);
+    // TODO: handle named parameters, etc.
+    List<java.VariableDecl> parameters =
+        functionNode.positionalParameters.map((p) => p.accept(this)).toList();
+    java.Block body = wrapInJavaBlock(buildStatement(functionNode.body));
+
+    return new java.MethodDef(node.name.name, body, parameters,
+        returnType: returnType, isStatic: node.isStatic, isFinal: false);
+  }
+
+  /// Wraps a Java statement in a block, if [stmt] is not already a block.
+  java.Block wrapInJavaBlock(java.Statement stmt) {
+    if (stmt is java.Block) {
+      return stmt;
+    } else {
+      return new java.Block([stmt]);
+    }
+  }
+
+  @override
+  java.Block visitBlock(dart.Block node) {
+    return new java.Block(node.statements.map(buildStatement).toList());
+  }
+
+  @override
+  java.IfStmt visitIfStatement(dart.IfStatement node) {
+    return new java.IfStmt(
+        node.condition.accept(this),
+        wrapInJavaBlock(buildStatement(node.then)),
+        node.otherwise == null
+            ? null
+            : wrapInJavaBlock(buildStatement(node.otherwise)));
+  }
+
+  @override
+  java.ReturnStmt visitReturnStatement(dart.ReturnStatement node) {
+    return new java.ReturnStmt(node.expression?.accept(this));
+  }
+
+  @override
+  java.ExpressionStmt visitExpressionStatement(dart.ExpressionStatement node) {
+    return new java.ExpressionStmt(node.expression.accept(this));
+  }
+
+  @override
+  java.IdentifierExpr visitVariableGet(dart.VariableGet node) {
+    return new java.IdentifierExpr(node.variable.name);
+  }
+
+  @override
+  java.AssignmentExpr visitVariableSet(dart.VariableSet node) {
+    return new java.AssignmentExpr(
+        new java.IdentifierExpr(node.variable.name), node.value.accept(this));
+  }
+
+  @override
+  java.IntLiteral visitIntLiteral(dart.IntLiteral node) {
+    return new java.IntLiteral(node.value);
+  }
+
+  @override
+  java.DoubleLiteral visitDoubleLiteral(dart.DoubleLiteral node) {
+    return new java.DoubleLiteral(node.value);
+  }
+
+  @override
+  java.StringLiteral visitStringLiteral(dart.StringLiteral node) {
+    return new java.StringLiteral(node.value);
+  }
+
+  /// Convert a Dart statement to a Java statement.
+  ///
+  /// Some statements require special handling.
+  java.Statement buildStatement(dart.Statement node) {
+    var result = node.accept(this);
+
+    if (node is dart.VariableDeclaration) {
+      // Our AST has VariableDecl and VariableDeclStmt and we want to keep
+      // them separate. Kernel AST has only VariableDeclaration as a statement.
+      // That kernel class translates to VariableDecl in our builder, but
+      // when we expect a statement, we wrap it in a VariableDeclStmt.
+      var decl = result as java.VariableDecl;
+      return new java.VariableDeclStmt(decl, node.initializer?.accept(this));
+    } else {
+      return result;
+    }
+  }
+
+  @override
+  String defaultDartType(dart.DartType node) {
+    // TODO(springerm): generate proper types
+    return node.toString();
+  }
+
+  @override
+  java.VariableDecl visitVariableDeclaration(dart.VariableDeclaration node) {
+    return new java.VariableDecl(node.name, node.type.accept(this),
+        isFinal: node.isFinal);
   }
 }
