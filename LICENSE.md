@@ -1,12 +1,8 @@
-This license applies to all files contained here with the following
-exceptions:
-
-- All code in test/js_test_tools is externally maintained with
-  corresponding licenses in those individual files and directories.
+This license applies to all files contained here.
 
 ---
 
-Copyright 2015, the Dart project authors. All rights reserved.
+Copyright 2016, the Dart project authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
