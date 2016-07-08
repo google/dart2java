@@ -10,7 +10,7 @@ import 'dart:io';
 import 'package:analyzer/src/generated/engine.dart' show AnalysisEngine;
 import 'package:args/src/usage_exception.dart' show UsageException;
 import 'package:bazel_worker/bazel_worker.dart';
-import 'package:dev_compiler/src/compiler/runner.dart';
+import 'package:dart2java/src/compiler/runner.dart';
 
 void main(List<String> args) {
   // Always returns a new modifiable list.
