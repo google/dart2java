@@ -53,7 +53,7 @@ class Runner {
   /// the executable.
   ///
   /// This includes usage for the arguments.
-  static String get usage => usageException(description);
+  static void usage() => usageException(description);
 
   /// Throws a [UsageException] with a specific [message].
   static void usageException(String message) =>
