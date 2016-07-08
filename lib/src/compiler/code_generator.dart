@@ -8,6 +8,7 @@ import '../java/java_builder.dart' show JavaAstBuilder;
 import '../java/java_emitter.dart' show JavaAstEmitter;
 import 'runner.dart' show CompileErrorException;
 import 'writer.dart' show FileWriter;
+import 'compiler_state.dart';
 
 class CodeGenerator {
   final CompilerOptions options;
@@ -28,7 +29,8 @@ class CodeGenerator {
     }
 
     for (var dartCls in library.classes) {
-      java.ClassDecl cls = JavaAstBuilder.buildClass(package, dartCls);
+      java.ClassDecl cls =
+          JavaAstBuilder.buildClass(package, dartCls, new CompilerState());
       writer.writeJavaFile(
           package, cls.name, JavaAstEmitter.emitClassDecl(cls));
     }

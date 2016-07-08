@@ -6,6 +6,8 @@ import 'package:kernel/ast.dart' as dart;
 
 import 'ast.dart' as java;
 import 'visitor.dart' as java;
+import 'constants.dart';
+import '../compiler/compiler_state.dart';
 
 /// Builds a Java class from Dart IR.
 ///
@@ -25,14 +27,16 @@ class JavaAstBuilder extends dart.Visitor {
   }
 
   /// Builds a Java class AST from a kernel class AST.
-  static java.ClassDecl buildClass(String package, dart.Class node) {
-    var instance = new JavaAstBuilder(package);
+  static java.ClassDecl buildClass(
+      String package, dart.Class node, CompilerState compilerState) {
+    var instance = new JavaAstBuilder(package, compilerState);
     return node.accept(instance);
   }
 
-  JavaAstBuilder(this.package);
+  JavaAstBuilder(this.package, this.compilerState);
 
   final String package;
+  final CompilerState compilerState;
 
   /// Visits a non-mixin class.
   @override
@@ -106,6 +110,35 @@ class JavaAstBuilder extends dart.Visitor {
   }
 
   @override
+  java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
+    java.Expression recv = node.receiver.accept(this);
+    String name = node.name;
+    List<java.Expression> args = node.arguments.positional.map((a) => a.accept(this)).toList();
+
+    // Expand operator symbol to Java-compatible method name
+    name = Constants.operatorToMethodName[name] ?? name;
+
+    String receiverType = getType(node.receiver).toString();
+    if (compilerState.javaClasses.containsKey(receiverType)) {
+      // Receiver type is an already existing Java class, genereate static
+      // method call.
+      var dartClass = compilerState.implementationClasses[receiverType];
+      var argsWithSelf = []
+        ..add(recv)
+        ..addAll(args);
+      return new java.MethodInvocation(dartClass, name, argsWithSelf);
+    }
+
+    return new java.MethodInvocation(recv, name, args);
+  }
+
+  /// Retrieves the [DartType] for a kernel [Expression] node.
+  dart.DartType getType(dart.Expression node) {
+    // TODO(andrewkrieger): Return DartType for kernel expression node
+    return null;
+  }
+
+  @override
   java.IdentifierExpr visitVariableGet(dart.VariableGet node) {
     return new java.IdentifierExpr(node.variable.name);
   }
@@ -149,10 +182,17 @@ class JavaAstBuilder extends dart.Visitor {
     }
   }
 
+  /// This is the default visitor method for DartType.
   @override
   String defaultDartType(dart.DartType node) {
-    // TODO(springerm): generate proper types
-    return node.toString();
+    String typeName = node.toString();
+    if (compilerState.javaClasses.containsKey(typeName)) {
+      // Reuse a Java type
+      return compilerState.javaClasses[typeName];
+    } else {
+      // TODO(springerm): generate proper types
+      return typeName;
+    }
   }
 
   @override
