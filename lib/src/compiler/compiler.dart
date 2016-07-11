@@ -47,7 +47,10 @@ class ModuleCompiler {
         loader = new Loader(repository),
         options = options;
 
-  void compile(List<String> sources) {
+  /// Compile a list of [sources] to a set of Java files each.
+  ///
+  /// Returns the union of all sets of Java files.
+  Set<File> compile(List<String> sources) {
     AnalysisContext context = loader.context;
     var errors = <AnalysisError>[];
     var librariesToCompile = <Library>[];
@@ -73,9 +76,9 @@ class ModuleCompiler {
     }
 
     var codeGenerator = new CodeGenerator(options, new FileWriter(options));
-    for (var library in librariesToCompile) {
-      codeGenerator.compile(library);
-    }
+    return librariesToCompile
+        .map((library) => codeGenerator.compile(library))
+        .fold(new Set<File>(), (files, newFiles) => files..addAll(newFiles));
   }
 }
 

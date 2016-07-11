@@ -18,6 +18,9 @@ import 'package:dart2java/src/compiler/compiler.dart'
 /// The `test/codegen` directory.
 final codegenDir = path.join(testDirectory, 'codegen');
 
+/// The `test/codegen_expect` directory.
+final codegenExpectDir = path.join(testDirectory, 'codegen_expect');
+
 /// The generated directory where tests and test support libraries are copied
 /// to.
 ///
@@ -51,8 +54,11 @@ main(List<String> arguments) {
 
     String name = path.withoutExtension(relativePath);
     test('dart2java $name', () {
-      String outDir = path.join(codegenOutputDir, path.dirname(relativePath));
+      String relativeDir = path.dirname(relativePath);
+      String outDir = path.join(codegenOutputDir, relativeDir);
+      String expectDir = path.join(codegenExpectDir, relativeDir);
       _ensureDirectory(outDir);
+      _ensureDirectory(expectDir);
 
       // Check if we need to use special compile options.
       var contents = new File(testFile).readAsStringSync();
@@ -66,7 +72,12 @@ main(List<String> arguments) {
       var options =
           new CompilerOptions.fromArguments(compilerArgParser.parse(args));
 
-      new ModuleCompiler(options).compile([testFile]);
+      new ModuleCompiler(options).compile([testFile]).forEach((file) {
+        var relativePath = path.relative(file.path, from: codegenOutputDir);
+        var newPath = path.join(codegenExpectDir, relativePath);
+        _ensureDirectory(path.dirname(newPath));
+        file.copySync(newPath);
+      });
     });
   }
 }

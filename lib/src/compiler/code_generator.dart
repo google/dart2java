@@ -16,24 +16,30 @@ class CodeGenerator {
 
   CodeGenerator(this.options, this.writer);
 
-  void compile(dart.Library library) {
+  /// Compile [library] to a set of Java files.
+  ///
+  /// Returns the set of the files that have been written.
+  Set<File> compile(dart.Library library) {
     String package = getJavaPackageName(options, library);
+
+    var filesWritten = new Set<File>();
 
     if (library.procedures.isNotEmpty || library.fields.isNotEmpty) {
       // TODO(andrewkrieger): Check for name collisions.
       String className = package.split('.').last;
       java.ClassDecl cls =
           JavaAstBuilder.buildWrapperClass(package, className, library);
-      writer.writeJavaFile(
-          package, className, JavaAstEmitter.emitClassDecl(cls));
+      filesWritten.add(writer.writeJavaFile(
+          package, className, JavaAstEmitter.emitClassDecl(cls)));
     }
 
     for (var dartCls in library.classes) {
-      java.ClassDecl cls =
-          JavaAstBuilder.buildClass(package, dartCls, new CompilerState());
-      writer.writeJavaFile(
-          package, cls.name, JavaAstEmitter.emitClassDecl(cls));
+      java.ClassDecl cls = JavaAstBuilder.buildClass(package, dartCls, new CompilerState());
+      filesWritten.add(writer.writeJavaFile(
+          package, cls.name, JavaAstEmitter.emitClassDecl(cls)));
     }
+
+    return filesWritten;
   }
 }
 

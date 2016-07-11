@@ -27,12 +27,15 @@ class FileWriter {
   /// will be written to `${_options.outputDir}/org/example/foo/FooBar.java`.
   FileWriter(this._options);
 
-  /// Write the [contents] to a file. [package] and [className] are used to
-  /// generate the file name, following Java conventions.
-  void writeJavaFile(String package, String className, String contents) {
+  /// Write the [contents] to a file.
+  ///
+  /// [package] and [className] are used to generate the file name, following
+  /// Java conventions. Returns the written file.
+  File writeJavaFile(String package, String className, String contents) {
     var file = new File(path.join(_options.outputDir,
         package.replaceAll('.', path.separator), className + '.java'));
     file.createSync(recursive: true);
     file.writeAsStringSync(contents);
+    return file;
   }
 }
