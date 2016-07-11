@@ -124,8 +124,8 @@ packages:
   kernel:
     description:
       ref: HEAD
-      resolved-ref: "2a30306e20f048c0cdfb06317a14ab65e20a851b"
-      url: "ssh://git@github.com/dart-lang/kernel.git"
+      resolved-ref: b87019e750f50d7ba2942690aeb78da472d1bcf9
+      url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
     source: git
     version: "0.0.0"
   logging:

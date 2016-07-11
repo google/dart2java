@@ -17,7 +17,7 @@ dependencies:
   js: ^0.6.0
   kernel:
     # Since kernel is still unpublished, use a git dependency
-    git: ssh://git@github.com/dart-lang/kernel.git
+    git: ssh://git@github.com/dart-lang/ddc-java-kernel.git
   path: ^1.3.0
   pub_semver: ^1.1.0
   source_maps: ^0.10.0
