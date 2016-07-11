@@ -92,6 +92,7 @@ class Tag {
   static const int TypeParameterType = 95;
   static const int SimpleInterfaceType = 96;
   static const int SimpleFunctionType = 97;
+  static const int BottomType = 98;
 
   static const int NormalClassReference = 100;
   static const int MixinClassReference = 101;

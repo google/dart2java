@@ -220,6 +220,7 @@ class DartTypeVisitor<R> {
   R visitInvalidType(InvalidType node) => defaultDartType(node);
   R visitDynamicType(DynamicType node) => defaultDartType(node);
   R visitVoidType(VoidType node) => defaultDartType(node);
+  R visitBottomType(BottomType node) => defaultDartType(node);
   R visitInterfaceType(InterfaceType node) => defaultDartType(node);
   R visitFunctionType(FunctionType node) => defaultDartType(node);
   R visitTypeParameterType(TypeParameterType node) => defaultDartType(node);
@@ -254,6 +255,7 @@ class Visitor<R> extends TreeVisitor<R>
   R visitInvalidType(InvalidType node) => defaultDartType(node);
   R visitDynamicType(DynamicType node) => defaultDartType(node);
   R visitVoidType(VoidType node) => defaultDartType(node);
+  R visitBottomType(BottomType node) => defaultDartType(node);
   R visitInterfaceType(InterfaceType node) => defaultDartType(node);
   R visitFunctionType(FunctionType node) => defaultDartType(node);
   R visitTypeParameterType(TypeParameterType node) => defaultDartType(node);

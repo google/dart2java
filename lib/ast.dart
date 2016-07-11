@@ -905,6 +905,8 @@ enum AsyncMarker {
 // ------------------------------------------------------------------------
 
 abstract class Expression extends TreeNode {
+  DartType staticType;
+
   accept(ExpressionVisitor v);
 }
 
@@ -2494,6 +2496,17 @@ class VoidType extends DartType {
   visitChildren(Visitor v) {}
 
   bool operator ==(Object other) => other is VoidType;
+}
+
+class BottomType extends DartType {
+  final int hashCode = 67890;
+
+  const BottomType();
+
+  accept(DartTypeVisitor v) => v.visitBottomType(this);
+  visitChildren(Visitor v) {}
+
+  bool operator ==(Object other) => other is BottomType;
 }
 
 class InterfaceType extends DartType {

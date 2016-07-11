@@ -1215,6 +1215,10 @@ class Printer extends Visitor<Null> {
     writeWord('void');
   }
 
+  visitBottomType(BottomType node) {
+    writeWord('bottom');
+  }
+
   visitInterfaceType(InterfaceType node) {
     writeClassReference(node.classNode);
     if (node.typeArguments.isNotEmpty) {

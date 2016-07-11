@@ -749,6 +749,10 @@ class BinaryPrinter extends Visitor {
     writeByte(Tag.VoidType);
   }
 
+  visitBottomType(BottomType node) {
+    writeByte(Tag.BottomType);
+  }
+
   visitInterfaceType(InterfaceType node) {
     if (node.typeArguments.isEmpty) {
       writeByte(Tag.SimpleInterfaceType);

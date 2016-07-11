@@ -857,11 +857,13 @@ class ExpressionBuilder
 
   ast.Expression build(Expression node) {
     var result = node.accept(this);
+    ast.Expression expression;
     if (result is Accessor) {
-      return result.buildSimpleRead();
+      expression = result.buildSimpleRead();
     } else {
-      return result;
+      expression = result;
     }
+    return expression..staticType = scope.buildType(node.staticType);
   }
 
   Accessor buildLeftHandValue(Expression node) {
@@ -1544,6 +1546,8 @@ class TypeAnnotationBuilder extends GeneralizingAstVisitor<ast.DartType> {
       return const ast.VoidType();
     } else if (type.isDynamic) {
       return const ast.DynamicType();
+    } else if (type.isBottom) {
+      return const ast.BottomType();
     } else {
       log.severe('Unexpected DartType: $type');
       return const ast.InvalidType();

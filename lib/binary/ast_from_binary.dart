@@ -715,6 +715,8 @@ class BinaryBuilder {
         return const DynamicType();
       case Tag.VoidType:
         return const VoidType();
+      case Tag.BottomType:
+        return const BottomType();
       case Tag.InterfaceType:
         return new InterfaceType(readClassReference(), readDartTypeList());
       case Tag.SimpleInterfaceType:
