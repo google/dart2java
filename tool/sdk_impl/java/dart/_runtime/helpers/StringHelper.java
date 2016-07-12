@@ -1,9 +1,9 @@
 package dart._runtime.helpers;
 
-class StringHelper {
+public class StringHelper {
 
   public static String operatorAt(String self, Integer index) {
-    return self.charAt(index).toString();
+    return String.valueOf(self.charAt(index));
   }
 
   public static String operatorPlus(String self, String other) {
@@ -11,7 +11,7 @@ class StringHelper {
   }
 
   public static Integer getLength(String self) {
-    return self.length;
+    return self.length();
   }
   
 }

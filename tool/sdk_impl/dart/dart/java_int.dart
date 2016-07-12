@@ -15,6 +15,13 @@ class JavaInteger implements int {
   @JavaCall("dart._runtime.helpers.IntegerHelper.operatorStar")
   external int operator *(int other);
 
+  @JavaCall("dart._runtime.helpers.IntegerHelper.operatorLess")
+  external bool operator <(int other);
+
+  @JavaCall("dart._runtime.helpers.IntegerHelper.operatorEqual")
+  external bool operator ==(int other);
+  
+
   @JavaCall("dart._runtime.helpers.IntegerHelper.toString")
   external String toString();
 

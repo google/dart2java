@@ -73,19 +73,21 @@ class JavaAstBuilder extends dart.Visitor {
         isFinal: node.isFinal);
   }
 
+  String capitalizeString(String str) => str[0].toUpperCase() + str.substring(1);
+
   String javaMethodName(String methodName, dart.ProcedureKind kind) {
     switch (kind) {
       case dart.ProcedureKind.Method:
         return methodName;
       case dart.ProcedureKind.Operator:
-        translatedMethodName = Constants.operatorToMethodName[methodName];
+        var translatedMethodName = Constants.operatorToMethodName[methodName];
         if (translatedMethodName == null) {
           throw new CompileErrorException(
               "Operator ${methodName} not implemented yet.");
         }
         return translatedMethodName;
       case dart.ProcedureKind.Getter:
-        return "get" + methodName;
+        return "get" + capitalizeString(methodName);
       default:
         // TODO(springerm): handle remaining kinds
         throw new CompileErrorException(
@@ -182,10 +184,14 @@ class JavaAstBuilder extends dart.Visitor {
       String methodName, List<dart.Expression> positionalArguments) {
     // Translate receiver
     java.Expression recv;
+    String recvType;
     if (receiver == null) {
+      // Implicit "this" receiver
       recv = buildThisExpression();
+      recvType = getMyDartClassName();
     } else {
       recv = receiver.accept(this);
+      recvType = getType(receiver);
     }
 
     // TODO(springerm): Handle other argument types
@@ -193,11 +199,10 @@ class JavaAstBuilder extends dart.Visitor {
         positionalArguments.map((a) => a.accept(this)).toList();
 
     // Replace with static method call if necessary
-    String receiverType = getType(receiver).toString();
-    if (compilerState.javaClasses.containsKey(receiverType)) {
+    if (compilerState.javaClasses.containsKey(recvType)) {
       // Receiver type is an already existing Java class, generate static
       // method call.
-      var dartClass = compilerState.interceptorClasses[receiverType];
+      var dartClass = compilerState.interceptorClasses[recvType];
       var argsWithSelf = []
         ..add(recv)
         ..addAll(args);
@@ -225,8 +230,20 @@ class JavaAstBuilder extends dart.Visitor {
   }
 
   /// Retrieves the [DartType] for a kernel [Expression] node.
-  dart.DartType getType(dart.Expression node) {
-    return node.staticType;
+  String getType(dart.Expression node) {
+    // TODO(andrewkrieger): Workaround until we get types for implicit "this"
+    // working.
+    if (node.staticType == null) {
+      if (node.toString() == "this") {
+        return getMyDartClassName();
+      } else {
+        throw new CompileErrorException(
+            'Unable to retrieve type for Kernel AST expression'
+            ' "$node" of type ${node.runtimeType}');
+      }
+    } else {
+      return node.staticType.toString();
+    }
   }
 
   /// Assuming that [node] has a single annotation of type [annotation] and
