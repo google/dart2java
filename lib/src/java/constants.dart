@@ -1,5 +1,5 @@
 class Constants {
-  static const operatorToMethodName = {
+  static const operatorToMethodName = const {
     "+": "operatorPlus",
     "-": "operatorMinus",
     "*": "operatorMultiply",
@@ -10,6 +10,12 @@ class Constants {
     "<": "operatorLess",
     "<=": "operatorLessEqual",
     ">": "operatorGreater",
-    ">=": "operatorGreaterEqual"
+    ">=": "operatorGreaterEqual",
+    "[]": "operatorAt",
+    "unary-": "operatorUnaryMinus"
   };
+
+  static const String javaCallAnnotation = "javaCall";
+
+  static const String javaStaticThisIdentifier = "self";
 }

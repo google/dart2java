@@ -8,6 +8,7 @@ import 'ast.dart' as java;
 import 'visitor.dart' as java;
 import 'constants.dart';
 import '../compiler/compiler_state.dart';
+import '../compiler/runner.dart' show CompileErrorException;
 
 /// Builds a Java class from Dart IR.
 ///
@@ -29,18 +30,31 @@ class JavaAstBuilder extends dart.Visitor {
   /// Builds a Java class AST from a kernel class AST.
   static java.ClassDecl buildClass(
       String package, dart.Class node, CompilerState compilerState) {
-    var instance = new JavaAstBuilder(package, compilerState);
+    // TODO(springerm): Use annotation
+    var isInterceptor = compilerState.isInterceptorClass(node.name);
+    var instance = new JavaAstBuilder(package, compilerState,
+        isInterceptorClass: isInterceptor);
     return node.accept(instance);
   }
 
-  JavaAstBuilder(this.package, this.compilerState);
+  JavaAstBuilder(this.package, this.compilerState,
+      {this.isInterceptorClass: false}) {
+    if (isInterceptorClass) {
+      // TODO(springerm): Fix package name
+      this.package = "dart._runtime";
+    }
+  }
 
-  final String package;
+  String package;
+  String className;
   final CompilerState compilerState;
+  final bool isInterceptorClass;
 
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
+    className = node.name;
+
     List<java.FieldDecl> fields =
         node.fields.map((f) => f.accept(this)).toList();
     List<java.MethodDef> methods =
@@ -59,20 +73,73 @@ class JavaAstBuilder extends dart.Visitor {
         isFinal: node.isFinal);
   }
 
+  String javaMethodName(String methodName, dart.ProcedureKind kind) {
+    switch (kind) {
+      case dart.ProcedureKind.Method:
+        return methodName;
+      case dart.ProcedureKind.Operator:
+        methodName = Constants.operatorToMethodName[methodName];
+        if (methodName == null) {
+          throw new CompileErrorException(
+              "Operator ${node.name.name} not implemented yet.");
+        }
+        return methodName;
+      case dart.ProcedureKind.Getter:
+        return "get" + methodName;
+      default:
+        // TODO(springerm): handle remaining kinds
+        throw new CompileErrorException(
+            "Method kind ${node.kind} not implemented yet.");
+    }
+  }
+
   @override
   java.MethodDef visitProcedure(dart.Procedure node) {
-    // TODO: handle other kinds (e.g., getters)
-    assert(node.kind == dart.ProcedureKind.Method);
-
+    String methodName = javaMethodName(node.name.name, node.kind);
     dart.FunctionNode functionNode = node.function;
     String returnType = functionNode.returnType.accept(this);
     // TODO: handle named parameters, etc.
     List<java.VariableDecl> parameters =
         functionNode.positionalParameters.map((p) => p.accept(this)).toList();
-    java.Block body = wrapInJavaBlock(buildStatement(functionNode.body));
+    var isStatic = node.isStatic;
 
-    return new java.MethodDef(node.name.name, body, parameters,
-        returnType: returnType, isStatic: node.isStatic, isFinal: false);
+    java.Statement body;
+    if (node.isExternal) {
+      // Generate a method call to a static Java method
+      // Every external Dart method must be annotated with "javaCall"!
+      String externalJavaMethod =
+          getSimpleAnnotation(node, Constants.javaCallAnnotation);
+      List<String> methodTokens = externalJavaMethod.split(".");
+      var extReceiver = new java.ClassRefExpr(
+          methodTokens.getRange(0, methodTokens.length - 1).join("."));
+      var extMethodName = methodTokens.last;
+
+      List<java.Expression> arguments = [];
+      if (!node.isStatic) {
+        // First argument is "this"
+        arguments
+            .add(new java.IdentifierExpr(Constants.javaStaticThisIdentifier));
+      }
+      // Remaining arguments are parameters of Dart method
+      arguments.addAll(parameters.map((p) => new java.IdentifierExpr(p.name)));
+
+      body = new java.ReturnStmt(
+          new java.MethodInvocation(extReceiver, extMethodName, arguments));
+    } else {
+      body = buildStatement(functionNode.body);
+    }
+
+    if (isInterceptorClass) {
+      // All methods in interceptor classes are static
+      isStatic = true;
+      parameters.insert(
+          0,
+          new java.VariableDecl(
+              Constants.javaStaticThisIdentifier, getMyJavaClassName()));
+    }
+
+    return new java.MethodDef(methodName, wrapInJavaBlock(body), parameters,
+        returnType: returnType, isStatic: isStatic, isFinal: false);
   }
 
   /// Wraps a Java statement in a block, if [stmt] is not already a block.
@@ -109,33 +176,104 @@ class JavaAstBuilder extends dart.Visitor {
     return new java.ExpressionStmt(node.expression.accept(this));
   }
 
-  @override
-  java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
-    java.Expression recv = node.receiver.accept(this);
-    String name = node.name;
-    List<java.Expression> args = node.arguments.positional.map((a) => a.accept(this)).toList();
+  /// Builds a Java MethodInvocation node. This method is reused for "normal"
+  /// method and for getter/setters etc.
+  java.MethodInvocation buildMethodInvocation(dart.Expression receiver,
+      String methodName, List<dart.Expression> positionalArguments) {
+    // Translate receiver
+    java.Expression recv;
+    if (receiver == null) {
+      recv = buildThisExpression();
+    } else {
+      recv = receiver.accept(this);
+    }
 
-    // Expand operator symbol to Java-compatible method name
-    name = Constants.operatorToMethodName[name] ?? name;
+    // TODO(springerm): Handle other argument types
+    List<java.Expression> args =
+        positionalArguments.map((a) => a.accept(this)).toList();
 
-    String receiverType = getType(node.receiver).toString();
+    // Replace with static method call if necessary
+    String receiverType = getType(receiver).toString();
     if (compilerState.javaClasses.containsKey(receiverType)) {
-      // Receiver type is an already existing Java class, genereate static
+      // Receiver type is an already existing Java class, generate static
       // method call.
-      var dartClass = compilerState.implementationClasses[receiverType];
+      var dartClass = compilerState.interceptorClasses[receiverType];
       var argsWithSelf = []
         ..add(recv)
         ..addAll(args);
-      return new java.MethodInvocation(dartClass, name, argsWithSelf);
+      return new java.MethodInvocation(
+          buildClassReference(dartClass), methodName, argsWithSelf);
     }
 
-    return new java.MethodInvocation(recv, name, args);
+    return new java.MethodInvocation(recv, methodName, args);
+  }
+
+  @override
+  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
+    String methodName =
+        javaMethodName(node.name.name, dart.ProcedureKind.Getter);
+    return buildMethodInvocation(node.receiver, methodName, []);
+  }
+
+  @override
+  java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
+    String name = node.name.name;
+    // Expand operator symbol to Java-compatible method name
+    name = Constants.operatorToMethodName[name] ?? name;
+    return buildMethodInvocation(
+        node.receiver, name, node.arguments.positional);
   }
 
   /// Retrieves the [DartType] for a kernel [Expression] node.
   dart.DartType getType(dart.Expression node) {
-    // TODO(andrewkrieger): Return DartType for kernel expression node
-    return null;
+    return node.staticType;
+  }
+
+  /// Assuming that [node] has a single annotation of type [annotation] and
+  /// that annotation has a single String parameter, return the parameter
+  /// value. If the assumptions do not apply, throw an exception.
+  String getSimpleAnnotation(dart.TreeNode node, String annotation) {
+    // TODO(andrewkrieger): Return first parameter of annotation.
+    return "todo.implement.annotation.support.Helper.method";
+  }
+
+  /// Converts a Dart class name to a Java class name.
+  String getJavaClassName(String dartClassName) {
+    return dartClassName.replaceFirst("::", ".");
+  }
+
+  /// Build a reference to a Dart class.
+  java.ClassRefExpr buildClassReference(String dartClassName) {
+    return new java.ClassRefExpr(getJavaClassName(dartClassName));
+  }
+
+  /// Build a reference to "this".
+  java.IdentifierExpr buildThisExpression() {
+    if (isInterceptorClass) {
+      // Replace "this" with "self" (first arg.) inside interceptor methods
+      return new java.IdentifierExpr(Constants.javaStaticThisIdentifier);
+    } else {
+      return new java.IdentifierExpr("this");
+    }
+  }
+
+  /// Returns the fully-qualified Dart class name of the current class.
+  String getMyDartClassName() {
+    return package + "::" + className;
+  }
+
+  /// Returns the fully-qualified Java class name of the current class.
+  String getMyJavaClassName() {
+    if (isInterceptorClass) {
+      return getJavaClassName(compilerState.javaClasses[getMyDartClassName()]);
+    } else {
+      return getJavaClassName(getMyDartClassName());
+    }
+  }
+
+  @override
+  java.IdentifierExpr visitThisExpression(dart.ThisExpression node) {
+    return buildThisExpression();
   }
 
   @override

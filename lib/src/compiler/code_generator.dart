@@ -13,6 +13,7 @@ import 'compiler_state.dart';
 class CodeGenerator {
   final CompilerOptions options;
   final FileWriter writer;
+  final CompilerState compilerState = new CompilerState();
 
   CodeGenerator(this.options, this.writer);
 
@@ -34,7 +35,7 @@ class CodeGenerator {
     }
 
     for (var dartCls in library.classes) {
-      java.ClassDecl cls = JavaAstBuilder.buildClass(package, dartCls, new CompilerState());
+      java.ClassDecl cls = JavaAstBuilder.buildClass(package, dartCls, compilerState);
       filesWritten.add(writer.writeJavaFile(
           package, cls.name, JavaAstEmitter.emitClassDecl(cls)));
     }

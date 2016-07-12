@@ -1,4 +1,3 @@
-import 'package:kernel/ast.dart' as dart;
 import '../java/ast.dart' as java;
 
 class CompilerState {
@@ -9,28 +8,41 @@ class CompilerState {
   /// TODO(springerm): Try to use mapping from dart.DartType here later.
   final javaClasses = new Map<String, String>();
 
-  /// Maps Dart SDK classes and interfaces to their runtime implementations.
+  /// Maps Dart SDK classes and interfaces to their runtime implementations,
+  /// i.e., "interceptor classes".
   ///
   /// E.g., dart.core.int is implemented by dart class JavaInteger. This
   /// required to find method implementations.
   /// TODO(springerm): Try to use mapping from dart.DartType here later.
-  final implementationClasses = new Map<String, java.ClassRefExpr>();
+  final interceptorClasses = new Map<String, String>();
 
   CompilerState() {
     // Set up primitive types
     registerPrimitiveCoreClass(
-        "dart.core::bool", "java.lang.Boolean", "dart.core.bool");
+        "dart.core::bool", "java.lang.Boolean", "dart.core::bool");
     registerPrimitiveCoreClass(
-        "dart.core::int", "java.lang.Integer", "dart._runtime.JavaInteger");
+        "dart.core::int", "java.lang.Integer", "dart._runtime::JavaInteger");
     registerPrimitiveCoreClass(
-        "dart.core::double", "java.lang.Double", "dart._runtime.JavaDouble");
+        "dart.core::double", "java.lang.Double", "dart._runtime::JavaDouble");
     registerPrimitiveCoreClass(
-        "dart.core::String", "java.lang.String", "dart._runtime.JavaString");
+        "dart.core::String", "java.lang.String", "dart._runtime::JavaString");
   }
 
   void registerPrimitiveCoreClass(
-      String dartName, String javaName, String implClass) {
+      String dartName, String javaName, String interceptorClass) {
     javaClasses[dartName] = javaName;
-    implementationClasses[dartName] = new java.ClassRefExpr(implClass);
+    javaClasses[interceptorClass] = javaName;
+    interceptorClasses[dartName] = interceptorClass;
+    interceptorClasses[interceptorClass] = interceptorClass;
+  } 
+
+  /// Check if a certain class is an interceptor class.
+  /// 
+  /// TODO(springerm): Remove once we got annotations working.
+  /// TODO(springerm): This should be the fully qualified class name, but
+  /// package naming is not fully implemented yet.
+  bool isInterceptorClass(String dartClassName) {
+    return interceptorClasses.values.map((interceptor) =>
+      interceptor.split("::").last).contains(dartClassName);
   }
 }
