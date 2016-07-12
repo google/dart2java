@@ -36,7 +36,7 @@ packages:
       name: boolean_selector
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   charcode:
     description:
       name: charcode
@@ -54,7 +54,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.9.0"
   convert:
     description:
       name: convert
@@ -96,7 +96,7 @@ packages:
       name: glob
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.2"
+    version: "1.1.3"
   html:
     description:
       name: html
@@ -108,13 +108,13 @@ packages:
       name: http_multi_server
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   http_parser:
     description:
       name: http_parser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   js:
     description:
       name: js
@@ -124,7 +124,7 @@ packages:
   kernel:
     description:
       ref: HEAD
-      resolved-ref: b87019e750f50d7ba2942690aeb78da472d1bcf9
+      resolved-ref: a26c7c54a0275664680a919121679e3995198764
       url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
     source: git
     version: "0.0.0"
@@ -175,7 +175,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.1+4"
+    version: "0.5.2"
   pub_semver:
     description:
       name: pub_semver
@@ -193,7 +193,7 @@ packages:
       name: shelf_static
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.3+4"
+    version: "0.2.4"
   shelf_web_socket:
     description:
       name: shelf_web_socket
@@ -223,7 +223,7 @@ packages:
       name: stack_trace
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.5"
+    version: "1.6.6"
   stream_channel:
     description:
       name: stream_channel
@@ -235,13 +235,13 @@ packages:
       name: string_scanner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.5"
+    version: "1.0.0"
   test:
     description:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.13+5"
+    version: "0.12.15+1"
   typed_data:
     description:
       name: typed_data
@@ -295,5 +295,5 @@ packages:
       name: yaml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.9"
-sdk: ">=1.16.0 <1.19.0"
+    version: "2.1.10"
+sdk: ">=1.16.0 <1.20.0"

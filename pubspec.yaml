@@ -37,3 +37,4 @@ environment:
 
 executables:
   dart2java: dart2java
+  dumptree: dumptree
