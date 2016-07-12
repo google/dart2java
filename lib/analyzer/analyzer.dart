@@ -6,6 +6,7 @@ library kernel.analyzer.frontend;
 
 export 'package:analyzer/dart/ast/visitor.dart';
 export 'package:analyzer/dart/ast/ast.dart';
+export 'package:analyzer/dart/constant/value.dart' show DartObject;
 export 'package:analyzer/dart/element/element.dart';
 export 'package:analyzer/dart/element/type.dart';
 export 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;

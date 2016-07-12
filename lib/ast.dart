@@ -84,6 +84,10 @@
 ///
 library kernel.ast;
 
+import 'package:analyzer/dart/constant/value.dart' show DartObject;
+export 'package:analyzer/dart/constant/value.dart' show DartObject;
+
+
 import 'visitor.dart';
 export 'visitor.dart';
 
@@ -281,6 +285,11 @@ abstract class Class extends TreeNode {
   /// For mixin applications this is an immutable empty list.
   final List<Procedure> procedures;
 
+  /// Temporary access to Analyzer metadata objects, if present.
+  ///
+  /// This will be removed once Kernel implements metadata support.
+  List<DartObject> analyzerMetadata;
+
   Class(this.name, this.isAbstract, this.typeParameters, this.supertype,
       this.implementedTypes, this.fields, this.constructors, this.procedures) {
     setParents(typeParameters, this);
@@ -472,6 +481,11 @@ abstract class Member extends TreeNode {
 
   /// True if this is a non-static field or procedure.
   bool get isInstanceMember;
+
+  /// Temporary access to Analyzer metadata objects, if present.
+  ///
+  /// This will be removed once Kernel implements metadata support.
+  List<DartObject> analyzerMetadata;
 
   /// Returns a possibly synthesized name for this member, consistent with
   /// the names used across all [toString] calls.

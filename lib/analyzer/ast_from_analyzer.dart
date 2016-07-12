@@ -1688,6 +1688,10 @@ class InitializerBuilder extends GeneralizingAstVisitor<ast.Initializer> {
   }
 }
 
+DartObject extractMetadata(ElementAnnotation annotation) {
+  return annotation.constantValue;
+}
+
 /// Brings a class from reference level to body level.
 ///
 /// The enclosing library is assumed to be at body level already.
@@ -1705,6 +1709,8 @@ class ClassBodyBuilder extends GeneralizingAstVisitor<Null> {
       throw 'Missing class declaration for $element';
     }
     node.accept(this);
+    currentClass.analyzerMetadata =
+        element.metadata.map(extractMetadata).toList();
   }
 
   void addTypeParameterBounds(TypeParameterList typeParameters) {
@@ -1890,6 +1896,8 @@ class MemberBodyBuilder extends GeneralizingAstVisitor<Null> {
   void build(AstNode node) {
     if (node != null) {
       node.accept(this);
+      currentMember.analyzerMetadata =
+          this.element.metadata.map(extractMetadata).toList();
       return;
     }
     Element element = this.element; // Allow type promotion.
