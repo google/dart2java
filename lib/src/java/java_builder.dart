@@ -78,18 +78,18 @@ class JavaAstBuilder extends dart.Visitor {
       case dart.ProcedureKind.Method:
         return methodName;
       case dart.ProcedureKind.Operator:
-        methodName = Constants.operatorToMethodName[methodName];
-        if (methodName == null) {
+        translatedMethodName = Constants.operatorToMethodName[methodName];
+        if (translatedMethodName == null) {
           throw new CompileErrorException(
-              "Operator ${node.name.name} not implemented yet.");
+              "Operator ${methodName} not implemented yet.");
         }
-        return methodName;
+        return translatedMethodName;
       case dart.ProcedureKind.Getter:
         return "get" + methodName;
       default:
         // TODO(springerm): handle remaining kinds
         throw new CompileErrorException(
-            "Method kind ${node.kind} not implemented yet.");
+            "Method kind ${kind} not implemented yet.");
     }
   }
 
@@ -232,9 +232,17 @@ class JavaAstBuilder extends dart.Visitor {
   /// Assuming that [node] has a single annotation of type [annotation] and
   /// that annotation has a single String parameter, return the parameter
   /// value. If the assumptions do not apply, throw an exception.
-  String getSimpleAnnotation(dart.TreeNode node, String annotation) {
-    // TODO(andrewkrieger): Return first parameter of annotation.
-    return "todo.implement.annotation.support.Helper.method";
+  String getSimpleAnnotation(dart.Procedure node, String annotation,
+      [String fieldName = "name"]) {
+    // TODO(springerm): Try to use DartTypes here instead of Strings
+    var obj = node.analyzerMetadata
+        .firstWhere((i) => i.type.toString() == annotation);
+    if (obj == null) {
+      throw new CompileErrorException(
+          "Unable to find ${annotation} annotation");
+    }
+
+    return obj.getField(fieldName).toStringValue();
   }
 
   /// Converts a Dart class name to a Java class name.

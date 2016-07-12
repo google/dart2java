@@ -15,7 +15,7 @@ class Constants {
     "unary-": "operatorUnaryMinus"
   };
 
-  static const String javaCallAnnotation = "javaCall";
+  static const String javaCallAnnotation = "JavaCall";
 
   static const String javaStaticThisIdentifier = "self";
 }
