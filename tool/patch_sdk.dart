@@ -233,6 +233,15 @@ class PatchApplier extends GeneralizingAstVisitor {
   /// Merge patches and extensions into the class
   @override
   visitClassDeclaration(ClassDeclaration node) {
+    List<Annotation> mergeAnnotations = patch.classAnnotations[node.name.name];
+    if (mergeAnnotations != null) {
+      for (var annotation in mergeAnnotations) {
+        String annotationText =
+            patch.contents.substring(annotation.offset, annotation.end);
+        edits.insert(node.offset, annotationText + '\n');
+      }
+    }
+
     node.members.forEach(_maybePatch);
 
     var mergeMembers = patch.mergeMembers[_qualifiedName(node)];
@@ -277,6 +286,8 @@ class PatchFinder extends GeneralizingAstVisitor {
   final Map patches = <String, Declaration>{};
   final Map mergeMembers = <String, List<ClassMember>>{};
   final List mergeDeclarations = <CompilationUnitMember>[];
+  final Map<String, List<Annotation>> classAnnotations =
+      <String, List<Annotation>>{};
 
   PatchFinder.parseAndVisit(String contents)
       : contents = contents,
@@ -292,6 +303,12 @@ class PatchFinder extends GeneralizingAstVisitor {
   @override
   visitClassDeclaration(ClassDeclaration node) {
     if (_isPatch(node)) {
+      List<Annotation> annotations =
+          node.metadata.where(_isNotPatchAnnotation).toList();
+      if (annotations.isNotEmpty) {
+        annotations.sort(AstNode.LEXICAL_ORDER);
+        classAnnotations[node.name.name] = annotations;
+      }
       var members = <ClassMember>[];
       for (var member in node.members) {
         if (_isPatch(member)) {
@@ -335,6 +352,8 @@ bool _isPatch(AnnotatedNode node) => node.metadata.any(_isPatchAnnotation);
 
 bool _isPatchAnnotation(Annotation m) =>
     m.name.name == 'patch' && m.constructorName == null && m.arguments == null;
+
+bool _isNotPatchAnnotation(Annotation m) => !_isPatchAnnotation(m);
 
 /// Editable string buffer.
 ///
