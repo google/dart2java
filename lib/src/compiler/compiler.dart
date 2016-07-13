@@ -56,7 +56,7 @@ class ModuleCompiler {
     var librariesToCompile = <Library>[];
 
     for (var sourcePath in sources) {
-      var loaderResult = loader.loadSource(sourcePath);
+      var loaderResult = loader.load(sourcePath);
       librariesToCompile.add(loaderResult.library);
       errors.addAll(loaderResult.errors);
     }
@@ -66,7 +66,7 @@ class ModuleCompiler {
     var messages = <String>[];
     for (var e in errors) {
       var m = formatError(context, e);
-      if (m != null) messages.add(m);
+      if (m != null) print(m);
     }
 
     if (!options.unsafeForceCompile &&

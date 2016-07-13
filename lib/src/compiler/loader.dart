@@ -44,7 +44,7 @@ class Loader {
   AnalysisContext get context => _loader.context;
 
   /// Loads a library by URI.
-  LoaderResult load(Uri sourceUri) {
+  LoaderResult loadUri(Uri sourceUri) {
     Library library = repository.getLibraryReference(sourceUri);
     _loader.ensureLibraryIsLoaded(library);
 
@@ -56,9 +56,12 @@ class Loader {
   }
 
   /// Loads a Dart source file.
-  LoaderResult loadSource(String sourcePath) {
-    Uri sourceUri = path.toUri(path.absolute(sourcePath));
-    return load(sourceUri);
+  LoaderResult load(String source) {
+    Uri sourceUri = Uri.parse(source);
+    if (sourceUri.scheme == '') {
+      sourceUri = path.toUri(path.absolute(source));
+    }
+    return loadUri(sourceUri);
   }
 
   /// Recursively loads everything referenced by the libraries that have already

@@ -35,7 +35,8 @@ class CodeGenerator {
     }
 
     for (var dartCls in library.classes) {
-      java.ClassDecl cls = JavaAstBuilder.buildClass(package, dartCls, compilerState);
+      java.ClassDecl cls =
+          JavaAstBuilder.buildClass(package, dartCls, compilerState);
       filesWritten.add(writer.writeJavaFile(
           package, cls.name, JavaAstEmitter.emitClassDecl(cls)));
     }
@@ -51,20 +52,36 @@ class CodeGenerator {
 /// [options.packagePrefix] plus the relative path from [options.buildRoot] to
 /// the [library] source file (with '/' replaced by '.', of course).
 String getJavaPackageName(CompilerOptions options, dart.Library library) {
-  String libraryPath = library.importUri.toFilePath();
+  // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
+  // or `packagePrefix == ""`.
+  List<String> packageParts = options.packagePrefix
+      .split('.')
+      .where((String part) => part.isNotEmpty)
+      .toList();
+  Uri uri = library.importUri;
 
-  if (path.isWithin(options.buildRoot, libraryPath)) {
-    // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
-    // or `packagePrefix == ""`.
-    List<String> packageParts = options.packagePrefix
-        .split('.')
-        .where((String part) => part.isNotEmpty)
-        .toList();
-    String relativePath = path.relative(libraryPath, from: options.buildRoot);
-    packageParts.addAll(path.split(path.withoutExtension(relativePath)));
-    // TODO(andrewkrieger): Maybe validate the package name?
-    return packageParts.join('.');
-  } else {
-    throw new CompileErrorException('All sources must be inside build-root.');
+  // Add parts to the package name, depending on the URI scheme.
+  switch (library.importUri.scheme) {
+    case 'file':
+      String libraryPath = uri.toFilePath();
+
+      if (!path.isWithin(options.buildRoot, libraryPath)) {
+        throw new CompileErrorException(
+            'All sources must be inside build-root.');
+      }
+
+      String relativePath =
+          path.relative(libraryPath, from: options.buildRoot);
+      packageParts.addAll(path.split(path.withoutExtension(relativePath)));
+      break;
+    case 'dart':
+      packageParts.add(uri.path);
+      break;
+    default:
+      throw new CompileErrorException('Unrecognized library URI scheme: '
+          '${library.importUri}');
   }
+
+  // TODO(andrewkrieger): Maybe validate the package name?
+  return packageParts.join('.');
 }
