@@ -12,15 +12,17 @@ class CodeGenerator {
   FileWriter writer;
   CompilerState compilerState;
 
-  CodeGenerator(CompilerOptions options, FileWriter writer) {
-    this.writer = writer;
-    compilerState = new CompilerState(options);
-  }
+  CodeGenerator(this.writer, this.compilerState);
 
   /// Compile [library] to a set of Java files.
   ///
   /// Returns the set of the files that have been written.
   Set<File> compile(dart.Library library) {
+    // TODO(andrewkrieger,springerm): Remove temporary debug statement
+    print("dart:core[${compilerState.getLibrary("dart:core")}]");
+    print(
+        "dart:core::Object[${compilerState.getClass("dart:core", "Object")}]");
+    print("dart:core::bool[${compilerState.getClass("dart:core", "bool")}]");
     String package = compilerState.getJavaPackageName(library);
 
     var filesWritten = new Set<File>();
@@ -44,4 +46,3 @@ class CodeGenerator {
     return filesWritten;
   }
 }
-

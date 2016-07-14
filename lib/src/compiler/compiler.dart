@@ -11,6 +11,7 @@ import 'package:kernel/analyzer/analyzer_repository.dart'
 import 'package:kernel/ast.dart' show Library;
 
 import 'code_generator.dart' show CodeGenerator;
+import 'compiler_state.dart' show CompilerState;
 import 'runner.dart' show CompileErrorException;
 import 'error_helpers.dart' show errorSeverity, formatError, sortErrors;
 import 'loader.dart' show Loader;
@@ -75,7 +76,9 @@ class ModuleCompiler {
           '\nPlease fix all errors before compiling (warnings are okay).');
     }
 
-    var codeGenerator = new CodeGenerator(options, new FileWriter(options));
+    var compilerState = new CompilerState(options, repository);
+    var codeGenerator =
+        new CodeGenerator(new FileWriter(options), compilerState);
     return librariesToCompile
         .map((library) => codeGenerator.compile(library))
         .fold(new Set<File>(), (files, newFiles) => files..addAll(newFiles));

@@ -1,7 +1,12 @@
-import '../java/ast.dart' as java;
+// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:kernel/ast.dart' as dart;
+import 'package:kernel/repository.dart' as dart;
 import 'package:path/path.dart' as path;
 
+import '../java/ast.dart' as java;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 
@@ -22,8 +27,9 @@ class CompilerState {
   final interceptorClasses = new Map<String, String>();
 
   final CompilerOptions options;
+  final dart.Repository repository;
 
-  CompilerState(this.options) {
+  CompilerState(this.options, this.repository) {
     // Set up primitive types
     registerPrimitiveCoreClass(
         "dart.core::bool", "java.lang.Boolean", "dart.core::bool");
@@ -33,6 +39,28 @@ class CompilerState {
         "dart.core::double", "java.lang.Double", "dart._runtime::JavaDouble");
     registerPrimitiveCoreClass(
         "dart.core::String", "java.lang.String", "dart._runtime::JavaString");
+  }
+
+  /// Get the [Library] object for the library named by [libraryUri], loaded to
+  /// at least reference level.
+  ///
+  /// The [libraryUri] may be a relative or absolute file path, or a URI string
+  /// with a `dart:`, `package:` or `file:` scheme.
+  dart.Library getLibrary(String libraryUri) {
+    dart.Library library = repository.getLibrary(libraryUri);
+    if (!library.isLoaded) {
+      throw new CompileErrorException("Library $libraryUri not loaded");
+    }
+    return library;
+  }
+
+  /// Look up a reference to the class with name [className] in the library
+  /// specified by [libraryUri], or [:null:] if the library does not declare a
+  /// class by the given name.
+  dart.Class getClass(String libraryUri, String className) {
+    dart.Library lib = getLibrary(libraryUri);
+    return lib.classes.firstWhere((dart.Class c) => c.name == className,
+        orElse: () => null);
   }
 
   void registerPrimitiveCoreClass(
