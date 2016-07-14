@@ -245,6 +245,18 @@ class UnaryExpr extends Expression {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitUnaryExpr(this);
 }
 
+/// A type cast.
+class CastExpr extends Expression {
+  Expression expression;
+
+  String type;
+
+  CastExpr(this.expression, this.type);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitCastExpr(this);
+}
+
 /// References an identifier such as a local variable.
 class IdentifierExpr extends Expression {
   String identifier;

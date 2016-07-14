@@ -140,6 +140,11 @@ class JavaAstEmitter extends Visitor<String> {
     return "(${expr.operatorSymbol}${expr.operand.accept(this)})";
   }
 
+  @override 
+  String visitCastExpr(CastExpr expr) {
+    return "(${expr.type}) ${expr.expression.accept(this)}";
+  }
+
   @override
   String visitIdentifierExpr(IdentifierExpr expr) {
     return expr.identifier;

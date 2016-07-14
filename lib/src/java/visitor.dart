@@ -19,6 +19,7 @@ abstract class Visitor<R> {
   R visitMethodInvocation(MethodInvocation node) => null;
   R visitBinaryExpr(BinaryExpr node) => null;
   R visitUnaryExpr(UnaryExpr node) => null;
+  R visitCastExpr(CastExpr node) => null;
   R visitClassRefExpr(ClassRefExpr node) => null;
   R visitIntLiteral(IntLiteral node) => null;
   R visitDoubleLiteral(DoubleLiteral node) => null;

@@ -1,35 +1,35 @@
 import 'compiler.dart' show CompilerOptions;
 
 import 'package:kernel/ast.dart' as dart;
-import 'package:path/path.dart' as path;
 
 import '../java/ast.dart' as java;
 import '../java/java_builder.dart' show JavaAstBuilder;
 import '../java/java_emitter.dart' show JavaAstEmitter;
-import 'runner.dart' show CompileErrorException;
 import 'writer.dart' show FileWriter;
 import 'compiler_state.dart';
 
 class CodeGenerator {
-  final CompilerOptions options;
-  final FileWriter writer;
-  final CompilerState compilerState = new CompilerState();
+  FileWriter writer;
+  CompilerState compilerState;
 
-  CodeGenerator(this.options, this.writer);
+  CodeGenerator(CompilerOptions options, FileWriter writer) {
+    this.writer = writer;
+    compilerState = new CompilerState(options);
+  }
 
   /// Compile [library] to a set of Java files.
   ///
   /// Returns the set of the files that have been written.
   Set<File> compile(dart.Library library) {
-    String package = getJavaPackageName(options, library);
+    String package = compilerState.getJavaPackageName(library);
 
     var filesWritten = new Set<File>();
 
     if (library.procedures.isNotEmpty || library.fields.isNotEmpty) {
       // TODO(andrewkrieger): Check for name collisions.
-      String className = package.split('.').last;
+      String className = CompilerState.getClassNameForPackageTopLevel(package);
       java.ClassDecl cls =
-          JavaAstBuilder.buildWrapperClass(package, className, library);
+          JavaAstBuilder.buildWrapperClass(package, className, library, compilerState);
       filesWritten.add(writer.writeJavaFile(
           package, className, JavaAstEmitter.emitClassDecl(cls)));
     }
@@ -45,43 +45,3 @@ class CodeGenerator {
   }
 }
 
-/// Get a Java package name for a Dart Library.
-///
-/// The package name always has at least one identifier in it (it will never be
-/// the empty string). The package name is essentially just
-/// [options.packagePrefix] plus the relative path from [options.buildRoot] to
-/// the [library] source file (with '/' replaced by '.', of course).
-String getJavaPackageName(CompilerOptions options, dart.Library library) {
-  // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
-  // or `packagePrefix == ""`.
-  List<String> packageParts = options.packagePrefix
-      .split('.')
-      .where((String part) => part.isNotEmpty)
-      .toList();
-  Uri uri = library.importUri;
-
-  // Add parts to the package name, depending on the URI scheme.
-  switch (library.importUri.scheme) {
-    case 'file':
-      String libraryPath = uri.toFilePath();
-
-      if (!path.isWithin(options.buildRoot, libraryPath)) {
-        throw new CompileErrorException(
-            'All sources must be inside build-root.');
-      }
-
-      String relativePath =
-          path.relative(libraryPath, from: options.buildRoot);
-      packageParts.addAll(path.split(path.withoutExtension(relativePath)));
-      break;
-    case 'dart':
-      packageParts.add(uri.path);
-      break;
-    default:
-      throw new CompileErrorException('Unrecognized library URI scheme: '
-          '${library.importUri}');
-  }
-
-  // TODO(andrewkrieger): Maybe validate the package name?
-  return packageParts.join('.');
-}

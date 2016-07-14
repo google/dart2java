@@ -1,4 +1,9 @@
 import '../java/ast.dart' as java;
+import 'package:kernel/ast.dart' as dart;
+import 'package:path/path.dart' as path;
+
+import 'compiler.dart' show CompilerOptions;
+import 'runner.dart' show CompileErrorException;
 
 class CompilerState {
   /// Maps Dart classes to Java classes which will be reused in generated code.
@@ -16,7 +21,9 @@ class CompilerState {
   /// TODO(springerm): Try to use mapping from dart.DartType here later.
   final interceptorClasses = new Map<String, String>();
 
-  CompilerState() {
+  final CompilerOptions options;
+
+  CompilerState(this.options) {
     // Set up primitive types
     registerPrimitiveCoreClass(
         "dart.core::bool", "java.lang.Boolean", "dart.core::bool");
@@ -44,5 +51,50 @@ class CompilerState {
   bool isInterceptorClass(String dartClassName) {
     return interceptorClasses.values.map((interceptor) =>
       interceptor.split("::").last).contains(dartClassName);
+  }
+
+  /// Get a Java package name for a Dart Library.
+  ///
+  /// The package name always has at least one identifier in it (it will never
+  /// be the empty string). The package name is essentially just
+  /// [options.packagePrefix] plus the relative path from [options.buildRoot]
+  /// to the [library] source file (with '/' replaced by '.', of course).
+  String getJavaPackageName(dart.Library library) {
+    // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
+    // or `packagePrefix == ""`.
+    List<String> packageParts = options.packagePrefix
+        .split('.')
+        .where((String part) => part.isNotEmpty)
+        .toList();
+    Uri uri = library.importUri;
+
+    // Add parts to the package name, depending on the URI scheme.
+    switch (library.importUri.scheme) {
+      case 'file':
+        String libraryPath = uri.toFilePath();
+
+        if (!path.isWithin(options.buildRoot, libraryPath)) {
+          throw new CompileErrorException(
+              'All sources must be inside build-root.');
+        }
+
+        String relativePath =
+            path.relative(libraryPath, from: options.buildRoot);
+        packageParts.addAll(path.split(path.withoutExtension(relativePath)));
+        break;
+      case 'dart':
+        packageParts.add(uri.path);
+        break;
+      default:
+        throw new CompileErrorException('Unrecognized library URI scheme: '
+            '${library.importUri}');
+    }
+
+    // TODO(andrewkrieger): Maybe validate the package name?
+    return packageParts.join('.');
+  }
+
+  static String getClassNameForPackageTopLevel(String package) {
+    return package.split('.').last;
   }
 }
