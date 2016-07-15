@@ -81,8 +81,9 @@ class ModuleCompiler {
     var codeGenerator =
         new CodeGenerator(new FileWriter(options), compilerState);
     return librariesToCompile
-        .map((library) => codeGenerator.compile(library))
-        .fold(new Set<File>(), (files, newFiles) => files..addAll(newFiles));
+        .map(codeGenerator.compile)
+        .expand((f) => f)
+        .toSet();
   }
 }
 

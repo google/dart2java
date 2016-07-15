@@ -73,12 +73,13 @@ main(List<String> arguments) {
       var options =
           new CompilerOptions.fromArguments(compilerArgParser.parse(args));
 
-      new ModuleCompiler(options).compile([testFile]).forEach((file) {
+      Set<File> files = new ModuleCompiler(options).compile([testFile]);
+      for (var file in files) {
         var relativePath = path.relative(file.path, from: codegenOutputDir);
         var newPath = path.join(codegenExpectDir, relativePath);
         _ensureDirectory(path.dirname(newPath));
         file.copySync(newPath);
-      });
+      }
     });
   }
 }
