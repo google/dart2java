@@ -434,7 +434,11 @@ class MemberScope extends TypeScope {
   }
 
   ast.Expression buildThis() {
-    return allowThis ? new ast.ThisExpression() : new ast.InvalidExpression();
+    if (allowThis) {
+      return new ast.ThisExpression()..staticType = currentClass.thisType;
+    } else {
+      return new ast.InvalidExpression()..staticType = const ast.InvalidType();
+    }
   }
 
   ast.Initializer buildInitializer(ConstructorInitializer node) {

@@ -95,11 +95,7 @@ class PropertyAccessor extends Accessor {
   Name name;
 
   static Accessor make(Expression receiver, Name name) {
-    if (receiver is ThisExpression) {
-      return new ThisPropertyAccessor(name);
-    } else {
-      return new PropertyAccessor._internal(receiver, name);
-    }
+    return new PropertyAccessor._internal(receiver, name);
   }
 
   PropertyAccessor._internal(this.receiver, this.name);
@@ -121,20 +117,6 @@ class PropertyAccessor extends Accessor {
   }
 
   _finish(Expression body) => makeLet(_receiverVariable, body);
-}
-
-/// Special case of [PropertyAccessor] to avoid creating an indirect access to
-/// 'this'.
-class ThisPropertyAccessor extends Accessor {
-  Name name;
-
-  ThisPropertyAccessor(this.name);
-
-  _makeRead() => new PropertyGet(new ThisExpression(), name);
-
-  _makeWrite(Expression value, bool voidContext) {
-    return new PropertySet(new ThisExpression(), name, value);
-  }
 }
 
 class NullAwarePropertyAccessor extends Accessor {
