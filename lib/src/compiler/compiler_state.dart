@@ -14,30 +14,34 @@ class CompilerState {
   ///
   /// E.g., dart.core.int uses java.lang.Integer. This is required to get
   /// the types right in generated Java code.
-  /// TODO(springerm): Try to use mapping from dart.DartType here later.
-  final javaClasses = new Map<String, String>();
+  final javaClasses = new Map<dart.DartType, String>();
 
   /// Maps Dart SDK classes and interfaces to their runtime implementations,
   /// i.e., "interceptor classes".
   ///
   /// E.g., dart.core.int is implemented by dart class JavaInteger. This
   /// required to find method implementations.
-  /// TODO(springerm): Try to use mapping from dart.DartType here later.
-  final interceptorClasses = new Map<String, String>();
+  final interceptorClasses = new Map<dart.DartType, String>();
 
   final CompilerOptions options;
   final dart.Repository repository;
 
+  // TODO(springerm): Initialize fields with SDK types
+  dart.DartType typeInt;
+  dart.DartType typeDouble;
+  dart.DartType typeBool;
+  dart.DartType typeString;
+
   CompilerState(this.options, this.repository) {
     // Set up primitive types
     registerPrimitiveCoreClass(
-        "dart.core::bool", "java.lang.Boolean", "dart.core::bool");
+        typeBool, "java.lang.Boolean", "dart.core.bool");
     registerPrimitiveCoreClass(
-        "dart.core::int", "java.lang.Integer", "dart._runtime::JavaInteger");
+        typeInt, "java.lang.Integer", "dart._runtime.JavaInteger");
     registerPrimitiveCoreClass(
-        "dart.core::double", "java.lang.Double", "dart._runtime::JavaDouble");
+        typeDouble, "java.lang.Double", "dart._runtime.JavaDouble");
     registerPrimitiveCoreClass(
-        "dart.core::String", "java.lang.String", "dart._runtime::JavaString");
+        typeString, "java.lang.String", "dart._runtime.JavaString");
   }
 
   /// Get the [Library] object for the library named by [libraryUri], loaded to
@@ -62,23 +66,13 @@ class CompilerState {
         orElse: () => null);
   }
 
+  // TODO(springerm): Call this method once we see a method with an @JavaClass
+  // annotation to compile SDK implementations correctly
   void registerPrimitiveCoreClass(
-      String dartName, String javaName, String interceptorClass) {
-    javaClasses[dartName] = javaName;
-    javaClasses[interceptorClass] = javaName;
-    interceptorClasses[dartName] = interceptorClass;
-    interceptorClasses[interceptorClass] = interceptorClass;
+      dart.DartType dartType, String javaName, String interceptorClass) {
+    javaClasses[dartType] = javaName;
+    interceptorClasses[dartType] = interceptorClass;
   } 
-
-  /// Check if a certain class is an interceptor class.
-  /// 
-  /// TODO(springerm): Remove once we got annotations working.
-  /// TODO(springerm): This should be the fully qualified class name, but
-  /// package naming is not fully implemented yet.
-  bool isInterceptorClass(String dartClassName) {
-    return interceptorClasses.values.map((interceptor) =>
-      interceptor.split("::").last).contains(dartClassName);
-  }
 
   /// Get a Java package name for a Dart Library.
   ///
