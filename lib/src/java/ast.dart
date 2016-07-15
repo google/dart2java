@@ -14,10 +14,11 @@ class Access {
   static const Access Protected = const Access("protected");
   static const Access Private = const Access("private");
 
-  /// Package-private or default access. In Java code, this is written by
-  /// omitting a specifier (e.g. `static void foo() {}` instead of
-  /// `public static void foo() {}`).
-  static const Access Package = const Access("");
+  /// Package-private or default access. In Java code, this is normally written
+  /// by omitting a specifier (e.g. `static void foo() {}` instead of
+  /// `public static void foo() {}`). For consistency with the other specifiers,
+  /// we use a comment rather than the empty string.
+  static const Access Package = const Access("/* package */");
 
   final String modifier;
 
@@ -61,8 +62,8 @@ class ClassDecl extends Node {
 
   List<FieldDecl> fields;
 
-  ClassDecl(this.package, this.name, 
-    [this.access, this.fields = const [], this.methods = const []]);
+  ClassDecl(this.package, this.name,
+      [this.access, this.fields = const [], this.methods = const []]);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassDecl(this);
@@ -90,11 +91,11 @@ class MethodDef extends Node {
 
   Access access;
 
-  MethodDef(this.name, this.body, this.parameters, {
-    this.returnType: "void",
-    this.isStatic: false,
-    this.isFinal: false,
-    this.access: Access.Public});
+  MethodDef(this.name, this.body, this.parameters,
+      {this.returnType: "void",
+      this.isStatic: false,
+      this.isFinal: false,
+      this.access: Access.Public});
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDef(this);
@@ -107,13 +108,14 @@ class FieldDecl extends Node {
   Access access;
   bool isStatic;
   bool isFinal;
-  Expression initializer;   // may be null
+  Expression initializer;
 
-  FieldDecl(this.name, this.type, {
-    this.initializer,
-    this.access: Access.Private, 
-    this.isStatic: false,
-    this.isFinal: false});
+  FieldDecl(this.name, this.type,
+      {Expression initializer,
+      this.access: Access.Private,
+      this.isStatic: false,
+      this.isFinal: false})
+      : this.initializer = initializer ?? new NullLiteral();
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldDecl(this);
@@ -165,17 +167,10 @@ class IfStmt extends Statement {
 class VariableDeclStmt extends Statement {
   VariableDecl variable;
 
-  Expression value;
+  Expression initializer;
 
-  VariableDeclStmt(VariableDecl variable, [Expression value = null]) {
-    this.variable = variable;
-
-    if (value == null) {
-      this.value = new NullLiteral();
-    } else {
-      this.value = value;
-    }
-  }
+  VariableDeclStmt(this.variable, [Expression initializer = null])
+      : this.initializer = initializer ?? new NullLiteral();
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitVariableDeclStmt(this);
@@ -212,8 +207,7 @@ class MethodInvocation extends Expression {
 
   List<Expression> arguments;
 
-  MethodInvocation(this.receiver, this.methodName, 
-    [this.arguments = const []]);
+  MethodInvocation(this.receiver, this.methodName, [this.arguments = const []]);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodInvocation(this);

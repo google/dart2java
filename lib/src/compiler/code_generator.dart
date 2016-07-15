@@ -1,12 +1,12 @@
-import 'compiler.dart' show CompilerOptions;
+import 'dart:io';
 
 import 'package:kernel/ast.dart' as dart;
 
 import '../java/ast.dart' as java;
 import '../java/java_builder.dart' show JavaAstBuilder;
 import '../java/java_emitter.dart' show JavaAstEmitter;
+import 'compiler_state.dart' show CompilerState;
 import 'writer.dart' show FileWriter;
-import 'compiler_state.dart';
 
 class CodeGenerator {
   FileWriter writer;

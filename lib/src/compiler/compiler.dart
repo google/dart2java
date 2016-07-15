@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:analyzer/analyzer.dart' show AnalysisError, ErrorSeverity;
 import 'package:analyzer/src/generated/engine.dart' show AnalysisContext;
 import 'package:args/args.dart' show ArgParser, ArgResults;
@@ -64,7 +66,6 @@ class ModuleCompiler {
     loader.loadEverything();
 
     sortErrors(context, errors);
-    var messages = <String>[];
     for (var e in errors) {
       var m = formatError(context, e);
       if (m != null) print(m);

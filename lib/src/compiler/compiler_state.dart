@@ -6,7 +6,6 @@ import 'package:kernel/ast.dart' as dart;
 import 'package:kernel/repository.dart' as dart;
 import 'package:path/path.dart' as path;
 
-import '../java/ast.dart' as java;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 

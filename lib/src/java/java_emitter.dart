@@ -69,8 +69,8 @@ class JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitVariableDeclStmt(VariableDeclStmt decl) {
-    return decl.value != null
-      ? "${decl.variable.accept(this)} = ${decl.value.accept(this)};"
+    return decl.initializer != null
+      ? "${decl.variable.accept(this)} = ${decl.initializer.accept(this)};"
       : "${decl.variable.accept(this)};";
   }
 

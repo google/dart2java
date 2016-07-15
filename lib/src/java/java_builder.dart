@@ -287,7 +287,7 @@ class JavaAstBuilder extends dart.Visitor {
         // Target is a top-level member of the library
         className = CompilerState.getClassNameForPackageTopLevel(package);
       } else {
-        className = node.target.parent.name.name;
+        className = node.target.enclosingClass.name;
       }
 
       var receiverName = libraryName + "::" + className;
