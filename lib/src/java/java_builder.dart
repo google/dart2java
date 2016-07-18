@@ -10,47 +10,42 @@ import 'constants.dart';
 import '../compiler/compiler_state.dart';
 import '../compiler/runner.dart' show CompileErrorException;
 
+/// Builds a Java class that contains the top-level procedures and fields in
+/// a Dart [Library].
+java.ClassDecl buildWrapperClass(String package, String className,
+    dart.Library library, CompilerState compilerState) {
+  java.ClassDecl result =
+      new java.ClassDecl(package, className, java.Access.Public, [], []);
+  var instance = new _JavaAstBuilder(package, compilerState, thisClass: result);
+
+  for (var f in library.fields) {
+    result.fields.add(f.accept(instance));
+  }
+  for (var p in library.procedures) {
+    result.methods.add(p.accept(instance));
+  }
+
+  return result;
+}
+
+/// Builds a Java class AST from a kernel class AST.
+List<java.ClassDecl> buildClass(
+    String package, dart.Class node, CompilerState compilerState) {
+  // Nothing to do for core abstract classes like `int`.
+  if (compilerState.interfaceOnlyCoreClasses.contains(node)) {
+    return const <java.ClassDecl>[];
+  }
+
+  // TODO(springerm): Use annotation
+  var isInterceptor = compilerState.isInterceptorClass(node);
+  var instance = new _JavaAstBuilder(package, compilerState,
+      isInterceptorClass: isInterceptor);
+  return [node.accept(instance)];
+}
+
 /// Builds a Java class from Dart IR.
-///
-/// Clients should only call static methods on this class. The fact that
-/// this class is a [dart.Visitor] is an implementation detail that callers must
-/// not rely on.
-class JavaAstBuilder extends dart.Visitor {
-  /// Builds a Java class that contains the top-level procedures and fields in
-  /// a Dart [Library].
-  static java.ClassDecl buildWrapperClass(String package, String className,
-      dart.Library library, CompilerState compilerState) {
-    java.ClassDecl result =
-        new java.ClassDecl(package, className, java.Access.Public, [], []);
-    var instance =
-        new JavaAstBuilder(package, compilerState, thisClass: result);
-
-    for (var f in library.fields) {
-      result.fields.add(f.accept(instance));
-    }
-    for (var p in library.procedures) {
-      result.methods.add(p.accept(instance));
-    }
-
-    return result;
-  }
-
-  /// Builds a Java class AST from a kernel class AST.
-  static List<java.ClassDecl> buildClass(
-      String package, dart.Class node, CompilerState compilerState) {
-    // Nothing to do for core interface classes like `int`.
-    if (compilerState.interfaceOnlyCoreClasses.contains(node)) {
-      return const <java.ClassDecl>[];
-    }
-
-    // TODO(springerm): Use annotation
-    var isInterceptor = compilerState.isInterceptorClass(node);
-    var instance = new JavaAstBuilder(package, compilerState,
-        isInterceptorClass: isInterceptor);
-    return [node.accept(instance)];
-  }
-
-  JavaAstBuilder(this.package, this.compilerState,
+class _JavaAstBuilder extends dart.Visitor {
+  _JavaAstBuilder(this.package, this.compilerState,
       {this.isInterceptorClass: false, this.thisClass}) {
     if (isInterceptorClass) {
       // TODO(springerm): Fix package name

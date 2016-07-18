@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:kernel/ast.dart' as dart;
 
 import '../java/ast.dart' as java;
-import '../java/java_builder.dart' show JavaAstBuilder;
-import '../java/java_emitter.dart' show JavaAstEmitter;
+import '../java/java_builder.dart' show buildWrapperClass, buildClass;
+import '../java/java_emitter.dart' show emitClassDecl;
 import 'compiler_state.dart' show CompilerState;
 import 'writer.dart' show FileWriter;
 
@@ -26,17 +26,17 @@ class CodeGenerator {
       // TODO(andrewkrieger): Check for name collisions.
       String className = CompilerState.getClassNameForPackageTopLevel(package);
       java.ClassDecl cls =
-          JavaAstBuilder.buildWrapperClass(package, className, library, compilerState);
-      filesWritten.add(writer.writeJavaFile(
-          package, className, JavaAstEmitter.emitClassDecl(cls)));
+          buildWrapperClass(package, className, library, compilerState);
+      filesWritten
+          .add(writer.writeJavaFile(package, className, emitClassDecl(cls)));
     }
 
     for (var dartCls in library.classes) {
       List<java.ClassDecl> classes =
-          JavaAstBuilder.buildClass(package, dartCls, compilerState);
+          buildClass(package, dartCls, compilerState);
       for (var cls in classes) {
-        filesWritten.add(writer.writeJavaFile(
-            package, cls.name, JavaAstEmitter.emitClassDecl(cls)));
+        filesWritten
+            .add(writer.writeJavaFile(package, cls.name, emitClassDecl(cls)));
       }
     }
 

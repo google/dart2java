@@ -5,25 +5,21 @@
 import 'ast.dart';
 import 'visitor.dart';
 
-/// Emits Java code for a Java AST.
+/// Emits the full file contents for a Java source file defining a top-level
+/// Java [Class].
 ///
-/// Clients should only call static methods on this class. The fact that
-/// this class is a [Visitor] is an implementation detail that callers must
-/// not rely on.
+/// This includes a package delcaration, imports, and a full Java class
+/// definition.
+String emitClassDecl(ClassDecl cls) {
+  var content = cls.accept(new _JavaAstEmitter());
+  return "package ${cls.package};\n\n${content}";
+}
+
+/// Emits Java code for a Java AST.
 ///
 /// As a rule, every statement adds its own semicolons if necessary (e.g.,
 /// a block does not need semicolons).
-class JavaAstEmitter extends Visitor<String> {
-  /// Emits the full file contents for a Java source file defining a top-level
-  /// Java [Class].
-  ///
-  /// This includes a package delcaration, imports, and a full Java class
-  /// definition.
-  static String emitClassDecl(ClassDecl cls) {
-    var content = cls.accept(new JavaAstEmitter());
-    return "package ${cls.package};\n\n${content}";
-  }
-
+class _JavaAstEmitter extends Visitor<String> {
   /// Indents every line with two spaces for readability reasons.
   static String indent(String str) {
     return str.split("\n").map((s) => "  ${s}").join("\n");
@@ -31,10 +27,8 @@ class JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitClassDecl(ClassDecl cls) {
-    var fields = cls.fields.map((v) => 
-      indent(v.accept(this)) + ";").join("\n");
-    var methods = cls.methods.map((m) =>
-      indent(m.accept(this))).join("\n");
+    var fields = cls.fields.map((v) => indent(v.accept(this)) + ";").join("\n");
+    var methods = cls.methods.map((m) => indent(m.accept(this))).join("\n");
     var content = indent(fields + "\n\n" + methods);
 
     return "${cls.access} class ${cls.name}\n{\n${content}\n}\n";
@@ -53,7 +47,7 @@ class JavaAstEmitter extends Visitor<String> {
       parts.add("=");
       parts.add(decl.initializer.accept(this));
     }
-    
+
     return parts.join(" ");
   }
 
@@ -70,15 +64,15 @@ class JavaAstEmitter extends Visitor<String> {
   @override
   String visitVariableDeclStmt(VariableDeclStmt decl) {
     return decl.initializer != null
-      ? "${decl.variable.accept(this)} = ${decl.initializer.accept(this)};"
-      : "${decl.variable.accept(this)};";
+        ? "${decl.variable.accept(this)} = ${decl.initializer.accept(this)};"
+        : "${decl.variable.accept(this)};";
   }
 
   @override
   String visitReturnStmt(ReturnStmt stmt) {
     return stmt.value != null
-      ? "return ${stmt.value.accept(this)};"
-      : "return;";
+        ? "return ${stmt.value.accept(this)};"
+        : "return;";
   }
 
   @override
@@ -90,13 +84,10 @@ class JavaAstEmitter extends Visitor<String> {
     frontPart.add(meth.returnType);
     frontPart.add(meth.name);
 
-    var parameterList = "(" + meth.parameters.map((p) => 
-      p.accept(this)).join(", ") + ")";
+    var parameterList =
+        "(" + meth.parameters.map((p) => p.accept(this)).join(", ") + ")";
 
-    return frontPart.join(" ") 
-      + parameterList 
-      + "\n" 
-      + meth.body.accept(this);
+    return frontPart.join(" ") + parameterList + "\n" + meth.body.accept(this);
   }
 
   @override
@@ -114,33 +105,32 @@ class JavaAstEmitter extends Visitor<String> {
   String visitIfStmt(IfStmt stmt) {
     var conditionCheck = "if (${stmt.condition.accept(this)})\n";
     var thenPart = stmt.thenBody.accept(this);
-    var elsePart = stmt.elseBody != null
-      ? "\nelse\n${stmt.elseBody.accept(this)}"
-      : "";
+    var elsePart =
+        stmt.elseBody != null ? "\nelse\n${stmt.elseBody.accept(this)}" : "";
     return conditionCheck + thenPart + elsePart;
   }
 
   @override
   String visitMethodInvocation(MethodInvocation invocation) {
     var receiver = invocation.receiver.accept(this);
-    var arguments = invocation.arguments.map((arg) => 
-      arg.accept(this)).join(", ");
+    var arguments =
+        invocation.arguments.map((arg) => arg.accept(this)).join(", ");
     return "${receiver}.${invocation.methodName}(${arguments})";
   }
 
-  @override 
+  @override
   String visitBinaryExpr(BinaryExpr expr) {
     var left = expr.leftOperand.accept(this);
     var right = expr.rightOperand.accept(this);
     return "(${left} ${expr.operatorSymbol} ${right})";
   }
 
-  @override 
+  @override
   String visitUnaryExpr(UnaryExpr expr) {
     return "(${expr.operatorSymbol}${expr.operand.accept(this)})";
   }
 
-  @override 
+  @override
   String visitCastExpr(CastExpr expr) {
     return "(${expr.type}) ${expr.expression.accept(this)}";
   }
