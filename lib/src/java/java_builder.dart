@@ -36,13 +36,18 @@ class JavaAstBuilder extends dart.Visitor {
   }
 
   /// Builds a Java class AST from a kernel class AST.
-  static java.ClassDecl buildClass(
+  static List<java.ClassDecl> buildClass(
       String package, dart.Class node, CompilerState compilerState) {
+    // Nothing to do for core interface classes like `int`.
+    if (compilerState.interfaceOnlyCoreClasses.contains(node)) {
+      return const <java.ClassDecl>[];
+    }
+
     // TODO(springerm): Use annotation
-    var isInterceptor = compilerState.isInterceptorClass(node.name);
+    var isInterceptor = compilerState.isInterceptorClass(node);
     var instance = new JavaAstBuilder(package, compilerState,
         isInterceptorClass: isInterceptor);
-    return node.accept(instance);
+    return [node.accept(instance)];
   }
 
   JavaAstBuilder(this.package, this.compilerState,
@@ -53,21 +58,59 @@ class JavaAstBuilder extends dart.Visitor {
     }
   }
 
+  /// The package that the [java.ClassDecl] being build should be declared in.
   String package;
+
+  /// A reference to the [java.ClassDecl] that this [_JavaAstBuilder] is
+  /// building.
+  ///
+  /// This must be [:null:] before [visitNormalClass] is called, and must never
+  /// be null after. If it is not [:null:] before calling [visitNormalClass],
+  /// then this builder assumes that it is being reused, and throws an error.
+  /// If it is [:null:] while building a class field or method, various visitors
+  /// might throw null-dereference errors.
+  ///
+  /// This reference is used by some visit methods to insert multiple
+  /// declarations when visiting a single Dart method (e.g., to insert the
+  /// result of [buildMainMethodWrapper] if the procdure being built is the
+  /// top-level `void main(List<String>)` method).
   java.ClassDecl thisClass;
+
+  /// A reference to the [dart.Class] that is being visited.
+  ///
+  /// This must be [:null:] before [visitNormalClass] is called, and may be null
+  /// afterwards. If it is not [:null:] before calling [visitNormalClass], then
+  /// this builder assumes that it is being reused, and throws an error. If it
+  /// is [:null:] while building a [dart.Member], then that [dart.Member] is a
+  /// top-level field or function in a [dart.Library].
+  ///
+  /// This reference is used to compute the [dart.DartType] of [:this:] inside
+  /// of method definitions.
+  dart.Class thisDartClass;
+
   final CompilerState compilerState;
+
+  /// If this class is an interceptor class, then all its instance methods
+  /// should actually be generated as static Java methods (with an extra `self`
+  /// parameter).
+  ///
+  /// This is used for methods added to @JavaClass classes like [int] or
+  /// [String]. The methods may have a Dart definition or a @JavaCall metadata.
+  /// The compiler will call the generated Java (static) method whenever the
+  /// original Dart (instance) method is invoked.
   final bool isInterceptorClass;
 
   /// Need to know if this is a static method to generate correct
-  /// implicit "this"
+  /// implicit "this".
   bool isInsideStaticMethod;
 
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
-    assert(thisClass == null);
+    assert(thisClass == null && thisDartClass == null);
     thisClass =
         new java.ClassDecl(package, node.name, java.Access.Public, [], []);
+    thisDartClass = node;
 
     for (var f in node.fields) {
       thisClass.fields.add(f.accept(this));
@@ -141,8 +184,13 @@ class JavaAstBuilder extends dart.Visitor {
       // Remaining arguments are parameters of Dart method
       arguments.addAll(parameters.map((p) => new java.IdentifierExpr(p.name)));
 
-      body = new java.ReturnStmt(
-          new java.MethodInvocation(extReceiver, extMethodName, arguments));
+      if (functionNode.returnType is dart.VoidType) {
+        body = new java.ExpressionStmt(
+            new java.MethodInvocation(extReceiver, extMethodName, arguments));
+      } else {
+        body = new java.ReturnStmt(
+            new java.MethodInvocation(extReceiver, extMethodName, arguments));
+      }
     } else {
       assert(isInsideStaticMethod == null);
       isInsideStaticMethod = isStatic;
@@ -218,9 +266,15 @@ class JavaAstBuilder extends dart.Visitor {
 
   /// Builds a Java MethodInvocation node. This method is reused for "normal"
   /// method and for getter/setters etc.
+  ///
+  /// [receiverType] is used to intercept the method invocation and replace it
+  /// by a static call to an interceptor class. If it is known that the method
+  /// will not be intercepted (e.g., because the method being invoked is a
+  /// static method, so the receiver is a [java.ClassRefExpr]), then
+  /// [receiverType] may be null.
   java.MethodInvocation buildMethodInvocation(
       java.Expression receiver,
-      String receiverType,
+      dart.DartType receiverType,
       String methodName,
       List<dart.Expression> positionalArguments) {
     // TODO(springerm): Handle other argument types
@@ -228,10 +282,11 @@ class JavaAstBuilder extends dart.Visitor {
         positionalArguments.map((a) => a.accept(this)).toList();
 
     // Replace with static method call if necessary
-    if (compilerState.javaClasses.containsKey(receiverType)) {
+    if (receiverType is dart.InterfaceType &&
+        compilerState.interceptorClasses.containsKey(receiverType.classNode)) {
       // Receiver type is an already existing Java class, generate static
       // method call.
-      var dartClass = compilerState.interceptorClasses[receiverType];
+      var dartClass = compilerState.interceptorClasses[receiverType.classNode];
       var argsWithSelf = [receiver]..addAll(args);
       return new java.MethodInvocation(
           buildClassReference(dartClass), methodName, argsWithSelf);
@@ -245,11 +300,11 @@ class JavaAstBuilder extends dart.Visitor {
       String methodName, List<dart.Expression> positionalArguments) {
     // Translate receiver
     java.Expression recv;
-    String recvType;
+    dart.DartType recvType;
     if (receiver == null) {
       // Implicit "this" receiver
       recv = buildDefaultReceiver();
-      recvType = getThisClassDartName();
+      recvType = getThisClassDartType();
     } else {
       recv = receiver.accept(this);
       recvType = getType(receiver);
@@ -283,6 +338,7 @@ class JavaAstBuilder extends dart.Visitor {
       String libraryName =
           compilerState.getJavaPackageName(node.target.enclosingLibrary);
       String className;
+      // TODO(andrewkrieger): Use symbol table for both branches.
       if (node.target.enclosingClass == null) {
         // Target is a top-level member of the library
         className = CompilerState.getClassNameForPackageTopLevel(package);
@@ -290,10 +346,10 @@ class JavaAstBuilder extends dart.Visitor {
         className = node.target.enclosingClass.name;
       }
 
-      var receiverName = libraryName + "::" + className;
       return buildMethodInvocation(
-          new java.ClassRefExpr(getJavaClassName(receiverName)),
-          receiverName,
+          new java.ClassRefExpr(libraryName + "." + className),
+          // receiverType = null, because this invocation cannot be intercepted.
+          null,
           node.target.name.name,
           node.arguments.positional);
     } else {
@@ -304,19 +360,19 @@ class JavaAstBuilder extends dart.Visitor {
   }
 
   /// Retrieves the [DartType] for a kernel [Expression] node.
-  String getType(dart.Expression node) {
+  dart.DartType getType(dart.Expression node) {
     // TODO(andrewkrieger): Workaround until we get types for implicit "this"
     // working.
     if (node.staticType == null) {
       if (node.toString() == "this") {
-        return getThisClassDartName();
+        return getThisClassDartType();
       } else {
         throw new CompileErrorException(
             'Unable to retrieve type for Kernel AST expression'
             ' "$node" of type ${node.runtimeType}');
       }
     } else {
-      return node.staticType.toString();
+      return node.staticType;
     }
   }
 
@@ -337,13 +393,14 @@ class JavaAstBuilder extends dart.Visitor {
   }
 
   /// Converts a Dart class name to a Java class name.
-  String getJavaClassName(String dartClassName) {
-    return dartClassName.replaceFirst("::", ".");
+  // TODO(andrewkrieger): Symbol table lookup
+  String getJavaClassName(dart.Class dartClass) {
+    return dartClass.name;
   }
 
   /// Build a reference to a Dart class.
-  java.ClassRefExpr buildClassReference(String dartClassName) {
-    return new java.ClassRefExpr(getJavaClassName(dartClassName));
+  java.ClassRefExpr buildClassReference(dart.Class dartClass) {
+    return new java.ClassRefExpr(getJavaClassName(dartClass));
   }
 
   java.ClassRefExpr buildThisClassRefExpr() {
@@ -366,19 +423,18 @@ class JavaAstBuilder extends dart.Visitor {
     }
   }
 
-  /// Returns the fully-qualified Dart class name of the current class.
-  String getThisClassDartName() {
-    return package + "::" + thisClass.name;
-  }
-
   /// Returns the fully-qualified Java class name of the current class.
   String getThisClassJavaName() {
     if (isInterceptorClass) {
-      return getJavaClassName(
-          compilerState.javaClasses[getThisClassDartName()]);
+      return compilerState.javaClasses[thisDartClass];
     } else {
-      return getJavaClassName(getThisClassDartName());
+      return getJavaClassName(thisDartClass);
     }
+  }
+
+  /// Returns the [dart.DartType] for the current class.
+  dart.DartType getThisClassDartType() {
+    return thisDartClass.thisType;
   }
 
   @override
@@ -433,14 +489,17 @@ class JavaAstBuilder extends dart.Visitor {
   /// This is the default visitor method for DartType.
   @override
   String defaultDartType(dart.DartType node) {
-    String typeName = node.toString();
-    if (compilerState.javaClasses.containsKey(typeName)) {
-      // Reuse a Java type
-      return compilerState.javaClasses[typeName];
-    } else {
-      // TODO(springerm): generate proper types
-      return typeName;
-    }
+    throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
+  }
+
+  @override
+  String visitVoidType(dart.VoidType node) {
+    return "void";
+  }
+
+  @override
+  String visitInterfaceType(dart.InterfaceType node) {
+    return compilerState.javaClasses[node.classNode] ?? node.toString();
   }
 
   @override

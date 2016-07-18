@@ -18,11 +18,6 @@ class CodeGenerator {
   ///
   /// Returns the set of the files that have been written.
   Set<File> compile(dart.Library library) {
-    // TODO(andrewkrieger,springerm): Remove temporary debug statement
-    print("dart:core[${compilerState.getLibrary("dart:core")}]");
-    print(
-        "dart:core::Object[${compilerState.getClass("dart:core", "Object")}]");
-    print("dart:core::bool[${compilerState.getClass("dart:core", "bool")}]");
     String package = compilerState.getJavaPackageName(library);
 
     var filesWritten = new Set<File>();
@@ -37,10 +32,12 @@ class CodeGenerator {
     }
 
     for (var dartCls in library.classes) {
-      java.ClassDecl cls =
+      List<java.ClassDecl> classes =
           JavaAstBuilder.buildClass(package, dartCls, compilerState);
-      filesWritten.add(writer.writeJavaFile(
-          package, cls.name, JavaAstEmitter.emitClassDecl(cls)));
+      for (var cls in classes) {
+        filesWritten.add(writer.writeJavaFile(
+            package, cls.name, JavaAstEmitter.emitClassDecl(cls)));
+      }
     }
 
     return filesWritten;

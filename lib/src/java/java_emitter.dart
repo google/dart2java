@@ -37,7 +37,7 @@ class JavaAstEmitter extends Visitor<String> {
       indent(m.accept(this))).join("\n");
     var content = indent(fields + "\n\n" + methods);
 
-    return "${cls.access} class ${cls.name}\n{\n${content}\n}";
+    return "${cls.access} class ${cls.name}\n{\n${content}\n}\n";
   }
 
   @override

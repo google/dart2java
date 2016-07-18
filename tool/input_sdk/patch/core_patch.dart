@@ -7,11 +7,11 @@ import 'dart:_internal' show JavaCall, JavaClass;
 @patch
 class Object {
   @patch
-  @JavaCall("hashCode")
+  @JavaCall("java.lang.System.identityHashCode")
   external int get hashCode;
 
   @patch
-  @JavaCall("toString")
+  @JavaCall("java.lang.String.valueOf")
   external String toString();
 
   @patch
