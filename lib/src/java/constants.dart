@@ -17,7 +17,5 @@ class Constants {
 
   static const String javaCallAnnotation = "JavaCall";
 
-  static const String javaClassAnnotation = "JavaClass";
-
   static const String javaStaticThisIdentifier = "self";
 }

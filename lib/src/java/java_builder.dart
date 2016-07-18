@@ -38,16 +38,25 @@ class JavaAstBuilder extends dart.Visitor {
   /// Builds a Java class AST from a kernel class AST.
   static java.ClassDecl buildClass(
       String package, dart.Class node, CompilerState compilerState) {
-    var instance = new JavaAstBuilder(package, compilerState);
+    // TODO(springerm): Use annotation
+    var isInterceptor = compilerState.isInterceptorClass(node.name);
+    var instance = new JavaAstBuilder(package, compilerState,
+        isInterceptorClass: isInterceptor);
     return node.accept(instance);
   }
 
-  JavaAstBuilder(this.package, this.compilerState, {this.thisClass});
+  JavaAstBuilder(this.package, this.compilerState,
+      {this.isInterceptorClass: false, this.thisClass}) {
+    if (isInterceptorClass) {
+      // TODO(springerm): Fix package name
+      this.package = "dart._runtime";
+    }
+  }
 
   String package;
   java.ClassDecl thisClass;
   final CompilerState compilerState;
-  bool isInterceptorClass = false;
+  final bool isInterceptorClass;
 
   /// Need to know if this is a static method to generate correct
   /// implicit "this"
@@ -59,14 +68,6 @@ class JavaAstBuilder extends dart.Visitor {
     assert(thisClass == null);
     thisClass =
         new java.ClassDecl(package, node.name, java.Access.Public, [], []);
-
-    String javaClassAnnotation = 
-        getSimpleAnnotation(node, Constants.javaClassAnnotation);
-    if (javaClassAnnotation != null) {
-      // This class is backed by a Java class
-      isInterceptorClass = true;
-      compilerState.registerPrimitiveCoreClass(node.thisType, javaClassAnnotation, getThisClassJavaName());
-    }
 
     for (var f in node.fields) {
       thisClass.fields.add(f.accept(this));
@@ -126,12 +127,6 @@ class JavaAstBuilder extends dart.Visitor {
       // Every external Dart method must be annotated with "javaCall"!
       String externalJavaMethod =
           getSimpleAnnotation(node, Constants.javaCallAnnotation);
-      if (externalJavaMethod == null) {
-        throw new CompileErrorException(
-          "No JavaCall annotation found for external "
-          "method definition ${methodName}");
-      }
-
       List<String> methodTokens = externalJavaMethod.split(".");
       var extReceiver = new java.ClassRefExpr(
           methodTokens.getRange(0, methodTokens.length - 1).join("."));
@@ -225,7 +220,7 @@ class JavaAstBuilder extends dart.Visitor {
   /// method and for getter/setters etc.
   java.MethodInvocation buildMethodInvocation(
       java.Expression receiver,
-      dart.DartType receiverType,
+      String receiverType,
       String methodName,
       List<dart.Expression> positionalArguments) {
     // TODO(springerm): Handle other argument types
@@ -327,14 +322,15 @@ class JavaAstBuilder extends dart.Visitor {
 
   /// Assuming that [node] has a single annotation of type [annotation] and
   /// that annotation has a single String parameter, return the parameter
-  /// value. Otherwise, return null.
-  String getSimpleAnnotation(dart.TreeNode node, String annotation,
+  /// value. If the assumptions do not apply, throw an exception.
+  String getSimpleAnnotation(dart.Procedure node, String annotation,
       [String fieldName = "name"]) {
     // TODO(springerm): Try to use DartTypes here instead of Strings
     var obj = node.analyzerMetadata
         .firstWhere((i) => i.type.toString() == annotation);
     if (obj == null) {
-      return null;
+      throw new CompileErrorException(
+          "Unable to find ${annotation} annotation");
     }
 
     return obj.getField(fieldName).toStringValue();
@@ -379,7 +375,7 @@ class JavaAstBuilder extends dart.Visitor {
   String getThisClassJavaName() {
     if (isInterceptorClass) {
       return getJavaClassName(
-          compilerState.javaClasses[thisClass.thisType]);
+          compilerState.javaClasses[getThisClassDartName()]);
     } else {
       return getJavaClassName(getThisClassDartName());
     }
@@ -437,12 +433,13 @@ class JavaAstBuilder extends dart.Visitor {
   /// This is the default visitor method for DartType.
   @override
   String defaultDartType(dart.DartType node) {
-    if (compilerState.javaClasses.containsKey(node)) {
+    String typeName = node.toString();
+    if (compilerState.javaClasses.containsKey(typeName)) {
       // Reuse a Java type
       return compilerState.javaClasses[typeName];
     } else {
       // TODO(springerm): generate proper types
-      return node.toString();
+      return typeName;
     }
   }
 
