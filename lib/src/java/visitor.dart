@@ -32,4 +32,7 @@ abstract class Visitor<R> {
   R visitDoubleLiteral(DoubleLiteral node) => null;
   R visitStringLiteral(StringLiteral node) => null;
   R visitNullLiteral(NullLiteral node) => null;
+
+  // Types
+  R visitJavaType(JavaType node) => null;
 }

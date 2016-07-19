@@ -169,4 +169,9 @@ class _JavaAstEmitter extends Visitor<String> {
   String visitNullLiteral(NullLiteral literal) {
     return "null";
   }
+
+  @override
+  String visitJavaType(JavaType type) {
+    return type.name;
+  }
 }

@@ -8,6 +8,8 @@
 
 import 'visitor.dart';
 
+export 'types.dart';
+
 /// Java access specifier
 class Access {
   static const Access Public = const Access("public");
@@ -36,19 +38,16 @@ abstract class Node {
 
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v);
 
-  /// TODO(springerm) Do we need this?
-  // Iterable/*<R>*/ visitChildren/*<R>*/(Visitor/*<R>*/ v);
-
   /// [toString] is only meant for debugging purposes. For Java code generation,
   /// use an AST visitor.
   String toString() => '[$runtimeType]';
 }
 
-/// A Java class.
+/// A Java class declaration.
 ///
 /// Each AST should be rooted at a Java class (since we produce exactly one
-/// class per source file).  Of course, Java also allows for nested and local
-/// classes, so this node may appear deeper within the tree as well.
+/// class per source file). Java also allows for nested and local classes, so
+/// this node may appear deeper within the tree as well.
 class ClassDecl extends Node {
   /// Java package. May not be null, and must contain at least one identifier.
   String package;
