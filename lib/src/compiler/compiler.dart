@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:analyzer/analyzer.dart' show AnalysisError, ErrorSeverity;
+import 'package:args/src/usage_exception.dart' show UsageException;
 import 'package:analyzer/src/generated/engine.dart' show AnalysisContext;
 import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:cli_util/cli_util.dart' show getSdkDir;
@@ -59,6 +60,12 @@ class ModuleCompiler {
     var librariesToCompile = <Library>[];
 
     for (var sourcePath in sources) {
+      if (!new File(sourcePath).existsSync()) {
+        throw new UsageException(
+            'Given file "$sourcePath" does not exist.',
+            'You need to pass at least one existing .dart file as an'
+            ' argument.');
+      }
       var loaderResult = loader.load(sourcePath);
       librariesToCompile.add(loaderResult.library);
       errors.addAll(loaderResult.errors);
