@@ -65,7 +65,7 @@ class ClassOrInterfaceType extends ReferenceType {
 
   /// A reference to the type which this type is a member of or `null` if there
   /// is none.
-  ClassOrInterfaceType parentType;
+  ClassOrInterfaceType enclosingType;
 
   /// A list of type parameters, in case this is a generic type.
   List<TypeVariable> typeArguments = [];
@@ -74,7 +74,7 @@ class ClassOrInterfaceType extends ReferenceType {
   bool get isGeneric => typeArguments.isNotEmpty;
 
   ClassOrInterfaceType(String name,
-      {this.isInterface, this.parentType, this.typeArguments})
+      {this.isInterface, this.enclosingType, this.typeArguments})
       : super(name);
 }
 
