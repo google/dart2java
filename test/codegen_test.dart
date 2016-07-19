@@ -32,9 +32,16 @@ final codegenTestDir = path.join(repoDirectory, 'gen', 'codegen_tests');
 /// output.
 final codegenOutputDir = path.join(repoDirectory, 'gen', 'codegen_output');
 
+final expectedToFailConfig = path.join(testDirectory, 'codegen_failures.txt');
+
 main(List<String> arguments) {
   if (arguments == null) arguments = [];
-  ArgResults args = new ArgParser().parse(arguments);
+
+  var parser = new ArgParser();
+  parser.addFlag('force',
+      abbr: 'f', help: 'Forcibly run tests marked as "skipped".');
+  ArgResults args = parser.parse(arguments);
+
   var filePattern = new RegExp(args.rest.length > 0 ? args.rest[0] : '.');
 
   // Copy all of the test files to gen/codegen_tests. We'll compile from there.
@@ -49,11 +56,16 @@ main(List<String> arguments) {
   ];
   var compilerArgParser = CompilerOptions.addArguments(new ArgParser());
 
+  List<String> expectedToFail = _loadExpectedToFail(filePattern);
+
   // Compile each test file to Java and put the result in gen/codegen_output.
   for (String testFile in testFiles) {
     String relativePath = path.relative(testFile, from: codegenTestDir);
 
     String name = path.withoutExtension(relativePath);
+    String skip = (!args['force'] && expectedToFail.contains(name))
+        ? "Test expected to fail."
+        : null;
     test('dart2java $name', () {
       String relativeDir = path.dirname(relativePath);
       String outDir = path.join(codegenOutputDir, relativeDir);
@@ -80,7 +92,7 @@ main(List<String> arguments) {
         _ensureDirectory(path.dirname(newPath));
         file.copySync(newPath);
       }
-    });
+    }, skip: skip);
   }
 }
 
@@ -100,6 +112,14 @@ List<String> _setUpTests(RegExp filePattern) {
   }
 
   return testFiles;
+}
+
+List<String> _loadExpectedToFail(RegExp filePattern) {
+  return new File(expectedToFailConfig)
+      .readAsLinesSync()
+      .map((line) => line.split("//")[0].trim()) // Remove all comments.
+      .where((line) => line.isNotEmpty) // Remove empty lines.
+      .toList();
 }
 
 /// Recursively creates [dir] if it doesn't exist.

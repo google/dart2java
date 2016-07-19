@@ -1,0 +1,8 @@
+// This file contains the name of codegen tests which are expected to fail and
+// should be skipped during testing. These tests can be forcibly run by passing
+// a --force flag to test/all_tests.dart or test/codegen_test.dart.
+//
+// Only // comments are allowed in this file and empty lines are ignored.
+// Provide one test name per line.
+
+BardCount // This test is speculative and we don't expect to pass it soon.
