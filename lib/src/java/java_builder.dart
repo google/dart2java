@@ -14,16 +14,12 @@ import '../compiler/runner.dart' show CompileErrorException;
 /// a Dart [Library].
 java.ClassDecl buildWrapperClass(String package, String className,
     dart.Library library, CompilerState compilerState) {
-  java.ClassDecl result = new java.ClassDecl(package,
-      new java.ClassOrInterfaceType(className), java.Access.Public, [], []);
-  var instance = new _JavaAstBuilder(package, compilerState, thisClass: result);
+  var type = new java.ClassOrInterfaceType(className);
+  var result = new java.ClassDecl(package, type, java.Access.Public, [], []);
 
-  for (var f in library.fields) {
-    result.fields.add(f.accept(instance));
-  }
-  for (var p in library.procedures) {
-    result.methods.add(p.accept(instance));
-  }
+  var instance = new _JavaAstBuilder(package, compilerState);
+  result.fields = library.fields.map((f) => f.accept(instance)).toList();
+  result.methods = library.procedures.map((p) => p.accept(instance)).toList();
 
   return result;
 }
@@ -46,7 +42,7 @@ List<java.ClassDecl> buildClass(
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
   _JavaAstBuilder(this.package, this.compilerState,
-      {this.isInterceptorClass: false, this.thisClass}) {
+      {this.isInterceptorClass: false}) {
     if (isInterceptorClass) {
       // TODO(springerm): Fix package name
       this.package = "dart._runtime";
@@ -55,17 +51,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// The package that the [java.ClassDecl] being build should be declared in.
   String package;
-
-  /// A reference to the [java.ClassDecl] that this [_JavaAstBuilder] is
-  /// building.
-  ///
-  /// This must be [:null:] before [visitNormalClass] is called, and must never
-  /// be null after. If it is not [:null:] before calling [visitNormalClass],
-  /// then this builder assumes that it is being reused, and throws an error.
-  /// If it is [:null:] while building a class field or method, various visitors
-  /// might throw null-dereference errors.
-  java.ClassDecl thisClass;
-  // TODO(stanm): not used anymore so consider deleting it.
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -98,22 +83,22 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
-    assert(thisClass == null && thisDartClass == null);
+    assert(thisDartClass == null);
 
     var type = new java.ClassOrInterfaceType(node.name);
     // TODO(stanm): add type to symbol table once we have a symbol table.
 
-    thisClass = new java.ClassDecl(package, type, java.Access.Public, [], []);
+    var result = new java.ClassDecl(package, type, java.Access.Public, [], []);
     thisDartClass = node;
 
     for (var f in node.fields) {
-      thisClass.fields.add(f.accept(this));
+      result.fields.add(f.accept(this));
     }
     for (var p in node.procedures) {
-      thisClass.methods.add(p.accept(this));
+      result.methods.add(p.accept(this));
     }
 
-    return thisClass;
+    return result;
   }
 
   @override
@@ -202,8 +187,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
               Constants.javaStaticThisIdentifier, getThisClassJavaType()));
     }
 
-    // TODO(stanm): not sure about the meaning of 'isStatic' here...
-    if (methodName == "main" && isStatic) {
+    if (methodName == "main" && procedure.enclosingClass == null) {
       if (parameters.length > 1) {
         throw new CompileErrorException(
             'Not implemented yet: Cannot handle main functions with more than'
@@ -493,9 +477,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// This is the default visitor method for DartType.
   @override
   java.JavaType defaultDartType(dart.DartType node) {
-    if (node.runtimeType is dynamic) {
-      // TODO(stanm): Object is not the best representation of dynamic:
-      // implement better.
+    if (node is dart.DynamicType) {
+      // TODO(stanm): #implementDynamic: Object is not the best representation
+      // of dynamic: implement better.
       return java.JavaType.object;
     }
     throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
