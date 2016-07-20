@@ -9,13 +9,15 @@ import 'package:path/path.dart' as path;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 
+import '../java/ast.dart' as java;
+
 class CompilerState {
   /// Maps Dart classes to Java classes which will be reused in generated code.
   ///
   /// E.g., dart.core.int uses java.lang.Integer. This is required to get
   /// the types right in generated Java code.
   /// TODO(springerm): Try to use mapping from dart.DartType here later.
-  final javaClasses = new Map<dart.Class, String>();
+  final javaClasses = new Map<dart.Class, java.ClassOrInterfaceType>();
 
   /// Maps Dart SDK classes and interfaces to their runtime implementations,
   /// i.e., "interceptor classes".
@@ -89,8 +91,9 @@ class CompilerState {
 
   void registerPrimitiveCoreClass(
       dart.Class dartName, String javaName, dart.Class interceptorClass) {
-    javaClasses[dartName] = javaName;
-    javaClasses[interceptorClass] = javaName;
+    var type = new java.ClassOrInterfaceType(javaName);
+    javaClasses[dartName] = type;
+    javaClasses[interceptorClass] = type;
     interceptorClasses[dartName] = interceptorClass;
     interceptorClasses[interceptorClass] = interceptorClass;
   }

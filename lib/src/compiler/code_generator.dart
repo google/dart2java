@@ -36,7 +36,7 @@ class CodeGenerator {
           buildClass(package, dartCls, compilerState);
       for (var cls in classes) {
         filesWritten
-            .add(writer.writeJavaFile(package, cls.name, emitClassDecl(cls)));
+            .add(writer.writeJavaFile(package, cls.type.name, emitClassDecl(cls)));
       }
     }
 

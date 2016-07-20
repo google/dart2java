@@ -6,16 +6,57 @@ import 'ast.dart';
 import 'visitor.dart';
 
 abstract class JavaType extends Node {
-  String name;
+  final String name;
 
   @override
   String toString() {
     return this.name;
   }
 
-  JavaType(this.name);
+  const JavaType(this.name);
 
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitJavaType(this);
+
+  /// A convenience object to allow handling of methods that don't return
+  /// a value.
+  ///
+  /// There is no "void" type in Java.
+  static const VoidType void_ = const VoidType._();
+
+  /// The boolean type has exactly two values: `true` and `false`.
+  static const PrimitiveType boolean = const PrimitiveType._("boolean");
+
+  /// The Java String type.
+  static ClassOrInterfaceType string = new ClassOrInterfaceType("String");
+
+  // Numeric types.
+  // Numeric types / Integral types.
+  /// 8-bit signed two's complement integer.
+  static const PrimitiveType byte = const PrimitiveType._("byte");
+
+  /// 16-bit signed two's complement integer.
+  static const PrimitiveType short = const PrimitiveType._("short");
+
+  /// 32-bit signed two's complement integer.
+  static const PrimitiveType int_ = const PrimitiveType._("int");
+
+  /// 64-bit signed two's complement integer.
+  static const PrimitiveType long = const PrimitiveType._("long");
+
+  /// 16-bit unsigned integers representing UTF-16 code units.
+  static const PrimitiveType char = const PrimitiveType._("char");
+
+  // Numeric types / Floating-point types.
+  /// 32-bit IEEE 754 floating-point number.
+  static const PrimitiveType float = const PrimitiveType._("float");
+
+  /// 64-bit IEEE 754 floating-point number.
+  static const PrimitiveType double_ = const PrimitiveType._("double");
+}
+
+/// A convenience class to allow handling of methods that don't return a value.
+class VoidType extends JavaType {
+  const VoidType._() : super("void");
 }
 
 /// Predefined types by the Java programming language and named by their
@@ -23,34 +64,7 @@ abstract class JavaType extends Node {
 ///
 /// Primitive values do not share state with other primitive values.
 class PrimitiveType extends JavaType {
-  /// The boolean type has exactly two values: `true` and `false`.
-  static PrimitiveType Boolean = new PrimitiveType._("boolean");
-
-  // Numeric types.
-  // Numeric types > Integral types.
-  /// 8-bit signed two's complement integer.
-  static PrimitiveType Byte = new PrimitiveType._("byte");
-
-  /// 16-bit signed two's complement integer.
-  static PrimitiveType Short = new PrimitiveType._("short");
-
-  /// 32-bit signed two's complement integer.
-  static PrimitiveType Int = new PrimitiveType._("int");
-
-  /// 64-bit signed two's complement integer.
-  static PrimitiveType Long = new PrimitiveType._("long");
-
-  /// 16-bit unsigned integers representing UTF-16 code units.
-  static PrimitiveType Char = new PrimitiveType._("char");
-
-  // Numeric types > Floating-point types.
-  /// 32-bit IEEE 754 floating-point number.
-  static PrimitiveType Float = new PrimitiveType._("float");
-
-  /// 64-bit IEEE 754 floating-point number.
-  static PrimitiveType Double = new PrimitiveType._("double");
-
-  PrimitiveType._(String name) : super(name);
+  const PrimitiveType._(String name) : super(name);
 }
 
 // TODO(stanm): consider the null type.
@@ -68,13 +82,15 @@ class ClassOrInterfaceType extends ReferenceType {
   ClassOrInterfaceType enclosingType;
 
   /// A list of type parameters, in case this is a generic type.
-  List<TypeVariable> typeArguments = [];
+  List<TypeVariable> typeArguments;
 
   /// Returns [true] if this type is generic.
   bool get isGeneric => typeArguments.isNotEmpty;
 
   ClassOrInterfaceType(String name,
-      {this.isInterface, this.enclosingType, this.typeArguments})
+      {this.isInterface: false,
+      this.enclosingType: null,
+      this.typeArguments: const []})
       : super(name);
 }
 

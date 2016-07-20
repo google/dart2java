@@ -14,8 +14,8 @@ import '../compiler/runner.dart' show CompileErrorException;
 /// a Dart [Library].
 java.ClassDecl buildWrapperClass(String package, String className,
     dart.Library library, CompilerState compilerState) {
-  java.ClassDecl result =
-      new java.ClassDecl(package, className, java.Access.Public, [], []);
+  java.ClassDecl result = new java.ClassDecl(package,
+      new java.ClassOrInterfaceType(className), java.Access.Public, [], []);
   var instance = new _JavaAstBuilder(package, compilerState, thisClass: result);
 
   for (var f in library.fields) {
@@ -44,7 +44,7 @@ List<java.ClassDecl> buildClass(
 }
 
 /// Builds a Java class from Dart IR.
-class _JavaAstBuilder extends dart.Visitor {
+class _JavaAstBuilder extends dart.Visitor<java.Node> {
   _JavaAstBuilder(this.package, this.compilerState,
       {this.isInterceptorClass: false, this.thisClass}) {
     if (isInterceptorClass) {
@@ -103,8 +103,11 @@ class _JavaAstBuilder extends dart.Visitor {
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
     assert(thisClass == null && thisDartClass == null);
-    thisClass =
-        new java.ClassDecl(package, node.name, java.Access.Public, [], []);
+
+    var type = new java.ClassOrInterfaceType(node.name);
+    // TODO(stanm): add type to symbol table once we have a symbol table.
+
+    thisClass = new java.ClassDecl(package, type, java.Access.Public, [], []);
     thisDartClass = node;
 
     for (var f in node.fields) {
@@ -153,7 +156,7 @@ class _JavaAstBuilder extends dart.Visitor {
   java.MethodDef visitProcedure(dart.Procedure node) {
     String methodName = javaMethodName(node.name.name, node.kind);
     dart.FunctionNode functionNode = node.function;
-    String returnType = functionNode.returnType.accept(this);
+    java.JavaType returnType = functionNode.returnType.accept(this);
     // TODO: handle named parameters, etc.
     List<java.VariableDecl> parameters =
         functionNode.positionalParameters.map((p) => p.accept(this)).toList();
@@ -199,7 +202,7 @@ class _JavaAstBuilder extends dart.Visitor {
       parameters.insert(
           0,
           new java.VariableDecl(
-              Constants.javaStaticThisIdentifier, getThisClassJavaName()));
+              Constants.javaStaticThisIdentifier, getThisClassJavaType()));
     }
 
     if (methodName == "main" && isStatic && parameters.length == 1) {
@@ -220,8 +223,14 @@ class _JavaAstBuilder extends dart.Visitor {
         [new java.CastExpr(java.NullLiteral.instance, firstParameter.type)]);
     var body = wrapInJavaBlock(new java.ExpressionStmt(methodInvoke));
     var methodDef = new java.MethodDef(
-        "main", body, [new java.VariableDecl("args", "String[]")],
-        returnType: "void", isStatic: true);
+        "main",
+        body,
+        [
+          new java.VariableDecl(
+              "args", new java.ArrayType(java.JavaType.string_, 1))
+        ],
+        returnType: java.JavaType.void_,
+        isStatic: true);
     return methodDef;
   }
 
@@ -389,17 +398,17 @@ class _JavaAstBuilder extends dart.Visitor {
 
   /// Converts a Dart class name to a Java class name.
   // TODO(andrewkrieger): Symbol table lookup
-  String getJavaClassName(dart.Class dartClass) {
-    return dartClass.name;
+  java.ClassOrInterfaceType getJavaType(dart.Class dartClass) {
+    return new java.ClassOrInterfaceType(dartClass.name);
   }
 
   /// Build a reference to a Dart class.
   java.ClassRefExpr buildClassReference(dart.Class dartClass) {
-    return new java.ClassRefExpr(getJavaClassName(dartClass));
+    return new java.ClassRefExpr(getJavaType(dartClass).name);
   }
 
   java.ClassRefExpr buildThisClassRefExpr() {
-    return new java.ClassRefExpr(getThisClassJavaName());
+    return new java.ClassRefExpr(getThisClassJavaType().name);
   }
 
   /// Build a reference to "this".
@@ -419,11 +428,11 @@ class _JavaAstBuilder extends dart.Visitor {
   }
 
   /// Returns the fully-qualified Java class name of the current class.
-  String getThisClassJavaName() {
+  java.ClassOrInterfaceType getThisClassJavaType() {
     if (isInterceptorClass) {
       return compilerState.javaClasses[thisDartClass];
     } else {
-      return getJavaClassName(thisDartClass);
+      return getJavaType(thisDartClass);
     }
   }
 
@@ -483,18 +492,23 @@ class _JavaAstBuilder extends dart.Visitor {
 
   /// This is the default visitor method for DartType.
   @override
-  String defaultDartType(dart.DartType node) {
+  java.JavaType defaultDartType(dart.DartType node) {
     throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
   }
 
   @override
-  String visitVoidType(dart.VoidType node) {
-    return "void";
+  java.VoidType visitVoidType(dart.VoidType node) {
+    return java.JavaType.void_;
   }
 
   @override
-  String visitInterfaceType(dart.InterfaceType node) {
-    return compilerState.javaClasses[node.classNode] ?? node.toString();
+  java.ClassOrInterfaceType visitInterfaceType(dart.InterfaceType node) {
+    // TODO(stanm): look-up in symbol table when we have one.
+    // TODO(stanm): You can't simply map Dart generics to Java generics!
+    List<java.JavaType> typeArguments =
+        node.typeArguments.map((type) => type.accept(this)).toList();
+    return new java.ClassOrInterfaceType(node.classNode.name,
+        typeArguments: typeArguments);
   }
 
   @override

@@ -8,6 +8,7 @@
 
 import 'visitor.dart';
 
+import 'types.dart';
 export 'types.dart';
 
 /// Java access specifier
@@ -34,13 +35,13 @@ class Access {
 
 /// The root class for nodes in the Java AST.
 abstract class Node {
-  Node parent;
-
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v);
 
   /// [toString] is only meant for debugging purposes. For Java code generation,
   /// use an AST visitor.
   String toString() => '[$runtimeType]';
+
+  const Node();
 }
 
 /// A Java class declaration.
@@ -52,8 +53,10 @@ class ClassDecl extends Node {
   /// Java package. May not be null, and must contain at least one identifier.
   String package;
 
-  /// Class name; may be null for anonymous classes.
-  String name;
+  /// The [JavaType] that this class declaration corresponds to.
+  ///
+  /// This includes the name of the class and the type parameters.
+  ClassOrInterfaceType type;
 
   Access access;
 
@@ -61,13 +64,13 @@ class ClassDecl extends Node {
 
   List<FieldDecl> fields;
 
-  ClassDecl(this.package, this.name,
+  ClassDecl(this.package, this.type,
       [this.access, this.fields = const [], this.methods = const []]);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassDecl(this);
 
-  String toString() => '${access} class $name';
+  String toString() => '${access} class ${type.name}';
 }
 
 /// A Java method.
@@ -82,7 +85,7 @@ class MethodDef extends Node {
   List<VariableDecl> parameters;
 
   /// Define the return type of the method.
-  String returnType;
+  JavaType returnType;
 
   bool isStatic;
 
@@ -91,7 +94,7 @@ class MethodDef extends Node {
   Access access;
 
   MethodDef(this.name, this.body, this.parameters,
-      {this.returnType: "void",
+      {this.returnType: JavaType.void_,
       this.isStatic: false,
       this.isFinal: false,
       this.access: Access.Public});
@@ -100,10 +103,10 @@ class MethodDef extends Node {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDef(this);
 }
 
-/// A instance variable declaration for fields.
+/// An instance variable declaration for fields.
 class FieldDecl extends Node {
   String name;
-  String type;
+  JavaType type;
   Access access;
   bool isStatic;
   bool isFinal;
@@ -123,7 +126,7 @@ class FieldDecl extends Node {
 /// A variable declaration for parameters and local variables.
 class VariableDecl extends Node {
   String name;
-  String type;
+  JavaType type;
   bool isFinal;
 
   VariableDecl(this.name, this.type, {this.isFinal: false});
@@ -242,7 +245,7 @@ class UnaryExpr extends Expression {
 class CastExpr extends Expression {
   Expression expression;
 
-  String type;
+  JavaType type;
 
   CastExpr(this.expression, this.type);
 
