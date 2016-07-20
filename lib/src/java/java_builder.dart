@@ -227,7 +227,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         body,
         [
           new java.VariableDecl(
-              "args", new java.ArrayType(java.JavaType.string_, 1))
+              "args", new java.ArrayType(java.JavaType.string, 1))
         ],
         returnType: java.JavaType.void_,
         isStatic: true);

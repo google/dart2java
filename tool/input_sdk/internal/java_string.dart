@@ -1,6 +1,6 @@
 part of dart._internal;
 
-@JavaClass("java.lang.String")
+@InterceptorFor("dart:core", "String")
 class JavaString implements String {
   
   @JavaCall("dart._runtime.helpers.StringHelper.operatorAt")

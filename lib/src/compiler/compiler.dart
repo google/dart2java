@@ -60,7 +60,8 @@ class ModuleCompiler {
     var librariesToCompile = <Library>[];
 
     for (var sourcePath in sources) {
-      if (!new File(sourcePath).existsSync()) {
+      if (!sourcePath.startsWith('dart:') &&
+          !new File(sourcePath).existsSync()) {
         throw new UsageException(
             'Given file "$sourcePath" does not exist.',
             'You need to pass at least one existing .dart file as an'

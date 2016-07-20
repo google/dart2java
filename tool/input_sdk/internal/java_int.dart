@@ -1,6 +1,6 @@
 part of dart._internal;
 
-@JavaClass("java.lang.Integer")
+@InterceptorFor("dart:core", "int")
 class JavaInteger implements int {
   
   @JavaCall("dart._runtime.helpers.IntegerHelper.operatorMinusUnary")

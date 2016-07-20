@@ -2,9 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:_internal' show JavaCall, JavaClass;
+import 'dart:_internal' show JavaCall, JavaClass, InterceptorFor;
 
 @patch
+@JavaClass("java.lang.Object")
+@InterceptorFor("dart:core", "Object")
 class Object {
   @patch
   @JavaCall("java.lang.System.identityHashCode")
@@ -13,31 +15,21 @@ class Object {
   @patch
   @JavaCall("java.lang.String.valueOf")
   external String toString();
-
-  @patch
-  dynamic noSuchMethod(Invocation invocation) {
-    throw new NoSuchMethodError(
-        this,
-        invocation.memberName,
-        invocation.positionalArguments,
-        invocation.namedArguments);
-  }
-
-  @patch
-  @JavaCall("dart._runtime.helpers.ObjectHelper.runtimeType")
-  external Type get runtimeType;
 }
 
 @patch
+@JavaClass("java.lang.Integer")
 abstract class int {
-  @patch
-  @JavaStatic("dart._runtime.helpers.IntHelper.fromEnvironment")
-  external factory int.fromEnvironment();
 }
 
 @patch
 @JavaClass("java.lang.Boolean")
+@InterceptorFor("dart:core", "bool")
 class bool {}
+
+@patch
+@JavaClass("java.lang.String")
+abstract class String {}
 
 @patch
 @JavaCall("java.lang.System.out.println")

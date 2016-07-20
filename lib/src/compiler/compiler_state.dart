@@ -6,10 +6,45 @@ import 'package:kernel/ast.dart' as dart;
 import 'package:kernel/repository.dart' as dart;
 import 'package:path/path.dart' as path;
 
+import '../java/types.dart' as java;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
+import 'symbol_table_builder.dart' show SymbolTableBuilder;
 
-import '../java/ast.dart' as java;
+/// Describes how a Dart class is implemented (e.g., how to represent it as a
+/// Java variable, how to call methods on it, etc.).
+class ClassImpl {
+  /// The Java class used to implement this Dart class.
+  java.ClassOrInterfaceType class_;
+
+  /// Whether this is an @JavaClass (if true) or a regular class that the
+  /// compiler should generate (if false).
+  bool isJavaClass;
+
+  /// The Java class containing interceptor methods for this class, or [:null:]
+  /// if this class is not intercepted.
+  ///
+  /// If this is a core @JavaClass like int (represented via java.lang.Integer),
+  /// the compiler uses an interceptor class to implement the instance methods
+  /// of this class (such as int.abs()). The interceptor class is a Java class
+  /// containing static methods; when client code attempts to invoke an instance
+  /// method on this class, the compiler will generate a call to a static method
+  /// in [interceptor] with the receiver (which would have been [:this:] inside
+  /// the instance method) as its first parameter.
+  java.ClassOrInterfaceType interceptor;
+
+  /// If this class is an interceptor class, then [intercepted] is the Dart
+  /// class whose methods this class intercepts; otherwise, [intercepted] is
+  /// [:null:].
+  ///
+  /// This is used to determine the correct type for the first `self` parameter
+  /// in the interceptor methods.
+  dart.Class intercepted;
+
+  /// Intended for debugging only.
+  String toString() => 'ClassImpl{class_="$class_", isJavaClass="$isJavaClass", '
+    'interceptor="$interceptor", intercepted="$intercepted"}';
+}
 
 class CompilerState {
   /// Maps Dart classes to Java classes which will be reused in generated code.
@@ -38,6 +73,8 @@ class CompilerState {
   /// compiler knows how to call methods on instances of this interface).
   final interfaceOnlyCoreClasses = new Set<dart.Class>();
 
+  final classImpls = <dart.Class, ClassImpl>{};
+
   final CompilerOptions options;
   final dart.Repository repository;
 
@@ -54,17 +91,33 @@ class CompilerState {
     doubleClass = getClass("dart:core", "double");
     stringClass = getClass("dart:core", "String");
 
-    interfaceOnlyCoreClasses.addAll([intClass, doubleClass, stringClass]);
+    repository.libraries.forEach(new SymbolTableBuilder(this).visitLibrary);
 
-    // Set up primitive types
-    registerPrimitiveCoreClass(objectClass, "java.lang.Object", objectClass);
-    registerPrimitiveCoreClass(boolClass, "java.lang.Boolean", boolClass);
-    registerPrimitiveCoreClass(intClass, "java.lang.Integer",
-        getClass("dart:_internal", "JavaInteger"));
-    registerPrimitiveCoreClass(doubleClass, "java.lang.Double",
-        getClass("dart:_internal", "JavaDouble"));
-    registerPrimitiveCoreClass(stringClass, "java.lang.String",
-        getClass("dart:_internal", "JavaString"));
+    // Tempoprary step - generate old data structures from [classImpls].
+    // TODO(andrewkrieger): remove references to old maps 
+    classImpls.forEach((dart.Class class_, ClassImpl impl) {
+      if (impl.isJavaClass) {
+        // If this class has an @JavaClass annotation, then it is should go in
+        // the javaClasses map.
+        javaClasses[class_] = impl.class_;
+      }
+
+      if (impl.intercepted != null) {
+        // In the old data structures, the interceptor classes automatically had
+        // @JavaClass applied to them. Also, each interceptor class should
+        // intercept itself.
+        javaClasses[class_] = classImpls[impl.intercepted].class_;
+        interceptorClasses[impl.intercepted] = class_;
+        interceptorClasses[class_] = class_;
+      }
+
+      if (impl.isJavaClass && impl.intercepted == null) {
+        // This rule captures the classes like `int` and `string` which are
+        // @JavaClass classes (so they should not go through ordinary codegen)
+        // and also abstract (i.e. not interceptors, so no method definitions).
+        interfaceOnlyCoreClasses.add(class_);
+      }
+    });
   }
 
   /// Get the [Library] object for the library named by [libraryUri], loaded to
@@ -87,15 +140,6 @@ class CompilerState {
     dart.Library lib = getLibrary(libraryUri);
     return lib.classes
         .firstWhere((dart.Class c) => c.name == className, orElse: () => null);
-  }
-
-  void registerPrimitiveCoreClass(
-      dart.Class dartName, String javaName, dart.Class interceptorClass) {
-    var type = new java.ClassOrInterfaceType(javaName);
-    javaClasses[dartName] = type;
-    javaClasses[interceptorClass] = type;
-    interceptorClasses[dartName] = interceptorClass;
-    interceptorClasses[interceptorClass] = interceptorClass;
   }
 
   /// Check if a certain class is an interceptor class.
