@@ -26,6 +26,9 @@ abstract class JavaType extends Node {
   /// The boolean type has exactly two values: `true` and `false`.
   static const PrimitiveType boolean = const PrimitiveType._("boolean");
 
+  /// The Java Object type.
+  static ClassOrInterfaceType object = new ClassOrInterfaceType("Object");
+
   /// The Java String type.
   static ClassOrInterfaceType string = new ClassOrInterfaceType("String");
 

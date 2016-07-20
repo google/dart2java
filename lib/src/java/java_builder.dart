@@ -64,12 +64,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// then this builder assumes that it is being reused, and throws an error.
   /// If it is [:null:] while building a class field or method, various visitors
   /// might throw null-dereference errors.
-  ///
-  /// This reference is used by some visit methods to insert multiple
-  /// declarations when visiting a single Dart method (e.g., to insert the
-  /// result of [buildMainMethodWrapper] if the procdure being built is the
-  /// top-level `void main(List<String>)` method).
   java.ClassDecl thisClass;
+  // TODO(stanm): not used anymore so consider deleting it.
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -153,28 +149,29 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.MethodDef visitProcedure(dart.Procedure node) {
-    String methodName = javaMethodName(node.name.name, node.kind);
-    dart.FunctionNode functionNode = node.function;
-    java.JavaType returnType = functionNode.returnType.accept(this);
-    // TODO: handle named parameters, etc.
-    List<java.VariableDecl> parameters =
-        functionNode.positionalParameters.map((p) => p.accept(this)).toList();
-    var isStatic = node.isStatic;
+  java.MethodDef visitProcedure(dart.Procedure procedure) {
+    String methodName = javaMethodName(procedure.name.name, procedure.kind);
+    java.JavaType returnType = procedure.function.returnType.accept(this);
+    // TODO(springerm): handle named parameters, etc.
+    List<java.VariableDecl> parameters = procedure.function.positionalParameters
+        .map((p) => p.accept(this))
+        .toList();
+    var isStatic = procedure.isStatic;
 
     java.Statement body;
-    if (node.isExternal) {
-      // Generate a method call to a static Java method
-      // Every external Dart method must be annotated with "javaCall"!
+    if (procedure.isExternal) {
+      // Generate a method call to a static Java method.
+      // Every external Dart method must be annotated with "JavaCall".
+      // TODO(stanm): add check.
       String externalJavaMethod =
-          getSimpleAnnotation(node, Constants.javaCallAnnotation);
+          getSimpleAnnotation(procedure, Constants.javaCallAnnotation);
       List<String> methodTokens = externalJavaMethod.split(".");
       var extReceiver = new java.ClassRefExpr(
           methodTokens.getRange(0, methodTokens.length - 1).join("."));
       var extMethodName = methodTokens.last;
 
       List<java.Expression> arguments = [];
-      if (!node.isStatic) {
+      if (!isStatic) {
         // First argument is "this"
         arguments
             .add(new java.IdentifierExpr(Constants.javaStaticThisIdentifier));
@@ -182,7 +179,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // Remaining arguments are parameters of Dart method
       arguments.addAll(parameters.map((p) => new java.IdentifierExpr(p.name)));
 
-      if (functionNode.returnType is dart.VoidType) {
+      if (procedure.function.returnType is dart.VoidType) {
         body = new java.ExpressionStmt(
             new java.MethodInvocation(extReceiver, extMethodName, arguments));
       } else {
@@ -192,7 +189,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     } else {
       assert(isInsideStaticMethod == null);
       isInsideStaticMethod = isStatic;
-      body = buildStatement(functionNode.body);
+      body = buildStatement(procedure.function.body);
       isInsideStaticMethod = null;
     }
 
@@ -205,33 +202,36 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
               Constants.javaStaticThisIdentifier, getThisClassJavaType()));
     }
 
-    if (methodName == "main" && isStatic && parameters.length == 1) {
-      // This method can act as a program entry point, generate a Java
-      // wrapper method with a String[] parameter type
-      // TODO(springerm): Ensure that type of first parameter is List<String>
-      thisClass.methods.add(buildMainMethodWrapper(parameters.first));
+    // TODO(stanm): not sure about the meaning of 'isStatic' here...
+    if (methodName == "main" && isStatic) {
+      if (parameters.length > 1) {
+        throw new CompileErrorException(
+            'Not implemented yet: Cannot handle main functions with more than'
+            ' one argument.');
+      }
+      if (parameters.length == 1 &&
+          parameters[0].type != java.JavaType.object) {
+        throw new CompileErrorException(
+            'Not implemented yet: Cannot handle main functions with an argument'
+            ' that is not of dynamic type.');
+      }
+
+      var stringArrayType = new java.ArrayType(java.JavaType.string, 1);
+      if (parameters.length == 0) {
+        parameters.add(new java.VariableDecl("args", stringArrayType));
+      } else {
+        parameters[0].type = stringArrayType;
+      }
+
+      // Ignore the declared/dynamic return type of main and set it to void.
+      // TODO(stanm): make sure there are no odd return statements in body, e.g.
+      // `return 1337;`: return values from main are ignored in Dart, as it is
+      // assumed that main has a `void` type.
+      returnType = java.JavaType.void_;
     }
 
     return new java.MethodDef(methodName, wrapInJavaBlock(body), parameters,
         returnType: returnType, isStatic: isStatic, isFinal: false);
-  }
-
-  java.MethodDef buildMainMethodWrapper(java.VariableDecl firstParameter) {
-    var methodInvoke = new java.MethodInvocation(
-        buildDefaultReceiver(isStatic: true),
-        "main",
-        [new java.CastExpr(java.NullLiteral.instance, firstParameter.type)]);
-    var body = wrapInJavaBlock(new java.ExpressionStmt(methodInvoke));
-    var methodDef = new java.MethodDef(
-        "main",
-        body,
-        [
-          new java.VariableDecl(
-              "args", new java.ArrayType(java.JavaType.string, 1))
-        ],
-        returnType: java.JavaType.void_,
-        isStatic: true);
-    return methodDef;
   }
 
   /// Wraps a Java statement in a block, if [stmt] is not already a block.
@@ -358,8 +358,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           node.arguments.positional);
     } else {
       throw new CompileErrorException(
-          "Not implemented yet: Cannot handle ${node.target.runtimeType} "
-          "targets in static invocations");
+          'Not implemented yet: Cannot handle ${node.target.runtimeType} '
+          'targets in static invocations.');
     }
   }
 
@@ -372,8 +372,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         return getThisClassDartType();
       } else {
         throw new CompileErrorException(
-            'Unable to retrieve type for Kernel AST expression'
-            ' "$node" of type ${node.runtimeType}');
+            'Unable to retrieve type for Kernel AST expression "$node" of type'
+            ' ${node.runtimeType}.');
       }
     } else {
       return node.staticType;
@@ -493,6 +493,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// This is the default visitor method for DartType.
   @override
   java.JavaType defaultDartType(dart.DartType node) {
+    if (node.runtimeType is dynamic) {
+      // TODO(stanm): Object is not the best representation of dynamic:
+      // implement better.
+      return java.JavaType.object;
+    }
     throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
   }
 

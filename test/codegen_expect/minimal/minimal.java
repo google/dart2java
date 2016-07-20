@@ -4,7 +4,7 @@ public class minimal
 {
   
   
-    public static dynamic main()
+    public static void main(String[] args)
     {
       
     }

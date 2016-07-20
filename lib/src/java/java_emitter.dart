@@ -11,7 +11,7 @@ import 'visitor.dart';
 /// This includes a package delcaration, imports, and a full Java class
 /// definition.
 String emitClassDecl(ClassDecl cls) {
-  var content = cls.accept(new _JavaAstEmitter());
+  String content = cls.accept(new _JavaAstEmitter());
   return "package ${cls.package};\n\n${content}";
 }
 
@@ -77,11 +77,11 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitMethodDef(MethodDef meth) {
-    var frontPart = [];
+    var frontPart = <String>[];
     frontPart.add(meth.access.toString());
     if (meth.isStatic) frontPart.add("static");
     if (meth.isFinal) frontPart.add("final");
-    frontPart.add(meth.returnType);
+    frontPart.add(meth.returnType.name);
     frontPart.add(meth.name);
 
     var parameterList =
