@@ -27,10 +27,12 @@ abstract class JavaType extends Node {
   static const PrimitiveType boolean = const PrimitiveType._("boolean");
 
   /// The Java Object type.
-  static ClassOrInterfaceType object = new ClassOrInterfaceType("Object");
+  static ClassOrInterfaceType object =
+      new ClassOrInterfaceType("java.lang", "Object");
 
   /// The Java String type.
-  static ClassOrInterfaceType string = new ClassOrInterfaceType("String");
+  static ClassOrInterfaceType string =
+      new ClassOrInterfaceType("java.lang", "String");
 
   // Numeric types.
   // Numeric types / Integral types.
@@ -76,25 +78,112 @@ abstract class ReferenceType extends JavaType {
 }
 
 class ClassOrInterfaceType extends ReferenceType {
+  /// The package containing this class or interface.
+  ///
+  /// This is only the package; it does not contain any enclosing classes. To
+  /// access the qualified name, see [fullyQualifiedName] or
+  /// [packageRelativeName].
+  final String package;
+
   /// Indicates whether this type is an interface type. If not, then it is
   /// a class type.
-  bool isInterface;
+  final bool isInterface;
+
+  /// Indicates whether this class is a static class (either top-level, or a
+  /// static nested class).
+  ///
+  /// Note that static classes cannot be enclosed in non-static inner classes,
+  /// so if this flag is true, then it must also be true on [enclosingType],
+  /// [enclosingType.enclosingType], etc.
+  final bool isStatic;
 
   /// A reference to the type which this type is a member of or `null` if there
   /// is none.
-  ClassOrInterfaceType enclosingType;
+  final ClassOrInterfaceType enclosingType;
 
   /// A list of type parameters, in case this is a generic type.
-  List<TypeVariable> typeArguments;
+  final List<TypeVariable> typeArguments;
+
+  /// A top-level type, i.e. a type that isn't nested in any other class or
+  /// interface.
+  ClassOrInterfaceType(this.package, String name,
+      {this.isInterface: false, this.typeArguments: const []})
+      : isStatic = true,
+        enclosingType = null,
+        super(name);
+
+  /// A nested type (either a static nested type or a non-static inner type).
+  ///
+  /// There are three rules pertaining to nested types:
+  ///   * A static member type cannot be nested inside of a non-static inner
+  ///     type.
+  ///   * An interface cannot contain non-static inner types.
+  ///   * A non-static inner type cannot be an interface.
+  ClassOrInterfaceType.nested(ClassOrInterfaceType enclosingType, String name,
+      {this.isInterface: false,
+      this.isStatic: true,
+      this.typeArguments: const []})
+      : package = enclosingType.package,
+        enclosingType = enclosingType,
+        super(name) {
+    // Require an enclosing class when using this constructor.
+    assert(enclosingType != null);
+
+    // Static classes cannot be nested inside of inner classes.
+    assert(!(isStatic && !enclosingType.isStatic));
+
+    // Interfaces cannot be non-static.
+    assert(!(isInterface && !isStatic));
+
+    // Non-static inner classes cannot be nested inside of interfaces.
+    assert(!(!isStatic && enclosingType.isInterface));
+  }
+
+  /// Parse a fully-qualified type name, assuming that the type is a top-level
+  /// type.
+  ///
+  /// Everything in [string] before the last '.' will be used as the package
+  /// name, and the identifier after the last '.' will be the class name.
+  factory ClassOrInterfaceType.parseTopLevel(String string,
+      {bool isInterface: false, List<TypeVariable> typeArguments: const []}) {
+    List<String> parts = string.split(".");
+    return new ClassOrInterfaceType(
+        parts.take(parts.length - 1).join("."), parts.last,
+        isInterface: isInterface, typeArguments: typeArguments);
+  }
 
   /// Returns [true] if this type is generic.
   bool get isGeneric => typeArguments.isNotEmpty;
 
-  ClassOrInterfaceType(String name,
-      {this.isInterface: false,
-      this.enclosingType: null,
-      this.typeArguments: const []})
-      : super(name);
+  /// The name of this type, relative to [package].
+  ///
+  /// For top-level types, this is just [name].
+  ///
+  /// For member types, it includes the names of the enclosing types.
+  String get packageRelativeName => enclosingType == null
+      ? name
+      : "${enclosingType.packageRelativeName}.name";
+
+  /// The fully-qualified name of this type.
+  String get fullyQualifiedName => "$package.$packageRelativeName";
+
+  /// All type arguments in scope in this class.
+  ///
+  /// If this class is a non-static inner class, then the type arguments of its
+  /// enclosing class(es) are also in scope. Otherwise (if this class is static,
+  /// either because it's top-level or is a static nested class), only the
+  /// [typeArguments] for the class itself are in scope.
+  List<TypeVariable> get allTypeArguments {
+    if (isStatic) {
+      return typeArguments;
+    } else {
+      List<TypeVariable> args = enclosingType.allTypeArguments.toList();
+      return args..addAll(typeArguments);
+    }
+  }
+
+  @override
+  String toString() => fullyQualifiedName;
 }
 
 class TypeVariable extends ReferenceType {

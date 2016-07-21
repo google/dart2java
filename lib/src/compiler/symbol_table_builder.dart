@@ -34,11 +34,11 @@ class SymbolTableBuilder extends dart.RecursiveVisitor {
       scope.add(name);
 
       impl.isJavaClass = false;
-      impl.class_ = new java.ClassOrInterfaceType(name);
+      impl.class_ = new java.ClassOrInterfaceType(package, name);
     } else if (javaClassMetadata.length == 1) {
       String javaClass = javaClassMetadata[0].getField("name").toStringValue();
       impl.isJavaClass = true;
-      impl.class_ = new java.ClassOrInterfaceType(javaClass);
+      impl.class_ = new java.ClassOrInterfaceType.parseTopLevel(javaClass);
     } else {
       throw new CompileErrorException(
           "Class ${node.name} in library ${node.enclosingLibrary.importUri} "
@@ -69,7 +69,8 @@ class SymbolTableBuilder extends dart.RecursiveVisitor {
         Set<String> scope = _getPackageContents(interceptorPackage);
         String interceptorName = _generateName(scope, node.name);
         scope.add(interceptorName);
-        interceptor = new java.ClassOrInterfaceType(interceptorName);
+        interceptor =
+            new java.ClassOrInterfaceType(interceptorPackage, interceptorName);
       }
 
       impl.intercepted = intercepted;

@@ -14,8 +14,8 @@ import '../compiler/runner.dart' show CompileErrorException;
 /// a Dart [Library].
 java.ClassDecl buildWrapperClass(String package, String className,
     dart.Library library, CompilerState compilerState) {
-  var type = new java.ClassOrInterfaceType(className);
-  var result = new java.ClassDecl(package, type, java.Access.Public, [], []);
+  var type = new java.ClassOrInterfaceType(package, className);
+  java.ClassDecl result = new java.ClassDecl(type, java.Access.Public, [], []);
 
   var instance = new _JavaAstBuilder(package, compilerState);
   result.fields = library.fields.map((f) => f.accept(instance)).toList();
@@ -42,15 +42,10 @@ List<java.ClassDecl> buildClass(
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
   _JavaAstBuilder(this.package, this.compilerState,
-      {this.isInterceptorClass: false}) {
-    if (isInterceptorClass) {
-      // TODO(springerm): Fix package name
-      this.package = "dart._runtime";
-    }
-  }
+      {this.isInterceptorClass: false});
 
   /// The package that the [java.ClassDecl] being build should be declared in.
-  String package;
+  final String package;
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -85,10 +80,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
     assert(thisDartClass == null);
 
-    var type = new java.ClassOrInterfaceType(node.name);
+    var type = new java.ClassOrInterfaceType(package, node.name);
     // TODO(stanm): add type to symbol table once we have a symbol table.
 
-    var result = new java.ClassDecl(package, type, java.Access.Public, [], []);
+    var result = new java.ClassDecl(type, java.Access.Public, [], []);
     thisDartClass = node;
 
     for (var f in node.fields) {
@@ -152,7 +147,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           getSimpleAnnotation(procedure, Constants.javaCallAnnotation);
       List<String> methodTokens = externalJavaMethod.split(".");
       var extReceiver = new java.ClassRefExpr(
-          methodTokens.getRange(0, methodTokens.length - 1).join("."));
+          new java.ClassOrInterfaceType.parseTopLevel(
+              methodTokens.getRange(0, methodTokens.length - 1).join(".")));
       var extMethodName = methodTokens.last;
 
       List<java.Expression> arguments = [];
@@ -184,7 +180,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       parameters.insert(
           0,
           new java.VariableDecl(
-              Constants.javaStaticThisIdentifier, getThisClassJavaType()));
+              Constants.javaStaticThisIdentifier,
+              getJavaType(
+                  compilerState.classImpls[thisDartClass].intercepted)));
     }
 
     if (methodName == "main" && procedure.enclosingClass == null) {
@@ -321,21 +319,20 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.MethodInvocation visitStaticInvocation(dart.StaticInvocation node) {
     if (node.target is dart.Procedure) {
-      // TODO(springerm): Instead of constructing types/classnames from
-      // strings, use DartType here (and in compiler_state) eventually
-      String libraryName =
-          compilerState.getJavaPackageName(node.target.enclosingLibrary);
-      String className;
-      // TODO(andrewkrieger): Use symbol table for both branches.
+      java.ClassOrInterfaceType receiver;
       if (node.target.enclosingClass == null) {
         // Target is a top-level member of the library
-        className = CompilerState.getClassNameForPackageTopLevel(package);
+        // TODO(andrewkrieger): Use symbol table for top-level functions.
+        String package =
+            compilerState.getJavaPackageName(node.target.enclosingLibrary);
+        receiver = new java.ClassOrInterfaceType(
+            package, CompilerState.getClassNameForPackageTopLevel(package));
       } else {
-        className = node.target.enclosingClass.name;
+        receiver = compilerState.classImpls[node.target.enclosingClass].class_;
       }
 
       return buildMethodInvocation(
-          new java.ClassRefExpr(libraryName + "." + className),
+          new java.ClassRefExpr(receiver),
           // receiverType = null, because this invocation cannot be intercepted.
           null,
           node.target.name.name,
@@ -381,18 +378,17 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   /// Converts a Dart class name to a Java class name.
-  // TODO(andrewkrieger): Symbol table lookup
   java.ClassOrInterfaceType getJavaType(dart.Class dartClass) {
-    return new java.ClassOrInterfaceType(dartClass.name);
+    return compilerState.classImpls[dartClass].class_;
   }
 
   /// Build a reference to a Dart class.
   java.ClassRefExpr buildClassReference(dart.Class dartClass) {
-    return new java.ClassRefExpr(getJavaType(dartClass).name);
+    return new java.ClassRefExpr(getJavaType(dartClass));
   }
 
   java.ClassRefExpr buildThisClassRefExpr() {
-    return new java.ClassRefExpr(getThisClassJavaType().name);
+    return buildClassReference(thisDartClass);
   }
 
   /// Build a reference to "this".
@@ -413,11 +409,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Returns the fully-qualified Java class name of the current class.
   java.ClassOrInterfaceType getThisClassJavaType() {
-    if (isInterceptorClass) {
-      return compilerState.javaClasses[thisDartClass];
-    } else {
-      return getJavaType(thisDartClass);
-    }
+    return getJavaType(thisDartClass);
   }
 
   /// Returns the [dart.DartType] for the current class.
@@ -492,12 +484,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.ClassOrInterfaceType visitInterfaceType(dart.InterfaceType node) {
-    // TODO(stanm): look-up in symbol table when we have one.
-    // TODO(stanm): You can't simply map Dart generics to Java generics!
-    List<java.JavaType> typeArguments =
-        node.typeArguments.map((type) => type.accept(this)).toList();
-    return new java.ClassOrInterfaceType(node.classNode.name,
-        typeArguments: typeArguments);
+    if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
+      // TODO(stanm): You can't simply map Dart generics to Java generics!
+      throw new CompileErrorException("Generic types not implemented yet!");
+    }
+
+    return compilerState.classImpls[node.classNode].class_;
   }
 
   @override

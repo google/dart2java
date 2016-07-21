@@ -12,7 +12,7 @@ import 'visitor.dart';
 /// definition.
 String emitClassDecl(ClassDecl cls) {
   String content = cls.accept(new _JavaAstEmitter());
-  return "package ${cls.package};\n\n${content}";
+  return "package ${cls.type.package};\n\n${content}";
 }
 
 /// Emits Java code for a Java AST.
@@ -36,11 +36,11 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitFieldDecl(FieldDecl decl) {
-    var parts = [];
+    var parts = <String>[];
     parts.add(decl.access.toString());
     if (decl.isStatic) parts.add("static");
     if (decl.isFinal) parts.add("final");
-    parts.add(decl.type);
+    parts.add(decl.type.accept(this));
     parts.add(decl.name);
 
     if (decl.initializer != null) {
@@ -53,9 +53,9 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitVariableDecl(VariableDecl decl) {
-    var parts = [];
+    var parts = <String>[];
     if (decl.isFinal) parts.add("final");
-    parts.add(decl.type);
+    parts.add(decl.type.accept(this));
     parts.add(decl.name);
 
     return parts.join(" ");
@@ -81,7 +81,7 @@ class _JavaAstEmitter extends Visitor<String> {
     frontPart.add(meth.access.toString());
     if (meth.isStatic) frontPart.add("static");
     if (meth.isFinal) frontPart.add("final");
-    frontPart.add(meth.returnType.name);
+    frontPart.add(meth.returnType.accept(this));
     frontPart.add(meth.name);
 
     var parameterList =
@@ -147,7 +147,7 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitClassRefExpr(ClassRefExpr expr) {
-    return expr.className;
+    return expr.type.accept(this);
   }
 
   @override
@@ -172,6 +172,6 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitJavaType(JavaType type) {
-    return type.name;
+    return type.toString();
   }
 }

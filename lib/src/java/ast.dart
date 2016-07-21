@@ -50,12 +50,9 @@ abstract class Node {
 /// class per source file). Java also allows for nested and local classes, so
 /// this node may appear deeper within the tree as well.
 class ClassDecl extends Node {
-  /// Java package. May not be null, and must contain at least one identifier.
-  String package;
-
   /// The [JavaType] that this class declaration corresponds to.
   ///
-  /// This includes the name of the class and the type parameters.
+  /// This includes the package and name of the class and the type parameters.
   ClassOrInterfaceType type;
 
   Access access;
@@ -64,7 +61,7 @@ class ClassDecl extends Node {
 
   List<FieldDecl> fields;
 
-  ClassDecl(this.package, this.type,
+  ClassDecl(this.type,
       [this.access, this.fields = const [], this.methods = const []]);
 
   @override
@@ -278,9 +275,9 @@ class AssignmentExpr extends Expression {
 /// A class reference. This node can be used as receiver expression when
 /// calling static methods.
 class ClassRefExpr extends Expression {
-  String className;
+  ClassOrInterfaceType type;
 
-  ClassRefExpr(this.className);
+  ClassRefExpr(this.type);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassRefExpr(this);
