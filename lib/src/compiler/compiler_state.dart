@@ -164,6 +164,7 @@ class CompilerState {
         .split('.')
         .where((String part) => part.isNotEmpty)
         .toList();
+
     Uri uri = library.importUri;
 
     // Add parts to the package name, depending on the URI scheme.
@@ -181,6 +182,8 @@ class CompilerState {
         packageParts.addAll(path.split(path.withoutExtension(relativePath)));
         break;
       case 'dart':
+        // 'dart:core' will become 'dart.core'.
+        packageParts.add('dart');
         packageParts.add(uri.path);
         break;
       default:
@@ -193,6 +196,6 @@ class CompilerState {
   }
 
   static String getClassNameForPackageTopLevel(String package) {
-    return package.split('.').last;
+    return "__TopLevel";
   }
 }
