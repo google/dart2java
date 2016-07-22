@@ -10,19 +10,25 @@ mkdir -p gen/compiled_sdk
 
 tool/patch_sdk.sh
 
+# Clean the gen directory
+rm -rf gen/compiled_sdk
+
 # Compile SDK implementation
 dart -c bin/dart2java.dart \
   --dart-sdk=gen/patched_sdk \
   --output-dir=gen/compiled_sdk \
-  --package-prefix=dart \
   $DART_SDK_LIBS
 
 # Copy helpers to gen directory
-cp -R tool/sdk_impl/java/* gen/compiled_sdk
+cp -R tool/sdk_impl/java/dart gen/compiled_sdk
+
+# Remove any `packages` symlinks created by pub
 find gen/compiled_sdk -name "packages" -delete
 
 # Compile all Java SDK files
 find gen/compiled_sdk -name "*.java" -print0 | xargs -0 javac
-jar cf gen/compiled_sdk.jar gen/compiled_sdk
+
+# Generate the jar file
+jar cf gen/compiled_sdk.jar -C gen/compiled_sdk dart
 
 echo "Generated compiled SDK: gen/compiled_sdk.jar"
