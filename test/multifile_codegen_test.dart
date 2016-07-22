@@ -14,6 +14,8 @@
 ///   the full path of this subdirectory (relative to the project root) should
 ///   be:
 ///       test/codegen/multifile/multifile-example
+///   You should not create a test named `packages` (which would conflict with
+///   the `packages` symlink that pub likes to create).
 /// * Dart files in the test's subdirectory, to be compiled. Otherwise, why
 ///   bother? ;)
 /// * A text file in the test's subdirectory named `test.meta`, with the
@@ -23,10 +25,10 @@
 ///       --force option is passed to the test runner.
 ///     * Zero or more lines starting with the word `classpath`, followed by a
 ///       space, then a path to a Java jar file or to a directory. The named jar
-///       file or directory willbe added to the classpath when compiling or
+///       file or directory will be added to the classpath when compiling or
 ///       running all Java code in the test. One jar file or directory per
 ///       `classpath` line. Paths are relative to the test directory (i.e
-///       /test/codegen/mutltifile/multifile-example/ in the example). Note that
+///       /test/codegen/multifile/multifile-example/ in the example). Note that
 ///       the classpath will always include the Dart SDK and the dart2java
 ///       output directory, so you should only need to add `classpath` lines if
 ///       you're importing a non-core Dart package or interoperating with Java.
@@ -40,16 +42,16 @@
 ///       If `<id>` is not specified in the `dart2java` entry, it defaults to
 ///       the 1-based index of the entry in the list of all `dart2java` entries
 ///       in the file. The compiled files will be copied into
-///       `codegen_expect/multifle/<testname>/compiled/`.
+///       `codegen_expect/multifile/<testname>/compiled/`.
 ///     * Zero or more lines starting with either `java` or `java[<id>]`,
 ///       followed by a space-separated list of arguments to pass to the `java`
 ///       executable. Similar to the above, stdout and stderr are captured in
 ///       files `codegen_expect/<testname>/java_<id>.std[out|err]`. `java` will
-///       be invoked with the `codegen_expect/multifle/<testname>/compiled/`
+///       be invoked with the `codegen_expect/multifile/<testname>/compiled/`
 ///       directory in its classpath, so the files compiled in the test will be
 ///       found automatically. Note that the test runner calls `javac` before
 ///       calling `java`, so there will be `.class` files in the
-///       `codegen_expect/multifle/<testname>/compiled/` directory (assuming the
+///       `codegen_expect/multifile/<testname>/compiled/` directory (assuming the
 ///       tests passed!). Do not pass '-classpath' as an argument. Use a
 ///       `classpath` line instead, so that the classpath is also set correctly
 ///       for javac.
@@ -138,7 +140,7 @@ main(List<String> arguments) {
     String skip = (!args['force'] && t.skipComment != null)
         ? "Test expected to fail: ${t.skipComment}"
         : null;
-    test('dart2java-multifle ${t.name}', () {
+    test('dart2java-multifile ${t.name}', () {
       String expectDir = path.join(multifileExpectDir, t.name);
       String compiledDir = path.join(expectDir, 'compiled');
       _ensureDirectory(expectDir);
@@ -304,13 +306,20 @@ Iterable<String> _listDirectories(String dir, RegExp dirPattern) {
     var dirPath = entry.path;
     if (!dirPattern.hasMatch(dirPath)) return false;
 
+    // Skip the 'packages' symlink that pub likes to generate.
+    if (path.basename(dirPath) == 'packages' &&
+        FileSystemEntity.typeSync(dirPath, followLinks: false) ==
+            FileSystemEntityType.LINK) {
+      return false;
+    }
+
     return true;
   }).map((dir) => dir.path);
 }
 
 final _javaFilePattern = new RegExp(r'.java$');
 
-/// Returns a list of all `*.java` files in [dir], recursviely.
+/// Returns a list of all `*.java` files in [dir], recursively.
 Iterable<String> _findJavaFiles(String dir) {
   return new Directory(dir)
       .listSync(recursive: true)

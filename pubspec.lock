@@ -12,7 +12,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4+2"
+    version: "0.13.5"
   async:
     description:
       name: async
