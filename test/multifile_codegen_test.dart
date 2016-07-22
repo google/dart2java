@@ -21,6 +21,15 @@
 ///     * Optionally, a line starting with the word `skip` (then, after a space,
 ///       an optional comment). If present, the test will be skipped unless the
 ///       --force option is passed to the test runner.
+///     * Zero or more lines starting with the word `classpath`, followed by a
+///       space, then a path to a Java jar file or to a directory. The named jar
+///       file or directory willbe added to the classpath when compiling or
+///       running all Java code in the test. One jar file or directory per
+///       `classpath` line. Paths are relative to the test directory (i.e
+///       /test/codegen/mutltifile/multifile-example/ in the example). Note that
+///       the classpath will always include the Dart SDK and the dart2java
+///       output directory, so you should only need to add `classpath` lines if
+///       you're importing a non-core Dart package or interoperating with Java.
 ///     * One or more lines starting with either the word `dart2java` or with
 ///      `dart2java[<id>]`, where <id> is an alphanumeric string. The rest of
 ///       the line should be a space-separated list of arguments to pass to
@@ -39,9 +48,11 @@
 ///       be invoked with the `codegen_expect/multifle/<testname>/compiled/`
 ///       directory in its classpath, so the files compiled in the test will be
 ///       found automatically. Note that the test runner calls `javac` before
-///       calling `java`, so there should be `.class` files in the
+///       calling `java`, so there will be `.class` files in the
 ///       `codegen_expect/multifle/<testname>/compiled/` directory (assuming the
-///       tests passed!)
+///       tests passed!). Do not pass '-classpath' as an argument. Use a
+///       `classpath` line instead, so that the classpath is also set correctly
+///       for javac.
 ///     * Blank lines or whole-line comments starting with '#' are allowed
 ///       anywhere. *Note that '#' does not start a comment unless it is the
 ///       first non-whitespace character on a line.*
@@ -88,7 +99,15 @@
 ///         my/awesome/project/main/
 ///           <some .java, .class, and javac_<filename>.std[out|err] files>
 ///           <some .java files and .class files>
-import 'dart:io' show Directory, File, Process, ProcessResult;
+
+import 'dart:io'
+    show
+        Directory,
+        File,
+        Process,
+        ProcessResult,
+        FileSystemEntity,
+        FileSystemEntityType;
 import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart' show test, expect, isZero;
@@ -125,47 +144,55 @@ main(List<String> arguments) {
       _ensureDirectory(expectDir);
       _ensureDirectory(compiledDir);
 
+      var baseClassPath = ([
+        path.join(repoDirectory, 'gen', 'compiled_sdk.jar'),
+        compiledDir
+      ]..addAll(t.classpath))
+          .join(':');
+
       // Invoke dart2java.
       for (ProgramInvocation d2j in t.dart2javaInvocations) {
         var args = ['--output-dir', compiledDir]..addAll(d2j.args);
         ProcessResult result = Process.runSync('dart2java', args,
             workingDirectory: path.join(multifileTestDir, t.name));
         var output = _writeResult(expectDir, 'dart2java_${d2j.id}', result);
-        expect(result.exitCode, isZero, reason: 'dart2java failed.\n'
-            '  stdout: ${output.stdout}\n'
-            '  stderr: ${output.stderr}\n');
+        expect(result.exitCode, isZero,
+            reason: 'Reason: dart2java failed.\n'
+                '  stdout: ${output.stdout}\n'
+                '  stderr: ${output.stderr}\n');
       }
 
       // Invoke javac.
       for (String javaPath in _findJavaFiles(compiledDir)) {
         String outputDir = path.dirname(javaPath);
-        ProcessResult result = Process.runSync('javac', [javaPath]);
+        var args = ['-cp', baseClassPath, javaPath];
+        ProcessResult result = Process.runSync('javac', args);
         var output = _writeResult(outputDir,
             'javac_${path.basenameWithoutExtension(javaPath)}', result);
-        expect(result.exitCode, isZero, reason: 'javac failed.\n'
-            '  stdout: ${output.stdout}\n'
-            '  stderr: ${output.stderr}\n');
+        expect(result.exitCode, isZero,
+            reason: 'Reason: javac failed.\n'
+                '  stdout: ${output.stdout}\n'
+                '  stderr: ${output.stderr}\n');
       }
 
       // Invoke java.
       for (ProgramInvocation java in t.javaInvocations) {
-        var autoClassPaths = [
-          path.join(repoDirectory, 'gen', 'compiled_sdk.jar'),
-          compiledDir
-        ];
-        var args =
-            _mergeClassPath(['-cp', autoClassPaths.join(':')], java.args);
+        var args = ['-cp', baseClassPath]..addAll(java.args);
         ProcessResult result = Process.runSync('java', args);
         var output = _writeResult(expectDir, 'java_${java.id}', result);
-        expect(result.exitCode, isZero, reason: 'java failed.\n'
-            '  stdout: ${output.stdout}\n'
-            '  stderr: ${output.stderr}\n');
+        expect(result.exitCode, isZero,
+            reason: 'Reason: java failed.\n'
+                '  stdout: ${output.stdout}\n'
+                '  stderr: ${output.stderr}\n');
       }
     }, skip: skip);
   }
 }
 
 class ProgramInvocation {
+  static final RegExp programPattern =
+      new RegExp(r'^([a-zA-Z0-9_-]+)(?:\[([a-zA-Z0-9_-]+)\])?$');
+
   /// Currently supported: `dart2java` and `java`.
   String program;
 
@@ -177,14 +204,13 @@ class ProgramInvocation {
 
   ProgramInvocation(String line) {
     List<String> words = line.split(new RegExp(r'\s'));
-    List<String> programParts = words.first.split(new RegExp(r'\[|\]'));
-    program = programParts.first;
-    if (programParts.length == 2) {
-      id = programParts[1];
-    } else {
-      assert(programParts.length == 1);
-      id = null;
+    var programMatch = programPattern.matchAsPrefix(words.first);
+    if (programMatch == null) {
+      throw new Exception('Error: Invalid program invocation "$line"\n'
+          'Program name "${words.first}" does not match $programPattern.');
     }
+    program = programMatch.group(1);
+    id = programMatch.group(2);
     args = words.skip(1).toList();
   }
 }
@@ -198,6 +224,8 @@ class MultiFileTestMeta {
   List<ProgramInvocation> dart2javaInvocations = [];
 
   List<ProgramInvocation> javaInvocations = [];
+
+  List<String> classpath = [];
 
   MultiFileTestMeta(String testDir) {
     name = path.basename(testDir);
@@ -218,11 +246,48 @@ class MultiFileTestMeta {
       } else if (line.startsWith("java")) {
         javaInvocations.add(new ProgramInvocation(line));
         javaInvocations.last.id ??= '${javaInvocations.length}';
+      } else if (line.startsWith("classpath")) {
+        var newClasspath = line.substring("classpath ".length);
+        if (path.isRelative(newClasspath)) {
+          newClasspath = path.join(testDir, newClasspath);
+        }
+        _verifyValidClasspathEntry(newClasspath);
+        classpath.add(newClasspath);
       } else {
-        throw new Exception('Malformed file ${metaFile.path}.\n'
+        throw new Exception('Error: Malformed file ${metaFile.path}.\n'
             'Unrecognized line: $line');
       }
     }
+
+    _verifyInvocations(dart2javaInvocations, metaFile.path);
+    _verifyInvocations(javaInvocations, metaFile.path);
+  }
+}
+
+/// Check a list of invocations (assumed to be invocations of the same program),
+/// report any non-fatal warnings, and throw on fatal errors.
+void _verifyInvocations(List<ProgramInvocation> invocations, String metaPath) {
+  String invocationName;
+  int numUnlabeled = 0;
+  Set<String> seenIds = new Set();
+  for (var invocation in invocations) {
+    invocationName ??= invocation.program;
+    if (invocation.id == null ||
+        int.parse(invocation.id, onError: (s) => null) != null) {
+      numUnlabeled++;
+    }
+    if (!seenIds.add(invocation.id)) {
+      throw new Exception(
+          'Error: duplicate ID `$invocationName[${invocation.id}]` in file\n'
+          '  $metaPath');
+    }
+  }
+  if (invocations.length > 1 && numUnlabeled > 0) {
+    print('Warning: you have multiple `$invocationName` lines in file\n'
+        '  $metaPath\n'
+        ' but you don\'t specify an ID for $numUnlabeled of them.\n'
+        'Consider adding IDs, e.g. `$invocationName[foo]`. See the comment\n'
+        'in test/multifile_codegen_test.dart for more information.');
   }
 }
 
@@ -253,28 +318,6 @@ Iterable<String> _findJavaFiles(String dir) {
       .map((entry) => entry.path);
 }
 
-/// Given two lists of arguments to `java`, join the lists together; if both
-/// lists specify a value for -classpath, merge the -classpath values.
-List<String> _mergeClassPath(Iterable<String> a, Iterable<String> b) {
-  List<String> aa = a.toList(), bb = b.toList();
-  List<String> classPath = _removeClassPath(aa).toList();
-  classPath.addAll(_removeClassPath(bb));
-  return ['-cp', classPath.join(':')]..addAll(aa)..addAll(bb);
-}
-
-/// If [javaArgs] contains a `-classpath` option, remove it and return the list
-/// of files named in the `-classpath` option.
-Iterable<String> _removeClassPath(List<String> javaArgs) {
-  for (int i = 0; i < javaArgs.length - 1; i++) {
-    if (javaArgs[i] == '-cp' || javaArgs[i] == '-classpath') {
-      var result = javaArgs[i + 1].split(':');
-      javaArgs.removeRange(i, i + 2);
-      return result;
-    }
-  }
-  return const [];
-}
-
 class _StdOutErr {
   final String stdout;
   final String stderr;
@@ -282,10 +325,36 @@ class _StdOutErr {
   _StdOutErr(this.stdout, this.stderr);
 }
 
+/// Write `.stdout` and `.stderr` files for the given [result] into directory
+/// [dir], using filename `basename.std[out|err]`.
+///
+/// For convenience, returns the actual file paths written, wrapped in a
+/// simple object.
 _StdOutErr _writeResult(String dir, String basename, ProcessResult result) {
   String stdout = path.join(dir, '$basename.stdout');
   String stderr = path.join(dir, '$basename.stderr');
   new File(stdout).writeAsStringSync(result.stdout);
   new File(stderr).writeAsStringSync(result.stderr);
   return new _StdOutErr(stdout, stderr);
+}
+
+/// Verify that a file path makes sense as a classpath entry; throw on errors.
+_verifyValidClasspathEntry(String classpath) {
+  FileSystemEntityType entityType = FileSystemEntity.typeSync(classpath);
+  switch (entityType) {
+    case FileSystemEntityType.FILE:
+      // Assume that if the file ends in '.jar', then it is a jar file.
+      // Verifying that it's a valid jar file is overkill.
+      if (path.extension(classpath).toLowerCase() != '.jar') {
+        throw new Exception('Error: Invalid classpath entry "$classpath" '
+            '(filename does not end in .jar)');
+      }
+      return;
+    case FileSystemEntityType.DIRECTORY:
+      // Assume that a directory is a valid classpath entry.
+      return;
+    default:
+      throw new Exception(
+          'Error: Invalid classpath entry "$classpath" (file not found).');
+  }
 }
