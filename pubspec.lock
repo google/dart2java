@@ -18,7 +18,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.11.0"
+    version: "1.11.1"
   barback:
     description:
       name: barback
@@ -124,7 +124,7 @@ packages:
   kernel:
     description:
       ref: HEAD
-      resolved-ref: a26c7c54a0275664680a919121679e3995198764
+      resolved-ref: "59413a05d8508ddbb40f70e6011ac43ae5217b00"
       url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
     source: git
     version: "0.0.0"
@@ -133,7 +133,7 @@ packages:
       name: logging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.3"
+    version: "0.11.3+1"
   matcher:
     description:
       name: matcher

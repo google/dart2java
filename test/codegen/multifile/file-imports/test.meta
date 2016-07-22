@@ -1,0 +1,1 @@
+dart2java --package-prefix=org.dartlang.file_import_test at_level_0.dart level_1/at_level_1.dart level_1/main.dart level_1/level_2/at_level_2.dart other_1/at_other_1.dart

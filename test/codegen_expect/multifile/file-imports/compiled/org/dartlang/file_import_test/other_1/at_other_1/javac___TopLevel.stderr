@@ -1,0 +1,4 @@
+/usr/local/google/home/andrewkrieger/ddc-java/test/codegen_expect/multifile/file-imports/compiled/org/dartlang/file_import_test/other_1/at_other_1/__TopLevel.java:9: error: package org.dartlang.file_import_test.dart.core does not exist
+      org.dartlang.file_import_test.dart.core.__TopLevel.print("At other 1");
+                                             ^
+1 error
