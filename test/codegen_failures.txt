@@ -6,4 +6,3 @@
 // Provide one test name per line.
 
 BardCount // This test is speculative and we don't expect to pass it soon.
-HelloWorld // We should be able to pass this test very soon.

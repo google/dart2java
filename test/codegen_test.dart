@@ -7,10 +7,10 @@
 ///
 /// Runs Dart Dev Compiler on all input in the `codegen` directory and checks
 /// that the output is what we expected.
-import 'dart:io' show Directory, File;
+import 'dart:io' show Directory, File, Process, ProcessResult;
 import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:path/path.dart' as path;
-import 'package:test/test.dart' show test;
+import 'package:test/test.dart' show test, expect, isZero;
 import 'testing.dart' show repoDirectory, testDirectory;
 
 import 'package:dart2java/src/compiler/compiler.dart'
@@ -22,17 +22,24 @@ final codegenDir = path.join(testDirectory, 'codegen');
 /// The `test/codegen_expect` directory.
 final codegenExpectDir = path.join(testDirectory, 'codegen_expect');
 
+/// The `gen` directory.
+final genDir = path.join(repoDirectory, 'gen');
+
 /// The generated directory where tests and test support libraries are copied
 /// to.
 ///
 /// The tests sometimes import utility libraries using a relative path.
-final codegenTestDir = path.join(repoDirectory, 'gen', 'codegen_tests');
+final codegenTestDir = path.join(genDir, 'codegen_tests');
 
 /// The generated directory where tests and packages compiled to Java are
 /// output.
-final codegenOutputDir = path.join(repoDirectory, 'gen', 'codegen_output');
+final codegenOutputDir = path.join(genDir, 'codegen_output');
 
+/// Config file containing the list of tests expected not to pass.
 final expectedToFailConfig = path.join(testDirectory, 'codegen_failures.txt');
+
+/// The path to the Dart SDK compiled to a .jar file.
+final compiledSdkJar = path.join(genDir, 'compiled_sdk.jar');
 
 main(List<String> arguments) {
   if (arguments == null) arguments = [];
@@ -92,6 +99,9 @@ main(List<String> arguments) {
         _ensureDirectory(path.dirname(newPath));
         file.copySync(newPath);
       }
+
+      files.forEach(_javaCompile);
+      _run(name);
     }, skip: skip);
   }
 }
@@ -140,4 +150,56 @@ Iterable<String> _listFiles(String dir, RegExp filePattern,
 
     return true;
   }).map((file) => file.path);
+}
+
+/// Compiles a .java [File] and returns the .class [File].
+File _javaCompile(File javaFile) {
+  var args = ['-cp', compiledSdkJar, javaFile.path];
+  ProcessResult result =
+      Process.runSync('javac', args, workingDirectory: codegenOutputDir);
+  expect(result.exitCode, isZero,
+      reason: 'Reason: javac failed.\n'
+          '  stdout: ${result.stdout}\n'
+          '  stderr: ${result.stderr}\n');
+
+  String name = path.withoutExtension(javaFile.path);
+  File classFile = new File('$name.class');
+  if (!classFile.existsSync()) {
+    throw "Error: $javaFile failed to compile to $classFile.";
+  }
+  return classFile;
+}
+
+void _run(String testName) {
+  var javaTopLevelClass = "$testName.__TopLevel";
+  var args = <String>['-cp', "$compiledSdkJar:.", javaTopLevelClass];
+  ProcessResult result =
+      Process.runSync('java', args, workingDirectory: codegenOutputDir);
+
+  String expectDir = path.join(codegenExpectDir, testName);
+  var output = _writeResult(expectDir, "run", result);
+  expect(result.exitCode, isZero,
+      reason: 'Reason: java failed.\n'
+          '  stdout: ${output.stdout}\n'
+          '  stderr: ${output.stderr}\n');
+}
+
+class _StdOutErr {
+  final String stdout;
+  final String stderr;
+
+  _StdOutErr(this.stdout, this.stderr);
+}
+
+/// Write `.stdout` and `.stderr` files for the given [result] into directory
+/// [dir], using filename `basename.std[out|err]`.
+///
+/// For convenience, returns the actual file paths written, wrapped in a
+/// simple object.
+_StdOutErr _writeResult(String dir, String basename, ProcessResult result) {
+  String stdout = path.join(dir, '$basename.stdout');
+  String stderr = path.join(dir, '$basename.stderr');
+  new File(stdout).writeAsStringSync(result.stdout);
+  new File(stderr).writeAsStringSync(result.stderr);
+  return new _StdOutErr(stdout, stderr);
 }
