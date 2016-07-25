@@ -12,40 +12,37 @@ import '../compiler/runner.dart' show CompileErrorException;
 
 /// Builds a Java class that contains the top-level procedures and fields in
 /// a Dart [Library].
-java.ClassDecl buildWrapperClass(String package, String className,
-    dart.Library library, CompilerState compilerState) {
-  var type = new java.ClassOrInterfaceType(package, className);
+java.ClassDecl buildWrapperClass(dart.Library library,
+    CompilerState compilerState) {
+  var type = compilerState.getTopLevelClass(library);
   java.ClassDecl result = new java.ClassDecl(type, java.Access.Public, [], []);
 
-  var instance = new _JavaAstBuilder(package, compilerState);
-  result.fields = library.fields.map((f) => f.accept(instance)).toList();
-  result.methods = library.procedures.map((p) => p.accept(instance)).toList();
+  var instance = new _JavaAstBuilder(compilerState);
+  result.fields = library.fields.map(instance.visitField).toList();
+  result.methods = library.procedures.map(instance.visitProcedure).toList();
 
   return result;
 }
 
 /// Builds a Java class AST from a kernel class AST.
-List<java.ClassDecl> buildClass(
-    String package, dart.Class node, CompilerState compilerState) {
+List<java.ClassDecl> buildClass(dart.Class node, CompilerState compilerState) {
   // Nothing to do for core abstract classes like `int`.
-  if (compilerState.interfaceOnlyCoreClasses.contains(node)) {
+  if (compilerState.isJavaClass(node) &&
+      !compilerState.isInterceptorClass(node)) {
     return const <java.ClassDecl>[];
   }
 
   // TODO(springerm): Use annotation
   var isInterceptor = compilerState.isInterceptorClass(node);
-  var instance = new _JavaAstBuilder(package, compilerState,
+  var instance = new _JavaAstBuilder(compilerState,
       isInterceptorClass: isInterceptor);
   return [node.accept(instance)];
 }
 
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
-  _JavaAstBuilder(this.package, this.compilerState,
+  _JavaAstBuilder(this.compilerState,
       {this.isInterceptorClass: false});
-
-  /// The package that the [java.ClassDecl] being build should be declared in.
-  final String package;
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -80,8 +77,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
     assert(thisDartClass == null);
 
-    var type = new java.ClassOrInterfaceType(package, node.name);
-    // TODO(stanm): add type to symbol table once we have a symbol table.
+    var type = compilerState.isInterceptorClass(node)
+      ? compilerState.getInterceptorClassFor(node)
+      :  compilerState.getClass(node);
 
     var result = new java.ClassDecl(type, java.Access.Public, [], []);
     thisDartClass = node;
@@ -134,7 +132,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     java.JavaType returnType = procedure.function.returnType.accept(this);
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = procedure.function.positionalParameters
-        .map((p) => p.accept(this))
+        .map(visitVariableDeclaration)
         .toList();
     var isStatic = procedure.isStatic;
 
@@ -179,10 +177,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       isStatic = true;
       parameters.insert(
           0,
-          new java.VariableDecl(
-              Constants.javaStaticThisIdentifier,
-              getJavaType(
-                  compilerState.classImpls[thisDartClass].intercepted)));
+          new java.VariableDecl(Constants.javaStaticThisIdentifier,
+              compilerState.getInterceptedClass(thisDartClass)));
     }
 
     if (methodName == "main" && procedure.enclosingClass == null) {
@@ -264,18 +260,21 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       String methodName,
       List<dart.Expression> positionalArguments) {
     // TODO(springerm): Handle other argument types
-    List<java.Expression> args =
-        positionalArguments.map((a) => a.accept(this)).toList();
+    List<java.Expression> args = positionalArguments
+        .map((a) => a.accept(this) as java.Expression)
+        .toList();
 
-    // Replace with static method call if necessary
-    if (receiverType is dart.InterfaceType &&
-        compilerState.interceptorClasses.containsKey(receiverType.classNode)) {
-      // Receiver type is an already existing Java class, generate static
-      // method call.
-      var dartClass = compilerState.interceptorClasses[receiverType.classNode];
-      var argsWithSelf = [receiver]..addAll(args);
-      return new java.MethodInvocation(
-          buildClassReference(dartClass), methodName, argsWithSelf);
+    // Intercept method call if necessary
+    if (receiverType is dart.InterfaceType) {
+      var interceptor =
+          compilerState.getInterceptorClassFor(receiverType.classNode);
+      if (interceptor != null) {
+        // Receiver type is an already existing Java class, generate static
+        // method call.
+        var argsWithSelf = [receiver]..addAll(args);
+        return new java.MethodInvocation(
+            new java.ClassRefExpr(interceptor), methodName, argsWithSelf);
+      }
     }
 
     return new java.MethodInvocation(receiver, methodName, args);
@@ -321,14 +320,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     if (node.target is dart.Procedure) {
       java.ClassOrInterfaceType receiver;
       if (node.target.enclosingClass == null) {
-        // Target is a top-level member of the library
-        // TODO(andrewkrieger): Use symbol table for top-level functions.
-        String package =
-            compilerState.getJavaPackageName(node.target.enclosingLibrary);
-        receiver = new java.ClassOrInterfaceType(
-            package, CompilerState.getClassNameForPackageTopLevel(package));
+        receiver = compilerState.getTopLevelClass(node.target.enclosingLibrary);
       } else {
-        receiver = compilerState.classImpls[node.target.enclosingClass].class_;
+        receiver = compilerState.getClass(node.target.enclosingClass);
       }
 
       return buildMethodInvocation(
@@ -379,7 +373,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Converts a Dart class name to a Java class name.
   java.ClassOrInterfaceType getJavaType(dart.Class dartClass) {
-    return compilerState.classImpls[dartClass].class_;
+    return compilerState.getClass(dartClass);
   }
 
   /// Build a reference to a Dart class.
@@ -469,12 +463,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// This is the default visitor method for DartType.
   @override
   java.JavaType defaultDartType(dart.DartType node) {
-    if (node is dart.DynamicType) {
-      // TODO(stanm): #implementDynamic: Object is not the best representation
-      // of dynamic: implement better.
-      return java.JavaType.object;
-    }
     throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
+  }
+
+  @override
+  java.ReferenceType visitDynamicType(dart.DynamicType node) {
+    // TODO(stanm): #implementDynamic: Object is not the best representation
+    // of dynamic: implement better.
+    return java.JavaType.object;
   }
 
   @override
@@ -489,7 +485,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       throw new CompileErrorException("Generic types not implemented yet!");
     }
 
-    return compilerState.classImpls[node.classNode].class_;
+    return compilerState.getClass(node.classNode);
   }
 
   @override

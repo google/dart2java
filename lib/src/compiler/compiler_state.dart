@@ -2,24 +2,28 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:collection' show HashMap;
+
 import 'package:kernel/ast.dart' as dart;
 import 'package:kernel/repository.dart' as dart;
 import 'package:path/path.dart' as path;
 
 import '../java/types.dart' as java;
+import '../java/constants.dart' as java;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 import 'symbol_table_builder.dart' show SymbolTableBuilder;
 
+/// Used as the name of synthetic Java classes used to wrap Dart top-level
+/// functions and fields.
+const String _topLevelClassName = '__TopLevel';
+
 /// Describes how a Dart class is implemented (e.g., how to represent it as a
 /// Java variable, how to call methods on it, etc.).
 class ClassImpl {
-  /// The Java class used to implement this Dart class.
-  java.ClassOrInterfaceType class_;
-
-  /// Whether this is an @JavaClass (if true) or a regular class that the
-  /// compiler should generate (if false).
-  bool isJavaClass;
+  /// If this class is a @JavaClass, this is the class named by the @JavaClass
+  /// metadata; otherwise [javaClass] is [:null:].
+  java.ClassOrInterfaceType javaClass;
 
   /// The Java class containing interceptor methods for this class, or [:null:]
   /// if this class is not intercepted.
@@ -42,38 +46,13 @@ class ClassImpl {
   dart.Class intercepted;
 
   /// Intended for debugging only.
-  String toString() => 'ClassImpl{class_="$class_", isJavaClass="$isJavaClass", '
-    'interceptor="$interceptor", intercepted="$intercepted"}';
+  String toString() =>
+      '$ClassImpl(javaClass="$javaClass", interceptor="$interceptor", '
+      'intercepted="$intercepted")';
 }
 
 class CompilerState {
-  /// Maps Dart classes to Java classes which will be reused in generated code.
-  ///
-  /// E.g., dart.core.int uses java.lang.Integer. This is required to get
-  /// the types right in generated Java code.
-  /// TODO(springerm): Try to use mapping from dart.DartType here later.
-  final javaClasses = new Map<dart.Class, java.ClassOrInterfaceType>();
-
-  /// Maps Dart SDK classes and interfaces to their runtime implementations,
-  /// i.e., "interceptor classes".
-  ///
-  /// E.g., dart.core.int is implemented by dart class JavaInteger. This
-  /// required to find method implementations.
-  final interceptorClasses = new Map<dart.Class, dart.Class>();
-
-  /// The set of classes for which no code should be generated.
-  ///
-  /// This contains only for a few core classes (like int) which are essentially
-  /// Dart interfaces. These interfaces are implemented by other (internal)
-  /// classes, which are typically @JavaClasses.
-  ///
-  /// Every class in this set should have corresponding entries in the
-  /// [javaClasses] map (so that they compiler knows what Java type to use in
-  /// place of this Dart type) and in the [interceptorClasses] map (so that the
-  /// compiler knows how to call methods on instances of this interface).
-  final interfaceOnlyCoreClasses = new Set<dart.Class>();
-
-  final classImpls = <dart.Class, ClassImpl>{};
+  final classImpls = new HashMap<dart.Class, ClassImpl>();
 
   final CompilerOptions options;
   final dart.Repository repository;
@@ -85,39 +64,13 @@ class CompilerState {
   dart.Class stringClass;
 
   CompilerState(this.options, this.repository) {
-    objectClass = getClass("dart:core", "Object");
-    boolClass = getClass("dart:core", "bool");
-    intClass = getClass("dart:core", "int");
-    doubleClass = getClass("dart:core", "double");
-    stringClass = getClass("dart:core", "String");
+    objectClass = getDartClass("dart:core", "Object");
+    boolClass = getDartClass("dart:core", "bool");
+    intClass = getDartClass("dart:core", "int");
+    doubleClass = getDartClass("dart:core", "double");
+    stringClass = getDartClass("dart:core", "String");
 
     repository.libraries.forEach(new SymbolTableBuilder(this).visitLibrary);
-
-    // Tempoprary step - generate old data structures from [classImpls].
-    // TODO(andrewkrieger): remove references to old maps 
-    classImpls.forEach((dart.Class class_, ClassImpl impl) {
-      if (impl.isJavaClass) {
-        // If this class has an @JavaClass annotation, then it is should go in
-        // the javaClasses map.
-        javaClasses[class_] = impl.class_;
-      }
-
-      if (impl.intercepted != null) {
-        // In the old data structures, the interceptor classes automatically had
-        // @JavaClass applied to them. Also, each interceptor class should
-        // intercept itself.
-        javaClasses[class_] = classImpls[impl.intercepted].class_;
-        interceptorClasses[impl.intercepted] = class_;
-        interceptorClasses[class_] = class_;
-      }
-
-      if (impl.isJavaClass && impl.intercepted == null) {
-        // This rule captures the classes like `int` and `string` which are
-        // @JavaClass classes (so they should not go through ordinary codegen)
-        // and also abstract (i.e. not interceptors, so no method definitions).
-        interfaceOnlyCoreClasses.add(class_);
-      }
-    });
   }
 
   /// Get the [Library] object for the library named by [libraryUri], loaded to
@@ -125,7 +78,7 @@ class CompilerState {
   ///
   /// The [libraryUri] may be a relative or absolute file path, or a URI string
   /// with a `dart:`, `package:` or `file:` scheme.
-  dart.Library getLibrary(String libraryUri) {
+  dart.Library getDartLibrary(String libraryUri) {
     dart.Library library = repository.getLibrary(libraryUri);
     if (!library.isLoaded) {
       throw new CompileErrorException("Library $libraryUri not loaded");
@@ -136,19 +89,10 @@ class CompilerState {
   /// Look up a reference to the class with name [className] in the library
   /// specified by [libraryUri], or [:null:] if the library does not declare a
   /// class by the given name.
-  dart.Class getClass(String libraryUri, String className) {
-    dart.Library lib = getLibrary(libraryUri);
+  dart.Class getDartClass(String libraryUri, String className) {
+    dart.Library lib = getDartLibrary(libraryUri);
     return lib.classes
         .firstWhere((dart.Class c) => c.name == className, orElse: () => null);
-  }
-
-  /// Check if a certain class is an interceptor class.
-  ///
-  /// TODO(springerm): Remove once we got annotations working.
-  /// TODO(springerm): This should be the fully qualified class name, but
-  /// package naming is not fully implemented yet.
-  bool isInterceptorClass(dart.Class dartClass) {
-    return interceptorClasses.values.contains(dartClass);
   }
 
   /// Get a Java package name for a Dart Library.
@@ -160,6 +104,7 @@ class CompilerState {
   String getJavaPackageName(dart.Library library) {
     // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
     // or `packagePrefix == ""`.
+    // TODO(andrewkrieger,stanm): This is badly broken. Fix it!
     List<String> packageParts = options.packagePrefix
         .split('.')
         .where((String part) => part.isNotEmpty)
@@ -186,16 +131,75 @@ class CompilerState {
         packageParts.add('dart');
         packageParts.add(uri.path);
         break;
+      // TODO(andrewkrieger,stanm): 'package' URIs
       default:
         throw new CompileErrorException('Unrecognized library URI scheme: '
             '${library.importUri}');
     }
 
-    // TODO(andrewkrieger): Maybe validate the package name?
-    return packageParts.join('.');
+    return packageParts.join(".");
   }
 
-  static String getClassNameForPackageTopLevel(String package) {
-    return "__TopLevel";
+  /// Get the Java class used to implement a Dart class.
+  ///
+  /// For most Dart classes, this is a compiler-generated class. For @JavaClass
+  /// classes, it is the class named in the @JavaClass metadata.
+  java.ClassOrInterfaceType getClass(dart.Class class_) {
+    var javaClass = classImpls[class_]?.javaClass;
+    if (javaClass != null) {
+      return javaClass;
+    } else {
+      String package = getJavaPackageName(class_.enclosingLibrary);
+      return new java.ClassOrInterfaceType(
+          package, _sanitizeClassName(class_.name));
+    }
   }
+
+  /// Gets the Java class used to contain the top-level methods and fields in a
+  /// Dart library.
+  java.ClassOrInterfaceType getTopLevelClass(dart.Library library) {
+    String package = getJavaPackageName(library);
+    return new java.ClassOrInterfaceType(package, _topLevelClassName);
+  }
+
+  /// Tests whether a Dart class is a @JavaClass.
+  bool isJavaClass(dart.Class class_) {
+    return classImpls[class_]?.javaClass != null;
+  }
+
+  /// If [receiverClass] is an intercepted class, return its interceptor; else,
+  /// return null.
+  java.ClassOrInterfaceType getInterceptorClassFor(dart.Class receiverClass) {
+    return classImpls[receiverClass]?.interceptor;
+  }
+
+  /// Check if a certain class is an interceptor class.
+  bool isInterceptorClass(dart.Class dartClass) {
+    return classImpls[dartClass]?.intercepted != null;
+  }
+
+  /// If this class is an interceptor class, return the Java type that should
+  /// be used for the `self` params in its methods.
+  ///
+  /// This is the "intercepted" type. For example, in the current SDK,
+  /// dart:_internal::JavaInteger is a (Dart) class that is an interceptor for
+  /// dart:core::int. Since dart:core::int is declared with
+  /// @JavaClass(java.lang.Integer),
+  ///     getInterceptedClass(getDartClass("dart:_internal", "JavaInteger"))
+  /// will return "java.lang.Integer".
+  ///
+  /// This method must only be called for interceptor classes!
+  java.ClassOrInterfaceType getInterceptedClass(dart.Class dartClass) {
+    assert(isInterceptorClass(dartClass));
+    var impl = classImpls[dartClass];
+    return getClass(impl.intercepted);
+  }
+}
+
+String _sanitizeClassName(String clsName) {
+  if (clsName.startsWith(_topLevelClassName) ||
+      clsName.startsWith(java.Constants.reservedWordPattern)) {
+    clsName += "_";
+  }
+  return clsName;
 }

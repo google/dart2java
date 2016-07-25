@@ -18,25 +18,19 @@ class CodeGenerator {
   ///
   /// Returns the set of the files that have been written.
   Set<File> compile(dart.Library library) {
-    String package = compilerState.getJavaPackageName(library);
-
     var filesWritten = new Set<File>();
 
     if (library.procedures.isNotEmpty || library.fields.isNotEmpty) {
-      // TODO(andrewkrieger): Check for name collisions.
-      String className = CompilerState.getClassNameForPackageTopLevel(package);
-      java.ClassDecl cls =
-          buildWrapperClass(package, className, library, compilerState);
-      filesWritten
-          .add(writer.writeJavaFile(package, className, emitClassDecl(cls)));
+      java.ClassDecl cls = buildWrapperClass(library, compilerState);
+      filesWritten.add(writer.writeJavaFile(
+          cls.type.package, cls.type.name, emitClassDecl(cls)));
     }
 
     for (var dartCls in library.classes) {
-      List<java.ClassDecl> classes =
-          buildClass(package, dartCls, compilerState);
+      List<java.ClassDecl> classes = buildClass(dartCls, compilerState);
       for (var cls in classes) {
-        filesWritten
-            .add(writer.writeJavaFile(package, cls.type.name, emitClassDecl(cls)));
+        filesWritten.add(writer.writeJavaFile(
+            cls.type.package, cls.type.name, emitClassDecl(cls)));
       }
     }
 

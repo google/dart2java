@@ -27,19 +27,10 @@ class SymbolTableBuilder extends dart.RecursiveVisitor {
     List<dart.DartObject> javaClassMetadata = node.analyzerMetadata
         .where(_metadataIs(java.Constants.javaClassAnnotation))
         .toList();
-    if (javaClassMetadata.isEmpty) {
-      String package = _state.getJavaPackageName(node.enclosingLibrary);
-      Set<String> scope = _getPackageContents(package);
-      String name = _generateName(scope, node.name);
-      scope.add(name);
-
-      impl.isJavaClass = false;
-      impl.class_ = new java.ClassOrInterfaceType(package, name);
-    } else if (javaClassMetadata.length == 1) {
+    if (javaClassMetadata.length == 1) {
       String javaClass = javaClassMetadata[0].getField("name").toStringValue();
-      impl.isJavaClass = true;
-      impl.class_ = new java.ClassOrInterfaceType.parseTopLevel(javaClass);
-    } else {
+      impl.javaClass = new java.ClassOrInterfaceType.parseTopLevel(javaClass);
+    } else if (javaClassMetadata.length > 1) {
       throw new CompileErrorException(
           "Class ${node.name} in library ${node.enclosingLibrary.importUri} "
           "has more than one insatnce of "
@@ -54,24 +45,19 @@ class SymbolTableBuilder extends dart.RecursiveVisitor {
       dart.DartObject obj = interceptorForMetadata[0];
       String library = obj.getField("library").toStringValue();
       String cls = obj.getField("cls").toStringValue();
-      dart.Class intercepted = _state.getClass(library, cls);
+      dart.Class intercepted = _state.getDartClass(library, cls);
       assert(intercepted != null);
 
       // If this is a @JavaClass and @InterceptorFor, then we need a separate
       // class to put interceptor methods into. Otherwise, we can reuse the
       // "regular" class that would be generated for this class.
-      java.ClassOrInterfaceType interceptor;
-      if (javaClassMetadata.isEmpty) {
-        interceptor = _state.classImpls[node].class_;
-      } else {
-        String interceptorPackage =
-            _state.getJavaPackageName(node.enclosingLibrary);
-        Set<String> scope = _getPackageContents(interceptorPackage);
-        String interceptorName = _generateName(scope, node.name);
-        scope.add(interceptorName);
-        interceptor =
+      String interceptorPackage =
+          _state.getJavaPackageName(node.enclosingLibrary);
+      Set<String> scope = _getPackageContents(interceptorPackage);
+      String interceptorName = _generateName(scope, node.name);
+      scope.add(interceptorName);
+      java.ClassOrInterfaceType interceptor =
             new java.ClassOrInterfaceType(interceptorPackage, interceptorName);
-      }
 
       impl.intercepted = intercepted;
       impl.interceptor = interceptor;
@@ -89,7 +75,7 @@ class SymbolTableBuilder extends dart.RecursiveVisitor {
   ///
   /// Does not add the resulting name to scope.
   String _generateName(Set<String> scope, String name) {
-    if (_javaReservedWords.contains(name) || scope.contains(name)) {
+    if (java.Constants.reservedWords.contains(name) || scope.contains(name)) {
       String newName;
       int i = 0;
       do {
@@ -115,63 +101,3 @@ typedef bool _MetadataPredicate(dart.DartObject obj);
 _MetadataPredicate _metadataIs(String className) {
   return (dart.DartObject obj) => obj.type.toString() == className;
 }
-
-// Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8
-final _javaReservedWords = new Set<String>.from(const [
-  // Keywords
-  "abstract",
-  "continue",
-  "for",
-  "new",
-  "switch",
-  "assert",
-  "default",
-  "if",
-  "package",
-  "synchronized",
-  "boolean",
-  "do",
-  "goto",
-  "private",
-  "this",
-  "break",
-  "double",
-  "implements",
-  "protected",
-  "throw",
-  "byte",
-  "else",
-  "import",
-  "public",
-  "throws",
-  "case",
-  "enum",
-  "instanceof",
-  "return",
-  "transient",
-  "catch",
-  "extends",
-  "int",
-  "short",
-  "try",
-  "char",
-  "final",
-  "interface",
-  "static",
-  "void",
-  "class",
-  "finally",
-  "long",
-  "strictfp",
-  "volatile",
-  "const",
-  "float",
-  "native",
-  "super",
-  "while",
-
-  // Literals
-  "true",
-  "false",
-  "null",
-]);
