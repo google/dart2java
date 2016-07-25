@@ -7,7 +7,9 @@
 import 'package:test/test.dart';
 
 import 'codegen_test.dart' as codegen_test;
+import 'multifile_codegen_test.dart' as multifile_codegen_test;
 
 void main(List<String> argv) {
   group('codegen', () => codegen_test.main(argv));
+  group('codegen', () => multifile_codegen_test.main(argv));
 }
