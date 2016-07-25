@@ -102,42 +102,41 @@ class CompilerState {
   /// [options.packagePrefix] plus the relative path from [options.buildRoot]
   /// to the [library] source file (with '/' replaced by '.', of course).
   String getJavaPackageName(dart.Library library) {
-    // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
-    // or `packagePrefix == ""`.
-    // TODO(andrewkrieger,stanm): This is badly broken. Fix it!
-    List<String> packageParts = options.packagePrefix
-        .split('.')
-        .where((String part) => part.isNotEmpty)
-        .toList();
+    var packageParts = <String>[];
 
     Uri uri = library.importUri;
 
     // Add parts to the package name, depending on the URI scheme.
-    switch (library.importUri.scheme) {
+    switch (uri.scheme) {
       case 'file':
         String libraryPath = uri.toFilePath();
+        String relativePath =
+            path.relative(libraryPath, from: options.buildRoot);
 
         if (!path.isWithin(options.buildRoot, libraryPath)) {
           throw new CompileErrorException(
               'All sources must be inside build-root.');
         }
-
-        String relativePath =
-            path.relative(libraryPath, from: options.buildRoot);
+        packageParts.addAll(_splitPackagePrefix(options.filePackagePrefix));
         packageParts.addAll(path.split(path.withoutExtension(relativePath)));
         break;
+
       case 'dart':
         // 'dart:core' will become 'dart.core'.
         packageParts.add('dart');
         packageParts.add(uri.path);
         break;
-      // TODO(andrewkrieger,stanm): 'package' URIs
+
+      case 'package':
+        throw new CompileErrorException('Package imports not yet implemented.');
+
       default:
         throw new CompileErrorException('Unrecognized library URI scheme: '
             '${library.importUri}');
     }
 
-    return packageParts.join(".");
+    // TODO(andrewkrieger): Sanitize and validate package names.
+    return packageParts.join('.');
   }
 
   /// Get the Java class used to implement a Dart class.
@@ -202,4 +201,10 @@ String _sanitizeClassName(String clsName) {
     clsName += "_";
   }
   return clsName;
+}
+
+Iterable<String> _splitPackagePrefix(String package) {
+    // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
+    // or `packagePrefix == ""`.
+  return package.split('.').where((String part) => part.isNotEmpty);
 }

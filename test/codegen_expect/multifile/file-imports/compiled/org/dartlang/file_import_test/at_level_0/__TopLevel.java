@@ -6,6 +6,6 @@ public class __TopLevel
   
     public static void atLevel0()
     {
-      org.dartlang.file_import_test.dart.core.__TopLevel.print("At level 0");
+      dart.core.__TopLevel.print("At level 0");
     }
 }

@@ -6,6 +6,6 @@ public class __TopLevel
   
     public static void atOther1()
     {
-      org.dartlang.file_import_test.dart.core.__TopLevel.print("At other 1");
+      dart.core.__TopLevel.print("At other 1");
     }
 }

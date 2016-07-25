@@ -109,22 +109,22 @@ class CompilerOptions {
   /// relative path of the original dart source file under this directory.
   final String buildRoot;
 
-  /// Added to the package of each generated Java class.
-  final String packagePrefix;
+  /// Package-prefix used for `file:` imports and for generated classes.
+  final String filePackagePrefix;
 
   const CompilerOptions(
       {this.unsafeForceCompile: false,
       this.dartSdkPath,
       this.outputDir: '.',
       this.buildRoot: '.',
-      this.packagePrefix: ''});
+      this.filePackagePrefix: ''});
 
   CompilerOptions.fromArguments(ArgResults args)
       : unsafeForceCompile = args['unsafe-force-compile'],
         dartSdkPath = args['dart-sdk'] ?? getSdkDir().path,
         outputDir = args['output-dir'],
         buildRoot = args['build-root'],
-        packagePrefix = args['package-prefix'];
+        filePackagePrefix = args['package-prefix'];
 
   static ArgParser addArguments(ArgParser parser) {
     return parser
