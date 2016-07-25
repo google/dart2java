@@ -205,7 +205,7 @@ class ProgramInvocation {
   List<String> args;
 
   ProgramInvocation(String line) {
-    List<String> words = line.split(new RegExp(r'\s'));
+    List<String> words = line.split(new RegExp(r'\s+'));
     var programMatch = programPattern.matchAsPrefix(words.first);
     if (programMatch == null) {
       throw new Exception('Error: Invalid program invocation "$line"\n'
@@ -342,13 +342,23 @@ class _StdOutErr {
 _StdOutErr _writeResult(String dir, String basename, ProcessResult result) {
   String stdout = path.join(dir, '$basename.stdout');
   String stderr = path.join(dir, '$basename.stderr');
-  new File(stdout).writeAsStringSync(result.stdout);
-  new File(stderr).writeAsStringSync(result.stderr);
+  _writeOrDelete(new File(stdout), result.stdout);
+  _writeOrDelete(new File(stderr), result.stderr);
   return new _StdOutErr(stdout, stderr);
 }
 
+/// If [contents] is not the empty string, then write [contents] to [file]; if
+/// [contents] is empty, then delete [file] (if it exists).
+void _writeOrDelete(File file, String contents) {
+  if (contents.isNotEmpty) {
+    file.writeAsStringSync(contents);
+  } else if (file.existsSync()) {
+    file.deleteSync();
+  }
+}
+
 /// Verify that a file path makes sense as a classpath entry; throw on errors.
-_verifyValidClasspathEntry(String classpath) {
+void _verifyValidClasspathEntry(String classpath) {
   FileSystemEntityType entityType = FileSystemEntity.typeSync(classpath);
   switch (entityType) {
     case FileSystemEntityType.FILE:

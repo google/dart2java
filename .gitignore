@@ -20,5 +20,9 @@ gen/
 # Ignore generated summary.
 lib/runtime/dart_sdk.sum
 
+# Ignore generated .class and .jar files, even in the codegen_expect directory.
+*.class
+*.jar
+
 # Created by ./tool/dependency_overrides.sh.
 dependency_overrides/
