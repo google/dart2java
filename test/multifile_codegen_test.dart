@@ -102,6 +102,7 @@
 ///           <some .java, .class, and javac_<filename>.std[out|err] files>
 ///           <some .java files and .class files>
 
+import 'dart:collection' show HashSet;
 import 'dart:io'
     show
         Directory,
@@ -271,7 +272,7 @@ class MultiFileTestMeta {
 void _verifyInvocations(List<ProgramInvocation> invocations, String metaPath) {
   String invocationName;
   int numUnlabeled = 0;
-  Set<String> seenIds = new Set();
+  var seenIds = new HashSet<String>();
   for (var invocation in invocations) {
     invocationName ??= invocation.program;
     if (invocation.id == null ||

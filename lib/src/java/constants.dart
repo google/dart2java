@@ -24,7 +24,7 @@ class Constants {
   static const String javaStaticThisIdentifier = "self";
 
   // Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8
-  static final Set<String> reservedWords = new HashSet.from(const [
+  static final reservedWords = new HashSet<String>.from([
     // Keywords
     "abstract",
     "continue",
@@ -83,5 +83,5 @@ class Constants {
     "null",
   ]);
 
-  static final RegExp reservedWordPattern = new RegExp(reservedWords.join('|'));
+  static final reservedWordPattern = new RegExp(reservedWords.join('|'));
 }

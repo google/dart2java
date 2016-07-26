@@ -77,6 +77,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
     assert(thisDartClass == null);
 
+    // TODO(andrewkrieger,springerm): Update for non-static interceptors.
+    // If the current class is an interceptor, there are two Java classes
+    // related to it: the class used for instances of the current class, and
+    // the interceptor implementation class. For example:
+    //     int x = 14.gcd(21);
+    // translates into
+    //     java.lang.Integer x = dart._internal.JavaInteger.gcd(14, 21);
+    // compilerState.getClass returns java.lang.Integer in this example, and
+    // compilerState.getInterceptorClassFor returns dart._internal.JavaInteger.
     var type = compilerState.isInterceptorClass(node)
       ? compilerState.getInterceptorClassFor(node)
       :  compilerState.getClass(node);

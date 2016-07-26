@@ -161,7 +161,7 @@ class CompilerState {
     return new java.ClassOrInterfaceType(package, _topLevelClassName);
   }
 
-  /// Tests whether a Dart class is a @JavaClass.
+  /// Checks whether a Dart class is a @JavaClass.
   bool isJavaClass(dart.Class class_) {
     return classImpls[class_]?.javaClass != null;
   }
@@ -172,7 +172,7 @@ class CompilerState {
     return classImpls[receiverClass]?.interceptor;
   }
 
-  /// Check if a certain class is an interceptor class.
+  /// Checks if a certain class is an interceptor class.
   bool isInterceptorClass(dart.Class dartClass) {
     return classImpls[dartClass]?.intercepted != null;
   }
@@ -183,7 +183,7 @@ class CompilerState {
   /// This is the "intercepted" type. For example, in the current SDK,
   /// dart:_internal::JavaInteger is a (Dart) class that is an interceptor for
   /// dart:core::int. Since dart:core::int is declared with
-  /// @JavaClass(java.lang.Integer),
+  ///     @JavaClass(java.lang.Integer),
   ///     getInterceptedClass(getDartClass("dart:_internal", "JavaInteger"))
   /// will return "java.lang.Integer".
   ///
@@ -195,6 +195,14 @@ class CompilerState {
   }
 }
 
+// TODO(andrewkrieger): Ensure no name collisions. Currently, there shouldn't be
+// any collisions introduced here. for example, even if the user defined two
+// classes `__TopLevel` and `__TopLevel_`, we'd rename them like so:
+//     __TopLevel  -> __TopLevel_
+//     __TopLevel_ -> __TopLevel__
+// so the new names wouldn't collide. But, we haven't yet proven that this
+// covers all possibilities. Before moving dart2java to production, we ought to
+// spend a few minutes making sure we cover all the possible collisions.
 String _sanitizeClassName(String clsName) {
   if (clsName.startsWith(_topLevelClassName) ||
       clsName.startsWith(java.Constants.reservedWordPattern)) {
