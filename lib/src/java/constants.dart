@@ -20,7 +20,8 @@ class Constants {
   static const String javaCallAnnotation = "JavaCall";
   static const String javaClassAnnotation = "JavaClass";
   static const String interceptorForAnnotation = "InterceptorFor";
-
+  static const String interceptorSingletonFieldName = "INSTANCE";
+  
   static const String javaStaticThisIdentifier = "self";
 
   // Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8

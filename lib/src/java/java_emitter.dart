@@ -111,6 +111,21 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitNewExpr(NewExpr expr) {
+    var className = expr.classRef.accept(this);
+    var arguments =
+        expr.arguments.map((arg) => arg.accept(this)).join(", ");
+    return "new ${className}(${arguments})";
+  }
+
+  @override
+  String visitFieldRead(FieldRead expr) {
+    var receiver = expr.receiver.accept(this);
+    var identifier = expr.identifier.accept(this);
+    return "${receiver}.${identifier}";
+  }
+
+  @override
   String visitMethodInvocation(MethodInvocation invocation) {
     var receiver = invocation.receiver.accept(this);
     var arguments =

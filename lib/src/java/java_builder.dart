@@ -12,8 +12,8 @@ import '../compiler/runner.dart' show CompileErrorException;
 
 /// Builds a Java class that contains the top-level procedures and fields in
 /// a Dart [Library].
-java.ClassDecl buildWrapperClass(dart.Library library,
-    CompilerState compilerState) {
+java.ClassDecl buildWrapperClass(
+    dart.Library library, CompilerState compilerState) {
   var type = compilerState.getTopLevelClass(library);
   java.ClassDecl result = new java.ClassDecl(type, java.Access.Public, [], []);
 
@@ -34,15 +34,14 @@ List<java.ClassDecl> buildClass(dart.Class node, CompilerState compilerState) {
 
   // TODO(springerm): Use annotation
   var isInterceptor = compilerState.isInterceptorClass(node);
-  var instance = new _JavaAstBuilder(compilerState,
-      isInterceptorClass: isInterceptor);
+  var instance =
+      new _JavaAstBuilder(compilerState, isInterceptorClass: isInterceptor);
   return [node.accept(instance)];
 }
 
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
-  _JavaAstBuilder(this.compilerState,
-      {this.isInterceptorClass: false});
+  _JavaAstBuilder(this.compilerState, {this.isInterceptorClass: false});
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -77,18 +76,20 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
     assert(thisDartClass == null);
 
-    // TODO(andrewkrieger,springerm): Update for non-static interceptors.
     // If the current class is an interceptor, there are two Java classes
     // related to it: the class used for instances of the current class, and
     // the interceptor implementation class. For example:
     //     int x = 14.gcd(21);
     // translates into
-    //     java.lang.Integer x = dart._internal.JavaInteger.gcd(14, 21);
+    //     java.lang.Integer x = 
+    //        dart._internal.JavaInteger.INSTANCE.gcd(14, 21);
     // compilerState.getClass returns java.lang.Integer in this example, and
     // compilerState.getInterceptorClassFor returns dart._internal.JavaInteger.
-    var type = compilerState.isInterceptorClass(node)
-      ? compilerState.getInterceptorClassFor(node)
-      :  compilerState.getClass(node);
+    // TODO(springerm): set up class hierarchy for interceptor classes
+    var isInterceptorClass = compilerState.isInterceptorClass(node);
+    var type = isInterceptorClass
+        ? compilerState.getInterceptorClassFor(node)
+        : compilerState.getClass(node);
 
     var result = new java.ClassDecl(type, java.Access.Public, [], []);
     thisDartClass = node;
@@ -98,6 +99,19 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
     for (var p in node.procedures) {
       result.methods.add(p.accept(this));
+    }
+
+    if (isInterceptorClass) {
+      // Create a singleton instance for interceptor classes
+      var singletonInitializer =
+          new java.NewExpr(new java.ClassRefExpr(type));
+      var singletonField = new java.FieldDecl(
+          Constants.interceptorSingletonFieldName, type,
+          initializer: singletonInitializer,
+          access: java.Access.Public,
+          isStatic: true,
+          isFinal: true);
+      result.fields.add(singletonField);
     }
 
     return result;
@@ -182,8 +196,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     if (isInterceptorClass) {
-      // All methods in interceptor classes are static
-      isStatic = true;
+      // Interceptor methods are non-static (member) methods, but always
+      // invoked on a singleton instance of the interceptor class, to allow
+      // for virtual method calls
       parameters.insert(
           0,
           new java.VariableDecl(Constants.javaStaticThisIdentifier,
@@ -281,8 +296,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         // Receiver type is an already existing Java class, generate static
         // method call.
         var argsWithSelf = [receiver]..addAll(args);
+        // Singleton instance of interceptor (to support virtual method calls)
+        var singletonInterceptor = new java.FieldRead(
+            new java.ClassRefExpr(interceptor),
+            new java.IdentifierExpr(Constants.interceptorSingletonFieldName));
+
         return new java.MethodInvocation(
-            new java.ClassRefExpr(interceptor), methodName, argsWithSelf);
+            singletonInterceptor, methodName, argsWithSelf);
       }
     }
 

@@ -21,6 +21,8 @@ abstract class Visitor<R> {
   R visitExpressionStmt(ExpressionStmt node) => null;
 
   // Expressions
+  R visitNewExpr(NewExpr node) => null;
+  R visitFieldRead(FieldRead node) => null;
   R visitMethodInvocation(MethodInvocation node) => null;
   R visitBinaryExpr(BinaryExpr node) => null;
   R visitUnaryExpr(UnaryExpr node) => null;

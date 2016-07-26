@@ -198,6 +198,29 @@ class ExpressionStmt extends Statement {
 /// Abstract class for expressions.
 abstract class Expression extends Node {}
 
+class NewExpr extends Expression {
+  ClassRefExpr classRef;
+
+  List<Expression> arguments;
+
+  NewExpr(this.classRef, [this.arguments = const <Expression>[]]);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitNewExpr(this);
+}
+
+/// A field read node.
+class FieldRead extends Expression {
+  Expression receiver;
+
+  IdentifierExpr identifier;
+
+  FieldRead(this.receiver, this.identifier);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldRead(this);
+}
+
 /// A method invocation.
 class MethodInvocation extends Expression {
   Expression receiver;
