@@ -5,8 +5,8 @@
 
 /// Tests code generation.
 ///
-/// Runs Dart Dev Compiler on all input in the `codegen` directory and checks
-/// that the output is what we expected.
+/// Runs Dart Dev Compiler on all input in the `unit` directory and runSync
+/// corresponding JUnit test cases.
 import 'dart:io' show Directory, File, Process, ProcessResult;
 import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:path/path.dart' as path;
@@ -16,11 +16,8 @@ import 'testing.dart' show repoDirectory, testDirectory;
 import 'package:dart2java/src/compiler/compiler.dart'
     show CompilerOptions, ModuleCompiler;
 
-/// The `test/codegen` directory.
-final codegenDir = path.join(testDirectory, 'codegen');
-
-/// The `test/codegen_expect` directory.
-final codegenExpectDir = path.join(testDirectory, 'codegen_expect');
+/// The `test/unit` directory.
+final unitDir = path.join(testDirectory, 'unit');
 
 /// The `gen` directory.
 final genDir = path.join(repoDirectory, 'gen');
@@ -29,17 +26,23 @@ final genDir = path.join(repoDirectory, 'gen');
 /// to.
 ///
 /// The tests sometimes import utility libraries using a relative path.
-final codegenTestDir = path.join(genDir, 'codegen_tests');
+final unitTestDir = path.join(genDir, 'unit_tests');
 
 /// The generated directory where tests and packages compiled to Java are
 /// output.
-final codegenOutputDir = path.join(genDir, 'codegen_output');
+final unitOutputDir = path.join(genDir, 'unit_output');
 
 /// Config file containing the list of tests expected not to pass.
-final expectedToFailConfig = path.join(testDirectory, 'codegen_failures.txt');
+final expectedToFailConfig = path.join(testDirectory, 'unit_failures.txt');
 
 /// The path to the Dart SDK compiled to a .jar file.
 final compiledSdkJar = path.join(genDir, 'compiled_sdk.jar');
+
+/// JUnit dependencies (JAR files)
+final junitJars = path.join(
+        repoDirectory, 'third_party/junit-4.12/junit-4.12.jar') +
+    ":" +
+    path.join(repoDirectory, 'third_party/hamcrest-1.3/hamcrest-core-1.3.jar');
 
 /// The path to the patched SDK
 final patchedSdkDir = path.join(genDir, 'patched_sdk');
@@ -52,84 +55,92 @@ main(List<String> arguments) {
       abbr: 'f', help: 'Forcibly run tests marked as "skipped".');
   ArgResults args = parser.parse(arguments);
 
-  var filePattern = new RegExp(args.rest.length > 0 ? args.rest[0] : '.');
+  var dirPattern = new RegExp(args.rest.length > 0 ? args.rest[0] : '.');
 
-  // Copy all of the test files to gen/codegen_tests. We'll compile from there.
-  List<String> testFiles = _setUpTests(filePattern);
+  // Copy all of the test files to gen/unit_tests. We'll compile from there.
+  List<String> testDirs = _setUpTests(dirPattern);
 
   // Our default compiler options. Individual tests can override these.
-  var defaultOptions = [
-    '--dart-sdk',
-    patchedSdkDir,
-    '--build-root',
-    codegenTestDir,
-    '--output-dir',
-    codegenOutputDir
-  ];
+  var defaultOptions = ['--dart-sdk', patchedSdkDir];
   var compilerArgParser = CompilerOptions.addArguments(new ArgParser());
 
-  List<String> expectedToFail = _loadExpectedToFail(filePattern);
+  List<String> expectedToFail = _loadExpectedToFail(dirPattern);
 
-  // Compile each test file to Java and put the result in gen/codegen_output.
-  for (String testFile in testFiles) {
-    String relativePath = path.relative(testFile, from: codegenTestDir);
+  // Compile each test file to Java and put the result in gen/unit_output.
+  for (String testDir in testDirs) {
+    String relativePath = path.relative(testDir, from: unitTestDir);
 
     String name = path.withoutExtension(relativePath);
     String skip = (!args['force'] && expectedToFail.contains(name))
         ? "Test expected to fail."
         : null;
     test('dart2java $name', () {
-      String relativeDir = path.dirname(relativePath);
-      String outDir = path.join(codegenOutputDir, relativeDir);
-      String expectDir = path.join(codegenExpectDir, relativeDir);
+      String outDir = path.join(unitOutputDir, relativePath);
       _ensureDirectory(outDir);
-      _ensureDirectory(expectDir);
 
-      // Check if we need to use special compile options.
-      var contents = new File(testFile).readAsStringSync();
-      var match =
-          new RegExp(r'// compile options: (.*)').matchAsPrefix(contents);
+      String scenarioFile = path.join(testDir, "scenario.dart");
 
       var args = defaultOptions.toList();
+      args.addAll(['--build-root', testDir]);
+      args.addAll(['--output-dir', outDir]);
+
+      // Check if we need to use special compile options.
+      var contents = new File(scenarioFile).readAsStringSync();
+      var match =
+          new RegExp(r'// compile options: (.*)').matchAsPrefix(contents);
       if (match != null) {
         args.addAll(match.group(1).split(' '));
       }
       var options =
           new CompilerOptions.fromArguments(compilerArgParser.parse(args));
 
-      Set<File> files = new ModuleCompiler(options).compile([testFile]);
-      for (var file in files) {
-        var relativePath = path.relative(file.path, from: codegenOutputDir);
-        var newPath = path.join(codegenExpectDir, relativePath);
-        _ensureDirectory(path.dirname(newPath));
-        file.copySync(newPath);
-      }
+      // Compile Dart to Java
+      Set<File> files = new ModuleCompiler(options).compile([scenarioFile]);
 
-      files.forEach(_javaCompile);
-      _run(name);
+      // Copy over JUnit test
+      new Directory(testDir)
+          .listSync(recursive: false, followLinks: false)
+          .forEach((entry) {
+        if (entry.path.endsWith(".java")) {
+          var fileName = path.relative(entry.path, from: testDir);
+          var targetFileName = path.join(outDir, fileName);
+          new File(entry.path).copySync(targetFileName);
+          files.add(new File(targetFileName));
+        }
+      });
+
+      for (var file in files) {
+        _javaCompile(file, outDir);
+      }
+      _run(name, outDir);
     }, skip: skip);
   }
 }
 
-List<String> _setUpTests(RegExp filePattern) {
-  _ensureDirectory(codegenTestDir);
+List<String> _setUpTests(RegExp dirPattern) {
+  _ensureDirectory(unitTestDir);
 
-  var testFiles = <String>[];
+  var testDirs = <String>[];
 
-  for (var file in _listFiles(codegenDir, filePattern)) {
-    var relativePath = path.relative(file, from: codegenDir);
-    var outputPath = path.join(codegenTestDir, relativePath);
+  for (var dir in _listDirs(unitDir, dirPattern)) {
+    var relativePath = path.relative(dir, from: unitDir);
+    var outputPath = path.join(unitTestDir, relativePath);
 
-    new File(file).copySync(outputPath);
-    if (file.endsWith(".dart")) {
-      testFiles.add(outputPath);
-    }
+    new Directory(outputPath).createSync();
+    new Directory(dir)
+        .listSync(recursive: false, followLinks: false)
+        .forEach((entry) {
+      var fileName = path.relative(entry.path, from: dir);
+      new File(entry.path).copySync(path.join(outputPath, fileName));
+    });
+
+    testDirs.add(outputPath);
   }
 
-  return testFiles;
+  return testDirs;
 }
 
-List<String> _loadExpectedToFail(RegExp filePattern) {
+List<String> _loadExpectedToFail(RegExp dirPattern) {
   return new File(expectedToFailConfig)
       .readAsLinesSync()
       .map((line) => line.split("//")[0].trim()) // Remove all comments.
@@ -142,26 +153,29 @@ void _ensureDirectory(String dir) {
   new Directory(dir).createSync(recursive: true);
 }
 
-/// Lists all of the files within [dir] that match [filePattern].
-Iterable<String> _listFiles(String dir, RegExp filePattern,
-    {bool recursive: false}) {
+/// Lists all of the directories within [dir] that match [dirPattern].
+Iterable<String> _listDirs(String dir, RegExp dirPattern) {
   return new Directory(dir)
-      .listSync(recursive: recursive, followLinks: false)
+      .listSync(recursive: false, followLinks: false)
       .where((entry) {
-    if (entry is! File) return false;
+    if (entry is! Directory) return false;
 
-    var filePath = entry.path;
-    if (!filePattern.hasMatch(filePath)) return false;
+    var dirPath = entry.path;
+    if (!dirPattern.hasMatch(dirPath)) return false;
 
     return true;
-  }).map((file) => file.path);
+  }).map((dir) => dir.path);
 }
 
 /// Compiles a .java [File] and returns the .class [File].
-File _javaCompile(File javaFile) {
-  var args = ['-cp', compiledSdkJar, javaFile.path];
+File _javaCompile(File javaFile, String classPathRoot) {
+  var args = [
+    '-cp',
+    compiledSdkJar + ':' + junitJars + ":${classPathRoot}",
+    javaFile.path
+  ];
   ProcessResult result =
-      Process.runSync('javac', args, workingDirectory: codegenOutputDir);
+      Process.runSync('javac', args, workingDirectory: unitOutputDir);
   expect(result.exitCode, isZero,
       reason: 'Reason: javac failed.\n'
           '  stdout: ${result.stdout}\n'
@@ -175,14 +189,18 @@ File _javaCompile(File javaFile) {
   return classFile;
 }
 
-void _run(String testName) {
-  var javaTopLevelClass = "$testName.__TopLevel";
-  var args = <String>['-cp', "$compiledSdkJar:.", javaTopLevelClass];
+void _run(String testName, String classPathRoot) {
+  var junitClass = "org.junit.runner.JUnitCore";
+  var classPath = compiledSdkJar + ':' + junitJars + ":${classPathRoot}";
+  var args = <String>['-cp', classPath, junitClass, "Tests"];
   ProcessResult result =
-      Process.runSync('java', args, workingDirectory: codegenOutputDir);
+      Process.runSync('java', args, workingDirectory: unitOutputDir);
 
-  String expectDir = path.join(codegenExpectDir, testName);
-  var output = _writeResult(expectDir, "run", result);
+  String outDir = path.join(unitOutputDir, testName);
+  var output = _writeResult(outDir, "run", result);
+
+  // Print result of JUnit tests
+  print(new File(output.stdout).readAsStringSync());
   expect(result.exitCode, isZero,
       reason: 'Reason: java failed.\n'
           '  stdout: ${output.stdout}\n'

@@ -1,0 +1,10 @@
+URL: http://hamcrest.googlecode.com/files/hamcrest-1.3.tgz
+License: BSD
+License File: LICENSE
+Version: 1.3
+
+Local Modifications:
+None
+
+The source code is bundled in the accompanying .jar files. This dependency was
+copied from //depot/google3/third_party/java/hamcrest/v1_3/
