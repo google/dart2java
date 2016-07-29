@@ -15,7 +15,7 @@ import '../compiler/runner.dart' show CompileErrorException;
 java.ClassDecl buildWrapperClass(
     dart.Library library, CompilerState compilerState) {
   var type = compilerState.getTopLevelClass(library);
-  java.ClassDecl result = new java.ClassDecl(type, java.Access.Public, [], []);
+  java.ClassDecl result = new java.ClassDecl(type);
 
   var instance = new _JavaAstBuilder(compilerState);
   result.fields = library.fields.map(instance.visitField).toList();
@@ -90,8 +90,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var type = isInterceptorClass
         ? compilerState.getInterceptorClassFor(node)
         : compilerState.getClass(node);
+    var supertype = isInterceptorClass
+        ? compilerState.getInterceptorClassFor(node.superclass)
+        : compilerState.getClass(node.superclass);
 
-    var result = new java.ClassDecl(type, java.Access.Public, [], []);
+    var result = new java.ClassDecl(type, supertype: supertype);
     thisDartClass = node;
 
     for (var f in node.fields) {

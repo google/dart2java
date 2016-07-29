@@ -55,6 +55,8 @@ class ClassDecl extends Node {
   /// This includes the package and name of the class and the type parameters.
   ClassOrInterfaceType type;
 
+  ClassOrInterfaceType supertype;
+
   Access access;
 
   List<MethodDef> methods;
@@ -62,7 +64,11 @@ class ClassDecl extends Node {
   List<FieldDecl> fields;
 
   ClassDecl(this.type,
-      [this.access, this.fields = const [], this.methods = const []]);
+      {this.access: Access.Public, this.fields, this.methods, this.supertype}) {
+    // Initialize ClassDecl with (non-const!) empty lists for fields and methods
+    methods ??= <MethodDef>[];
+    fields ??= <FieldDecl>[];
+  }
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassDecl(this);
