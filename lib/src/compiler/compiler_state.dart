@@ -12,7 +12,6 @@ import '../java/types.dart' as java;
 import '../java/constants.dart' as java;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
-import 'symbol_table_builder.dart' show SymbolTableBuilder;
 
 /// Used as the name of synthetic Java classes used to wrap Dart top-level
 /// functions and fields.
@@ -20,35 +19,28 @@ const String _topLevelClassName = '__TopLevel';
 
 /// Describes how a Dart class is implemented (e.g., how to represent it as a
 /// Java variable, how to call methods on it, etc.).
+///
+/// This data structure is only ever created for `@JavaClass` classes, including
+/// the core types `Object`, `String`, `bool`, `num`, `int`, and `double`.
+/// Ordinary user-defined classes don't need a [ClassImpl] entry.
 class ClassImpl {
-  /// If this class is a @JavaClass, this is the class named by the @JavaClass
-  /// metadata; otherwise [javaClass] is [:null:].
-  java.ClassOrInterfaceType javaClass;
-
-  /// The Java class containing interceptor methods for this class, or [:null:]
-  /// if this class is not intercepted.
+  /// The java class named by the @JavaClass metadata.
   ///
-  /// If this is a core @JavaClass like int (represented via java.lang.Integer),
-  /// the compiler uses an interceptor class to implement the instance methods
-  /// of this class (such as int.abs()). The interceptor class is a Java class
-  /// containing static methods; when client code attempts to invoke an instance
-  /// method on this class, the compiler will generate a call to a static method
-  /// in [interceptor] with the receiver (which would have been [:this:] inside
-  /// the instance method) as its first parameter.
-  java.ClassOrInterfaceType interceptor;
+  /// May not be [:null:].
+  final java.ClassOrInterfaceType javaClass;
 
-  /// If this class is an interceptor class, then [intercepted] is the Dart
-  /// class whose methods this class intercepts; otherwise, [intercepted] is
-  /// [:null:].
+  /// The Java class containing implementations of the instance methods on this
+  /// class.
   ///
-  /// This is used to determine the correct type for the first `self` parameter
-  /// in the interceptor methods.
-  dart.Class intercepted;
+  /// May not be [:null:], since all classes with a [ClassImpl] must be
+  /// `@JavaClass` classes and so must (sometimes) use helper methods.
+  final java.ClassOrInterfaceType helperClass;
+
+  ClassImpl(this.javaClass, this.helperClass);
 
   /// Intended for debugging only.
   String toString() =>
-      '$ClassImpl(javaClass="$javaClass", interceptor="$interceptor", '
-      'intercepted="$intercepted")';
+      '$ClassImpl(javaClass="$javaClass", helperClass="$helperClass")';
 }
 
 class CompilerState {
@@ -69,8 +61,34 @@ class CompilerState {
     intClass = getDartClass("dart:core", "int");
     doubleClass = getDartClass("dart:core", "double");
     stringClass = getDartClass("dart:core", "String");
+    var numClass = getDartClass("dart:core", "num");
 
-    repository.libraries.forEach(new SymbolTableBuilder(this).visitLibrary);
+    // Initialize the data structures.
+    classImpls.addAll({
+      objectClass: new ClassImpl(
+          java.JavaType.object,
+          new java.ClassOrInterfaceType(
+              "dart._runtime.helpers", "ObjectHelper")),
+      boolClass: new ClassImpl(
+          new java.ClassOrInterfaceType("java.lang", "Boolean"),
+          new java.ClassOrInterfaceType("dart._runtime.helpers", "BoolHelper")),
+      intClass: new ClassImpl(
+          new java.ClassOrInterfaceType("java.lang", "Integer"),
+          new java.ClassOrInterfaceType(
+              "dart._runtime.helpers", "IntegerHelper")),
+      doubleClass: new ClassImpl(
+          new java.ClassOrInterfaceType("java.lang", "Double"),
+          new java.ClassOrInterfaceType(
+              "dart._runtime.helpers", "DoubleHelper")),
+      stringClass: new ClassImpl(
+          new java.ClassOrInterfaceType("java.lang", "String"),
+          new java.ClassOrInterfaceType(
+              "dart._runtime.helpers", "StringHelper")),
+      numClass: new ClassImpl(
+          new java.ClassOrInterfaceType("java.lang", "Number"),
+          new java.ClassOrInterfaceType(
+              "dart._runtime.helpers", "NumberHelper")),
+    });
   }
 
   /// Get the [Library] object for the library named by [libraryUri], loaded to
@@ -166,32 +184,34 @@ class CompilerState {
     return classImpls[class_]?.javaClass != null;
   }
 
-  /// If [receiverClass] is an intercepted class, return its interceptor; else,
-  /// return null.
-  java.ClassOrInterfaceType getInterceptorClassFor(dart.Class receiverClass) {
-    return classImpls[receiverClass]?.interceptor;
+  /// Checks whether a instance method invocation needs to go through a helper
+  /// function.
+  ///
+  /// Currently, all instance methods on `Object`, `String`, `bool`, `num`,
+  /// `int`, and `double` go through helper methods, as does any instance method
+  /// invocation on a `@JavaClass`. Eventually, some methods on `@JavaClass`
+  /// might not go through helper methods; they might use the underlying Java
+  /// instance methods instead.
+  bool usesHelperFunction(dart.DartType receiverType, String method) {
+    // TODO(andrewkrieger): #implementDynamic We'll probably want to use helper
+    // functions for dcalls.
+    return receiverType is dart.InterfaceType &&
+        classImpls.containsKey(receiverType.classNode);
   }
 
-  /// Checks if a certain class is an interceptor class.
-  bool isInterceptorClass(dart.Class dartClass) {
-    return classImpls[dartClass]?.intercepted != null;
-  }
-
-  /// If this class is an interceptor class, return the Java type that should
-  /// be used for the `self` params in its methods.
+  /// If [receiverType] has any methods that need to be invoked via a helper
+  /// function, returns the Java class enclosing the helper function.
   ///
-  /// This is the "intercepted" type. For example, in the current SDK,
-  /// dart:_internal::JavaInteger is a (Dart) class that is an interceptor for
-  /// dart:core::int. Since dart:core::int is declared with
-  ///     @JavaClass(java.lang.Integer),
-  ///     getInterceptedClass(getDartClass("dart:_internal", "JavaInteger"))
-  /// will return "java.lang.Integer".
-  ///
-  /// This method must only be called for interceptor classes!
-  java.ClassOrInterfaceType getInterceptedClass(dart.Class dartClass) {
-    assert(isInterceptorClass(dartClass));
-    var impl = classImpls[dartClass];
-    return getClass(impl.intercepted);
+  /// This method should only be called if
+  /// `usesHelperFunction(receiverType, someMethod)` returns true. Always check
+  /// [usesHelperFunction] before calling this method!
+  java.ClassOrInterfaceType getHelperClass(dart.DartType receiverType) {
+    ClassImpl impl;
+    if (receiverType is dart.InterfaceType) {
+      impl = classImpls[receiverType.classNode];
+    }
+    assert(impl != null);
+    return impl.helperClass;
   }
 }
 
@@ -212,7 +232,7 @@ String _sanitizeClassName(String clsName) {
 }
 
 Iterable<String> _splitPackagePrefix(String package) {
-    // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
-    // or `packagePrefix == ""`.
+  // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
+  // or `packagePrefix == ""`.
   return package.split('.').where((String part) => part.isNotEmpty);
 }

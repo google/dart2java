@@ -5,5 +5,3 @@ library dart._internal;
 // part declarations refer to them as if they are in the same directory as this
 // file.
 part 'java_annotations.dart';
-part 'java_int.dart';
-part 'java_string.dart';

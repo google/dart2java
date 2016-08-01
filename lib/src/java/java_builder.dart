@@ -27,21 +27,16 @@ java.ClassDecl buildWrapperClass(
 /// Builds a Java class AST from a kernel class AST.
 List<java.ClassDecl> buildClass(dart.Class node, CompilerState compilerState) {
   // Nothing to do for core abstract classes like `int`.
-  if (compilerState.isJavaClass(node) &&
-      !compilerState.isInterceptorClass(node)) {
+  if (compilerState.isJavaClass(node)) {
     return const <java.ClassDecl>[];
   }
 
-  // TODO(springerm): Use annotation
-  var isInterceptor = compilerState.isInterceptorClass(node);
-  var instance =
-      new _JavaAstBuilder(compilerState, isInterceptorClass: isInterceptor);
-  return [node.accept(instance)];
+  return [node.accept(new _JavaAstBuilder(compilerState))];
 }
 
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
-  _JavaAstBuilder(this.compilerState, {this.isInterceptorClass: false});
+  _JavaAstBuilder(this.compilerState);
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -57,16 +52,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   final CompilerState compilerState;
 
-  /// If this class is an interceptor class, then all its instance methods
-  /// should actually be generated as static Java methods (with an extra `self`
-  /// parameter).
-  ///
-  /// This is used for methods added to @JavaClass classes like [int] or
-  /// [String]. The methods may have a Dart definition or a @JavaCall metadata.
-  /// The compiler will call the generated Java (static) method whenever the
-  /// original Dart (instance) method is invoked.
-  final bool isInterceptorClass;
-
   /// Need to know if this is a static method to generate correct
   /// implicit "this".
   bool isInsideStaticMethod;
@@ -75,49 +60,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
     assert(thisDartClass == null);
-
-    // If the current class is an interceptor, there are two Java classes
-    // related to it: the class used for instances of the current class, and
-    // the interceptor implementation class. For example:
-    //     int x = 14.gcd(21);
-    // translates into
-    //     java.lang.Integer x = 
-    //        dart._internal.JavaInteger.INSTANCE.gcd(14, 21);
-    // compilerState.getClass returns java.lang.Integer in this example, and
-    // compilerState.getInterceptorClassFor returns dart._internal.JavaInteger.
-    // TODO(springerm): set up class hierarchy for interceptor classes
-    var isInterceptorClass = compilerState.isInterceptorClass(node);
-    var type = isInterceptorClass
-        ? compilerState.getInterceptorClassFor(node)
-        : compilerState.getClass(node);
-    var supertype = isInterceptorClass
-        ? compilerState.getInterceptorClassFor(node.superclass)
-        : compilerState.getClass(node.superclass);
-
-    var result = new java.ClassDecl(type, supertype: supertype);
     thisDartClass = node;
+    java.ClassOrInterfaceType type = compilerState.getClass(node);
+    List<java.FieldDecl> fields = node.fields.map(this.visitField).toList();
+    List<java.MethodDef> methods =
+        node.procedures.map(this.visitProcedure).toList();
 
-    for (var f in node.fields) {
-      result.fields.add(f.accept(this));
-    }
-    for (var p in node.procedures) {
-      result.methods.add(p.accept(this));
-    }
-
-    if (isInterceptorClass) {
-      // Create a singleton instance for interceptor classes
-      var singletonInitializer =
-          new java.NewExpr(new java.ClassRefExpr(type));
-      var singletonField = new java.FieldDecl(
-          Constants.interceptorSingletonFieldName, type,
-          initializer: singletonInitializer,
-          access: java.Access.Public,
-          isStatic: true,
-          isFinal: true);
-      result.fields.add(singletonField);
-    }
-
-    return result;
+    return new java.ClassDecl(type,
+        access: java.Access.Public, fields: fields, methods: methods);
   }
 
   @override
@@ -198,16 +148,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       isInsideStaticMethod = null;
     }
 
-    if (isInterceptorClass) {
-      // Interceptor methods are non-static (member) methods, but always
-      // invoked on a singleton instance of the interceptor class, to allow
-      // for virtual method calls
-      parameters.insert(
-          0,
-          new java.VariableDecl(Constants.javaStaticThisIdentifier,
-              compilerState.getInterceptedClass(thisDartClass)));
-    }
-
     if (methodName == "main" && procedure.enclosingClass == null) {
       if (parameters.length > 1) {
         throw new CompileErrorException(
@@ -277,7 +217,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// method and for getter/setters etc.
   ///
   /// [receiverType] is used to intercept the method invocation and replace it
-  /// by a static call to an interceptor class. If it is known that the method
+  /// by a static call to a helper function. If it is known that the method
   /// will not be intercepted (e.g., because the method being invoked is a
   /// static method, so the receiver is a [java.ClassRefExpr]), then
   /// [receiverType] may be null.
@@ -292,21 +232,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         .toList();
 
     // Intercept method call if necessary
-    if (receiverType is dart.InterfaceType) {
-      var interceptor =
-          compilerState.getInterceptorClassFor(receiverType.classNode);
-      if (interceptor != null) {
-        // Receiver type is an already existing Java class, generate static
-        // method call.
-        var argsWithSelf = [receiver]..addAll(args);
-        // Singleton instance of interceptor (to support virtual method calls)
-        var singletonInterceptor = new java.FieldRead(
-            new java.ClassRefExpr(interceptor),
-            new java.IdentifierExpr(Constants.interceptorSingletonFieldName));
-
-        return new java.MethodInvocation(
-            singletonInterceptor, methodName, argsWithSelf);
-      }
+    if (compilerState.usesHelperFunction(receiverType, methodName)) {
+      java.ClassOrInterfaceType helperClass =
+          compilerState.getHelperClass(receiverType);
+      // Generate static call to helper function.
+      List<java.Expression> argsWithSelf = [receiver]..addAll(args);
+      java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
+      return new java.MethodInvocation(helperRefExpr, methodName, argsWithSelf);
     }
 
     return new java.MethodInvocation(receiver, methodName, args);
@@ -424,12 +356,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     if (isStatic) {
       return buildThisClassRefExpr();
     } else {
-      if (isInterceptorClass) {
-        // Replace "this" with "self" (first arg.) inside interceptor methods
-        return new java.IdentifierExpr(Constants.javaStaticThisIdentifier);
-      } else {
-        return new java.IdentifierExpr("this");
-      }
+      assert(!compilerState.isJavaClass(thisDartClass));
+      return new java.IdentifierExpr("this");
     }
   }
 

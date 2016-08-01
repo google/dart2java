@@ -6,6 +6,7 @@ DART_SDK_LIBS="dart:_internal dart:core"
 # Switch to the root directory of dart2java.
 cd $( dirname "${BASH_SOURCE[0]}" )/..
 
+rm -rf gen/compiled_sdk
 mkdir -p gen/compiled_sdk
 
 tool/patch_sdk.sh
