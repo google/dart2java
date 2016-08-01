@@ -6,6 +6,7 @@ part 'bool.dart';
 // Unimplemented type: TypeParameterType
 // part 'comparable.dart';
 
+part 'double.dart';
 part 'function.dart';
 part 'int.dart';
 part 'iterable.dart';

@@ -309,6 +309,38 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
   }
 
+  @override
+  java.FieldRead visitStaticGet(dart.StaticGet node) {
+    assert(!node.target.isInstanceMember);
+
+    if (node.target.runtimeType == dart.Field) {
+      // Static field read
+      dart.Field field = node.target;
+
+      // TODO(springerm): Reconsider passing method name here (it is a field!)
+      if (compilerState.usesHelperFunction(
+        node.target.enclosingClass.thisType, field.name.name)) {
+        // Access static field in helper class
+        java.ClassOrInterfaceType helperClass =
+            compilerState.getHelperClass(node.target.enclosingClass.thisType);
+        java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
+        java.FieldRead staticNested = new java.FieldRead(
+          helperRefExpr, 
+          new java.IdentifierExpr(Constants.helperNestedClassForStatic));
+        return new java.FieldRead(
+          staticNested, new java.IdentifierExpr(field.name.name));
+      } else {
+        // Regular static field access
+        throw new CompileErrorException(
+            'Not implemented yet: Cannot handle StaticGet for fields');
+      }
+    } else {
+      throw new CompileErrorException(
+          'Not implemented yet: Cannot handle StaticGet for '
+          '${node.target.runtimeType}');
+    }
+  }
+
   /// Retrieves the [DartType] for a kernel [Expression] node.
   dart.DartType getType(dart.Expression node) {
     // TODO(andrewkrieger): Workaround until we get types for implicit "this"

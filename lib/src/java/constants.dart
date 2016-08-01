@@ -28,6 +28,7 @@ class Constants {
   static const String javaClassAnnotation = "JavaClass";
   static const String interceptorForAnnotation = "InterceptorFor";
   static const String interceptorSingletonFieldName = "INSTANCE";
+  static const String helperNestedClassForStatic = "Static";
   
   static const String javaStaticThisIdentifier = "self";
 

@@ -231,6 +231,11 @@ public class IntegerHelper {
   // TODO(springerm): toSigned
   // TODO(springerm): toRadixString
 
+  public static class Static {
+    // TODO(springerm): parse
+    // TODO(springerm): fromEnvironment
+  }
+
 
   // --- Other methods ---
 
