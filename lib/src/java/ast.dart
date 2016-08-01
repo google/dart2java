@@ -315,6 +315,16 @@ class ClassRefExpr extends Expression {
 /// Abstract class for literals.
 abstract class Literal extends Expression {}
 
+/// A boolean literal.
+class BoolLiteral extends Literal {
+  bool value;
+
+  BoolLiteral(this.value);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitBoolLiteral(this);
+}
+
 /// An integer literal.
 class IntLiteral extends Literal {
   int value;

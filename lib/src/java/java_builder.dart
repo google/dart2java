@@ -56,6 +56,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// implicit "this".
   bool isInsideStaticMethod;
 
+  /// Default visitor method. Useful to track which AST nodes are not
+  /// translated yet.
+  @override
+  void defaultExpression(Expression node) {
+    print("WARNING: java_builder does not handle ${node.runtimeType} yet");
+  }
+
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
@@ -90,7 +97,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         var translatedMethodName = Constants.operatorToMethodName[methodName];
         if (translatedMethodName == null) {
           throw new CompileErrorException(
-              "Operator ${methodName} not implemented yet.");
+              "${methodName} is not an operator.");
         }
         return translatedMethodName;
       case dart.ProcedureKind.Getter:
@@ -385,6 +392,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.AssignmentExpr visitVariableSet(dart.VariableSet node) {
     return new java.AssignmentExpr(
         new java.IdentifierExpr(node.variable.name), node.value.accept(this));
+  }
+
+  @override
+  java.BoolLiteral visitBoolLiteral(dart.BoolLiteral node) {
+    return new java.BoolLiteral(node.value);
   }
 
   @override

@@ -6,7 +6,13 @@ class Constants {
     "-": "operatorMinus",
     "*": "operatorMultiply",
     "/": "operatorDivide",
+    "~/": "operatorTruncatedDivide",
     "%": "operatorModulus",
+    "&": "operatorBitAnd",
+    "|": "operatorBitOr",
+    "^": "operatorBitXor",
+    "<<": "operatorShiftLeft",
+    ">>": "operatorShiftRight",
     "==": "operatorEqual",
     "!=": "operatorNotEqual",
     "<": "operatorLess",
@@ -14,7 +20,8 @@ class Constants {
     ">": "operatorGreater",
     ">=": "operatorGreaterEqual",
     "[]": "operatorAt",
-    "unary-": "operatorUnaryMinus"
+    "unary-": "operatorUnaryMinus",
+    "~": "operatorUnaryBitNegate"
   };
 
   static const String javaCallAnnotation = "JavaCall";

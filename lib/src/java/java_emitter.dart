@@ -170,6 +170,11 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitBoolLiteral(BoolLiteral literal) {
+    return literal.value.toString();
+  }
+
+  @override
   String visitIntLiteral(IntLiteral literal) {
     return literal.value.toString();
   }

@@ -30,6 +30,7 @@ abstract class Visitor<R> {
   R visitIdentifierExpr(IdentifierExpr node) => null;
   R visitAssignmentExpr(AssignmentExpr node) => null;
   R visitClassRefExpr(ClassRefExpr node) => null;
+  R visitBoolLiteral(BoolLiteral node) => null;
   R visitIntLiteral(IntLiteral node) => null;
   R visitDoubleLiteral(DoubleLiteral node) => null;
   R visitStringLiteral(StringLiteral node) => null;
