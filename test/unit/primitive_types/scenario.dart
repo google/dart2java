@@ -10,6 +10,14 @@ double getDouble() {
   return 4.2;
 }
 
+num getNumberInt() {
+  return 43;
+}
+
+num getNumberDouble() {
+  return 4.3;
+}
+
 double getDoubleMin() {
   return double.MIN_POSITIVE;
 }
@@ -38,6 +46,22 @@ double getDoubleAbs(double number) {
   return number.abs();
 }
 
+num getNumberIntSign(num number) {
+  return number.sign;
+}
+
+num getNumberDoubleSign(num number) {
+  return number.sign;
+}
+
+num getNumberIntAbs(num number) {
+  return number.abs();
+}
+
+num getNumberDoubleAbs(num number) {
+  return number.abs();
+}
+
 int addInts(int v1, int v2) {
   return v1 + v2;
 }
@@ -54,6 +78,26 @@ double addDoubleInt(double v1, int v2) {
   return v1 + v2;
 }
 
+num addNumbers(num v1, num v2) {
+  return v1 + v2;
+}
+
+num addIntNumber(int v1, num v2) {
+  return v1 + v2;
+}
+
+num addDoubleNumber(double v1, num v2) {
+  return v1 + v2;
+}
+
+num addNumberInt(num v1, int v2) {
+  return v1 + v2;
+}
+
+num addNumberDouble(num v1, double v2) {
+  return v1 + v2;
+}
+
 bool lessEqualInts(int v1, int v2) {
   return v1 <= v2;
 }
@@ -67,6 +111,26 @@ bool lessEqualIntDouble(int v1, double v2) {
 }
 
 bool lessEqualDoubleInt(double v1, int v2) {
+  return v1 <= v2;
+}
+
+bool lessEqualNumbers(num v1, num v2) {
+  return v1 <= v2;
+}
+
+bool lessEqualNumberInt(num v1, int v2) {
+  return v1 <= v2;
+}
+
+bool lessEqualNumberDouble(num v1, double v2) {
+  return v1 <= v2;
+}
+
+bool lessEqualIntNumber(int v1, num v2) {
+  return v1 <= v2;
+}
+
+bool lessEqualDoubleNumber(double v1, num v2) {
   return v1 <= v2;
 }
 

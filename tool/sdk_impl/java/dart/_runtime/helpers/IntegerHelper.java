@@ -41,12 +41,31 @@ public class IntegerHelper {
     }
   }
 
+  public static Integer compareTo(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return compareTo(self, (Integer) other);
+    } else {
+      // Must be double
+      return compareTo(self, (Double) other);
+    }
+  }
+
+
   public static Integer operatorPlus(Integer self, Integer other) {
     return self + other;
   }
 
   public static Double operatorPlus(Integer self, Double other) {
     return self + other;
+  }
+
+  public static Number operatorPlus(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorPlus(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorPlus(self, (Double) other);
+    }
   }
 
   public static Integer operatorMinus(Integer self, Integer other) {
@@ -57,6 +76,15 @@ public class IntegerHelper {
     return self - other;
   }
 
+  public static Number operatorMinus(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorMinus(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorMinus(self, (Double) other);
+    }
+  }
+
   public static Integer operatorStar(Integer self, Integer other) {
     return self * other;
   }
@@ -65,11 +93,21 @@ public class IntegerHelper {
     return self * other;
   }
 
+  public static Number operatorStar(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorStar(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorStar(self, (Double) other);
+    }
+  }
+
   public static Integer operatorModulus(Integer self, Integer other) {
     return self % other;
   }
 
   // TODO(springerm): operatorModulus for Double
+  // TODO(springerm): operatorModulus for Number
 
   public static Double operatorDivide(Integer self, Integer other) {
     return ((double) self) / other;
@@ -79,12 +117,30 @@ public class IntegerHelper {
     return ((double) self) / other;
   } 
 
+  public static Double operatorDivide(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorDivide(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorDivide(self, (Double) other);
+    }
+  }
+
   public static Integer operatorTruncatedDivide(Integer self, Integer other) {
     return (Integer) (self / other);
   }
 
   public static Integer operatorTruncatedDivide(Integer self, Double other) {
     return (int) (self / other);
+  }
+
+  public static Integer operatorTruncatedDivide(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorTruncatedDivide(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorTruncatedDivide(self, (Double) other);
+    }
   }
 
   public static Integer operatorUnaryMinus(Integer self) {
@@ -101,12 +157,30 @@ public class IntegerHelper {
     return self < other;
   }
 
+  public static Boolean operatorLess(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorLess(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorLess(self, (Double) other);
+    }
+  }
+
   public static Boolean operatorLessEqual(Integer self, Integer other) {
     return self <= other;
   }
 
   public static Boolean operatorLessEqual(Integer self, Double other) {
     return self <= other;
+  }
+
+  public static Boolean operatorLessEqual(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorLessEqual(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorLessEqual(self, (Double) other);
+    }
   }
 
   public static Boolean operatorGreater(Integer self, Integer other) {
@@ -117,6 +191,15 @@ public class IntegerHelper {
     return self > other;
   }
 
+  public static Boolean operatorGreater(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorGreater(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorGreater(self, (Double) other);
+    }
+  }
+
   public static Boolean operatorGreaterEqual(Integer self, Integer other) {
     return self >= other;
   }
@@ -125,6 +208,15 @@ public class IntegerHelper {
     return self >= other;
   }
 
+  public static Boolean operatorGreaterEqual(Integer self, Number other) {
+    if (other instanceof Integer) {
+      return operatorGreaterEqual(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorGreaterEqual(self, (Double) other);
+    }
+  }
+  
   public static Boolean isNaN(Integer self) {
     return false;
   }
