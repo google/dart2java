@@ -13,5 +13,9 @@ public class StringHelper {
   public static Integer getLength(String self) {
     return self.length();
   }
+
+  public static String toString(String self) {
+    return self;
+  }
   
 }

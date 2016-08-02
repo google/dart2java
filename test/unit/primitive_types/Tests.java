@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import scenario.__TopLevel;
@@ -88,5 +89,32 @@ public class Tests {
   @Test
   public void testStaticFields() {
     assertTrue(__TopLevel.getDoubleMin() < __TopLevel.getDoubleInfinity());
+  }
+
+  @Test
+  public void testToString() {
+    assertEquals("HelloWorld", __TopLevel.getStringToString());
+    assertEquals("42", __TopLevel.getIntToString());
+    assertEquals("42.12", __TopLevel.getDoubleToString());
+    assertEquals("42", __TopLevel.getNumToString(42));
+    assertEquals("42.12", __TopLevel.getNumToString(42.12));
+    assertEquals("false", __TopLevel.getFalseToString());
+    assertEquals("true", __TopLevel.getTrueToString());
+  }
+
+  @Test
+  public void testEquals() {
+    assertTrue(__TopLevel.getEqualsBools(true, true));
+    assertFalse(__TopLevel.getEqualsBools(false, true));
+    assertTrue(__TopLevel.getEqualsInts(12, 12));
+    assertTrue(__TopLevel.getEqualsDoubles(45.2, 45.2));
+    
+    // TODO(springerm): Fix test
+    // assertTrue(__TopLevel.getEqualsIntDouble(42, 42.0));
+    
+    assertTrue(__TopLevel.getEqualsIntNum(42, 42));
+    assertTrue(__TopLevel.getEqualsNumInt(42, 42));
+    assertTrue(__TopLevel.getEqualsNums(42, 42));
+    assertTrue(__TopLevel.getEqualsNums(45.2, 45.2));
   }
 }

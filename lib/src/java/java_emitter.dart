@@ -150,6 +150,14 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitConditionalExpr(ConditionalExpr expr) {
+    var condition = expr.condition.accept(this);
+    var thenExpr = expr.thenExpr.accept(this);
+    var elseExpr = expr.elseExpr.accept(this);
+    return "($condition) ? ($thenExpr) : ($elseExpr)";
+  }
+
+  @override
   String visitCastExpr(CastExpr expr) {
     return "(${expr.type}) ${expr.expression.accept(this)}";
   }

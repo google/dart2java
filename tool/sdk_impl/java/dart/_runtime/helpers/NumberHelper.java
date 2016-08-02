@@ -14,7 +14,12 @@ public class NumberHelper {
   // --- Methods defined in num ---
   
   public static Boolean operatorEqual(Number self, Object other) {
-    return self == other;
+    if (self instanceof Integer) {
+      return IntegerHelper.operatorEqual((Integer) self, other);
+    } else {
+      // Must be double
+      return DoubleHelper.operatorEqual((Double) self, other);
+    }
   }
 
   public static Integer getHashCode(Number self) {

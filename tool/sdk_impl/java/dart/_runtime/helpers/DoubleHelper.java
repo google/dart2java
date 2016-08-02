@@ -14,7 +14,7 @@ public class DoubleHelper {
   // --- Methods defined in num ---
   
   public static Boolean operatorEqual(Double self, Object other) {
-    return self == other;
+    return self.equals(other);
   }
 
   public static Integer getHashCode(Double self) {

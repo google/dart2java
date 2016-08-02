@@ -15,6 +15,9 @@ class Object {
   @patch
   @JavaCall("java.lang.String.valueOf")
   external String toString();
+
+  @patch
+  external bool operator ==(other);
 }
 
 @patch

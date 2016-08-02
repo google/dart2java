@@ -211,6 +211,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
+  java.ConditionalExpr visitConditionalExpression(
+    dart.ConditionalExpression node) {
+    return new java.ConditionalExpr(
+      node.condition.accept(this),
+      node.then.accept(this),
+      node.otherwise.accept(this));
+  }
+  
+  @override
   java.ReturnStmt visitReturnStatement(dart.ReturnStatement node) {
     return new java.ReturnStmt(node.expression?.accept(this));
   }

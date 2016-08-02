@@ -141,3 +141,55 @@ int negateInt(int v) {
 int unaryTilde(int v) {
   return ~v;
 }
+
+String getIntToString() {
+  return 42.toString();
+}
+
+String getDoubleToString() {
+  return (42.12).toString();
+}
+
+String getFalseToString() {
+  return false.toString();
+}
+
+String getTrueToString() {
+  return true.toString();
+}
+
+String getNumToString(num number) {
+  return number.toString();
+}
+
+String getStringToString() {
+  return "HelloWorld".toString();
+}
+
+bool getEqualsBools(bool v1, bool v2) {
+  return v1 == v2;
+}
+
+bool getEqualsInts(int v1, int v2) {
+  return v1 == v2;
+}
+
+bool getEqualsDoubles(double v1, double v2) {
+  return v1 == v2;
+}
+
+bool getEqualsIntDouble(int v1, double v2) {
+  return v1 == v2;
+}
+
+bool getEqualsIntNum(int v1, num v2) {
+  return v1 == v2;
+}
+
+bool getEqualsNumInt(int v1, num v2) {
+  return v1 == v2;
+}
+
+bool getEqualsNums(num v1, num v2) {
+  return v1 == v2;
+}

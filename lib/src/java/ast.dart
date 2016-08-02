@@ -267,6 +267,20 @@ class UnaryExpr extends Expression {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitUnaryExpr(this);
 }
 
+/// A conditional (ternary) expression.
+class ConditionalExpr extends Expression {
+  Expression condition;
+
+  Expression thenExpr;
+
+  Expression elseExpr;
+
+  ConditionalExpr(this.condition, this.thenExpr, this.elseExpr);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitConditionalExpr(this);  
+}
+
 /// A type cast.
 class CastExpr extends Expression {
   Expression expression;
