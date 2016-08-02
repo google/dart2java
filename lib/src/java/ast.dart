@@ -63,11 +63,15 @@ class ClassDecl extends Node {
 
   List<FieldDecl> fields;
 
+  List<Constructor> constructors;
+
   ClassDecl(this.type,
-      {this.access: Access.Public, this.fields, this.methods, this.supertype}) {
+      {this.access: Access.Public, this.fields, this.methods, 
+        this.constructors, this.supertype}) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
     methods ??= <MethodDef>[];
     fields ??= <FieldDecl>[];
+    constructors ??= <Constructor>[];
   }
 
   @override
@@ -106,6 +110,23 @@ class MethodDef extends Node {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDef(this);
 }
 
+/// A class constructor.
+class Constructor extends Node {
+  /// The type of the class.
+  ClassOrInterfaceType classType;
+
+  /// Represent the list of statements, i.e., the method body.
+  Block body;
+
+  /// Define the parameter names and types.
+  List<VariableDecl> parameters;
+
+  Constructor(this.classType, this.body, this.parameters);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitConstructor(this);
+}
+
 /// An instance variable declaration for fields.
 class FieldDecl extends Node {
   String name;
@@ -116,11 +137,10 @@ class FieldDecl extends Node {
   Expression initializer;
 
   FieldDecl(this.name, this.type,
-      {Expression initializer,
-      this.access: Access.Private,
+      {this.access: Access.Private,
       this.isStatic: false,
-      this.isFinal: false})
-      : this.initializer = initializer ?? new NullLiteral();
+      this.isFinal: false,
+      this.initializer});
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldDecl(this);
@@ -215,16 +235,16 @@ class NewExpr extends Expression {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitNewExpr(this);
 }
 
-/// A field read node.
-class FieldRead extends Expression {
+/// A field access node.
+class FieldAccess extends Expression {
   Expression receiver;
 
   IdentifierExpr identifier;
 
-  FieldRead(this.receiver, this.identifier);
+  FieldAccess(this.receiver, this.identifier);
 
   @override
-  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldRead(this);
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldAccess(this);
 }
 
 /// A method invocation.
@@ -305,7 +325,8 @@ class IdentifierExpr extends Expression {
 
 /// An expression that writes to a local variable.
 class AssignmentExpr extends Expression {
-  IdentifierExpr identifier;
+  // Can be an [IdentifierExpr] or a [FieldAccess]
+  Expression identifier;
 
   Expression value;
 

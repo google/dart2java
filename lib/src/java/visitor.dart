@@ -10,6 +10,7 @@ abstract class Visitor<R> {
   // Declarations
   R visitClassDecl(ClassDecl node) => null;
   R visitMethodDef(MethodDef node) => null;
+  R visitConstructor(Constructor node) => null;
   R visitFieldDecl(FieldDecl node) => null;
   R visitVariableDecl(VariableDecl node) => null;
 
@@ -22,7 +23,7 @@ abstract class Visitor<R> {
 
   // Expressions
   R visitNewExpr(NewExpr node) => null;
-  R visitFieldRead(FieldRead node) => null;
+  R visitFieldAccess(FieldAccess node) => null;
   R visitMethodInvocation(MethodInvocation node) => null;
   R visitBinaryExpr(BinaryExpr node) => null;
   R visitUnaryExpr(UnaryExpr node) => null;

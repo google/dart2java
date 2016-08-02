@@ -59,7 +59,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// Default visitor method. Useful to track which AST nodes are not
   /// translated yet.
   @override
-  void defaultExpression(Expression node) {
+  void defaultExpression(dart.Expression node) {
+    print("WARNING: java_builder does not handle ${node.runtimeType} yet");
+  }
+
+  /// Default visitor method. Useful to track which AST nodes are not
+  /// translated yet.
+  @override
+  void defaultStatement(dart.Statement node) {
     print("WARNING: java_builder does not handle ${node.runtimeType} yet");
   }
 
@@ -70,11 +77,32 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     thisDartClass = node;
     java.ClassOrInterfaceType type = compilerState.getClass(node);
     List<java.FieldDecl> fields = node.fields.map(this.visitField).toList();
+    List<java.MethodDef> implicitGetters = 
+      node.fields.map(this.buildGetter).toList();
+    List<java.MethodDef> implicitSetters = node.fields.where((f) => !f.isFinal)
+        .map(this.buildSetter).toList();
     List<java.MethodDef> methods =
         node.procedures.map(this.visitProcedure).toList();
+    List<java.Constructor> constructors = 
+        node.constructors.map(this.visitConstructor).toList();
+
+    // Merge getters/setters
+    if (methods.any((m) => implicitGetters.any((g) => m.name == g.name))) {
+      // This can happen because we simple prepend getters with "get"
+      throw new CompileErrorException("Name clash between getter and method");
+    }
+    if (methods.any((m) => implicitSetters.any((s) => m.name == s.name))) {
+      // This can happen because we simple prepend getters with "set"
+      throw new CompileErrorException("Name clash between setter and method");
+    }
+    methods.addAll(implicitGetters);
+    methods.addAll(implicitSetters);
 
     return new java.ClassDecl(type,
-        access: java.Access.Public, fields: fields, methods: methods);
+        access: java.Access.Public, 
+        fields: fields, 
+        methods: methods, 
+        constructors: constructors);
   }
 
   @override
@@ -84,6 +112,61 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         access: java.Access.Public,
         isStatic: node.isStatic,
         isFinal: node.isFinal);
+  }
+
+  java.MethodDef buildGetter(dart.Field node) {
+    assert(isInsideStaticMethod == null);
+    isInsideStaticMethod = node.isStatic;   
+
+    String methodName = javaMethodName(
+      node.name.name, dart.ProcedureKind.Getter);
+    var body = wrapInJavaBlock(new java.ReturnStmt(
+      new java.FieldAccess(buildDefaultReceiver(), 
+        new java.IdentifierExpr(node.name.name))));
+
+    isInsideStaticMethod = null;
+
+    return new java.MethodDef(methodName, body, [], 
+      returnType: node.type.accept(this),
+      isStatic: node.isStatic);
+  }
+
+  java.MethodDef buildSetter(dart.Field node) {
+    assert(isInsideStaticMethod == null);
+    isInsideStaticMethod = node.isStatic;   
+
+    String methodName = javaMethodName(
+      node.name.name, dart.ProcedureKind.Setter);
+    var fieldAssignment = new java.AssignmentExpr(
+      new java.FieldAccess(buildDefaultReceiver(), 
+        new java.IdentifierExpr(node.name.name)), 
+      new java.IdentifierExpr("value"));
+    var returnStmt = new java.ReturnStmt(new java.IdentifierExpr("value"));
+    var body = new java.Block([
+      new java.ExpressionStmt(fieldAssignment), 
+      returnStmt]);
+    var param = new java.VariableDecl("value", node.type.accept(this));
+
+    isInsideStaticMethod = null;
+
+    return new java.MethodDef(methodName, body, [param], 
+      returnType: node.type.accept(this),
+      isStatic: node.isStatic);
+  }
+
+  @override
+  java.Statement visitFieldInitializer(dart.FieldInitializer node) {
+    assert(isInsideStaticMethod == null);
+    isInsideStaticMethod = false; 
+
+    var fieldAssignment = new java.AssignmentExpr(
+      new java.FieldAccess(buildDefaultReceiver(), 
+        new java.IdentifierExpr(node.field.name.name)), 
+      node.value.accept(this));
+
+    isInsideStaticMethod = null;
+
+    return new java.ExpressionStmt(fieldAssignment);
   }
 
   String capitalizeString(String str) =>
@@ -102,6 +185,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         return translatedMethodName;
       case dart.ProcedureKind.Getter:
         return "get" + capitalizeString(methodName);
+      case dart.ProcedureKind.Setter:
+        return "set" + capitalizeString(methodName);
       default:
         // TODO(springerm): handle remaining kinds
         throw new CompileErrorException(
@@ -186,6 +271,35 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         returnType: returnType, isStatic: isStatic, isFinal: false);
   }
 
+  @override
+  java.Constructor visitConstructor(dart.Constructor node) {
+    // TODO(springerm): Handle initializers other than [FieldInitializer]
+    Iterable<dart.Initializer> fieldInitializers = 
+      node.initializers.where((i) => i.runtimeType == dart.FieldInitializer);
+    Iterable<java.Statement> javaFieldInitializers = 
+      fieldInitializers.map((i) => i.accept(this));
+
+    java.Block body;
+    if (node.function.body == null) {
+      // Constructor may not have a body (sometimes also contains a body
+      // with an [EmptyStatement]).
+      body = new java.Block(<java.Statement>[]);
+    } else {
+      body = wrapInJavaBlock(buildStatement(node.function.body));
+    }
+    body.statements.insertAll(0, javaFieldInitializers);
+
+    // TODO(springerm): handle named parameters, etc.
+    List<java.VariableDecl> parameters = node.function.positionalParameters
+        .map(visitVariableDeclaration)
+        .toList();
+
+    return new java.Constructor(
+      getJavaType(thisDartClass), 
+      body, 
+      parameters);
+  }
+
   /// Wraps a Java statement in a block, if [stmt] is not already a block.
   java.Block wrapInJavaBlock(java.Statement stmt) {
     if (stmt is java.Block) {
@@ -198,6 +312,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.Block visitBlock(dart.Block node) {
     return new java.Block(node.statements.map(buildStatement).toList());
+  }
+
+  @override
+  java.Block visitEmptyStatement(dart.EmptyStatement node) {
+    // TODO(springerm): We don't have an empty statement right now,
+    // but an empty block has no effect
+    return new java.Block(<java.Statement>[]);
   }
 
   @override
@@ -242,6 +363,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       dart.DartType receiverType,
       String methodName,
       List<dart.Expression> positionalArguments) {
+
     // TODO(springerm): Handle other argument types
     List<java.Expression> args = positionalArguments
         .map((a) => a.accept(this) as java.Expression)
@@ -287,6 +409,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
+  java.MethodInvocation visitPropertySet(dart.PropertySet node) {
+    String methodName =
+        javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+    return buildDynamicMethodInvocation(node.receiver, methodName, 
+        [node.value]);
+  }
+
+  @override
   java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
     String name = node.name.name;
     // Expand operator symbol to Java-compatible method name
@@ -319,7 +449,19 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.FieldRead visitStaticGet(dart.StaticGet node) {
+  java.NewExpr visitConstructorInvocation(dart.ConstructorInvocation node) {
+    // TODO(springerm): Check for usesHelperFunction
+    // TODO(springerm): Handle other parameter types
+    List<java.Expression> args = node.arguments.positional
+      .map((a) => a.accept(this) as java.Expression)
+      .toList();
+
+    return new java.NewExpr(new java.ClassRefExpr(
+      node.target.enclosingClass.thisType.accept(this)), args);
+  }
+
+  @override
+  java.FieldAccess visitStaticGet(dart.StaticGet node) {
     assert(!node.target.isInstanceMember);
 
     if (node.target.runtimeType == dart.Field) {
@@ -333,10 +475,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         java.ClassOrInterfaceType helperClass =
             compilerState.getHelperClass(node.target.enclosingClass.thisType);
         java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
-        java.FieldRead staticNested = new java.FieldRead(
+        java.FieldAccess staticNested = new java.FieldAccess(
           helperRefExpr, 
           new java.IdentifierExpr(Constants.helperNestedClassForStatic));
-        return new java.FieldRead(
+        return new java.FieldAccess(
           staticNested, new java.IdentifierExpr(field.name.name));
       } else {
         // Regular static field access

@@ -29,7 +29,9 @@ class _JavaAstEmitter extends Visitor<String> {
   String visitClassDecl(ClassDecl cls) {
     var fields = cls.fields.map((v) => indent(v.accept(this)) + ";").join("\n");
     var methods = cls.methods.map((m) => indent(m.accept(this))).join("\n");
-    var content = indent(fields + "\n\n" + methods);
+    var constructors = cls.constructors.map((m) => 
+      indent(m.accept(this))).join("\n");
+    var content = indent(fields + "\n\n" + constructors + "\n\n" + methods);
     var extendsClause = cls.supertype == null
         ? ""
         : " extends ${cls.supertype.fullyQualifiedName}";
@@ -95,6 +97,19 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitConstructor(Constructor constr) {
+    String classType = constr.classType.name;
+
+    var parameterList =
+        "(" + constr.parameters.map((p) => p.accept(this)).join(", ") + ")";
+
+    return "public $classType" 
+      + parameterList 
+      + "\n" 
+      + constr.body.accept(this);
+  }
+
+  @override
   String visitExpressionStmt(ExpressionStmt stmt) {
     return "${stmt.expression.accept(this)};";
   }
@@ -123,7 +138,7 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
-  String visitFieldRead(FieldRead expr) {
+  String visitFieldAccess(FieldAccess expr) {
     var receiver = expr.receiver.accept(this);
     var identifier = expr.identifier.accept(this);
     return "${receiver}.${identifier}";

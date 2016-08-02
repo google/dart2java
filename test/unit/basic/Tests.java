@@ -8,4 +8,9 @@ public class Tests {
   public void testHelloWorld() {
     assertEquals("Hello World!", __TopLevel.helloWorld());
   }
+
+  @Test
+  public void testMultiFieldAssignment() {
+    assertEquals(12, (int) __TopLevel.setReturnMultipleFields(12));
+  }
 }
