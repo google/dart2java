@@ -29,7 +29,8 @@ class Constants {
   static const String interceptorForAnnotation = "InterceptorFor";
   static const String interceptorSingletonFieldName = "INSTANCE";
   static const String helperNestedClassForStatic = "Static";
-  
+  static const String dartObjectPackage = "dart._runtime.base";
+  static const String dartObjectClassname = "DartObject";
   static const String javaStaticThisIdentifier = "self";
 
   // Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8

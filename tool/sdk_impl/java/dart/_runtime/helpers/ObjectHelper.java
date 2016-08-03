@@ -3,10 +3,11 @@ package dart._runtime.helpers;
 public class ObjectHelper {
 
   public static Integer getHashCode(Object self) {
-    return self.hashCode();
+    // Hash code of null in Dart VM is 2011 ;)
+    return self == null ? 2011 : self.hashCode();
   }
 
-  public static Boolean equals(Object self, Object other) {
+  public static Boolean operatorEqual(Object self, Object other) {
     return self == null ? other == null : self.equals(other);
   }
 

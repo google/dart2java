@@ -72,6 +72,7 @@ class ClassDecl extends Node {
     methods ??= <MethodDef>[];
     fields ??= <FieldDecl>[];
     constructors ??= <Constructor>[];
+    supertype ??= JavaType.dartObject;
   }
 
   @override

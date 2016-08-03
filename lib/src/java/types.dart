@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'ast.dart';
+import 'constants.dart';
 import 'visitor.dart';
 
 abstract class JavaType extends Node {
@@ -25,6 +26,10 @@ abstract class JavaType extends Node {
 
   /// The boolean type has exactly two values: `true` and `false`.
   static const PrimitiveType boolean = const PrimitiveType._("boolean");
+
+  /// The default superclass of all Dart classes.
+  static ClassOrInterfaceType dartObject = new ClassOrInterfaceType(
+    Constants.dartObjectPackage, Constants.dartObjectClassname);
 
   /// The Java Object type.
   static ClassOrInterfaceType object =
@@ -78,6 +83,7 @@ abstract class ReferenceType extends JavaType {
 }
 
 class ClassOrInterfaceType extends ReferenceType {
+
   /// The package containing this class or interface.
   ///
   /// This is only the package; it does not contain any enclosing classes. To

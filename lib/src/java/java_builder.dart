@@ -6,6 +6,7 @@ import 'package:kernel/ast.dart' as dart;
 
 import 'ast.dart' as java;
 import 'visitor.dart' as java;
+import 'types.dart' as java;
 import 'constants.dart';
 import '../compiler/compiler_state.dart';
 import '../compiler/runner.dart' show CompileErrorException;
@@ -96,11 +97,20 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     methods.addAll(implicitGetters);
     methods.addAll(implicitSetters);
 
+    java.ClassOrInterfaceType supertype = node.supertype.accept(this);
+    if (supertype == java.JavaType.object) {
+      // Make sure that "extends Object" results in "extends DartObject"
+      // TODO(springerm): Remove hard-coded special case once we 
+      // figure out interop
+      supertype = java.JavaType.dartObject;
+    }
+
     return new java.ClassDecl(type,
         access: java.Access.Public, 
         fields: fields, 
         methods: methods, 
-        constructors: constructors);
+        constructors: constructors,
+        supertype: supertype);
   }
 
   @override
@@ -442,8 +452,17 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       .map((a) => a.accept(this) as java.Expression)
       .toList();
 
-    return new java.NewExpr(new java.ClassRefExpr(
-      node.target.enclosingClass.thisType.accept(this)), args);
+    java.ClassOrInterfaceType type = 
+      node.target.enclosingClass.thisType.accept(this);
+
+    if (type == java.JavaType.object) {
+      // Make sure that "new Object" results in "new DartObject"
+      // TODO(springerm): Remove hard-coded special case once we 
+      // figure out interop
+      type = java.JavaType.dartObject;
+    }
+
+    return new java.NewExpr(new java.ClassRefExpr(type), args);
   }
 
   @override
