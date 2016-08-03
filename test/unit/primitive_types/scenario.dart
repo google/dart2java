@@ -26,6 +26,10 @@ double getDoubleInfinity() {
   return double.INFINITY;
 }
 
+String getFromCharCode(int charCode) {
+  return new String.fromCharCode(charCode);
+}
+
 bool getBool() {
   return true;
 }

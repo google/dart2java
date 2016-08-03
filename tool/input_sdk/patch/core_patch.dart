@@ -32,7 +32,10 @@ class bool {}
 
 @patch
 @JavaClass("java.lang.String")
-abstract class String {}
+abstract class String {
+  @patch
+  external factory String.fromCharCode(int charCode);
+}
 
 @patch
 @JavaCall("java.lang.System.out.println")

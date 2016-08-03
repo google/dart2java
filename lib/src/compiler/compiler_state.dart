@@ -184,34 +184,28 @@ class CompilerState {
     return classImpls[class_]?.javaClass != null;
   }
 
-  /// Checks whether a instance method invocation needs to go through a helper
-  /// function.
+  /// Checks whether a method invocation needs to go through a helper function.
   ///
   /// Currently, all instance methods on `Object`, `String`, `bool`, `num`,
   /// `int`, and `double` go through helper methods, as does any instance method
   /// invocation on a `@JavaClass`. Eventually, some methods on `@JavaClass`
   /// might not go through helper methods; they might use the underlying Java
   /// instance methods instead.
-  bool usesHelperFunction(dart.DartType receiverType, String method) {
+  bool usesHelperFunction(dart.Class receiverClass, String method) {
     // TODO(andrewkrieger): #implementDynamic We'll probably want to use helper
     // functions for dcalls.
-    return receiverType is dart.InterfaceType &&
-        classImpls.containsKey(receiverType.classNode);
+    return classImpls.containsKey(receiverClass);
   }
 
-  /// If [receiverType] has any methods that need to be invoked via a helper
+  /// If [receiverClass] has any methods that need to be invoked via a helper
   /// function, returns the Java class enclosing the helper function.
   ///
   /// This method should only be called if
-  /// `usesHelperFunction(receiverType, someMethod)` returns true. Always check
+  /// `usesHelperFunction(receiverClass, someMethod)` returns true. Always check
   /// [usesHelperFunction] before calling this method!
-  java.ClassOrInterfaceType getHelperClass(dart.DartType receiverType) {
-    ClassImpl impl;
-    if (receiverType is dart.InterfaceType) {
-      impl = classImpls[receiverType.classNode];
-    }
-    assert(impl != null);
-    return impl.helperClass;
+  java.ClassOrInterfaceType getHelperClass(dart.Class receiverClass) {
+    assert(classImpls[receiverClass] != null);
+    return classImpls[receiverClass].helperClass;
   }
 }
 

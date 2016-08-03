@@ -360,9 +360,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// [receiverType] may be null.
   java.MethodInvocation buildMethodInvocation(
       java.Expression receiver,
-      dart.DartType receiverType,
+      dart.Class receiverClass,
       String methodName,
-      List<dart.Expression> positionalArguments) {
+      List<dart.Expression> positionalArguments,
+      {bool isStaticCall: false}) {
 
     // TODO(springerm): Handle other argument types
     List<java.Expression> args = positionalArguments
@@ -370,13 +371,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         .toList();
 
     // Intercept method call if necessary
-    if (compilerState.usesHelperFunction(receiverType, methodName)) {
+    if (compilerState.usesHelperFunction(receiverClass, methodName)) {
       java.ClassOrInterfaceType helperClass =
-          compilerState.getHelperClass(receiverType);
+          compilerState.getHelperClass(receiverClass);
+
       // Generate static call to helper function.
-      List<java.Expression> argsWithSelf = [receiver]..addAll(args);
       java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
-      return new java.MethodInvocation(helperRefExpr, methodName, argsWithSelf);
+      if (isStaticCall) {
+        // Static method invocation
+        java.FieldAccess staticNested = new java.FieldAccess(
+          helperRefExpr, 
+          new java.IdentifierExpr(Constants.helperNestedClassForStatic));
+        return new java.MethodInvocation(staticNested, methodName, args);
+      } else {
+        // Dynamic method invocation
+        return new java.MethodInvocation(helperRefExpr, 
+          methodName, [receiver]..addAll(args));
+      }
     }
 
     return new java.MethodInvocation(receiver, methodName, args);
@@ -397,8 +408,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       recvType = getType(receiver);
     }
 
+    if (recvType is! dart.InterfaceType) {
+      throw new CompileErrorException("Can only handle InterfaceType");
+    }
+
     return buildMethodInvocation(
-        recv, recvType, methodName, positionalArguments);
+        recv, recvType.classNode, methodName, positionalArguments);
   }
 
   @override
@@ -427,20 +442,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitStaticInvocation(dart.StaticInvocation node) {
+    dart.DartType receiverType = null;
+
     if (node.target is dart.Procedure) {
       java.ClassOrInterfaceType receiver;
       if (node.target.enclosingClass == null) {
         receiver = compilerState.getTopLevelClass(node.target.enclosingLibrary);
       } else {
         receiver = compilerState.getClass(node.target.enclosingClass);
+        receiverType = node.target.enclosingClass;
       }
 
       return buildMethodInvocation(
           new java.ClassRefExpr(receiver),
-          // receiverType = null, because this invocation cannot be intercepted.
-          null,
+          receiverType,
           node.target.name.name,
-          node.arguments.positional);
+          node.arguments.positional,
+          isStaticCall: true);
     } else {
       throw new CompileErrorException(
           'Not implemented yet: Cannot handle ${node.target.runtimeType} '
@@ -470,10 +488,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
       // TODO(springerm): Reconsider passing method name here (it is a field!)
       if (compilerState.usesHelperFunction(
-        node.target.enclosingClass.thisType, field.name.name)) {
+        node.target.enclosingClass, field.name.name)) {
         // Access static field in helper class
         java.ClassOrInterfaceType helperClass =
-            compilerState.getHelperClass(node.target.enclosingClass.thisType);
+            compilerState.getHelperClass(node.target.enclosingClass);
         java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
         java.FieldAccess staticNested = new java.FieldAccess(
           helperRefExpr, 

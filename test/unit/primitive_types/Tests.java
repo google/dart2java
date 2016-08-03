@@ -92,6 +92,11 @@ public class Tests {
   }
 
   @Test
+  public void testStaticMethods() {
+    assertEquals("ぁ", __TopLevel.getFromCharCode(12353));
+  }
+
+  @Test
   public void testToString() {
     assertEquals("HelloWorld", __TopLevel.getStringToString());
     assertEquals("42", __TopLevel.getIntToString());
