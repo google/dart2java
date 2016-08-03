@@ -52,22 +52,20 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   final CompilerState compilerState;
 
-  /// Need to know if this is a static method to generate correct
-  /// implicit "this".
-  bool isInsideStaticMethod;
-
   /// Default visitor method. Useful to track which AST nodes are not
   /// translated yet.
   @override
-  void defaultExpression(dart.Expression node) {
+  java.Node defaultExpression(dart.Expression node) {
     print("WARNING: java_builder does not handle ${node.runtimeType} yet");
+    return null;
   }
 
   /// Default visitor method. Useful to track which AST nodes are not
   /// translated yet.
   @override
-  void defaultStatement(dart.Statement node) {
+  java.Node defaultStatement(dart.Statement node) {
     print("WARNING: java_builder does not handle ${node.runtimeType} yet");
+    return null;
   }
 
   /// Visits a non-mixin class.
@@ -115,16 +113,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.MethodDef buildGetter(dart.Field node) {
-    assert(isInsideStaticMethod == null);
-    isInsideStaticMethod = node.isStatic;   
-
     String methodName = javaMethodName(
       node.name.name, dart.ProcedureKind.Getter);
     var body = wrapInJavaBlock(new java.ReturnStmt(
-      new java.FieldAccess(buildDefaultReceiver(), 
+      new java.FieldAccess(buildDefaultReceiver(node.isStatic), 
         new java.IdentifierExpr(node.name.name))));
-
-    isInsideStaticMethod = null;
 
     return new java.MethodDef(methodName, body, [], 
       returnType: node.type.accept(this),
@@ -132,13 +125,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.MethodDef buildSetter(dart.Field node) {
-    assert(isInsideStaticMethod == null);
-    isInsideStaticMethod = node.isStatic;   
-
     String methodName = javaMethodName(
       node.name.name, dart.ProcedureKind.Setter);
     var fieldAssignment = new java.AssignmentExpr(
-      new java.FieldAccess(buildDefaultReceiver(), 
+      new java.FieldAccess(buildDefaultReceiver(node.isStatic), 
         new java.IdentifierExpr(node.name.name)), 
       new java.IdentifierExpr("value"));
     var returnStmt = new java.ReturnStmt(new java.IdentifierExpr("value"));
@@ -147,8 +137,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       returnStmt]);
     var param = new java.VariableDecl("value", node.type.accept(this));
 
-    isInsideStaticMethod = null;
-
     return new java.MethodDef(methodName, body, [param], 
       returnType: node.type.accept(this),
       isStatic: node.isStatic);
@@ -156,15 +144,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.Statement visitFieldInitializer(dart.FieldInitializer node) {
-    assert(isInsideStaticMethod == null);
-    isInsideStaticMethod = false; 
-
     var fieldAssignment = new java.AssignmentExpr(
-      new java.FieldAccess(buildDefaultReceiver(), 
+      new java.FieldAccess(buildDefaultReceiver(false), 
         new java.IdentifierExpr(node.field.name.name)), 
       node.value.accept(this));
-
-    isInsideStaticMethod = null;
 
     return new java.ExpressionStmt(fieldAssignment);
   }
@@ -234,10 +217,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
             new java.MethodInvocation(extReceiver, extMethodName, arguments));
       }
     } else {
-      assert(isInsideStaticMethod == null);
-      isInsideStaticMethod = isStatic;
       body = buildStatement(procedure.function.body);
-      isInsideStaticMethod = null;
     }
 
     if (methodName == "main" && procedure.enclosingClass == null) {
@@ -350,23 +330,90 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return new java.ExpressionStmt(node.expression.accept(this));
   }
 
-  /// Builds a Java MethodInvocation node. This method is reused for "normal"
-  /// method and for getter/setters etc.
-  ///
-  /// [receiverType] is used to intercept the method invocation and replace it
-  /// by a static call to a helper function. If it is known that the method
-  /// will not be intercepted (e.g., because the method being invoked is a
-  /// static method, so the receiver is a [java.ClassRefExpr]), then
-  /// [receiverType] may be null.
-  java.MethodInvocation buildMethodInvocation(
-      java.Expression receiver,
-      dart.Class receiverClass,
-      String methodName,
-      List<dart.Expression> positionalArguments,
-      {bool isStaticCall: false}) {
+  /// Builds a method invocation where the call target is not statically known.
+  java.MethodInvocation buildDynamicMethodInvocation(dart.Expression receiver, 
+      String methodName, List<dart.Expression> positionalArguments,
+      bool isInsideStaticMethod) {
+    // Translate receiver
+    java.Expression recv;
+    dart.InterfaceType recvType;
+    if (receiver == null) {
+      // Implicit "this" receiver
+      recv = buildDefaultReceiver(isInsideStaticMethod);
+      recvType = getThisClassDartType();
+    } else {
+      recv = receiver.accept(this);
+      recvType = getType(receiver);
+    }
+
+    if (recvType is! dart.InterfaceType) {
+      throw new CompileErrorException(
+        "Can only handle method invocation where receiver is an InterfaceType");
+    }
 
     // TODO(springerm): Handle other argument types
     List<java.Expression> args = positionalArguments
+        .map((a) => a.accept(this) as java.Expression)
+        .toList();
+
+    // Intercept method call if necessary
+    if (compilerState.usesHelperFunction(recvType.classNode, methodName)) {
+      java.ClassOrInterfaceType helperClass =
+          compilerState.getHelperClass(recvType.classNode);
+
+      // Generate static call to helper function.
+      java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
+        // Dynamic method invocation
+      return new java.MethodInvocation(
+        helperRefExpr, methodName, [recv]..addAll(args));
+    }
+
+    return new java.MethodInvocation(recv, methodName, args);
+  }
+
+  @override
+  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
+    String methodName =
+        javaMethodName(node.name.name, dart.ProcedureKind.Getter);
+    return buildDynamicMethodInvocation(node.receiver, methodName, [], 
+      isInsideStaticMethod(node));
+  }
+
+  @override
+  java.MethodInvocation visitPropertySet(dart.PropertySet node) {
+    String methodName =
+        javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+    return buildDynamicMethodInvocation(node.receiver, methodName, 
+        [node.value], isInsideStaticMethod(node));
+  }
+
+  @override
+  java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
+    String name = node.name.name;
+    // Expand operator symbol to Java-compatible method name
+    name = Constants.operatorToMethodName[name] ?? name;
+    return buildDynamicMethodInvocation(
+        node.receiver, name, node.arguments.positional, 
+        isInsideStaticMethod(node));
+  }
+
+  @override
+  java.MethodInvocation visitStaticInvocation(dart.StaticInvocation node) {
+    java.Expression receiver;
+    dart.Class receiverClass = null;
+    String methodName = node.target.name.name;
+
+    if (node.target.enclosingClass == null) {
+      receiver = new java.ClassRefExpr(
+        compilerState.getTopLevelClass(node.target.enclosingLibrary));
+    } else {
+      receiver = new java.ClassRefExpr(
+        compilerState.getClass(node.target.enclosingClass));
+      receiverClass = node.target.enclosingClass;
+    }
+
+    // TODO(springerm): Handle other argument types
+    List<java.Expression> args = node.arguments.positional
         .map((a) => a.accept(this) as java.Expression)
         .toList();
 
@@ -377,93 +424,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
       // Generate static call to helper function.
       java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
-      if (isStaticCall) {
-        // Static method invocation
-        java.FieldAccess staticNested = new java.FieldAccess(
-          helperRefExpr, 
-          new java.IdentifierExpr(Constants.helperNestedClassForStatic));
-        return new java.MethodInvocation(staticNested, methodName, args);
-      } else {
-        // Dynamic method invocation
-        return new java.MethodInvocation(helperRefExpr, 
-          methodName, [receiver]..addAll(args));
-      }
+      // Static method invocation
+      java.FieldAccess staticNested = new java.FieldAccess(
+        helperRefExpr, 
+        new java.IdentifierExpr(Constants.helperNestedClassForStatic));
+      return new java.MethodInvocation(staticNested, methodName, args);
     }
 
     return new java.MethodInvocation(receiver, methodName, args);
-  }
-
-  /// Builds a method invocation where the call target is not statically known.
-  java.MethodInvocation buildDynamicMethodInvocation(dart.Expression receiver,
-      String methodName, List<dart.Expression> positionalArguments) {
-    // Translate receiver
-    java.Expression recv;
-    dart.DartType recvType;
-    if (receiver == null) {
-      // Implicit "this" receiver
-      recv = buildDefaultReceiver();
-      recvType = getThisClassDartType();
-    } else {
-      recv = receiver.accept(this);
-      recvType = getType(receiver);
-    }
-
-    if (recvType is! dart.InterfaceType) {
-      throw new CompileErrorException("Can only handle InterfaceType");
-    }
-
-    return buildMethodInvocation(
-        recv, recvType.classNode, methodName, positionalArguments);
-  }
-
-  @override
-  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Getter);
-    return buildDynamicMethodInvocation(node.receiver, methodName, []);
-  }
-
-  @override
-  java.MethodInvocation visitPropertySet(dart.PropertySet node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Setter);
-    return buildDynamicMethodInvocation(node.receiver, methodName, 
-        [node.value]);
-  }
-
-  @override
-  java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
-    String name = node.name.name;
-    // Expand operator symbol to Java-compatible method name
-    name = Constants.operatorToMethodName[name] ?? name;
-    return buildDynamicMethodInvocation(
-        node.receiver, name, node.arguments.positional);
-  }
-
-  @override
-  java.MethodInvocation visitStaticInvocation(dart.StaticInvocation node) {
-    dart.DartType receiverType = null;
-
-    if (node.target is dart.Procedure) {
-      java.ClassOrInterfaceType receiver;
-      if (node.target.enclosingClass == null) {
-        receiver = compilerState.getTopLevelClass(node.target.enclosingLibrary);
-      } else {
-        receiver = compilerState.getClass(node.target.enclosingClass);
-        receiverType = node.target.enclosingClass;
-      }
-
-      return buildMethodInvocation(
-          new java.ClassRefExpr(receiver),
-          receiverType,
-          node.target.name.name,
-          node.arguments.positional,
-          isStaticCall: true);
-    } else {
-      throw new CompileErrorException(
-          'Not implemented yet: Cannot handle ${node.target.runtimeType} '
-          'targets in static invocations.');
-    }
   }
 
   @override
@@ -500,8 +468,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           staticNested, new java.IdentifierExpr(field.name.name));
       } else {
         // Regular static field access
-        throw new CompileErrorException(
-            'Not implemented yet: Cannot handle StaticGet for fields');
+        return new java.FieldAccess(new java.ClassRefExpr(
+            node.target.enclosingClass.thisType.accept(this)), 
+          new java.IdentifierExpr(field.name.name));
       }
     } else {
       throw new CompileErrorException(
@@ -557,10 +526,27 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return buildClassReference(thisDartClass);
   }
 
-  /// Build a reference to "this".
-  java.Expression buildDefaultReceiver({bool isStatic: null}) {
-    isStatic ??= isInsideStaticMethod;
+  /// Determine if an expression occurs in a static method.
+  bool isInsideStaticMethod(dart.Expression expression) {
+    dart.TreeNode node = expression;
 
+    while (node is! dart.Member) {
+      node = node.parent;
+    }
+
+    switch (node.runtimeType) {
+      case dart.Constructor:
+        return false;
+      case dart.Procedure:
+        return (node as dart.Procedure).isStatic;
+      default:
+        throw new CompileErrorException(
+          "Expression is found under unknown Member ${node.runtimeType}");
+    }
+  }
+
+  /// Build a reference to "this".
+  java.Expression buildDefaultReceiver(bool isStatic) {
     if (isStatic) {
       return buildThisClassRefExpr();
     } else {
@@ -569,19 +555,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
   }
 
-  /// Returns the fully-qualified Java class name of the current class.
-  java.ClassOrInterfaceType getThisClassJavaType() {
-    return getJavaType(thisDartClass);
-  }
-
   /// Returns the [dart.DartType] for the current class.
-  dart.DartType getThisClassDartType() {
+  dart.InterfaceType getThisClassDartType() {
     return thisDartClass.thisType;
   }
 
   @override
   java.IdentifierExpr visitThisExpression(dart.ThisExpression node) {
-    return buildDefaultReceiver();
+    return buildDefaultReceiver(isInsideStaticMethod(node));
   }
 
   @override

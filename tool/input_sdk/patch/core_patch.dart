@@ -2,36 +2,24 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:_internal' show JavaCall, JavaClass, InterceptorFor;
+import 'dart:_internal' show JavaCall;
 
 @patch
-@JavaClass("java.lang.Object")
-@InterceptorFor("dart:core", "Object")
 class Object {
+  // These methods now dispatch to ObjectHelper, but without these patches the
+  // compiler throws a warning that there was no patch found for these 
+  // external methods.
   @patch
-  @JavaCall("java.lang.System.identityHashCode")
+  external bool operator ==(other);
+
+  @patch
   external int get hashCode;
 
   @patch
-  @JavaCall("java.lang.String.valueOf")
   external String toString();
-
-  @patch
-  external bool operator ==(other);
 }
 
 @patch
-@JavaClass("java.lang.Integer")
-abstract class int {
-}
-
-@patch
-@JavaClass("java.lang.Boolean")
-@InterceptorFor("dart:core", "bool")
-class bool {}
-
-@patch
-@JavaClass("java.lang.String")
 abstract class String {
   @patch
   external factory String.fromCharCode(int charCode);
