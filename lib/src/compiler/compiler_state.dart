@@ -32,11 +32,18 @@ class ClassImpl {
   /// The Java class containing implementations of the instance methods on this
   /// class.
   ///
-  /// May not be [:null:], since all classes with a [ClassImpl] must be
-  /// `@JavaClass` classes and so must (sometimes) use helper methods.
+  /// May be [:null:]. All classes with a [ClassImpl] must be `@JavaClass` 
+  /// classes. These classes can use helper methods or map Dart method names
+  /// to Java method names.
   final java.ClassOrInterfaceType helperClass;
 
-  ClassImpl(this.javaClass, this.helperClass);
+  /// Maps Dart method names to Java method names (using an @JavaMethod
+  /// annotation). This is sometimes necessary to make methods available in
+  /// Dart that are not valid Dart method names.
+  final Map<String, String> mappedMethodNames;
+
+  ClassImpl(this.javaClass, this.helperClass) : 
+    mappedMethodNames = new Map<String, String>();
 
   /// Intended for debugging only.
   String toString() =>
@@ -89,6 +96,52 @@ class CompilerState {
           new java.ClassOrInterfaceType(
               "dart._runtime.helpers", "NumberHelper")),
     });
+  }
+
+  /// Find classes that are annotated with @JavaClass and add them
+  /// to classImpls.
+  void initializeJavaClasses(Iterable<dart.Class> classes) {
+    for (var cls in classes) {
+      String fullClassName = getSimpleAnnotation(
+        cls, java.Constants.javaClassAnnotation);
+
+      if (fullClassName != null) {
+        // This class is an @JavaClass
+        List<String> classTokens = fullClassName.split(".");
+        String package = classTokens.getRange(
+          0, classTokens.length - 1).join(".");
+        String className = classTokens.last;
+
+        // helperClass == null means no intercepting
+        classImpls[cls] = new ClassImpl(
+          new java.ClassOrInterfaceType(package, className), null);
+
+        // Add method mappings
+        for (dart.Procedure proc in cls.procedures) {
+          String mappedMethodName = getSimpleAnnotation(
+            proc, java.Constants.javaMethodAnnotation);
+
+          if (mappedMethodName != null) {
+            // This method should have a different name in Dart
+            classImpls[cls].mappedMethodNames[proc.name.name] = 
+              mappedMethodName;
+          }
+        }
+      }
+    }
+  }
+
+  /// Assuming that [node] has a single annotation of type [annotation] and
+  /// that annotation has a single String parameter, return the parameter,
+  /// otherwise return null.
+  String getSimpleAnnotation(dart.Class node, String annotation,
+      [String fieldName = "name"]) {
+    // TODO(springerm): Try to use DartTypes here instead of Strings
+    // TODO(springerm): Potential duplication with method in java_builder
+    var obj = node.analyzerMetadata
+        .firstWhere((i) => i.type.toString() == annotation, 
+          orElse: () => null);
+    return obj?.getField(fieldName)?.toStringValue();
   }
 
   /// Get the [Library] object for the library named by [libraryUri], loaded to
@@ -194,7 +247,22 @@ class CompilerState {
   bool usesHelperFunction(dart.Class receiverClass, String method) {
     // TODO(andrewkrieger): #implementDynamic We'll probably want to use helper
     // functions for dcalls.
+    return classImpls.containsKey(receiverClass) 
+      && classImpls[receiverClass].helperClass != null;
+  }
+
+  bool hasJavaImpl(dart.Class receiverClass) {
     return classImpls.containsKey(receiverClass);
+  }
+
+  String getJavaMethodName(dart.Class receiverClass, String dartMethod) {
+    if (!classImpls.containsKey(receiverClass)) {
+      throw new CompileErrorException(
+        "No implementation class defined for $receiverClass");
+    }
+
+    return classImpls[receiverClass].
+      mappedMethodNames[dartMethod] ?? dartMethod;
   }
 
   /// If [receiverClass] has any methods that need to be invoked via a helper

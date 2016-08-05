@@ -361,6 +361,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         "Can only handle method invocation where receiver is an InterfaceType");
     }
 
+    // Change method name if annotated with @JavaMethod
+    if (compilerState.hasJavaImpl(recvType.classNode)) {
+      methodName = compilerState.getJavaMethodName(
+        recvType.classNode, methodName);
+    }
+
     // TODO(springerm): Handle other argument types
     List<java.Expression> args = positionalArguments
         .map((a) => a.accept(this) as java.Expression)
@@ -420,6 +426,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       receiver = new java.ClassRefExpr(
         compilerState.getClass(node.target.enclosingClass));
       receiverClass = node.target.enclosingClass;
+    }
+
+    // Change method name if annotated with @JavaMethod
+    if (compilerState.hasJavaImpl(receiverClass)) {
+      methodName = compilerState.getJavaMethodName(receiverClass, methodName);
     }
 
     // TODO(springerm): Handle other argument types

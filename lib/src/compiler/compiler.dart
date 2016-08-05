@@ -11,7 +11,7 @@ import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:cli_util/cli_util.dart' show getSdkDir;
 import 'package:kernel/analyzer/analyzer_repository.dart'
     show AnalyzerRepository;
-import 'package:kernel/ast.dart' show Library;
+import 'package:kernel/ast.dart' as dart;
 
 import 'code_generator.dart' show CodeGenerator;
 import 'compiler_state.dart' show CompilerState;
@@ -27,7 +27,7 @@ import 'writer.dart' show FileWriter;
 /// files.
 ///
 /// This class loads the Dart sources, builds kernel IR, and passes each kernel
-/// [Library] from the given Dart sources to a [CodeGenerator]. The
+/// [dart.Library] from the given Dart sources to a [CodeGenerator]. The
 /// [CodeGenerator] reads the Kernel AST and uses a [FileWriter] to actually
 /// save output files.
 ///
@@ -57,7 +57,7 @@ class ModuleCompiler {
   Set<File> compile(List<String> sources) {
     AnalysisContext context = loader.context;
     var errors = <AnalysisError>[];
-    var librariesToCompile = <Library>[];
+    var librariesToCompile = <dart.Library>[];
 
     for (var sourcePath in sources) {
       if (!sourcePath.startsWith('dart:') &&
@@ -86,12 +86,18 @@ class ModuleCompiler {
     }
 
     var compilerState = new CompilerState(options, repository);
+    compilerState.initializeJavaClasses(getAllClasses(librariesToCompile));
+
     var codeGenerator =
         new CodeGenerator(new FileWriter(options), compilerState);
     return librariesToCompile
         .map(codeGenerator.compile)
         .expand((f) => f)
         .toSet();
+  }
+
+  Iterable<dart.Class> getAllClasses(List<Library> libraries) {
+    return libraries.expand((lib) => lib.classes);
   }
 }
 

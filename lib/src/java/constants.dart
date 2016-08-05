@@ -25,6 +25,7 @@ class Constants {
   };
 
   static const String javaCallAnnotation = "JavaCall";
+  static const String javaMethodAnnotation = "JavaMethod";
   static const String javaClassAnnotation = "JavaClass";
   static const String interceptorForAnnotation = "InterceptorFor";
   static const String interceptorSingletonFieldName = "INSTANCE";
