@@ -2,19 +2,18 @@ import 'dart:io';
 import 'dart:math';
 
 main(List<String> argv) {
-  if (argv.length < 2) {
+  if (argv.length < 4) {
     var name = Platform.executable;
-    stderr.writeln('Usage: $name <benchmark-subdir> <benchmark-java-class>');
+    stderr.writeln('Usage: $name <benchmark-subdir> <benchmark-java-class>'
+        ' <repetitions> <resolution>');
     return;
   }
-  const int repeatRun = 100;
+  int repeatRun = int.parse(argv[2]);
   Directory.current = new Directory(Directory.current.path + "/" + argv[0]);
-
-  // TODO(stanm): report JVM version
 
   print("pre-JIT mean,post-JIT mean,pre-JIT 2 sigma,post-JIT 2 sigma");
 
-  const int resolution = 120;
+  int resolution = int.parse(argv[3]);
   for (int i = 0; i < resolution; ++i) {
     int innerReps = getInnerReps(i, resolution);
     int outerReps = getOuterReps(i, resolution);
@@ -35,8 +34,8 @@ main(List<String> argv) {
 
       {
         stderr.write("$i, ");
-        ProcessResult results = Process.runSync(
-            'java', [argv[1], "$outerReps", "$innerReps"]);
+        ProcessResult results =
+            Process.runSync('java', [argv[1], "$outerReps", "$innerReps"]);
 
         // Warning: assuming no errors.
         String output = results.stdout;
