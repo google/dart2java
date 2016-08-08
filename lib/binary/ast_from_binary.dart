@@ -24,6 +24,7 @@ class BinaryBuilder {
   final List<Library> importTable = <Library>[];
   final List<VariableDeclaration> variableStack = <VariableDeclaration>[];
   final List<LabeledStatement> labelStack = <LabeledStatement>[];
+  int labelStackBase = 0;
   final List<SwitchCase> switchCaseStack = <SwitchCase>[];
   final List<TypeParameter> typeParameterStack = <TypeParameter>[];
   final String filename;
@@ -71,9 +72,23 @@ class BinaryBuilder {
 
   String readStringEntry() {
     int numBytes = readUInt();
+    // Utf8Decoder will skip leading BOM characters, but we must preserve them.
+    // Collect leading BOMs before passing the bytes onto Utf8Decoder.
+    int numByteOrderMarks = 0;
+    while (_byteIndex + 2 < _bytes.length &&
+        _bytes[_byteIndex] == 0xef &&
+        _bytes[_byteIndex + 1] == 0xbb &&
+        _bytes[_byteIndex + 2] == 0xbf) {
+      ++numByteOrderMarks;
+      _byteIndex += 3;
+      numBytes -= 3;
+    }
     String string =
         const Utf8Decoder().convert(_bytes, _byteIndex, _byteIndex + numBytes);
     _byteIndex += numBytes;
+    if (numByteOrderMarks > 0) {
+      return '\ufeff' * numByteOrderMarks + string;
+    }
     return string;
   }
 
@@ -394,7 +409,10 @@ class BinaryBuilder {
     var positional = readAndPushVariableDeclarationList();
     var named = readAndPushVariableDeclarationList();
     var returnType = readDartType();
+    int oldLabelStackBase = labelStackBase;
+    labelStackBase = labelStack.length;
     var body = readStatementOption();
+    labelStackBase = oldLabelStackBase;
     variableStack.length = variableStackHeight;
     typeParameterStack.length = typeParameterStackHeight;
     return new FunctionNode(body,
@@ -563,6 +581,10 @@ class BinaryBuilder {
         var body = readExpression();
         variableStack.length = stackHeight;
         return new Let(variable, body);
+      case Tag.BlockExpression:
+        var body = readBlock();
+        var expression = readExpression();
+        return new BlockExpression(body, expression);
       default:
         throw fail('Invalid expression tag: $tag');
     }
@@ -601,10 +623,7 @@ class BinaryBuilder {
       case Tag.ExpressionStatement:
         return new ExpressionStatement(readExpression());
       case Tag.Block:
-        int stackHeight = variableStack.length;
-        var body = readStatementList();
-        variableStack.length = stackHeight;
-        return new Block(body);
+        return readBlock();
       case Tag.EmptyStatement:
         return new EmptyStatement();
       case Tag.AssertStatement:
@@ -617,7 +636,7 @@ class BinaryBuilder {
         return label;
       case Tag.BreakStatement:
         int index = readUInt();
-        return new BreakStatement(labelStack[index]);
+        return new BreakStatement(labelStack[labelStackBase + index]);
       case Tag.WhileStatement:
         return new WhileStatement(readExpression(), readStatement());
       case Tag.DoStatement:
@@ -638,8 +657,7 @@ class BinaryBuilder {
         var iterable = readExpression();
         var body = readStatement();
         variableStack.length = variableStackHeight;
-        return new ForInStatement(variable, iterable, body,
-            isAsync: isAsync);
+        return new ForInStatement(variable, iterable, body, isAsync: isAsync);
       case Tag.SwitchStatement:
         var expression = readExpression();
         int count = readUInt();
@@ -669,7 +687,8 @@ class BinaryBuilder {
       case Tag.YieldStatement:
         int flags = readByte();
         return new YieldStatement(readExpression(),
-            isYieldStar: flags & 0x1 != 0);
+            isYieldStar: flags & YieldStatement.FlagYieldStar != 0,
+            isNative: flags & YieldStatement.FlagNative != 0);
       case Tag.VariableDeclaration:
         var variable = readVariableDeclaration();
         variableStack.add(variable); // Will be popped by the enclosing scope.
@@ -696,6 +715,13 @@ class BinaryBuilder {
     var body = readStatement();
     variableStack.length = variableStackHeight;
     return new Catch(exception, body, guard: guard, stackTrace: stackTrace);
+  }
+
+  Block readBlock() {
+    int stackHeight = variableStack.length;
+    var body = readStatementList();
+    variableStack.length = stackHeight;
+    return new Block(body);
   }
 
   List<DartType> readDartTypeList() {
@@ -751,8 +777,8 @@ class BinaryBuilder {
     }
   }
 
-  List<TypeParameter> readAndPushTypeParameterList([List<TypeParameter> list,
-      TreeNode parent]) {
+  List<TypeParameter> readAndPushTypeParameterList(
+      [List<TypeParameter> list, TreeNode parent]) {
     int length = readUInt();
     if (length == 0) return list ?? <TypeParameter>[];
     if (list == null) {

@@ -34,7 +34,7 @@ void main() {
       test(name, () {
         String dartPath = file.path;
         String shortName = pathlib.withoutExtension(name);
-        String binaryPath = '$binaryDirectory/$shortName.bart';
+        String binaryPath = '$binaryDirectory/$shortName.dill';
         String baselineTextPath = '$textDirectory/$shortName.baseline.txt';
         String currentTextPath = '$textDirectory/$shortName.current.txt';
 
@@ -42,7 +42,7 @@ void main() {
         if (isUpToDate(binaryPath, dartPath)) {
           program = loadProgramFromBinary(binaryPath);
         } else {
-          AnalyzerRepository repository = new AnalyzerRepository(sdk: sdk);
+          Repository repository = new Repository(sdk: sdk);
           program = loadProgramFromDart(dartPath, repository);
           writeProgramToBinary(program, binaryPath);
         }

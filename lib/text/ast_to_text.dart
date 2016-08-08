@@ -5,6 +5,7 @@ library kernel.ast_to_text;
 
 import '../ast.dart';
 import '../import_table.dart';
+import '../type_propagation/type_propagation.dart';
 
 class Namer<T> {
   int index = 0;
@@ -98,6 +99,7 @@ class NameSystem {
   final Namer<Class> classes = new Namer<Class>('#class');
   final Namer<Library> libraries = new Namer<Library>('#lib');
   final Namer<TypeParameter> typeParameters = new Namer<TypeParameter>('#T');
+  final Namer<TreeNode> labels = new Namer<TreeNode>('#L');
   final Disambiguator<Library> prefixes = new Disambiguator<Library>();
 
   nameVariable(VariableDeclaration node) => variables.getName(node);
@@ -105,6 +107,8 @@ class NameSystem {
   nameClass(Class node) => classes.getName(node);
   nameLibrary(Library node) => libraries.getName(node);
   nameTypeParameter(TypeParameter node) => typeParameters.getName(node);
+  nameSwitchCase(SwitchCase node) => labels.getName(node);
+  nameLabeledStatement(LabeledStatement node) => labels.getName(node);
 
   nameLibraryPrefix(Library node, {String proposedName}) {
     return prefixes.disambiguate(node, () {
@@ -150,6 +154,7 @@ class Printer extends Visitor<Null> {
   final Annotator annotator;
   ImportTable importTable;
   int indentation = 0;
+  int column = 0;
 
   static int SPACE = 0;
   static int WORD = 1;
@@ -186,6 +191,16 @@ class Printer extends Visitor<Null> {
     String name = getClassName(node);
     String library = getLibraryReference(node.enclosingLibrary);
     return '$library::$name';
+  }
+
+  String getInferredValueString(InferredValue value) {
+    if (value.isNothing) return 'Nothing';
+    if (value.isAlwaysNull) return 'Null';
+    assert(value.baseClass != null);
+    String baseName = getClassReference(value.baseClass);
+    String baseSuffix = value.isSubclass ? '+' : value.isSubtype ? '*' : '!';
+    String bitSuffix = ValueBit.format(value.valueBits);
+    return '$baseName$baseSuffix $bitSuffix';
   }
 
   static final String emptyNameString = '•';
@@ -300,6 +315,7 @@ class Printer extends Visitor<Null> {
 
   void write(String string) {
     sink.write(string);
+    column += string.length;
   }
 
   void writeSpace([String string = ' ']) {
@@ -393,6 +409,7 @@ class Printer extends Visitor<Null> {
     }
     write('\n');
     state = SPACE;
+    column = 0;
   }
 
   void writeFunction(FunctionNode function,
@@ -437,6 +454,8 @@ class Printer extends Visitor<Null> {
         return 'async';
       case AsyncMarker.AsyncStar:
         return 'async*';
+      case AsyncMarker.SyncYielding:
+        return 'yielding';
       default:
         return '<Invalid async marker: $marker>';
     }
@@ -866,6 +885,33 @@ class Printer extends Visitor<Null> {
     writeExpression(node.body);
   }
 
+  visitBlockExpression(BlockExpression node) {
+    int savedColumn = column;
+
+    var savedState = state;
+    int savedIndentation = indentation;
+    String spaces = ' ' * savedColumn;
+
+    writeWord('|{');
+    endLine();
+    state = SPACE;
+    indentation = (savedColumn + 4) ~/ 2;
+    for (var statement in node.body.statements) {
+      statement.accept(this);
+    }
+    endLine();
+    write('$spaces   => ');
+    writeExpression(node.value);
+    endLine();
+    write('$spaces');
+
+    indentation = savedIndentation;
+    state = savedState;
+    column = savedColumn;
+
+    write('}| ');
+  }
+
   defaultExpression(Expression node) {
     writeWord('${node.runtimeType}');
   }
@@ -961,12 +1007,16 @@ class Printer extends Visitor<Null> {
   }
 
   visitLabeledStatement(LabeledStatement node) {
-    writeNode(node.body); // TODO
+    writeIndentation();
+    writeWord(syntheticNames.nameLabeledStatement(node));
+    endLine(':');
+    writeNode(node.body);
   }
 
   visitBreakStatement(BreakStatement node) {
     writeIndentation();
-    writeWord('break'); // TODO
+    writeWord('break');
+    writeWord(syntheticNames.nameLabeledStatement(node.target));
     endLine(';');
   }
 
@@ -1030,6 +1080,10 @@ class Printer extends Visitor<Null> {
   }
 
   visitSwitchCase(SwitchCase node) {
+    String label = syntheticNames.nameSwitchCase(node);
+    writeIndentation();
+    writeWord(label);
+    endLine(':');
     for (var expression in node.expressions) {
       writeIndentation();
       writeWord('case');
@@ -1048,7 +1102,8 @@ class Printer extends Visitor<Null> {
 
   visitContinueSwitchStatement(ContinueSwitchStatement node) {
     writeIndentation();
-    writeWord('continue to switch case'); // TODO
+    writeWord('continue');
+    writeWord(syntheticNames.nameSwitchCase(node.target));
     endLine(';');
   }
 
@@ -1115,7 +1170,13 @@ class Printer extends Visitor<Null> {
 
   visitYieldStatement(YieldStatement node) {
     writeIndentation();
-    writeWord('yield');
+    if (node.isYieldStar) {
+      writeWord('yield*');
+    } else if (node.isNative) {
+      writeWord('[yield]');
+    } else {
+      writeWord('yield');
+    }
     writeExpression(node.expression);
     endLine(';');
   }
@@ -1362,6 +1423,7 @@ class Precedence extends ExpressionVisitor<int> {
   int visitStaticGet(StaticGet node) => PRIMARY;
   int visitStaticSet(StaticSet node) => EXPRESSION;
   int visitLet(Let node) => EXPRESSION;
+  int visitBlockExpression(BlockExpression node) => EXPRESSION;
 }
 
 String procedureKindToString(ProcedureKind kind) {

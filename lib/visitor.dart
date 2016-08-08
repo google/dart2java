@@ -47,6 +47,7 @@ abstract class ExpressionVisitor<R> {
   R visitBoolLiteral(BoolLiteral node) => defaultBasicLiteral(node);
   R visitNullLiteral(NullLiteral node) => defaultBasicLiteral(node);
   R visitLet(Let node) => defaultExpression(node);
+  R visitBlockExpression(BlockExpression node) => defaultExpression(node);
 }
 
 abstract class StatementVisitor<R> {
@@ -153,6 +154,7 @@ class TreeVisitor<R> implements ExpressionVisitor<R>,
   R visitBoolLiteral(BoolLiteral node) => defaultBasicLiteral(node);
   R visitNullLiteral(NullLiteral node) => defaultBasicLiteral(node);
   R visitLet(Let node) => defaultExpression(node);
+  R visitBlockExpression(BlockExpression node) => defaultExpression(node);
 
   // Statements
   R defaultStatement(Statement node) => defaultTreeNode(node);
@@ -295,8 +297,8 @@ class RecursiveVisitor<R> extends Visitor<R> {
 ///       @override
 ///       Node visitNot(Not node) {
 ///         var operand = node.operand.accept(this); // Remember to visit.
-///         if (operand is LogicalOperator && operand.operator == '&&') {
-///           return new LogicalOperator(
+///         if (operand is LogicalExpression && operand.operator == '&&') {
+///           return new LogicalExpression(
 ///             new Not(operand.left),
 ///             '||',
 ///             new Not(operand.right));

@@ -487,6 +487,9 @@ abstract class Member extends TreeNode {
   /// This will be removed once Kernel implements metadata support.
   List<DartObject> analyzerMetadata;
 
+  /// The body of the procedure or constructor, or `null` if this is a field.
+  FunctionNode get function => null;
+
   /// Returns a possibly synthesized name for this member, consistent with
   /// the names used across all [toString] calls.
   String toString() => debugQualifiedMemberName(this);
@@ -911,7 +914,8 @@ enum AsyncMarker {
   Sync,
   SyncStar,
   Async,
-  AsyncStar
+  AsyncStar,
+  SyncYielding,
 }
 
 // ------------------------------------------------------------------------
@@ -1745,6 +1749,34 @@ class Let extends Expression {
   }
 }
 
+class BlockExpression extends Expression {
+  Block body;
+  Expression value;
+
+  BlockExpression(this.body, this.value) {
+    body?.parent = this;
+    value?.parent = this;
+  }
+
+  accept(ExpressionVisitor v) => v.visitBlockExpression(this);
+
+  visitChildren(Visitor v) {
+    body?.accept(v);
+    value?.accept(v);
+  }
+
+  transformChildren(Transformer v) {
+    if (body != null) {
+      body = body.accept(v);
+      body?.parent = this;
+    }
+    if (value != null) {
+      value = value.accept(v);
+      value?.parent = this;
+    }
+  }
+}
+
 // ------------------------------------------------------------------------
 //                              STATEMENTS
 // ------------------------------------------------------------------------
@@ -2255,10 +2287,28 @@ class TryFinally extends Statement {
 /// Statement of form `yield x` or `yield* x`.
 class YieldStatement extends Statement {
   Expression expression;
-  bool isYieldStar;
+  int flags = 0;
 
-  YieldStatement(this.expression, {this.isYieldStar: false}) {
+  YieldStatement(this.expression,
+      {bool isYieldStar: false,
+       bool isNative: false}) {
     expression?.parent = this;
+    this.isYieldStar = isYieldStar;
+    this.isNative = isNative;
+  }
+
+  static const int FlagYieldStar = 1 << 0;
+  static const int FlagNative = 1 << 1;
+
+  bool get isYieldStar => flags & FlagYieldStar != 0;
+  bool get isNative => flags & FlagNative != 0;
+
+  void set isYieldStar(bool value) {
+    flags = value ? (flags | FlagYieldStar) : (flags & ~FlagYieldStar);
+  }
+
+  void set isNative(bool value) {
+    flags = value ? (flags | FlagNative) : (flags & ~FlagNative);
   }
 
   accept(StatementVisitor v) => v.visitYieldStatement(this);

@@ -1,3 +1,6 @@
+// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 library kernel.type_propagation.visualizer;
 
 import 'constraints.dart';
@@ -15,6 +18,8 @@ class Visualizer {
   final Map<int, GraphNode> variableNodes = <int, GraphNode>{};
   final Map<int, FunctionNode> value2function = <int, FunctionNode>{};
   final Map<FunctionNode, int> function2value = <FunctionNode, int>{};
+  final Map<int, Annotation> latticePointAnnotation = <int, Annotation>{};
+  final Map<int, Annotation> valueAnnotation = <int, Annotation>{};
   FieldNames fieldNames;
   ConstraintSystem constraints;
   Solver solver;
@@ -63,16 +68,12 @@ class Visualizer {
     }
   }
 
-  static Member _getEnclosingMember(TreeNode node) {
-    while (node != null) {
-      if (node is Member) return node;
-      node = node.parent;
-    }
-    return null;
+  void annotateAssign(int source, int destination, TreeNode node) {
+    addEdge(source, destination, _getEnclosingMember(node), '');
   }
 
-  void annotateAssign(int source, int destination, Member member) {
-    addEdge(source, destination, member, '');
+  void annotateSink(int source, int destination, TreeNode node) {
+    addEdge(source, destination, _getEnclosingMember(node), 'sink');
   }
 
   void annotateLoad(int object, int field, int destination, Member member) {
@@ -83,6 +84,36 @@ class Visualizer {
   void annotateStore(int object, int field, int source, Member member) {
     String fieldName = fieldNames.getDiagnosticNameOfField(field);
     addEdge(source, object, member, 'Store[$fieldName]');
+  }
+
+  void annotateDirectStore(int object, int field, int source, Member member) {
+    String fieldName = fieldNames.getDiagnosticNameOfField(field);
+    addEdge(source, object, member, 'Store![$fieldName]');
+  }
+
+  void annotateLatticePoint(int point, TreeNode node, [String info]) {
+    latticePointAnnotation[point] = new Annotation(node, info);
+  }
+
+  void annotateValue(int value, TreeNode node, [String info]) {
+    valueAnnotation[value] = new Annotation(node, info);
+  }
+
+  String getLatticePointName(int latticePoint) {
+    if (latticePoint < 0) return 'bottom';
+    return latticePointAnnotation[latticePoint].toLabel();
+  }
+
+  String getValueName(int value) {
+    return valueAnnotation[value].toLabel();
+  }
+
+  static Member _getEnclosingMember(TreeNode node) {
+    while (node != null) {
+      if (node is Member) return node;
+      node = node.parent;
+    }
+    return null;
   }
 
   void addEdge(int source, int destination, Member member, String label) {
@@ -120,13 +151,9 @@ class Visualizer {
   }
 
   String _getValueLabel(GraphNode node) {
-    int value = solver.variableValue[node.variable];
-    if (value < 0) return 'bottom';
-    if (value < constraints.numberOfClasses) {
-      return '${hierarchy.classes[value]}';
-    }
-    FunctionNode function = value2function[value];
-    return escapeLabel(shorten('${function.parent}'));
+    int latticePoint = solver.getVariableValue(node.variable);
+    if (latticePoint < 0) return 'bottom';
+    return escapeLabel(shorten(getLatticePointName(latticePoint)));
   }
 
   /// Returns the Graphviz Dot code a the subgraph relevant for [member].
@@ -260,19 +287,19 @@ class GraphNode {
   /// another member.
   String get externalLabel {
     if (isGlobal) return globalAnnotation.toLabel();
-    if (annotationForContext.isEmpty) return '';
+    if (annotationForContext.isEmpty) return '$variable';
     Member member = annotationForContext.keys.first;
     Annotation annotation = annotationForContext[member];
-    return annotation.toLabelWithContext(member);
+    return '$variable:' + annotation.toLabelWithContext(member);
   }
 
   String getAnnotationInContextOf(Member member) {
     if (annotationForContext.isEmpty) return '';
     Annotation annotation = annotationForContext[member];
-    if (annotation != null) return annotation.toLabel();
+    if (annotation != null) return '$variable:' + annotation.toLabel();
     annotation =
         annotationForContext[null] ?? annotationForContext.values.first;
-    return annotation.toLabelWithContext(member);
+    return '$variable:' + annotation.toLabelWithContext(member);
   }
 
   void addEdgeTo(GraphNode other, Member member, String label) {
@@ -318,16 +345,19 @@ class TextAnnotator extends Annotator {
 
   Builder get builder => visualizer.builder;
 
+  String getReference(Node node, Printer printer) {
+    if (node is Class) return printer.getClassReference(node);
+    if (node is Member) return printer.getMemberReference(node);
+    if (node is Library) return printer.getLibraryReference(node);
+    return debugNodeToString(node);
+  }
+
   String getValueForVariable(Printer printer, int variable) {
     if (variable == null) {
       return '<missing type>';
     }
-    Class value = visualizer.solver.getVariableValue(variable);
-    if (value == null) {
-      return 'bottom';
-    } else {
-      return printer.getClassReference(value);
-    }
+    var value = visualizer.solver.getValueInferredForVariable(variable);
+    return printer.getInferredValueString(value);
   }
 
   TextAnnotator(this.visualizer) {
@@ -351,14 +381,15 @@ class TextAnnotator extends Annotator {
 
   String annotateVariable(Printer printer, VariableDeclaration node) {
     return getValueForVariable(
-        printer, builder.functionParameters[node] ?? variables[node]);
+        printer, builder.global.parameters[node] ?? variables[node]);
   }
 
   String annotateReturn(Printer printer, FunctionNode node) {
-    return getValueForVariable(printer, functionReturns[node]);
+    if (node.parent is Constructor) return null;
+    return getValueForVariable(printer, builder.global.returns[node]);
   }
 
   String annotateField(Printer printer, Field node) {
-    return getValueForVariable(printer, builder.fields[node]);
+    return getValueForVariable(printer, builder.global.fields[node]);
   }
 }

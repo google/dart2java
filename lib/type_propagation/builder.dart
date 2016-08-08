@@ -5,10 +5,52 @@ library kernel.type_propagation.builder;
 
 import '../ast.dart';
 import '../class_hierarchy.dart';
-import 'constraints.dart';
-import 'canonicalizer.dart';
-import 'visualizer.dart';
 import '../core_types.dart';
+import 'canonicalizer.dart';
+import 'constraints.dart';
+import 'type_propagation.dart';
+import 'visualizer.dart';
+
+/// Maps AST nodes to constraint variables at the level of function boundaries.
+///
+/// Bindings internally in a function are only preserved by the [Visualizer].
+class VariableMapping {
+  /// Variable holding all values that may flow into the given field.
+  final Map<Field, int> fields = <Field, int>{};
+
+  /// Variable holding all values that may be returned from the given function.
+  final Map<FunctionNode, int> returns = <FunctionNode, int>{};
+
+  /// Variable holding all values that may be passed into the given function
+  /// parameter (possibly through a default parameter value).
+  final Map<VariableDeclaration, int> parameters = <VariableDeclaration, int>{};
+
+  /// Variable holding the function object for the given function.
+  final Map<FunctionNode, int> functions = <FunctionNode, int>{};
+
+  static VariableMapping make(int _) => new VariableMapping();
+}
+
+/// Maps AST nodes to the lattice employed by the constraint system.
+class LatticeMapping {
+  /// Lattice point containing the torn-off functions originating from an
+  /// instance procedure that overrides the given procedure.
+  final Map<Procedure, int> functionsOverridingMethod = <Procedure, int>{};
+
+  /// Lattice point containing all torn-off functions originating from an
+  /// instance procedure of the given name,
+  ///
+  /// This ensures that calls to a method with unknown receiver may still
+  /// recover some information about the callee based on the name alone.
+  final Map<Name, int> functionsWithName = <Name, int>{};
+
+  /// Maps a class index to a lattice point containing all values that are
+  /// subtypes of that class..
+  final List<int> subtypesOfClass;
+
+  LatticeMapping(int numberOfClasses)
+      : subtypesOfClass = new List<int>(numberOfClasses);
+}
 
 /// Generates a [ConstraintSystem] to be solved by [Solver].
 class Builder {
@@ -19,23 +61,40 @@ class Builder {
   final FieldNames fieldNames;
   final Visualizer visualizer;
 
-  final Map<Field, int> fields = <Field, int>{};
-  final Map<Procedure, int> tearOffs = <Procedure, int>{};
-  final Map<VariableDeclaration, int> functionParameters =
-      <VariableDeclaration, int>{};
-  final Map<Procedure, int> returnVariables = <Procedure, int>{};
+  final LatticeMapping lattice;
+
+  /// Bindings for all members. The values inferred for these variables is the
+  /// output of the analysis.
+  ///
+  /// For static members, these are the canonical variables representing the
+  /// member.
+  ///
+  /// For instance members, these are the context-insensitive joins over all
+  /// the specialized copies of the instance member.
+  final VariableMapping global = new VariableMapping();
+
+  /// Maps a class index to the bindings for instance members specific to that
+  /// class as the host class.
+  final List<VariableMapping> classMapping;
+
   final Map<TypeParameter, int> functionTypeParameters = <TypeParameter, int>{};
+
+  /// Variable holding the result of the declaration-site field initializer
+  /// for the given field.
+  final Map<Field, int> declarationSiteFieldInitializer = <Field, int>{};
 
   /// Maps a class index to the result of [getInterfaceEscapeVariable].
   final List<int> interfaceEscapeVariables;
 
   /// Maps a class index to the result of [getExternalInstanceVariable].
   final List<int> externalClassVariables;
+  final List<int> externalClassValues;
 
   final List<int> externalClassWorklist = <int>[];
 
   final Uint31PairMap<int> _stores = new Uint31PairMap<int>();
   final Uint31PairMap<int> _loads = new Uint31PairMap<int>();
+  final List<InferredValue> _baseTypeOfLatticePoint = <InferredValue>[];
 
   int bottomNode;
   int dynamicNode;
@@ -55,6 +114,11 @@ class Builder {
 
   int iteratorField;
   int currentField;
+
+  /// Lattice point containing all function values.
+  int latticePointForAllFunctions;
+
+  Member identicalFunction;
 
   bool verbose;
 
@@ -77,16 +141,47 @@ class Builder {
       : this.hierarchy = hierarchy,
         this.fieldNames = names,
         this.visualizer = visualizer,
-        this.constraints = new ConstraintSystem(hierarchy.classes.length),
+        this.constraints = new ConstraintSystem(),
+        this.classMapping = new List<VariableMapping>.generate(
+            hierarchy.classes.length, VariableMapping.make),
         this.interfaceEscapeVariables = new List<int>(hierarchy.classes.length),
-        this.externalClassVariables = new List<int>(hierarchy.classes.length) {
+        this.externalClassVariables = new List<int>(hierarchy.classes.length),
+        this.externalClassValues = new List<int>(hierarchy.classes.length),
+        this.lattice = new LatticeMapping(hierarchy.classes.length) {
     if (visualizer != null) {
       visualizer.builder = this;
       visualizer.constraints = constraints;
       visualizer.fieldNames = fieldNames;
-      for (int i = 0; i < hierarchy.classes.length; ++i) {
-        visualizer.annotateVariable(i, hierarchy.classes[i]);
+    }
+
+    // Translate class hierarchy into constraints.
+    for (int i = 0; i < hierarchy.classes.length; ++i) {
+      Class class_ = hierarchy.classes[i];
+      List<int> supers = <int>[];
+      if (class_.supertype != null) {
+        supers.add(getLatticePointForSubtypesOfClass(class_.superclass));
       }
+      if (class_.mixedInType != null) {
+        supers.add(getLatticePointForSubtypesOfClass(class_.mixedInClass));
+      }
+      for (InterfaceType supertype in class_.implementedTypes) {
+        supers.add(getLatticePointForSubtypesOfClass(supertype.classNode));
+      }
+      int subtypePoint = newLatticePoint(supers, class_, BaseClassKind.Subtype);
+      int concretePoint =
+          newLatticePoint(<int>[subtypePoint], class_, BaseClassKind.Exact);
+      lattice.subtypesOfClass[i] = subtypePoint;
+      int value = constraints.newValue(concretePoint);
+      int variable = constraints.newVariable();
+      // We construct the constraint system so the first N variables and values
+      // correspond to the N classes in the program.
+      assert(variable == i);
+      assert(value == -i);
+      visualizer?.annotateLatticePoint(subtypePoint, class_, 'subtype');
+      visualizer?.annotateLatticePoint(concretePoint, class_, 'concrete');
+      visualizer?.annotateVariable(variable, class_);
+      visualizer?.annotateValue(value, class_);
+      addInput(value, ValueBit.other, variable);
     }
 
     bottomNode = newVariable(null, 'bottom');
@@ -103,36 +198,53 @@ class Builder {
     futureNode = getExternalInstanceVariable(coreTypes.futureClass);
     streamNode = getExternalInstanceVariable(coreTypes.streamClass);
     functionValueNode = getExternalInstanceVariable(coreTypes.functionClass);
-    nullNode = bottomNode; // Assume anything might be null so don't propagate.
+    nullNode = newVariable(null, 'Null');
 
     iteratorField = getPropertyField(Names.iterator);
     currentField = getPropertyField(Names.current);
 
+    latticePointForAllFunctions =
+        getLatticePointForSubtypesOfClass(coreTypes.functionClass);
+
+    identicalFunction = coreTypes.getCoreProcedure('dart:core', 'identical');
+
+    // Seed bitmasks for built-in values.
+    constraints.addBitmaskInput(ValueBit.null_, nullNode);
+    constraints.addBitmaskInput(ValueBit.all, dynamicNode);
+
     for (Library library in program.libraries) {
       for (Procedure procedure in library.procedures) {
-        buildProcedure(procedure, null);
+        buildProcedure(null, procedure);
       }
       for (Field field in library.fields) {
         buildStaticField(field);
       }
       for (Class class_ in library.classes) {
-        int host = getInstanceVariable(class_);
         for (Procedure procedure in class_.procedures) {
-          if (!procedure.isAbstract) {
-            buildProcedure(procedure, host);
+          if (procedure.isStatic) {
+            buildProcedure(null, procedure);
           }
         }
         for (Field field in class_.fields) {
           if (field.isStatic) {
             buildStaticField(field);
-          } else {
-            buildInstanceField(field, host);
           }
         }
-        for (Constructor constructor in class_.constructors) {
-          buildConstructor(constructor, host);
+        if (!class_.isAbstract) {
+          buildInstanceValue(class_);
         }
       }
+    }
+
+    // We don't track the values flowing into the identical function, as it
+    // causes a lot of spurious escape.  Every class that inherits Object.==
+    // would escape its 'this' value into a dynamic context.
+    // Mark the identical() parameters as 'dynamic' so the output is sound.
+    for (int i = 0; i < 2; ++i) {
+      constraints.addAssign(
+          dynamicNode,
+          getSharedParameterVariable(
+              identicalFunction.function.positionalParameters[i]));
     }
 
     // Build constraints mocking the external interfaces.
@@ -142,23 +254,115 @@ class Builder {
     }
   }
 
+  int newLatticePoint(
+      List<int> parentLatticePoints, Class baseClass, BaseClassKind kind) {
+    _baseTypeOfLatticePoint.add(new InferredValue(baseClass, kind, 0));
+    return constraints.newLatticePoint(parentLatticePoints);
+  }
+
+  void addInput(int value, int bitmask, int destination) {
+    constraints.addAllocation(value, destination);
+    constraints.addBitmaskInput(bitmask, destination);
+  }
+
+  /// Returns an [InferredValue] with the base type relation for the given
+  /// lattice point but whose bitmask is 0.  The bitmask must be filled in
+  /// before this value is exposed to analysis clients.
+  InferredValue getBaseTypeOfLatticePoint(int latticePoint) {
+    return _baseTypeOfLatticePoint[latticePoint];
+  }
+
+  /// Returns the lattice point containing all subtypes of the given class.
+  int getLatticePointForSubtypesOfClass(Class classNode) {
+    int index = hierarchy.getClassIndex(classNode);
+    return lattice.subtypesOfClass[index];
+  }
+
+  /// Returns the lattice point containing all function implementing the given
+  /// instance method.
+  int getLatticePointForFunctionsOverridingMethod(Procedure node) {
+    assert(!node.isStatic);
+    if (node.isAccessor) return latticePointForAllFunctions;
+    if (node.enclosingClass.supertype == null)
+      return latticePointForAllFunctions;
+    return lattice.functionsOverridingMethod[node] ??=
+        _makeLatticePointForFunctionsOverridingMethod(node);
+  }
+
+  int _makeLatticePointForFunctionsOverridingMethod(Procedure node) {
+    Class host = node.enclosingClass;
+    Member superMember = host.supertype == null
+        ? null
+        : hierarchy.getInterfaceMember(host.superclass, node.name);
+    int super_;
+    if (superMember is Procedure && !superMember.isAccessor) {
+      super_ = getLatticePointForFunctionsOverridingMethod(superMember);
+    } else {
+      super_ = getLatticePointForFunctionsWithName(node.name);
+    }
+    int point = newLatticePoint(
+        <int>[super_], coreTypes.functionClass, BaseClassKind.Subtype);
+    visualizer?.annotateLatticePoint(point, node, 'overriders');
+    return point;
+  }
+
   int newVariable([TreeNode node, String info]) {
     int variable = constraints.newVariable();
     visualizer?.annotateVariable(variable, node, info);
     return variable;
   }
 
-  /// Returns a variable that should contain all values that may be contained
-  /// in the given field.
-  ///
-  /// For instance fields, do not assign to this variable, but rather emit a
-  /// store to the the receiver object.
-  int getFieldVariable(Field field) {
-    return fields[field] ??= newVariable(field);
+  VariableMapping getClassMapping(Class host) {
+    if (host == null) return global;
+    int index = hierarchy.getClassIndex(host);
+    return classMapping[index];
   }
 
-  int getParameterVariable(VariableDeclaration node) {
-    return functionParameters[node] ??= newVariable(node, 'parameter');
+  /// Returns a variable that should contain all values that may be contained
+  /// in any copy the given field (hence "shared" between the copies).
+  int getSharedFieldVariable(Field field) {
+    return global.fields[field] ??= newVariable(field);
+  }
+
+  /// Returns a variable representing the given field on the given class.
+  ///
+  /// If the field is static, [host] should be `null`.
+  int getFieldVariable(Class host, Field field) {
+    if (host == null) return getSharedFieldVariable(field);
+    VariableMapping mapping = getClassMapping(host);
+    return mapping.fields[field] ??= _makeFieldVariable(host, field);
+  }
+
+  int _makeFieldVariable(Class host, Field field) {
+    // Create a variable specific to this host class, and add an assignment
+    // to the global sink for this field.
+    assert(host != null);
+    int variable = newVariable(field);
+    int sink = getSharedFieldVariable(field);
+    constraints.addSink(variable, sink);
+    visualizer?.annotateSink(variable, sink, field);
+    return variable;
+  }
+
+  /// Variable containing all values that may be passed into the given parameter
+  /// of any instantiation of the given function (hence "shared" between them).
+  int getSharedParameterVariable(VariableDeclaration node) {
+    return global.parameters[node] ??= newVariable(node, 'shared parameter');
+  }
+
+  int getParameterVariable(Class host, VariableDeclaration node) {
+    if (host == null) return getSharedParameterVariable(node);
+    VariableMapping mapping = getClassMapping(host);
+    return mapping.parameters[node] ??= _makeParameterVariable(host, node);
+  }
+
+  int _makeParameterVariable(Class host, VariableDeclaration node) {
+    assert(host != null);
+    int variable = newVariable(node, 'parameter');
+    int sink = getSharedParameterVariable(node);
+    constraints.addSink(variable, sink);
+    visualizer?.annotateSink(variable, sink, node);
+    return variable;
   }
 
   /// Returns the variable representing all the values that would be checked
@@ -180,34 +384,165 @@ class Builder {
     return functionTypeParameters[node] ??= newVariable(node);
   }
 
-  int getReturnVariable(Procedure node) {
-    return returnVariables[node] ??= newVariable(node, 'return');
+  /// Variable containing all values that may be returned from any instantiation
+  /// of the given function (hence "shared" between them).
+  int getSharedReturnVariable(FunctionNode node) {
+    return global.returns[node] ??= newVariable(node, 'return');
+  }
+
+  int getReturnVariable(Class host, Procedure node) {
+    if (host == null) return getSharedReturnVariable(node.function);
+    VariableMapping mapping = getClassMapping(host);
+    return mapping.returns[node.function] ??= _makeReturnVariable(host, node);
+  }
+
+  int _makeReturnVariable(Class host, Procedure node) {
+    assert(host != null);
+    int variable = newVariable(node, 'return');
+    int sink = getSharedReturnVariable(node.function);
+    constraints.addSink(variable, sink);
+    visualizer?.annotateSink(variable, sink, node);
+    return variable;
+  }
+
+  /// Returns a variable containing all the function objects for all
+  /// instantiations of the given function.
+  int getSharedTearOffVariable(FunctionNode node) {
+    return global.functions[node] ??= newVariable(node);
+  }
+
+  /// Returns a variable containing the torn-off copy of the given function
+  /// occurring in static context.
+  int getStaticTearOffVariable(FunctionNode node) {
+    return global.functions[node] ??= _makeStaticTearOffVariable(node);
+  }
+
+  int _makeStaticTearOffVariable(FunctionNode node) {
+    int variable = newVariable(node);
+    addInput(newFunctionValue(node), ValueBit.other, variable);
+    return variable;
   }
 
   /// Returns a variable containing the torn-off copy of the given procedure.
-  int getTearOffVariable(Procedure node) {
-    return tearOffs[node] ??= _makeTearOffVariable(node);
+  int getTearOffVariable(Class host, Procedure node) {
+    if (host == null) return getStaticTearOffVariable(node.function);
+    VariableMapping mapping = getClassMapping(host);
+    return mapping.functions[node.function] ??=
+        _makeTearOffVariable(host, node);
   }
 
-  int _makeTearOffVariable(Procedure node) {
+  int _makeTearOffVariable(Class host, Procedure node) {
     int variable = newVariable(node, 'function');
-    constraints.addAllocateFunction(newFunctionValue(node.function), variable);
+    addInput(newFunctionValue(node.function, node), ValueBit.other, variable);
+    int sink = getSharedTearOffVariable(node.function);
+    constraints.addSink(variable, sink);
+    visualizer?.annotateSink(variable, sink, node);
     return variable;
+  }
+
+  /// Returns the variable holding the result of a 'get' selector dispatched
+  /// to the given member, or `null` if the member cannot respond to a 'get'
+  /// selector.
+  int getMemberGetter(Class host, Member member) {
+    if (member is Field) {
+      return getFieldVariable(host, member);
+    } else if (member is Procedure) {
+      if (member.isGetter) {
+        return getReturnVariable(host, member);
+      } else if (!member.isAccessor) {
+        return getTearOffVariable(host, member);
+      }
+    }
+    return null;
+  }
+
+  /// Returns the variable holding the argument to a 'set' selector dispatched
+  /// to the given member, or `null` if the member cannot respond to a 'set'
+  /// selector.
+  int getMemberSetter(Class host, Member member) {
+    if (member is Field && !member.isFinal) {
+      return getFieldVariable(host, member);
+    } else if (member is Procedure && member.isSetter) {
+      return getParameterVariable(
+          host, member.function.positionalParameters[0]);
+    }
+    return null;
+  }
+
+  /// Returns a lattice point containing all instance methods with the given
+  /// name.
+  int getLatticePointForFunctionsWithName(Name name) {
+    if (name == null) return latticePointForAllFunctions;
+    return lattice.functionsWithName[name] ??=
+        _makeLatticePointForFunctionsWithName(name);
+  }
+
+  int _makeLatticePointForFunctionsWithName(Name name) {
+    int point = newLatticePoint(<int>[latticePointForAllFunctions],
+        coreTypes.functionClass, BaseClassKind.Subtype);
+    visualizer?.annotateLatticePoint(point, null, 'Methods of name $name');
+    return point;
   }
 
   /// Returns a new function value annotated with given AST node.
   ///
+  /// If the function is the body of an instance procedure, it should be passed
+  /// as [member] to ensure an effective union hierarchy is built for it.
+  /// Otherwise, [member] should be omitted.
+  ///
   /// Note that the returned value is not a variable. Add a function allocation
   /// constraint to move it into a variable.
-  int newFunctionValue(FunctionNode node) {
-    int functionValue = constraints.newFunctionValue();
+  int newFunctionValue(FunctionNode node, [Procedure member]) {
+    assert(node != null);
+    int baseLatticePoint = member == null
+        ? latticePointForAllFunctions
+        : getLatticePointForFunctionsOverridingMethod(member);
+    int latticePoint = newLatticePoint(<int>[baseLatticePoint],
+        coreTypes.functionClass, BaseClassKind.Subtype);
+    visualizer?.annotateLatticePoint(latticePoint, member, 'function');
+    int minArity = node.requiredParameterCount;
+    int maxArity = node.positionalParameters.length;
+    int functionValue = constraints.newValue(latticePoint);
+    for (int i = 0; i < node.positionalParameters.length; ++i) {
+      int variable = newVariable();
+      for (int arity = minArity; arity <= maxArity; ++arity) {
+        int field = fieldNames.getPositionalParameterField(arity, i);
+        constraints.setStoreLocation(functionValue, field, variable);
+        constraints.setLoadLocation(functionValue, field, variable);
+      }
+    }
+    for (int i = 0; i < node.namedParameters.length; ++i) {
+      int variable = newVariable();
+      for (int arity = minArity; arity <= maxArity; ++arity) {
+        int field = fieldNames.getNamedParameterField(
+          arity, node.namedParameters[i].name);
+          constraints.setStoreLocation(functionValue, field, variable);
+          constraints.setLoadLocation(functionValue, field, variable);
+      }
+    }
+    int returnVariable = newVariable();
+    for (int arity = minArity; arity <= maxArity; ++arity) {
+      int returnField = fieldNames.getReturnField(arity);
+      constraints.setStoreLocation(functionValue, returnField, returnVariable);
+      constraints.setLoadLocation(functionValue, returnField, returnVariable);
+    }
     visualizer?.annotateFunction(functionValue, node);
+    visualizer?.annotateValue(functionValue, member, 'function');
     return functionValue;
   }
 
-  /// Returns a variable containing the instances of the given class.
+  /// Returns a variable containing the concrete instances of the given class.
   int getInstanceVariable(Class node) {
+    assert(!node.isAbstract);
     return hierarchy.getClassIndex(node);
+  }
+
+  /// Returns the value representing the concrete instances of the given class.
+  int getInstanceValue(Class node) {
+    assert(!node.isAbstract);
+    // Values are negated to help distinguish them from variables and
+    // lattice points.
+    return -hierarchy.getClassIndex(node);
   }
 
   /// Returns a variable containing the external instances of the given class.
@@ -224,48 +559,92 @@ class Builder {
   /// class.
   int getExternalInstanceVariable(Class node) {
     int classIndex = hierarchy.getClassIndex(node);
-    int externalObject = externalClassVariables[classIndex];
-    if (externalObject == null) {
-      // TODO(asgerf): For now we use the same abstract object for internal
-      // and external instances, but we may want to change this.
-      externalObject = classIndex;
-      externalClassVariables[classIndex] = externalObject;
-      externalClassWorklist.add(classIndex);
+    return externalClassVariables[classIndex] ??=
+        _makeExternalInstanceVariable(node, classIndex);
+  }
+
+  int getValueBitForExternalClass(Class node) {
+    if (node == coreTypes.intClass) {
+      return ValueBit.integer;
+    } else if (node == coreTypes.doubleClass) {
+      return ValueBit.double_;
+    } else if (node == coreTypes.stringClass) {
+      return ValueBit.string;
+    } else {
+      return ValueBit.other;
     }
-    return externalObject;
+  }
+
+  int _makeExternalInstanceVariable(Class node, int classIndex) {
+    if (node == coreTypes.numClass) {
+      // Don't build an interface based on the "num" class, instead treat it
+      // as the union of "int" and "double".
+      int variable = newVariable(node);
+      constraints.addAssign(intNode, variable);
+      constraints.addAssign(doubleNode, variable);
+      return variable;
+    }
+    int baseLatticePoint = getLatticePointForSubtypesOfClass(node);
+    // TODO(asgerf): Use more fine-grained handling of externals, based on
+    //   metadata or on a specification read from a separate file (issue #22).
+    int latticePoint =
+        newLatticePoint(<int>[baseLatticePoint], node, BaseClassKind.Subtype);
+    visualizer?.annotateLatticePoint(latticePoint, node, 'external');
+    int value = constraints.newValue(latticePoint);
+    int variable = newVariable(node, 'external');
+    addInput(value, getValueBitForExternalClass(node), variable);
+    externalClassValues[classIndex] = value;
+    externalClassWorklist.add(classIndex);
+    return variable;
   }
 
   void _buildExternalClassValue(int index) {
     Class node = hierarchy.classes[index];
-    int externalObject = externalClassVariables[index];
+    int variable = externalClassVariables[index];
+    int externalObject = externalClassValues[index];
     for (Member member in hierarchy.getInterfaceMembers(node, setters: false)) {
-      _buildExternalInterfaceMember(member, externalObject);
+      _buildExternalInterfaceMember(node, member, externalObject, variable,
+          isSetter: false);
     }
     for (Member member in hierarchy.getInterfaceMembers(node, setters: true)) {
-      _buildExternalInterfaceMember(member, externalObject);
+      _buildExternalInterfaceMember(node, member, externalObject, variable,
+          isSetter: true);
+    }
+    for (TypeParameter parameter in node.typeParameters) {
+      int field = fieldNames.getTypeParameterField(parameter);
+      int location = newVariable(parameter);
+      constraints.setStoreLocation(externalObject, field, location);
+      constraints.setLoadLocation(externalObject, field, location);
     }
   }
 
-  void _buildExternalInterfaceMember(Member member, int object) {
+  void _buildExternalInterfaceMember(
+      Class host, Member member, int object, int variable,
+      {bool isSetter}) {
+    // TODO(asgerf): Handle nullability of return values.
     TypeEnvironment environment =
-        new TypeEnvironment(this, member, thisValue: object);
+        new TypeEnvironment(this, host, member, thisVariable: variable);
     int propertyField = fieldNames.getPropertyField(member.name);
     if (member is Field) {
-      int value = buildCovariantType(member.type, environment);
-      environment.addStore(object, propertyField, value);
+      int fieldType = buildCovariantType(member.type, environment);
+      if (isSetter) {
+        constraints.setStoreLocation(object, propertyField, fieldType);
+      } else {
+        constraints.setLoadLocation(object, propertyField, fieldType);
+      }
     } else {
       Procedure procedure = member;
       FunctionNode function = procedure.function;
       if (procedure.isGetter) {
-        int value = buildCovariantType(function.returnType, environment);
-        environment.addStore(object, propertyField, value);
+        int returned = buildCovariantType(function.returnType, environment);
+        constraints.setLoadLocation(object, propertyField, returned);
       } else if (procedure.isSetter) {
-        int value = environment.getLoad(object, propertyField);
+        int escaping = environment.getLoad(variable, propertyField);
         buildContravariantType(
-            function.positionalParameters[0].type, environment, value);
+            function.positionalParameters[0].type, environment, escaping);
       } else {
         int externalMember = buildCovariantFunctionType(function, environment);
-        environment.addStore(object, propertyField, externalMember);
+        constraints.setLoadLocation(object, propertyField, externalMember);
       }
     }
   }
@@ -309,19 +688,20 @@ class Builder {
     visualizer?.annotateVariable(escapingObject, node, 'escape point');
     interfaceEscapeVariables[index] = escapingObject;
     for (Member member in hierarchy.getInterfaceMembers(node, setters: false)) {
-      _buildEscapingInterfaceMember(member, escapingObject);
+      _buildEscapingInterfaceMember(node, member, escapingObject);
     }
     for (Member member in hierarchy.getInterfaceMembers(node, setters: true)) {
-      _buildEscapingInterfaceMember(member, escapingObject);
+      _buildEscapingInterfaceMember(node, member, escapingObject);
     }
     return escapingObject;
   }
 
   /// Models the behavior of external code invoking [member] on
   /// [escapingObject].
-  void _buildEscapingInterfaceMember(Member member, int escapingObject) {
+  void _buildEscapingInterfaceMember(
+      Class host, Member member, int escapingObject) {
     TypeEnvironment environment =
-        new TypeEnvironment(this, member, thisValue: escapingObject);
+        new TypeEnvironment(this, host, member, thisVariable: escapingObject);
     int propertyField = fieldNames.getPropertyField(member.name);
     if (member is Field) {
       int escapingMember = environment.getLoad(escapingObject, propertyField);
@@ -335,10 +715,8 @@ class Builder {
             function.returnType, environment, escapingMember);
       } else if (procedure.isSetter) {
         VariableDeclaration parameter = function.positionalParameters[0];
-        int escapingMember = environment.getLoad(escapingObject, propertyField);
-        int field = fieldNames.getPositionalParameterField(1, 0);
-        int value = buildCovariantType(parameter.type, environment);
-        environment.addStore(escapingMember, field, value);
+        int argument = buildCovariantType(parameter.type, environment);
+        environment.addStore(escapingObject, propertyField, argument);
       } else {
         int escapingMember = environment.getLoad(escapingObject, propertyField);
         buildContravariantFunctionType(function, environment, escapingMember);
@@ -391,101 +769,152 @@ class Builder {
     return fieldNames.getReturnField(arity);
   }
 
-  void buildStaticField(Field field) {
-    int value = nullNode;
-    var environment = new Environment(this, field);
-    if (field.initializer != null) {
-      value = new ExpressionBuilder(this, environment).build(field.initializer);
+  void buildInstanceValue(Class host) {
+    int value = getInstanceValue(host);
+    for (Member target in hierarchy.getDispatchTargets(host, setters: false)) {
+      constraints.setLoadLocation(
+          value, getPropertyField(target.name), getMemberGetter(host, target));
     }
-    environment.addAssign(value, getFieldVariable(field));
-  }
-
-  void buildProcedure(Procedure node, int host) {
-    if (node.isAbstract) return;
-    int functionValue = getTearOffVariable(node);
-    int returnVariable = getReturnVariable(node);
-    var environment = new Environment(this, node,
-        returnVariable: returnVariable, thisValue: host);
-    buildFunctionNode(node.function, environment,
-        addTypeBasedSummary: node.isExternal, functionValue: functionValue);
-    if (host != null) {
-      int propertyName = fieldNames.getPropertyField(node.name);
-      if (node.isGetter) {
-        environment.addStore(host, propertyName, returnVariable);
-      } else if (node.isSetter) {
-        environment.addLoad(host, propertyName,
-            getParameterVariable(node.function.positionalParameters[0]));
-      } else {
-        environment.addStore(host, propertyName, functionValue);
+    for (Member target in hierarchy.getDispatchTargets(host, setters: true)) {
+      constraints.setStoreLocation(
+          value, getPropertyField(target.name), getMemberSetter(host, target));
+    }
+    for (Class node = host; node != null; node = node.superclass) {
+      for (Procedure procedure in node.mixin.procedures) {
+        if (!procedure.isStatic) {
+          buildProcedure(host, procedure);
+        }
+      }
+      for (Constructor constructor in node.constructors) {
+        buildConstructor(host, constructor);
       }
     }
   }
 
-  void buildInstanceField(Field node, int host) {
-    int value = nullNode;
-    var environment = new Environment(this, node);
-    if (node.initializer != null) {
-      value = new ExpressionBuilder(this, environment).build(node.initializer);
-    }
-    int field = getPropertyField(node.name);
-    environment.addStore(host, field, value);
-    // Ensure all values stored in the field are propagated to the variable,
-    // as this variable is part of the inference output.
-    // TODO(asgerf): We could avoid this redundancy by exposing the Solver's
-    //   internal storage locations for field values.
-    environment.addLoad(host, field, getFieldVariable(node));
+  void buildStaticField(Field field) {
+    var environment = new Environment(this, null, field);
+    int initializer = field.initializer == null
+        ? nullNode
+        : new ExpressionBuilder(this, environment).build(field.initializer);
+    environment.addAssign(initializer, getSharedFieldVariable(field));
   }
 
-  void buildConstructor(Constructor node, int host) {
-    var environment = new Environment(this, node, thisValue: host);
+  void buildProcedure(Class hostClass, Procedure node) {
+    if (node.isAbstract) return;
+    int host = hostClass == null ? null : getInstanceVariable(hostClass);
+    int function = getTearOffVariable(hostClass, node);
+    int returnVariable = getReturnVariable(hostClass, node);
+    var environment = new Environment(this, hostClass, node,
+        returnVariable: returnVariable, thisVariable: host);
+    buildFunctionNode(node.function, environment,
+        addTypeBasedSummary: node.isExternal, function: function);
+  }
+
+  int getDeclarationSiteFieldInitializer(Field field) {
+    if (field.initializer == null) return nullNode;
+    return declarationSiteFieldInitializer[field] ??=
+        _makeDeclarationSiteFieldInitializer(field);
+  }
+
+  int _makeDeclarationSiteFieldInitializer(Field field) {
+    return new ExpressionBuilder(this, new Environment(this, null, field))
+        .build(field.initializer);
+  }
+
+  void buildConstructor(Class hostClass, Constructor node) {
+    int host = getInstanceVariable(hostClass);
+    var environment =
+        new Environment(this, hostClass, node, thisVariable: host);
     buildFunctionNode(node.function, environment);
     InitializerBuilder builder = new InitializerBuilder(this, environment);
+    Set<Field> initializedFields = new Set<Field>();
     for (Initializer initializer in node.initializers) {
       builder.build(initializer);
+      if (initializer is FieldInitializer) {
+        initializedFields.add(initializer.field);
+      }
+    }
+    for (Field field in node.enclosingClass.mixin.fields) {
+      if (field.isInstanceMember) {
+        // Note: ensure the initializer is built even if it is not used.
+        int initializer = getDeclarationSiteFieldInitializer(field);
+        if (!initializedFields.contains(field)) {
+          int variable = getFieldVariable(hostClass, field);
+          environment.addAssign(initializer, variable);
+        }
+      }
     }
   }
 
+  /// Builds constraints to model the behavior of the given function.
+  ///
+  /// If the function is external, [addTypeBasedSummary] should be `true`;
+  /// its parameter and return type are then used to model its behavior instead
+  /// of the body.
+  ///
+  /// [function] should be a variable holding the function object itself, if
+  /// such an object exists (which is always the case except for constructors,
+  /// which currently do have function values).
   void buildFunctionNode(FunctionNode node, Environment environment,
-      {int functionValue, bool addTypeBasedSummary: false}) {
+      {int function, bool addTypeBasedSummary: false}) {
+    var expressionBuilder = new ExpressionBuilder(this, environment);
     int minArity = node.requiredParameterCount;
     int maxArity = node.positionalParameters.length;
     for (int i = 0; i < node.positionalParameters.length; ++i) {
       var parameter = node.positionalParameters[i];
-      int value = getParameterVariable(parameter);
-      environment.localVariables[parameter] = value;
-      if (functionValue != null) {
+      int variable = node.parent is Member
+          ? getParameterVariable(environment.host, parameter)
+          : environment.getVariable(parameter);
+      environment.localVariables[parameter] = variable;
+      if (function != null) {
         for (int arity = minArity; arity <= maxArity; ++arity) {
-          environment.addLoad(
-              functionValue, getPositionalParameterField(arity, i), value);
+          if (i < arity) {
+            environment.addLoad(
+              function, getPositionalParameterField(arity, i), variable);
+          }
         }
       }
+      if (i >= node.requiredParameterCount) {
+        int parameterDefault = parameter.initializer == null
+            ? nullNode
+            : expressionBuilder.build(parameter.initializer);
+        environment.addAssign(parameterDefault, variable);
+      }
       if (addTypeBasedSummary) {
-        buildContravariantType(parameter.type, environment, value);
+        buildContravariantType(parameter.type, environment, variable);
       }
     }
     for (int i = 0; i < node.namedParameters.length; ++i) {
       var parameter = node.namedParameters[i];
-      int value = getParameterVariable(parameter);
-      environment.localVariables[parameter] = value;
-      if (functionValue != null) {
+      int variable = node.parent is Member
+          ? getParameterVariable(environment.host, parameter)
+          : environment.getVariable(parameter);
+      environment.localVariables[parameter] = variable;
+      if (function != null) {
         for (int arity = minArity; arity <= maxArity; ++arity) {
-          environment.addLoad(functionValue,
-              getNamedParameterField(arity, parameter.name), value);
+          environment.addLoad(function,
+              getNamedParameterField(arity, parameter.name), variable);
         }
       }
+      int parameterDefault = parameter.initializer == null
+          ? nullNode
+          : expressionBuilder.build(parameter.initializer);
+      environment.addAssign(parameterDefault, variable);
       if (addTypeBasedSummary) {
-        buildContravariantType(parameter.type, environment, value);
+        buildContravariantType(parameter.type, environment, variable);
       }
     }
     if (environment.returnVariable == null) {
       environment.returnVariable = newVariable(node, 'return');
+      environment.addSink(
+          environment.returnVariable, getSharedReturnVariable(node));
     } else {
       visualizer?.annotateVariable(environment.returnVariable, node, 'return');
     }
-    if (functionValue != null) {
+    if (function != null) {
       for (int arity = minArity; arity <= maxArity; ++arity) {
         environment.addStore(
-            functionValue, getReturnField(arity), environment.returnVariable);
+            function, getReturnField(arity), environment.returnVariable);
       }
     }
     if (addTypeBasedSummary) {
@@ -493,7 +922,12 @@ class Builder {
       environment.addAssign(returnFromType, environment.returnVariable);
     }
     if (node.body != null) {
-      new StatementBuilder(this, environment).build(node.body);
+      Completion completes =
+          new StatementBuilder(this, environment).build(node.body);
+      if (completes == Completion.Maybe) {
+        // Null is returned when control falls over the end.
+        environment.addAssign(nullNode, environment.returnVariable);
+      }
     }
   }
 
@@ -595,13 +1029,14 @@ class FieldNames {
 
 class TypeEnvironment {
   final Builder builder;
+  final Class host;
   final Member member;
-  int thisValue;
+  int thisVariable;
 
   ConstraintSystem get constraints => builder.constraints;
   Visualizer get visualizer => builder.visualizer;
 
-  TypeEnvironment(this.builder, this.member, {this.thisValue});
+  TypeEnvironment(this.builder, this.host, this.member, {this.thisVariable});
 
   void addAssign(int source, int destination) {
     constraints.addAssign(source, destination);
@@ -641,8 +1076,13 @@ class TypeEnvironment {
     return variable;
   }
 
-  void addStore(int object, int field, int value) {
-    addAssign(value, getStore(object, field));
+  void addStore(int object, int field, int source) {
+    addAssign(source, getStore(object, field));
+  }
+
+  void addSink(int source, int sink) {
+    constraints.addSink(source, sink);
+    visualizer?.annotateSink(source, sink, member);
   }
 }
 
@@ -651,12 +1091,13 @@ class Environment extends TypeEnvironment {
       <VariableDeclaration, int>{};
   int returnVariable;
 
-  Environment(Builder builder, Member member,
-      {int thisValue, this.returnVariable})
-      : super(builder, member, thisValue: thisValue);
+  Environment(Builder builder, Class host, Member member,
+      {int thisVariable, this.returnVariable})
+      : super(builder, host, member, thisVariable: thisVariable);
 
   Environment.inner(Environment outer, {this.returnVariable})
-      : super(outer.builder, outer.member, thisValue: outer.thisValue);
+      : super(outer.builder, outer.host, outer.member,
+            thisVariable: outer.thisVariable);
 
   int getVariable(VariableDeclaration variable) {
     return localVariables[variable] ??= builder.newVariable(variable);
@@ -692,13 +1133,19 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
   }
 
   int visitVariableSet(VariableSet node) {
-    int value = build(node.value);
+    int rightHandSide = build(node.value);
     int variable = environment.getVariable(node.variable);
-    environment.addAssign(value, variable);
-    return value;
+    environment.addAssign(rightHandSide, variable);
+    return rightHandSide;
   }
 
   int visitPropertyGet(PropertyGet node) {
+    if (node.receiver is ThisExpression) {
+      Class host = environment.host;
+      Member target = builder.hierarchy.getDispatchTarget(host, node.name);
+      int source = builder.getMemberGetter(host, target);
+      return source == null ? builder.bottomNode : source;
+    }
     int object = build(node.receiver);
     int field = fieldNames.getPropertyField(node.name);
     return environment.getLoad(object, field);
@@ -706,49 +1153,59 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
 
   int visitPropertySet(PropertySet node) {
     int object = build(node.receiver);
+    int rightHandSide = build(node.value);
+    if (node.receiver is ThisExpression) {
+      Class host = environment.host;
+      Member target =
+          builder.hierarchy.getDispatchTarget(host, node.name, setter: true);
+      int destination = builder.getMemberSetter(host, target);
+      if (destination != null) {
+        environment.addAssign(rightHandSide, destination);
+      }
+      return rightHandSide;
+    }
     int field = fieldNames.getPropertyField(node.name);
-    int value = build(node.value);
-    environment.addStore(object, field, value);
-    return value;
+    environment.addStore(object, field, rightHandSide);
+    return rightHandSide;
   }
 
   int visitSuperPropertyGet(SuperPropertyGet node) {
-    return unsupported(node);
+    return builder.getMemberGetter(environment.host, node.target);
   }
 
   int visitSuperPropertySet(SuperPropertySet node) {
-    build(node.value);
-    return unsupported(node);
+    int rightHandSide = build(node.value);
+    int destination = builder.getMemberSetter(environment.host, node.target);
+    if (destination != null) {
+      environment.addAssign(rightHandSide, destination);
+    }
+    return rightHandSide;
   }
 
   int visitStaticGet(StaticGet node) {
-    if (node.target is Procedure) {
-      Procedure target = node.target;
-      if (target.isGetter) {
-        return builder.getReturnVariable(target);
-      } else {
-        return builder.getTearOffVariable(target);
-      }
-    }
-    return builder.getFieldVariable(node.target);
+    return builder.getMemberGetter(null, node.target);
   }
 
   int visitStaticSet(StaticSet node) {
-    int value = build(node.value);
-    int destination;
-    if (node.target is Procedure) {
-      Procedure target = node.target;
-      assert(target.isSetter);
-      destination =
-          builder.getParameterVariable(target.function.positionalParameters[0]);
-    } else {
-      destination = builder.getFieldVariable(node.target);
-    }
-    environment.addAssign(value, destination);
-    return value;
+    int rightHandSide = build(node.value);
+    int destination = builder.getMemberSetter(null, node.target);
+    assert(destination != null); // Static accessors must be valid.
+    environment.addAssign(rightHandSide, destination);
+    return rightHandSide;
   }
 
   int visitMethodInvocation(MethodInvocation node) {
+    // Resolve calls on 'this' directly.
+    if (node.receiver is ThisExpression) {
+      Class host = environment.host;
+      Member target = builder.hierarchy.getDispatchTarget(host, node.name);
+      if (target is Procedure && !target.isAccessor) {
+        FunctionNode function = target.function;
+        passArgumentsToFunction(node.arguments, host, function);
+        return builder.getReturnVariable(host, target);
+      }
+    }
+    // Dispatch call dynamically.
     int receiver = build(node.receiver);
     int methodProperty = builder.getPropertyField(node.name);
     int function = node.name.name == 'call'
@@ -770,13 +1227,14 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
     return environment.getLoad(function, builder.getReturnField(arity));
   }
 
-  void passArgumentsToFunction(Arguments node, FunctionNode function) {
+  void passArgumentsToFunction(
+      Arguments node, Class host, FunctionNode function) {
     // TODO(asgerf): Check that arity matches (although mismatches are rare).
     for (int i = 0; i < node.positional.length; ++i) {
       int argument = build(node.positional[i]);
       if (i < function.positionalParameters.length) {
-        int parameter =
-            builder.getParameterVariable(function.positionalParameters[i]);
+        int parameter = builder.getParameterVariable(
+            host, function.positionalParameters[i]);
         environment.addAssign(argument, parameter);
       }
     }
@@ -787,7 +1245,7 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
       for (int j = 0; j < function.namedParameters.length; ++j) {
         var namedParameter = function.namedParameters[j];
         if (namedParameter.name == namedNode.name) {
-          int parameter = builder.getParameterVariable(namedParameter);
+          int parameter = builder.getParameterVariable(host, namedParameter);
           environment.addAssign(argument, parameter);
           break;
         }
@@ -796,18 +1254,34 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
   }
 
   int visitSuperMethodInvocation(SuperMethodInvocation node) {
-    passArgumentsToFunction(node.arguments, node.target.function);
-    return builder.getReturnVariable(node.target);
+    Class host = environment.host;
+    passArgumentsToFunction(node.arguments, host, node.target.function);
+    return builder.getReturnVariable(host, node.target);
+  }
+
+  void passArgumentsNowhere(Arguments node) {
+    for (int i = 0; i < node.positional.length; ++i) {
+      build(node.positional[i]);
+    }
+    for (int i = 0; i < node.named.length; ++i) {
+      build(node.named[i].value);
+    }
   }
 
   int visitStaticInvocation(StaticInvocation node) {
-    passArgumentsToFunction(node.arguments, node.target.function);
-    return builder.getReturnVariable(node.target);
+    if (node.target == builder.identicalFunction) {
+      // Ignore calls to identical() as they cause a lot of spurious escape.
+      passArgumentsNowhere(node.arguments);
+      return builder.boolNode;
+    }
+    passArgumentsToFunction(node.arguments, null, node.target.function);
+    return builder.getReturnVariable(null, node.target);
   }
 
   int visitConstructorInvocation(ConstructorInvocation node) {
-    passArgumentsToFunction(node.arguments, node.target.function);
-    return builder.getInstanceVariable(node.target.enclosingClass);
+    Class host = node.target.enclosingClass;
+    passArgumentsToFunction(node.arguments, host, node.target.function);
+    return builder.getInstanceVariable(host);
   }
 
   int visitNot(Not node) {
@@ -857,7 +1331,7 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
   }
 
   int visitThisExpression(ThisExpression node) {
-    return environment.thisValue;
+    return environment.thisVariable;
   }
 
   int visitRethrow(Rethrow node) {
@@ -874,8 +1348,8 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
     TypeParameter parameter = builder.coreTypes.listClass.typeParameters.single;
     int field = fieldNames.getTypeParameterField(parameter);
     for (int i = 0; i < node.expressions.length; ++i) {
-      int value = build(node.expressions[i]);
-      environment.addStore(object, field, value);
+      int content = build(node.expressions[i]);
+      environment.addStore(object, field, content);
     }
     return object;
   }
@@ -934,13 +1408,52 @@ class ExpressionBuilder extends ExpressionVisitor<int> {
       environment.localVariables[self] = variable;
     }
     Environment inner = new Environment.inner(environment);
-    constraints.addAllocateFunction(builder.newFunctionValue(node), variable);
-    builder.buildFunctionNode(node, inner, functionValue: variable);
+    builder.addInput(builder.newFunctionValue(node), ValueBit.other, variable);
+    builder.buildFunctionNode(node, inner, function: variable);
     return variable;
   }
 }
 
-class StatementBuilder extends StatementVisitor {
+/// Indicates whether a statement can complete normally.
+enum Completion {
+  /// The statement might complete normally.
+  Maybe,
+
+  /// The statement never completes normally, because it throws, returns,
+  /// breaks, loops forever, etc.
+  Never,
+}
+
+Completion neverCompleteIf(bool condition) {
+  return condition ? Completion.Never : Completion.Maybe;
+}
+
+Completion completeIfBoth(Completion first, Completion second) {
+  return first == Completion.Maybe && second == Completion.Maybe
+      ? Completion.Maybe
+      : Completion.Never;
+}
+
+Completion completeIfEither(Completion first, Completion second) {
+  return first == Completion.Maybe || second == Completion.Maybe
+      ? Completion.Maybe
+      : Completion.Never;
+}
+
+bool _isTrueConstant(Expression node) {
+  return node is BoolLiteral && node.value == true;
+}
+
+bool _isThrowing(Expression node) {
+  return node is Throw || node is Rethrow;
+}
+
+/// Translates a statement to constraints.
+///
+/// The visit methods return a [Completion] indicating if the statement can
+/// complete normally.  This is used to check if null can be returned due to
+/// control falling over the end of the method.
+class StatementBuilder extends StatementVisitor<Completion> {
   final Builder builder;
   final Environment environment;
   ExpressionBuilder expressionBuilder;
@@ -953,14 +1466,10 @@ class StatementBuilder extends StatementVisitor {
     expressionBuilder = new ExpressionBuilder(builder, environment);
   }
 
-  void build(Statement node) {
-    node.accept(this);
-  }
+  Completion build(Statement node) => node.accept(this);
 
-  void buildOptional(Statement node) {
-    if (node != null) {
-      node.accept(this);
-    }
+  Completion buildOptional(Statement node) {
+    return node != null ? node.accept(this) : Completion.Maybe;
   }
 
   int buildExpression(Expression node) {
@@ -971,38 +1480,48 @@ class StatementBuilder extends StatementVisitor {
     builder.unsupported(node);
   }
 
-  visitInvalidStatement(InvalidStatement node) {}
+  Completion visitInvalidStatement(InvalidStatement node) => Completion.Never;
 
   visitExpressionStatement(ExpressionStatement node) {
     buildExpression(node.expression);
+    return neverCompleteIf(_isThrowing(node.expression));
   }
 
   visitBlock(Block node) {
     for (int i = 0; i < node.statements.length; ++i) {
-      build(node.statements[i]);
+      if (build(node.statements[i]) == Completion.Never) {
+        return Completion.Never;
+      }
     }
+    return Completion.Maybe;
   }
 
-  visitEmptyStatement(EmptyStatement node) {}
+  visitEmptyStatement(EmptyStatement node) => Completion.Maybe;
 
   visitAssertStatement(AssertStatement node) {
     unsupported(node);
+    return Completion.Maybe;
   }
 
   visitLabeledStatement(LabeledStatement node) {
     build(node.body);
+    // We don't track reachability of breaks in the body, so just assume we
+    // might hit a break.
+    return Completion.Maybe;
   }
 
-  visitBreakStatement(BreakStatement node) {}
+  visitBreakStatement(BreakStatement node) => Completion.Never;
 
   visitWhileStatement(WhileStatement node) {
     buildExpression(node.condition);
     build(node.body);
+    return neverCompleteIf(_isTrueConstant(node.condition));
   }
 
   visitDoStatement(DoStatement node) {
     build(node.body);
     buildExpression(node.condition);
+    return neverCompleteIf(_isTrueConstant(node.condition));
   }
 
   visitForStatement(ForStatement node) {
@@ -1016,6 +1535,7 @@ class StatementBuilder extends StatementVisitor {
       buildExpression(node.updates[i]);
     }
     build(node.body);
+    return neverCompleteIf(_isTrueConstant(node.condition));
   }
 
   visitForInStatement(ForInStatement node) {
@@ -1025,34 +1545,46 @@ class StatementBuilder extends StatementVisitor {
     int variable = environment.getVariable(node.variable);
     environment.addAssign(current, variable);
     build(node.body);
+    return Completion.Maybe;
   }
 
   visitSwitchStatement(SwitchStatement node) {
     buildExpression(node.expression);
+    Completion lastCanComplete = Completion.Maybe;
     for (int i = 0; i < node.cases.length; ++i) {
       // There is no need to visit the expression since constants cannot
       // have side effects.
-      build(node.cases[i].body);
+      // Note that only the last case can actually fall out of the switch,
+      // as the others will throw an exception if they fall through.
+      // Also note that breaks from the switch have been desugared to breaks
+      // to a [LabeledStatement].
+      lastCanComplete = build(node.cases[i].body);
     }
+    return lastCanComplete;
   }
 
-  visitContinueSwitchStatement(ContinueSwitchStatement node) {}
+  visitContinueSwitchStatement(ContinueSwitchStatement node) {
+    return Completion.Never;
+  }
 
   visitIfStatement(IfStatement node) {
     buildExpression(node.condition);
-    build(node.then);
-    buildOptional(node.otherwise);
+    Completion thenCompletes = build(node.then);
+    Completion elseCompletes = buildOptional(node.otherwise);
+    return completeIfEither(thenCompletes, elseCompletes);
   }
 
   visitReturnStatement(ReturnStatement node) {
     if (node.expression != null) {
-      int value = buildExpression(node.expression);
-      environment.addAssign(value, environment.returnVariable);
+      int returned = buildExpression(node.expression);
+      environment.addAssign(returned, environment.returnVariable);
     }
+    return Completion.Never;
   }
 
   visitTryCatch(TryCatch node) {
-    build(node.body);
+    Completion bodyCompletes = build(node.body);
+    Completion catchCompletes = Completion.Never;
     for (int i = 0; i < node.catches.length; ++i) {
       Catch catchNode = node.catches[i];
       if (catchNode.exception != null) {
@@ -1061,29 +1593,36 @@ class StatementBuilder extends StatementVisitor {
       if (catchNode.stackTrace != null) {
         environment.localVariables[catchNode.stackTrace] = builder.dynamicNode;
       }
-      build(catchNode.body);
+      if (build(catchNode.body) == Completion.Maybe) {
+        catchCompletes = Completion.Maybe;
+      }
     }
+    return completeIfEither(bodyCompletes, catchCompletes);
   }
 
   visitTryFinally(TryFinally node) {
-    build(node.body);
-    build(node.finalizer);
+    Completion bodyCompletes = build(node.body);
+    Completion finalizerCompletes = build(node.finalizer);
+    return completeIfBoth(bodyCompletes, finalizerCompletes);
   }
 
   visitYieldStatement(YieldStatement node) {
     unsupported(node);
+    return Completion.Maybe;
   }
 
   visitVariableDeclaration(VariableDeclaration node) {
-    int value = node.initializer == null
+    int initializer = node.initializer == null
         ? builder.nullNode
         : buildExpression(node.initializer);
     int variable = environment.getVariable(node);
-    environment.addAssign(value, variable);
+    environment.addAssign(initializer, variable);
+    return neverCompleteIf(_isThrowing(node.initializer));
   }
 
   visitFunctionDeclaration(FunctionDeclaration node) {
     expressionBuilder.buildInnerFunction(node.function, self: node.variable);
+    return Completion.Maybe;
   }
 }
 
@@ -1109,20 +1648,19 @@ class InitializerBuilder extends InitializerVisitor<Null> {
   visitInvalidInitializer(InvalidInitializer node) {}
 
   visitFieldInitializer(FieldInitializer node) {
-    environment.addStore(
-        environment.thisValue,
-        fieldNames.getPropertyField(node.field.name),
-        buildExpression(node.value));
+    int fieldVariable = builder.getFieldVariable(environment.host, node.field);
+    int rightHandSide = buildExpression(node.value);
+    environment.addAssign(rightHandSide, fieldVariable);
   }
 
   visitSuperInitializer(SuperInitializer node) {
     expressionBuilder.passArgumentsToFunction(
-        node.arguments, node.target.function);
+        node.arguments, environment.host, node.target.function);
   }
 
   visitRedirectingInitializer(RedirectingInitializer node) {
     expressionBuilder.passArgumentsToFunction(
-        node.arguments, node.target.function);
+        node.arguments, environment.host, node.target.function);
   }
 
   visitLocalInitializer(LocalInitializer node) {
@@ -1183,8 +1721,8 @@ class CovariantExternalTypeVisitor extends DartTypeVisitor<int> {
 
   int visitTypeParameterType(TypeParameterType node) {
     if (node.parameter.parent is Class) {
-      assert(environment.thisValue != null);
-      return environment.getLoad(environment.thisValue,
+      assert(environment.thisVariable != null);
+      return environment.getLoad(environment.thisVariable,
           fieldNames.getTypeParameterField(node.parameter));
     } else {
       return builder.getFunctionTypeParameterVariable(node.parameter);
@@ -1213,23 +1751,32 @@ class CovariantExternalTypeVisitor extends DartTypeVisitor<int> {
 
   /// Equivalent to visiting the FunctionType for the given function.
   int buildFunctionNode(FunctionNode node) {
-    // TODO: Handle arity range.
-    int arity = node.positionalParameters.length;
-    int function = builder.functionValueNode;
-    for (int i = 0; i < node.positionalParameters.length; ++i) {
-      int field = fieldNames.getPositionalParameterField(arity, i);
-      int argument = environment.getLoad(function, field);
-      visitContravariant(node.positionalParameters[i].type, argument);
+    int minArity = node.requiredParameterCount;
+    int maxArity = node.positionalParameters.length;
+    Member member = node.parent is Member ? node.parent : null;
+    int functionValue = builder.newFunctionValue(node, member);
+    int function = builder.newVariable(node);
+    builder.addInput(functionValue, ValueBit.other, function);
+    for (int arity = minArity; arity <= maxArity; ++arity) {
+      for (int i = 0; i < arity; ++i) {
+        int field = fieldNames.getPositionalParameterField(arity, i);
+        int argument = environment.getLoad(function, field);
+        visitContravariant(node.positionalParameters[i].type, argument);
+      }
     }
     for (int i = 0; i < node.namedParameters.length; ++i) {
       VariableDeclaration variable = node.namedParameters[i];
-      int field = fieldNames.getNamedParameterField(arity, variable.name);
-      int argument = environment.getLoad(function, field);
-      visitContravariant(variable.type, argument);
+      for (int arity = minArity; arity <= maxArity; ++arity) {
+        int field = fieldNames.getNamedParameterField(arity, variable.name);
+        int argument = environment.getLoad(function, field);
+        visitContravariant(variable.type, argument);
+      }
     }
     int returnVariable = visit(node.returnType);
-    environment.addStore(
-        function, fieldNames.getReturnField(arity), returnVariable);
+    for (int arity = minArity; arity <= maxArity; ++arity) {
+      environment.addStore(
+          function, fieldNames.getReturnField(arity), returnVariable);
+    }
     return function;
   }
 }
@@ -1272,8 +1819,8 @@ class ContravariantExternalTypeVisitor extends DartTypeVisitor<Null> {
 
   visitTypeParameterType(TypeParameterType node) {
     if (node.parameter.parent is Class) {
-      assert(environment.thisValue != null);
-      environment.addStore(environment.thisValue,
+      assert(environment.thisVariable != null);
+      environment.addStore(environment.thisVariable,
           fieldNames.getTypeParameterField(node.parameter), input);
     } else {
       environment.addAssign(
@@ -1282,40 +1829,52 @@ class ContravariantExternalTypeVisitor extends DartTypeVisitor<Null> {
   }
 
   visitFunctionType(FunctionType node) {
-    // TODO: Handle arity range.
-    int arity = node.positionalParameters.length;
+    int minArity = node.requiredParameterCount;
+    int maxArity = node.positionalParameters.length;
     for (int i = 0; i < node.positionalParameters.length; ++i) {
       int argument = visitCovariant(node.positionalParameters[i]);
-      int field = fieldNames.getPositionalParameterField(arity, i);
-      environment.addStore(input, field, argument);
+      for (int arity = minArity; arity <= maxArity; ++arity) {
+        int field = fieldNames.getPositionalParameterField(arity, i);
+        environment.addStore(input, field, argument);
+      }
     }
     node.namedParameters.forEach((String name, DartType type) {
       int argument = visitCovariant(type);
-      int field = fieldNames.getNamedParameterField(arity, name);
-      environment.addStore(input, field, argument);
+      for (int arity = minArity; arity <= maxArity; ++arity) {
+        int field = fieldNames.getNamedParameterField(arity, name);
+        environment.addStore(input, field, argument);
+      }
     });
-    int returnLocation =
-        environment.getLoad(input, fieldNames.getReturnField(arity));
-    visitContravariant(node.returnType, returnLocation);
+    for (int arity = minArity; arity <= maxArity; ++arity) {
+      int returnLocation =
+          environment.getLoad(input, fieldNames.getReturnField(arity));
+      visitContravariant(node.returnType, returnLocation);
+    }
   }
 
   /// Equivalent to visiting the FunctionType for the given function.
   void buildFunctionNode(FunctionNode node) {
-    // TODO: Handle arity range.
-    int arity = node.positionalParameters.length;
-    for (int i = 0; i < node.positionalParameters.length; ++i) {
-      int argument = visitCovariant(node.positionalParameters[i].type);
-      int field = fieldNames.getPositionalParameterField(arity, i);
-      environment.addStore(input, field, argument);
+    int minArity = node.requiredParameterCount;
+    int maxArity = node.positionalParameters.length;
+    for (int arity = minArity; arity <= maxArity; ++arity) {
+      for (int i = 0; i < arity; ++i) {
+        int argument = visitCovariant(node.positionalParameters[i].type);
+        int field = fieldNames.getPositionalParameterField(arity, i);
+        environment.addStore(input, field, argument);
+      }
     }
     for (int i = 0; i < node.namedParameters.length; ++i) {
       VariableDeclaration variable = node.namedParameters[i];
       int argument = visitCovariant(variable.type);
-      int field = fieldNames.getNamedParameterField(arity, variable.name);
-      environment.addStore(input, field, argument);
+      for (int arity = minArity; arity <= maxArity; ++arity) {
+        int field = fieldNames.getNamedParameterField(arity, variable.name);
+        environment.addStore(input, field, argument);
+      }
     }
-    int returnLocation =
-        environment.getLoad(input, fieldNames.getReturnField(arity));
-    visitContravariant(node.returnType, returnLocation);
+    for (int arity = minArity; arity <= maxArity; ++arity) {
+      int returnLocation =
+          environment.getLoad(input, fieldNames.getReturnField(arity));
+      visitContravariant(node.returnType, returnLocation);
+    }
   }
 }
