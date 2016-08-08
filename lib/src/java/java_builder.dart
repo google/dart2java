@@ -329,7 +329,25 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       node.then.accept(this),
       node.otherwise.accept(this));
   }
-  
+
+  @override
+  java.WhileStmt visitWhileStatement(dart.WhileStatement node) {
+    return new java.WhileStmt(
+      node.condition.accept(this),
+      wrapInJavaBlock(buildStatement(node.body)));
+  } 
+
+  @override
+  java.ForStmt visitForStatement(dart.ForStatement node) {
+    return new java.ForStmt(
+      node.variables.map((v) => v.accept(this)).toList() 
+        as List<java.VariableDecl>,
+      node.condition.accept(this),
+      node.updates.map((u) => u.accept(this)).toList()
+        as List<java.Expression>,
+      wrapInJavaBlock(buildStatement(node.body)));
+  }
+
   @override
   java.ReturnStmt visitReturnStatement(dart.ReturnStatement node) {
     return new java.ReturnStmt(node.expression?.accept(this));
@@ -639,12 +657,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var result = node.accept(this);
 
     if (node is dart.VariableDeclaration) {
-      // Our AST has VariableDecl and VariableDeclStmt and we want to keep
-      // them separate. Kernel AST has only VariableDeclaration as a statement.
-      // That kernel class translates to VariableDecl in our builder, but
-      // when we expect a statement, we wrap it in a VariableDeclStmt.
+      // A variable declaration should sometimes be a statement. In that case,
+      // we ensure that the variable is initialized (to null if necessary).
       var decl = result as java.VariableDecl;
-      return new java.VariableDeclStmt(decl, node.initializer?.accept(this));
+      decl.initializer ??= new java.NullLiteral();
+      return new java.VariableDeclStmt(decl);
     } else {
       return result;
     }
@@ -674,7 +691,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
       return type.withTypeArguments(
-        node.typeArguments.map((t) => t.accept(this)));
+        node.typeArguments.map((t) => t.accept(this)).toList());
     } else {
       return type;
     }
@@ -683,6 +700,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.VariableDecl visitVariableDeclaration(dart.VariableDeclaration node) {
     return new java.VariableDecl(node.name, node.type.accept(this),
-        isFinal: node.isFinal);
+        isFinal: node.isFinal, initializer: node.initializer?.accept(this));
   }
 }

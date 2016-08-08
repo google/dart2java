@@ -20,5 +20,11 @@ public class Tests {
     assertTrue(__TopLevel.isLessTernary(1, 2));
     assertFalse(__TopLevel.isLessTernary(2, 1));
   }
-  
+
+  @Test
+  public void testLoops() {
+    assertEquals(10, (int) __TopLevel.countWhile());
+    assertEquals(10, (int) __TopLevel.countFor());
+    assertEquals(90, (int) __TopLevel.countForMultiUpdate());
+  }
 }

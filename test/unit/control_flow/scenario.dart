@@ -17,3 +17,29 @@ bool isLessIfThenElse(int a, int b) {
 bool isLessTernary(int a, int b) {
   return a < b ? true : false;
 }
+
+int countWhile() {
+  int i = 0;
+  while (i < 10) {
+    i = i + 1;
+  }
+  return i;
+}
+
+int countFor() {
+  int counter = 0;
+  for (var i = 0; i < 10; i = i + 1) {
+    counter = counter + 1;
+  }
+  return counter;
+}
+
+int countForMultiUpdate() {
+  int counter = 0;
+  int i = 0;
+  int j = 0;
+  for (; i < 10; i = i + 1, j = j - 1) {
+    counter = counter + i - j;
+  }
+  return counter;
+}

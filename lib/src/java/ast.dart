@@ -152,8 +152,9 @@ class VariableDecl extends Node {
   String name;
   JavaType type;
   bool isFinal;
+  Expression initializer;
 
-  VariableDecl(this.name, this.type, {this.isFinal: false});
+  VariableDecl(this.name, this.type, {this.isFinal: false, this.initializer});
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitVariableDecl(this);
@@ -170,6 +171,16 @@ class Block extends Statement {
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitBlock(this);
+}
+
+/// A statement wrapping a variable declaration.
+class VariableDeclStmt extends Statement {
+  VariableDecl decl;
+
+  VariableDeclStmt(this.decl);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitVariableDeclStmt(this);
 }
 
 /// An if statement. The else (false) part is optional.
@@ -189,17 +200,30 @@ class IfStmt extends Statement {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitIfStmt(this);
 }
 
-/// A local variable definition with an optional initialization value.
-class VariableDeclStmt extends Statement {
-  VariableDecl variable;
+class WhileStmt extends Statement {
+  Expression condition;
 
-  Expression initializer;
+  Block body;
 
-  VariableDeclStmt(this.variable, [Expression initializer = null])
-      : this.initializer = initializer ?? new NullLiteral();
+  WhileStmt(this.condition, this.body);
 
   @override
-  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitVariableDeclStmt(this);
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitWhileStmt(this);
+}
+
+class ForStmt extends Statement {
+  List<VariableDecl> variableDeclarations;
+
+  Expression condition;
+
+  List<Expression> updates;
+
+  Block body;
+
+  ForStmt(this.variableDeclarations, this.condition, this.updates, this.body);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitForStmt(this);
 }
 
 /// A method return statement.

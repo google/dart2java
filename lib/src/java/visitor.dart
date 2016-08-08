@@ -16,8 +16,10 @@ abstract class Visitor<R> {
 
   // Statements
   R visitBlock(Block node) => null;
-  R visitIfStmt(IfStmt node) => null;
   R visitVariableDeclStmt(VariableDeclStmt node) => null;
+  R visitIfStmt(IfStmt node) => null;
+  R visitWhileStmt(WhileStmt node) => null;
+  R visitForStmt(ForStmt node) => null;
   R visitReturnStmt(ReturnStmt node) => null;
   R visitExpressionStmt(ExpressionStmt node) => null;
 

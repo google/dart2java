@@ -64,14 +64,12 @@ class _JavaAstEmitter extends Visitor<String> {
     parts.add(decl.type.accept(this));
     parts.add(decl.name);
 
-    return parts.join(" ");
-  }
+    if (decl.initializer != null) {
+      parts.add("=");
+      parts.add(decl.initializer.accept(this));
+    }
 
-  @override
-  String visitVariableDeclStmt(VariableDeclStmt decl) {
-    return decl.initializer != null
-        ? "${decl.variable.accept(this)} = ${decl.initializer.accept(this)};"
-        : "${decl.variable.accept(this)};";
+    return parts.join(" ");
   }
 
   @override
@@ -121,6 +119,11 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitVariableDeclStmt(VariableDeclStmt stmt) {
+    return "${stmt.decl.accept(this)};";
+  }
+
+  @override
   String visitIfStmt(IfStmt stmt) {
     var conditionCheck = "if (${stmt.condition.accept(this)})\n";
     var thenPart = stmt.thenBody.accept(this);
@@ -134,6 +137,25 @@ class _JavaAstEmitter extends Visitor<String> {
     return "${expr.type.toString()}.class";
   }
 
+  @override
+  String visitWhileStmt(WhileStmt stmt) {
+    var conditionCheck = "while (${stmt.condition.accept(this)})\n";
+    var body = stmt.body.accept(this);
+    return conditionCheck + body;
+  }
+
+  @override
+  String visitForStmt(ForStmt stmt) {
+    // TODO(springerm): Multiple VarDecls are currently not emitted correctly.
+    // The type should only be emitted once (e.g. not: int a = 1, int b = 2).
+    var varDecls = stmt.variableDeclarations.map((d) => d.accept(this))
+      .join(", ");
+    var updates = stmt.updates.map((u) => u.accept(this)).join(", ");
+    var condition = stmt.condition.accept(this);
+    var body = stmt.body.accept(this);
+    return "for ($varDecls; $condition; $updates)\n$body";
+  }
+  
   @override
   String visitNewExpr(NewExpr expr) {
     var className = expr.classRef.accept(this);
