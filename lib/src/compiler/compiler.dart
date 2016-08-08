@@ -85,8 +85,8 @@ class ModuleCompiler {
           '\nPlease fix all errors before compiling (warnings are okay).');
     }
 
-    var compilerState = new CompilerState(options, repository);
-    compilerState.initializeJavaClasses(getAllClasses(librariesToCompile));
+    var compilerState = new CompilerState(options, repository, 
+      getAllClasses(librariesToCompile));
 
     var codeGenerator =
         new CodeGenerator(new FileWriter(options), compilerState);
@@ -96,7 +96,7 @@ class ModuleCompiler {
         .toSet();
   }
 
-  Iterable<dart.Class> getAllClasses(List<Library> libraries) {
+  Iterable<dart.Class> getAllClasses(List<dart.Library> libraries) {
     return libraries.expand((lib) => lib.classes);
   }
 }

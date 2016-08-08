@@ -22,6 +22,7 @@ abstract class Visitor<R> {
   R visitExpressionStmt(ExpressionStmt node) => null;
 
   // Expressions
+  R visitTypeExpr(TypeExpr node) => null;
   R visitNewExpr(NewExpr node) => null;
   R visitFieldAccess(FieldAccess node) => null;
   R visitMethodInvocation(MethodInvocation node) => null;

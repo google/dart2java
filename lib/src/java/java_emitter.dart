@@ -130,6 +130,11 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitTypeExpr(TypeExpr expr) {
+    return "${expr.type.toString()}.class";
+  }
+
+  @override
   String visitNewExpr(NewExpr expr) {
     var className = expr.classRef.accept(this);
     var arguments =

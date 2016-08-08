@@ -20,6 +20,7 @@ class Constants {
     ">": "operatorGreater",
     ">=": "operatorGreaterEqual",
     "[]": "operatorAt",
+    "[]=": "operatorAtPut",
     "unary-": "operatorUnaryMinus",
     "~": "operatorUnaryBitNegate"
   };

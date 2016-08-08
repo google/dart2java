@@ -433,10 +433,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       methodName = compilerState.getJavaMethodName(receiverClass, methodName);
     }
 
-    // TODO(springerm): Handle other argument types
-    List<java.Expression> args = node.arguments.positional
-        .map((a) => a.accept(this) as java.Expression)
-        .toList();
+    // TODO(springerm): Handle named arguments
+    var args = <java.Expression>[];
+    // Calling convention: Type arguments as first arguments 
+    // for static invocations, then positional arguments
+    // TODO(springerm, andrewkrieger): Use proper types once implemented
+    args.addAll(node.arguments.types.map(
+      (t) => new java.TypeExpr(t.accept(this))));
+    // Positional arguments
+    args.addAll(node.arguments.positional
+        .map((a) => a.accept(this) as java.Expression));
 
     // Intercept method call if necessary
     if (compilerState.usesHelperFunction(receiverClass, methodName)) {
@@ -664,12 +670,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.ClassOrInterfaceType visitInterfaceType(dart.InterfaceType node) {
-    if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
-      // TODO(stanm): You can't simply map Dart generics to Java generics!
-      throw new CompileErrorException("Generic types not implemented yet!");
-    }
+    java.ClassOrInterfaceType type = compilerState.getClass(node.classNode);
 
-    return compilerState.getClass(node.classNode);
+    if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
+      return type.withTypeArguments(
+        node.typeArguments.map((t) => t.accept(this)));
+    } else {
+      return type;
+    }
   }
 
   @override

@@ -107,8 +107,8 @@ class ClassOrInterfaceType extends ReferenceType {
   /// is none.
   final ClassOrInterfaceType enclosingType;
 
-  /// A list of type parameters, in case this is a generic type.
-  final List<TypeVariable> typeArguments;
+  /// A list of type arguments, in case this is a generic type.
+  final List<JavaType> typeArguments;
 
   /// A top-level type, i.e. a type that isn't nested in any other class or
   /// interface.
@@ -151,11 +151,19 @@ class ClassOrInterfaceType extends ReferenceType {
   /// Everything in [string] before the last '.' will be used as the package
   /// name, and the identifier after the last '.' will be the class name.
   factory ClassOrInterfaceType.parseTopLevel(String string,
-      {bool isInterface: false, List<TypeVariable> typeArguments: const []}) {
+      {bool isInterface: false, List<JavaType> typeArguments: const []}) {
     List<String> parts = string.split(".");
     return new ClassOrInterfaceType(
         parts.take(parts.length - 1).join("."), parts.last,
         isInterface: isInterface, typeArguments: typeArguments);
+  }
+
+  ClassOrInterfaceType._copy(String name, this.package, this.isInterface, 
+    this.isStatic, this.enclosingType, this.typeArguments) : super(name);
+
+  ClassOrInterfaceType withTypeArguments(List<JavaType> typeArgs) {
+    return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
+      enclosingType, typeArgs);
   }
 
   /// Returns [true] if this type is generic.
@@ -179,17 +187,26 @@ class ClassOrInterfaceType extends ReferenceType {
   /// enclosing class(es) are also in scope. Otherwise (if this class is static,
   /// either because it's top-level or is a static nested class), only the
   /// [typeArguments] for the class itself are in scope.
-  List<TypeVariable> get allTypeArguments {
+  List<JavaType> get allTypeArguments {
     if (isStatic) {
       return typeArguments;
     } else {
-      List<TypeVariable> args = enclosingType.allTypeArguments.toList();
+      List<JavaType> args = enclosingType.allTypeArguments.toList();
       return args..addAll(typeArguments);
     }
   }
 
   @override
-  String toString() => fullyQualifiedName;
+  String toString() {
+    String identifier = fullyQualifiedName;
+
+    if (isGeneric) {
+      String typeArgs = typeArguments.map((a) => a.toString()).join(", ");
+      return "$identifier<$typeArgs>";
+    } else {
+      return identifier;
+    }
+  }
 }
 
 class TypeVariable extends ReferenceType {

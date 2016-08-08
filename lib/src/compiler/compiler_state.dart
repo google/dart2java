@@ -61,13 +61,16 @@ class CompilerState {
   dart.Class intClass;
   dart.Class doubleClass;
   dart.Class stringClass;
+  dart.Class listClass;
 
-  CompilerState(this.options, this.repository) {
+  CompilerState(this.options, this.repository, 
+    Iterable<dart.Class> classesToCompile) {
     objectClass = getDartClass("dart:core", "Object");
     boolClass = getDartClass("dart:core", "bool");
     intClass = getDartClass("dart:core", "int");
     doubleClass = getDartClass("dart:core", "double");
     stringClass = getDartClass("dart:core", "String");
+    listClass = getDartClass("dart:core", "List");
     var numClass = getDartClass("dart:core", "num");
 
     // Initialize the data structures.
@@ -91,41 +94,61 @@ class CompilerState {
           new java.ClassOrInterfaceType("java.lang", "String"),
           new java.ClassOrInterfaceType(
               "dart._runtime.helpers", "StringHelper")),
+      // Arrays are not growable and Java lists do not have reified generics,
+      // so we are implementing our own DartList
+      listClass: new ClassImpl(
+          new java.ClassOrInterfaceType("dart._runtime.base", "DartList"),
+          null),
       numClass: new ClassImpl(
           new java.ClassOrInterfaceType("java.lang", "Number"),
           new java.ClassOrInterfaceType(
               "dart._runtime.helpers", "NumberHelper")),
     });
+
+    initializeJavaClasses(classesToCompile);
   }
 
   /// Find classes that are annotated with @JavaClass and add them
   /// to classImpls.
   void initializeJavaClasses(Iterable<dart.Class> classes) {
     for (var cls in classes) {
-      String fullClassName = getSimpleAnnotation(
-        cls, java.Constants.javaClassAnnotation);
+      initializeJavaClass(cls);
+    }
 
-      if (fullClassName != null) {
-        // This class is an @JavaClass
-        List<String> classTokens = fullClassName.split(".");
-        String package = classTokens.getRange(
-          0, classTokens.length - 1).join(".");
-        String className = classTokens.last;
+    // Initialize SDK classes
+    initializeJavaClass(listClass);
+  }
 
-        // helperClass == null means no intercepting
-        classImpls[cls] = new ClassImpl(
-          new java.ClassOrInterfaceType(package, className), null);
+  /// Find methods that have a Java implementation. Add them to classImpls.
+  /// Then, go through all methods of these classes and look for @JavaMethod
+  /// annotations.
+  void initializeJavaClass(dart.Class cls) {
+    String fullClassName = getSimpleAnnotation(
+      cls, java.Constants.javaClassAnnotation);
 
-        // Add method mappings
-        for (dart.Procedure proc in cls.procedures) {
-          String mappedMethodName = getSimpleAnnotation(
-            proc, java.Constants.javaMethodAnnotation);
+    if (fullClassName != null) {
+      // This class is an @JavaClass
+      List<String> classTokens = fullClassName.split(".");
+      String package = classTokens.getRange(
+        0, classTokens.length - 1).join(".");
+      String className = classTokens.last;
 
-          if (mappedMethodName != null) {
-            // This method should have a different name in Dart
-            classImpls[cls].mappedMethodNames[proc.name.name] = 
-              mappedMethodName;
-          }
+      // helperClass == null means no intercepting
+      classImpls[cls] = new ClassImpl(
+        new java.ClassOrInterfaceType(package, className), null);
+    }
+
+    bool checkMethods = hasJavaImpl(cls) || fullClassName != null;
+    if (checkMethods) {
+      // Add method mappings
+      for (dart.Procedure proc in cls.procedures) {
+        String mappedMethodName = getSimpleAnnotation(
+          proc, java.Constants.javaMethodAnnotation);
+
+        if (mappedMethodName != null) {
+          // This method should have a different name in Dart
+          classImpls[cls].mappedMethodNames[proc.name.name] = 
+            mappedMethodName;
         }
       }
     }
@@ -134,7 +157,7 @@ class CompilerState {
   /// Assuming that [node] has a single annotation of type [annotation] and
   /// that annotation has a single String parameter, return the parameter,
   /// otherwise return null.
-  String getSimpleAnnotation(dart.Class node, String annotation,
+  String getSimpleAnnotation(dart.TreeNode node, String annotation,
       [String fieldName = "name"]) {
     // TODO(springerm): Try to use DartTypes here instead of Strings
     // TODO(springerm): Potential duplication with method in java_builder

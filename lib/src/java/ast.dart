@@ -225,6 +225,16 @@ class ExpressionStmt extends Statement {
 /// Abstract class for expressions.
 abstract class Expression extends Node {}
 
+/// A [JavaType] as an expression.
+class TypeExpr extends Expression {
+  JavaType type;
+
+  TypeExpr(this.type);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitTypeExpr(this);
+}
+
 class NewExpr extends Expression {
   ClassRefExpr classRef;
 

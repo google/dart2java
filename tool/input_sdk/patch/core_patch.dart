@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:_internal' show JavaCall;
+import 'dart:_internal' show JavaCall, JavaMethod;
 
 @patch
 class Object {
@@ -23,6 +23,13 @@ class Object {
 abstract class String {
   @patch
   external factory String.fromCharCode(int charCode);
+}
+
+@patch
+class List<E> {
+  @patch
+  @JavaMethod("newInstance")
+  external factory List();
 }
 
 @patch
