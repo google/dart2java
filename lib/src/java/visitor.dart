@@ -19,6 +19,7 @@ abstract class Visitor<R> {
   R visitVariableDeclStmt(VariableDeclStmt node) => null;
   R visitIfStmt(IfStmt node) => null;
   R visitWhileStmt(WhileStmt node) => null;
+  R visitDoStmt(DoStmt node) => null;
   R visitForStmt(ForStmt node) => null;
   R visitReturnStmt(ReturnStmt node) => null;
   R visitExpressionStmt(ExpressionStmt node) => null;
@@ -28,6 +29,7 @@ abstract class Visitor<R> {
   R visitNewExpr(NewExpr node) => null;
   R visitFieldAccess(FieldAccess node) => null;
   R visitMethodInvocation(MethodInvocation node) => null;
+  R visitSuperMethodInvocation(SuperMethodInvocation node) => null;
   R visitBinaryExpr(BinaryExpr node) => null;
   R visitUnaryExpr(UnaryExpr node) => null;
   R visitConditionalExpr(ConditionalExpr node) => null;

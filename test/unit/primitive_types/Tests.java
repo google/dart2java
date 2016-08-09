@@ -87,6 +87,16 @@ public class Tests {
   }
 
   @Test
+  public void testLogicalOperators() {
+    assertTrue(__TopLevel.getLogicalAnd(true, true));
+    assertFalse(__TopLevel.getLogicalAnd(true, false));
+    assertTrue(__TopLevel.getLogicalOr(false, true));
+    assertFalse(__TopLevel.getLogicalOr(false, false));
+    assertTrue(__TopLevel.getLogicalNot(false));
+    assertFalse(__TopLevel.getLogicalNot(true));
+  }
+  
+  @Test
   public void testStaticFields() {
     assertTrue(__TopLevel.getDoubleMin() < __TopLevel.getDoubleInfinity());
   }

@@ -35,8 +35,9 @@ class _JavaAstEmitter extends Visitor<String> {
     var extendsClause = cls.supertype == null
         ? ""
         : " extends ${cls.supertype.fullyQualifiedName}";
+    var abstractClause = cls.isAbstract ? "abstract " : " ";
 
-    return "${cls.access} class ${cls.type.name}${extendsClause}"
+    return "${cls.access} ${abstractClause}class ${cls.type.name}${extendsClause}"
       "\n{\n${content}\n}\n";
   }
 
@@ -85,13 +86,18 @@ class _JavaAstEmitter extends Visitor<String> {
     frontPart.add(meth.access.toString());
     if (meth.isStatic) frontPart.add("static");
     if (meth.isFinal) frontPart.add("final");
+    if (meth.isAbstract) frontPart.add("abstract");
     frontPart.add(meth.returnType.accept(this));
     frontPart.add(meth.name);
 
     var parameterList =
         "(" + meth.parameters.map((p) => p.accept(this)).join(", ") + ")";
 
-    return frontPart.join(" ") + parameterList + "\n" + meth.body.accept(this);
+    var methodBody = meth.isAbstract
+      ? ";"
+      : "\n" + meth.body.accept(this);
+
+    return frontPart.join(" ") + parameterList + methodBody;
   }
 
   @override
@@ -145,6 +151,13 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitDoStmt(DoStmt stmt) {
+    var conditionCheck = "\nwhile (${stmt.condition.accept(this)});";
+    var body = stmt.body.accept(this);
+    return "do\n" + body + conditionCheck;
+  }
+
+  @override
   String visitForStmt(ForStmt stmt) {
     // TODO(springerm): Multiple VarDecls are currently not emitted correctly.
     // The type should only be emitted once (e.g. not: int a = 1, int b = 2).
@@ -177,6 +190,13 @@ class _JavaAstEmitter extends Visitor<String> {
     var arguments =
         invocation.arguments.map((arg) => arg.accept(this)).join(", ");
     return "${receiver}.${invocation.methodName}(${arguments})";
+  }
+
+  @override
+  String visitSuperMethodInvocation(SuperMethodInvocation invocation) {
+    var arguments =
+        invocation.arguments.map((arg) => arg.accept(this)).join(", ");
+    return "super.${invocation.methodName}(${arguments})";
   }
 
   @override

@@ -110,7 +110,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         fields: fields, 
         methods: methods, 
         constructors: constructors,
-        supertype: supertype);
+        supertype: supertype,
+        isAbstract: node.isAbstract);
   }
 
   @override
@@ -227,7 +228,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
             new java.MethodInvocation(extReceiver, extMethodName, arguments));
       }
     } else {
-      body = buildStatement(procedure.function.body);
+      // Normal Dart method
+      if (!procedure.isAbstract) {
+        body = buildStatement(procedure.function.body);
+      }
     }
 
     if (methodName == "main" && procedure.enclosingClass == null) {
@@ -257,8 +261,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       returnType = java.JavaType.void_;
     }
 
-    return new java.MethodDef(methodName, wrapInJavaBlock(body), parameters,
-        returnType: returnType, isStatic: isStatic, isFinal: false);
+    if (!procedure.isAbstract) {
+      // Make sure body is a [java.Block]
+      body = wrapInJavaBlock(body);
+    }
+
+    return new java.MethodDef(methodName, body, parameters, 
+      returnType: returnType, isStatic: isStatic, isFinal: false,
+      isAbstract: procedure.isAbstract);
   }
 
   @override
@@ -336,6 +346,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       node.condition.accept(this),
       wrapInJavaBlock(buildStatement(node.body)));
   } 
+
+  @override
+  java.DoStmt visitDoStatement(dart.DoStatement node) {
+    return new java.DoStmt(
+      node.condition.accept(this),
+      wrapInJavaBlock(buildStatement(node.body)));
+  }
 
   @override
   java.ForStmt visitForStatement(dart.ForStatement node) {
@@ -429,6 +446,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return buildDynamicMethodInvocation(
         node.receiver, name, node.arguments.positional, 
         isInsideStaticMethod(node));
+  }
+
+  @override
+  java.SuperMethodInvocation visitSuperMethodInvocation(
+    dart.SuperMethodInvocation node) {
+    return new java.SuperMethodInvocation(
+      node.name.name,
+      node.arguments.positional.map((a) => a.accept(this)).toList());
   }
 
   @override
@@ -532,6 +557,36 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           '${node.target.runtimeType}');
     }
   }
+
+  @override
+  java.UnaryExpr visitNot(dart.Not node) {
+    return new java.UnaryExpr(node.operand.accept(this), "!");
+  }
+
+  @override
+  java.Expression visitStringConcatenation(dart.StringConcatenation node) {
+    Iterable<java.Expression> strings = node.expressions.map((e) =>
+      new java.MethodInvocation(e.accept(this),
+        Constants.toStringMethodName));
+
+    return strings.reduce((value, element) =>
+      new java.BinaryExpr(value, element, "+"));
+  }
+
+  @override
+  java.NullLiteral visitNullLiteral(dart.NullLiteral node) {
+    return new java.NullLiteral();
+  }
+
+
+  @override
+  java.BinaryExpr visitLogicalExpression(dart.LogicalExpression node) {
+    return new java.BinaryExpr(
+      node.left.accept(this),
+      node.right.accept(this),
+      node.operator);
+  }
+
 
   /// Retrieves the [DartType] for a kernel [Expression] node.
   dart.DartType getType(dart.Expression node) {

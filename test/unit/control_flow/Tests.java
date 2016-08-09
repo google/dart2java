@@ -24,6 +24,7 @@ public class Tests {
   @Test
   public void testLoops() {
     assertEquals(10, (int) __TopLevel.countWhile());
+    assertEquals(10, (int) __TopLevel.countDo());
     assertEquals(10, (int) __TopLevel.countFor());
     assertEquals(90, (int) __TopLevel.countForMultiUpdate());
   }

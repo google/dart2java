@@ -197,3 +197,15 @@ bool getEqualsNumInt(int v1, num v2) {
 bool getEqualsNums(num v1, num v2) {
   return v1 == v2;
 }
+
+bool getLogicalAnd(bool v1, bool v2) {
+  return v1 && v2;
+}
+
+bool getLogicalOr(bool v1, bool v2) {
+  return v1 || v2;
+}
+
+bool getLogicalNot(bool v1) {
+  return !v1;
+}

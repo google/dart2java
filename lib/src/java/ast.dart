@@ -59,6 +59,8 @@ class ClassDecl extends Node {
 
   Access access;
 
+  bool isAbstract;
+
   List<MethodDef> methods;
 
   List<FieldDecl> fields;
@@ -67,7 +69,7 @@ class ClassDecl extends Node {
 
   ClassDecl(this.type,
       {this.access: Access.Public, this.fields, this.methods, 
-        this.constructors, this.supertype}) {
+        this.constructors, this.supertype, this.isAbstract: false}) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
     methods ??= <MethodDef>[];
     fields ??= <FieldDecl>[];
@@ -99,12 +101,15 @@ class MethodDef extends Node {
 
   bool isFinal;
 
+  bool isAbstract;
+
   Access access;
 
   MethodDef(this.name, this.body, this.parameters,
       {this.returnType: JavaType.void_,
       this.isStatic: false,
       this.isFinal: false,
+      this.isAbstract: false,
       this.access: Access.Public});
 
   @override
@@ -211,6 +216,17 @@ class WhileStmt extends Statement {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitWhileStmt(this);
 }
 
+class DoStmt extends Statement {
+  Expression condition;
+
+  Block body;
+
+  DoStmt(this.condition, this.body);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitDoStmt(this);
+}
+
 class ForStmt extends Statement {
   List<VariableDecl> variableDeclarations;
 
@@ -294,6 +310,18 @@ class MethodInvocation extends Expression {
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodInvocation(this);
+}
+
+/// A super method invocation.
+class SuperMethodInvocation extends Expression {
+  String methodName;
+
+  List<Expression> arguments;
+
+  SuperMethodInvocation(this.methodName, [this.arguments = const []]);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitSuperMethodInvocation(this); 
 }
 
 /// A binary expression (e.g., arithmetic operators).

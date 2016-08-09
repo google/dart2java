@@ -4,7 +4,7 @@ class Constants {
   static const operatorToMethodName = const {
     "+": "operatorPlus",
     "-": "operatorMinus",
-    "*": "operatorMultiply",
+    "*": "operatorStar",
     "/": "operatorDivide",
     "~/": "operatorTruncatedDivide",
     "%": "operatorModulus",
@@ -34,7 +34,8 @@ class Constants {
   static const String dartObjectPackage = "dart._runtime.base";
   static const String dartObjectClassname = "DartObject";
   static const String javaStaticThisIdentifier = "self";
-
+  static const String toStringMethodName = "toString";
+    
   // Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8
   static final reservedWords = new HashSet<String>.from([
     // Keywords
