@@ -209,3 +209,12 @@ bool getLogicalOr(bool v1, bool v2) {
 bool getLogicalNot(bool v1) {
   return !v1;
 }
+
+int testUnaryArithmetics() {
+  int i = 5;
+  int a = i++;
+  int b = i--;
+  int c = ++i;
+  int d = --i;
+  return a + b + c + d;
+}

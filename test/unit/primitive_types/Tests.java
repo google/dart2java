@@ -132,4 +132,9 @@ public class Tests {
     assertTrue(__TopLevel.getEqualsNums(42, 42));
     assertTrue(__TopLevel.getEqualsNums(45.2, 45.2));
   }
+
+  @Test
+  public void testUnaryArithmeticOperators() {
+    assertEquals(22, (int) __TopLevel.testUnaryArithmetics());
+  }
 }

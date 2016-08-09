@@ -25,7 +25,9 @@ java.ClassDecl buildWrapperClass(
   return result;
 }
 
-/// Builds a Java class AST from a kernel class AST.
+/// Builds a Java class AST from a kernel class AST. Kernel does not give names
+/// to temporary variables, so we need to keep track of them manually. Also see
+/// the comment for visitLet.
 List<java.ClassDecl> buildClass(dart.Class node, CompilerState compilerState) {
   // Nothing to do for core abstract classes like `int`.
   if (compilerState.isJavaClass(node)) {
@@ -33,6 +35,15 @@ List<java.ClassDecl> buildClass(dart.Class node, CompilerState compilerState) {
   }
 
   return [node.accept(new _JavaAstBuilder(compilerState))];
+}
+
+/// A temporary local variable defined in a method.
+class TemporaryVariable {
+  String name;
+
+  dart.DartType type;
+
+  TemporaryVariable(this.name, this.type);
 }
 
 /// Builds a Java class from Dart IR.
@@ -50,6 +61,17 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// This reference is used to compute the [dart.DartType] of [:this:] inside
   /// of method definitions.
   dart.Class thisDartClass;
+
+  /// A counter for generating unique identifiers for temporary variables.
+  int tempVarCounter = 0;
+
+  /// A map assigning Kernel AST variables to temporary variables.
+  Map<dart.VariableDeclaration, TemporaryVariable> tempVars = null;
+
+  /// Generates a unique variable identifier.
+  String nextTempVarIdentifier() {
+    return "__tempVar_${tempVarCounter++}";
+  }
 
   final CompilerState compilerState;
 
@@ -188,6 +210,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
   }
 
+  Iterable<java.Statement> buildTempVarDecls() {
+    return tempVars.values.map((v) =>
+      new java.VariableDeclStmt(
+          new java.VariableDecl(v.name, v.type.accept(this))));
+  }
+
   @override
   java.MethodDef visitProcedure(dart.Procedure procedure) {
     String methodName = javaMethodName(procedure.name.name, procedure.kind);
@@ -230,7 +258,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     } else {
       // Normal Dart method
       if (!procedure.isAbstract) {
-        body = buildStatement(procedure.function.body);
+        assert(tempVars == null);
+        tempVars = new Map<dart.VariableDeclaration, TemporaryVariable>();
+
+        body = wrapInJavaBlock(buildStatement(procedure.function.body));
+
+        // Insert declarations of temporary variables
+        (body as java.Block).statements.insertAll(0, buildTempVarDecls());
+        tempVars = null;
       }
     }
 
@@ -393,7 +428,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     if (recvType is! dart.InterfaceType) {
       throw new CompileErrorException(
-        "Can only handle method invocation where receiver is an InterfaceType");
+        "Can only handle method invocation where receiver is an InterfaceType "
+        "(found ${recvType.runtimeType})");
     }
 
     // Change method name if annotated with @JavaMethod
@@ -590,15 +626,31 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Retrieves the [DartType] for a kernel [Expression] node.
   dart.DartType getType(dart.Expression node) {
-    // TODO(andrewkrieger): Workaround until we get types for implicit "this"
-    // working.
+    if (node.runtimeType == dart.VariableGet) {
+      // TODO(springerm, andrewkrieger): Workaround for temporary variables
+      // inside let expressions until we get types for let expressions working.
+      dart.VariableGet varGetNode = node as dart.VariableGet;
+      dart.DartType nodeType = varGetNode.variable.type;
+
+      if (nodeType.runtimeType == dart.DynamicType) {
+        if (tempVars.containsKey(varGetNode.variable)) {
+          // This is a temporary variable
+          return tempVars[varGetNode.variable].type;
+        }
+      } else {
+        return nodeType;
+      }
+    }
+
     if (node.staticType == null) {
       if (node.toString() == "this") {
+        // TODO(andrewkrieger): Workaround until we get types for implicit 
+        // "this" working.
         return getThisClassDartType();
       } else {
         throw new CompileErrorException(
             'Unable to retrieve type for Kernel AST expression "$node" of type'
-            ' ${node.runtimeType}.');
+            ' ${node.runtimeType}');
       }
     } else {
       return node.staticType;
@@ -676,13 +728,60 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.IdentifierExpr visitVariableGet(dart.VariableGet node) {
-    return new java.IdentifierExpr(node.variable.name);
+    if (node.variable.name == null) {
+      // This must be a temporary variable
+      String name = tempVars[node.variable]?.name;
+
+      if (name == null) {
+        throw new CompileErrorException("Expected temporary variable.");
+      }
+
+      return new java.IdentifierExpr(name);
+    } else {
+      return new java.IdentifierExpr(node.variable.name);
+    }
   }
 
   @override
   java.AssignmentExpr visitVariableSet(dart.VariableSet node) {
     return new java.AssignmentExpr(
         new java.IdentifierExpr(node.variable.name), node.value.accept(this));
+  }
+
+  @override
+  java.Expression visitLet(dart.Let node) {
+    // TODO(springerm): Need to seriously optimize this for simple
+    // incremenets/decrements
+
+    // Let expressions require two operations: (1) create and assign a 
+    // temporary variable and (2) evaluate and return an expression.
+    // This is hard to do in an expression because (1) is a statement.
+    // Here's a way to do it:
+    // Create a temporary variable at the beginning of the method and 
+    // assign it Let.variable where the let expression occurs. Pass this
+    // assignment expression as an argument to the `comma` method (sequence
+    // point method) along with the body of the let expression. That is a way
+    // to implement Let expressions without lambdas. `comma` simply returns
+    // the second parameter and acts as a sequence point (comma in C/C++).
+
+    String tempIdentifier = nextTempVarIdentifier();
+    tempVars[node.variable] = new TemporaryVariable(
+      tempIdentifier,
+      // TODO(springerm, andrewkrieger): Kernel AST does currently not expose
+      // types of expressions in let expressions. Assume for the moment that 
+      // everything is int to make "i++" etc. working
+      compilerState.intClass.thisType /* node.variable.type */);
+
+    var assignment = new java.AssignmentExpr(
+      new java.IdentifierExpr(tempIdentifier),
+      node.variable.initializer.accept(this));
+
+    return new java.MethodInvocation(
+      new java.ClassRefExpr(java.JavaType.letHelper),
+      Constants.sequencePointMethodName,
+      <java.Expression>[
+        assignment,
+        node.body.accept(this)]);
   }
 
   @override
