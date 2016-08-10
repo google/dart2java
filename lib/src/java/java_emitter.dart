@@ -200,6 +200,14 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitSuperConstructorInvocation(
+    SuperConstructorInvocation invocation) {
+    var arguments =
+      invocation.arguments.map((arg) => arg.accept(this)).join(", ");
+    return "super(${arguments})";
+  }
+  
+  @override
   String visitBinaryExpr(BinaryExpr expr) {
     var left = expr.leftOperand.accept(this);
     var right = expr.rightOperand.accept(this);

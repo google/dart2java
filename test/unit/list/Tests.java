@@ -12,4 +12,9 @@ public class Tests {
     assertEquals(170, (int) __TopLevel.simpleOperations());
     assertEquals(18, (int) __TopLevel.triggerArrayGrowth());
   }
+
+  @Test
+  public void testListLiteral() {
+    assertEquals(30, (int) __TopLevel.listLiteral());
+  }
 }

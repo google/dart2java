@@ -324,6 +324,18 @@ class SuperMethodInvocation extends Expression {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitSuperMethodInvocation(this); 
 }
 
+/// Invokes a constructor in the superclass.
+class SuperConstructorInvocation extends Expression {
+  // TODO(springerm): Add support for named constructors
+  List<Expression> arguments;
+
+  SuperConstructorInvocation(this.arguments);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => 
+  v.visitSuperConstructorInvocation(this);
+}
+
 /// A binary expression (e.g., arithmetic operators).
 class BinaryExpr extends Expression {
   Expression leftOperand;

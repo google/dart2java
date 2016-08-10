@@ -42,3 +42,20 @@ int triggerArrayGrowth() {
   list.add(18);
   return list[17];
 }
+
+class IntWrapper {
+  int value;
+
+  IntWrapper(this.value);
+}
+
+int listLiteral() {
+  var list = <IntWrapper>[new IntWrapper(10), new IntWrapper(20)];
+  int result = 0;
+
+  for (int i = 0; i < list.length; i = i + 1) {
+    result = result + list[i].value;
+  }
+
+  return result;
+}

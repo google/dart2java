@@ -30,6 +30,7 @@ abstract class Visitor<R> {
   R visitFieldAccess(FieldAccess node) => null;
   R visitMethodInvocation(MethodInvocation node) => null;
   R visitSuperMethodInvocation(SuperMethodInvocation node) => null;
+  R visitSuperConstructorInvocation(SuperConstructorInvocation node) => null;
   R visitBinaryExpr(BinaryExpr node) => null;
   R visitUnaryExpr(UnaryExpr node) => null;
   R visitConditionalExpr(ConditionalExpr node) => null;

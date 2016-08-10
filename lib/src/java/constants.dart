@@ -44,6 +44,7 @@ class Constants {
   static const String javaStaticThisIdentifier = "self";
   static const String toStringMethodName = "toString";
   static const String sequencePointMethodName = "comma";
+  static const String listInitializerMethodName = "_fromArguments";
 
   // Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8
   static final reservedWords = new HashSet<String>.from([

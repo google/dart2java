@@ -28,6 +28,16 @@ public class DartList<T> {
     return new DartList<T>(genericType);
   }
 
+  public static <T> DartList<T> _fromArguments(
+    Class<T> genericType, T... elements) {
+    DartList<T> instance = newInstance(genericType);
+
+    for (int i = 0; i < elements.length; i++) {
+      instance.add(elements[i]);
+    }
+    return instance;
+  }
+  
   private void increaseSize() {
     array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR), 
       genericArrayType);
