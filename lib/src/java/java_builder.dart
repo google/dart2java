@@ -590,11 +590,22 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return new java.NewExpr(new java.ClassRefExpr(type), args);
   }
 
+  /// Returns the enclosing class type of a member or the top level class type
+  /// if there is no enclosing class.
+  java.ClassOrInterfaceType getEnclosingOfMember(dart.Member member) {
+    if (member.enclosingClass == null) {
+      // Belongs to top top level
+      return compilerState.getTopLevelClass(member.enclosingLibrary);
+    } else {
+      return member.enclosingClass.thisType.accept(this);
+    }
+  }
+
   @override
   java.FieldAccess visitStaticGet(dart.StaticGet node) {
     assert(!node.target.isInstanceMember);
 
-    if (node.target.runtimeType == dart.Field) {
+    if (node.target is dart.Field) {
       // Static field read
       dart.Field field = node.target;
 
@@ -612,13 +623,44 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           staticNested, new java.IdentifierExpr(field.name.name));
       } else {
         // Regular static field access
-        return new java.FieldAccess(new java.ClassRefExpr(
-            node.target.enclosingClass.thisType.accept(this)), 
+        java.Expression fieldAccess = new java.FieldAccess(
+          new java.ClassRefExpr(getEnclosingOfMember(node.target)), 
           new java.IdentifierExpr(field.name.name));
+        return fieldAccess;
       }
     } else {
       throw new CompileErrorException(
           'Not implemented yet: Cannot handle StaticGet for '
+          '${node.target.runtimeType}');
+    }
+  }
+
+  @override
+  java.AssignmentExpr visitStaticSet(dart.StaticSet node) {
+    assert(!node.target.isInstanceMember);
+
+    if (node.target is dart.Field) {
+      // Static field read
+      dart.Field field = node.target;
+
+      // TODO(springerm): Reconsider passing method name here (it is a field!)
+      if (compilerState.usesHelperFunction(
+        node.target.enclosingClass, field.name.name)) {
+        throw new CompileErrorException(
+            'Not implemented yet: Cannot handle StaticSet for '
+            'types with helper classes');
+      } else {
+        // Regular static field access
+        java.Expression fieldAccess = new java.FieldAccess(
+          new java.ClassRefExpr(getEnclosingOfMember(node.target)), 
+          new java.IdentifierExpr(field.name.name));
+        return new java.AssignmentExpr(
+          fieldAccess, 
+          buildCovariantCompatibleExpression(node.value));
+      }
+    } else {
+      throw new CompileErrorException(
+          'Not implemented yet: Cannot handle StaticSet for '
           '${node.target.runtimeType}');
     }
   }

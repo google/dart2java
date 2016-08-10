@@ -13,10 +13,6 @@ import '../java/constants.dart' as java;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 
-/// Used as the name of synthetic Java classes used to wrap Dart top-level
-/// functions and fields.
-const String _topLevelClassName = '__TopLevel';
-
 /// Describes how a Dart class is implemented (e.g., how to represent it as a
 /// Java variable, how to call methods on it, etc.).
 ///
@@ -252,7 +248,8 @@ class CompilerState {
   /// Dart library.
   java.ClassOrInterfaceType getTopLevelClass(dart.Library library) {
     String package = getJavaPackageName(library);
-    return new java.ClassOrInterfaceType(package, _topLevelClassName);
+    return new java.ClassOrInterfaceType(package, 
+      java.Constants.topLevelClassName);
   }
 
   /// Checks whether a Dart class is a @JavaClass.
@@ -309,7 +306,7 @@ class CompilerState {
 // covers all possibilities. Before moving dart2java to production, we ought to
 // spend a few minutes making sure we cover all the possible collisions.
 String _sanitizeClassName(String clsName) {
-  if (clsName.startsWith(_topLevelClassName) ||
+  if (clsName.startsWith(java.Constants.topLevelClassName) ||
       clsName.startsWith(java.Constants.reservedWordPattern)) {
     clsName += "_";
   }
