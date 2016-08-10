@@ -455,7 +455,7 @@ class DebugPrinter extends Visitor {
 
   @override
   visitName(Name node) {
-    defaultNode(node, extraArgs: [
+    defaultNode(node, extraProps: [
       'name=${node.name}',
       'lib=${_libraryToString(node.library)}',
       node.isPrivate ? 'private' : 'public'
