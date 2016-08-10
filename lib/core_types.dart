@@ -4,6 +4,7 @@
 library kernel.class_table;
 
 import 'ast.dart';
+import 'repository.dart';
 
 /// Provides access to the classes and libraries in the core libraries.
 class CoreTypes {
@@ -26,6 +27,27 @@ class CoreTypes {
   Class typeClass;
   Class functionClass;
 
+  static CoreTypes _instance;
+
+  /// A global [CoreTypes] instance, for the common case where only a single
+  /// program is being processed.
+  ///
+  /// This property must be set before being read.  After setting up the
+  /// repository and loading core libraries to the reference level, you should
+  /// set this to a new [CoreTypes] instance.  If you need to work with multiple
+  /// copies of the core libraries, you should not use this global instance.
+  static CoreTypes get instance {
+    return _instance ??
+      (throw new StateError('No global CoreTypes instance set'));
+  }
+
+  static void set instance(CoreTypes inst) {
+    if (_instance != null) {
+      throw new StateError('Global CoreTypes instance already set');
+    }
+    _instance = inst;
+  }
+
   Library getCoreLibrary(String uri) => _dartLibraries[uri].library;
 
   Class getCoreClass(String libraryUri, String className) {
@@ -40,8 +62,13 @@ class CoreTypes {
     throw 'Missing procedure ${topLevelMemberName} from $libraryUri';
   }
 
-  CoreTypes(Program program) {
-    for (var library in program.libraries) {
+  CoreTypes(Program program) : this.fromLibraries(program.libraries);
+
+  CoreTypes.fromRepository(Repository repository) :
+    this.fromLibraries(repository.libraries);
+
+  CoreTypes.fromLibraries(Iterable<Library> libraries) {
+    for (var library in libraries) {
       if (library.importUri.scheme == 'dart') {
         _dartLibraries['${library.importUri}'] = new _LibraryIndex(library);
       }

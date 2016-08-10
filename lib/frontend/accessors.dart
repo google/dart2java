@@ -7,6 +7,7 @@
 library kernel.frontend.accessors;
 
 import '../ast.dart';
+import '../core_types.dart';
 
 abstract class Accessor {
   Expression buildSimpleRead() {
@@ -21,40 +22,52 @@ abstract class Accessor {
     return _finish(_makeSimpleWrite(value, voidContext));
   }
 
-  Expression buildNullAwareAssignment(Expression value,
-      {bool voidContext: false}) {
+  Expression buildNullAwareAssignment(DartType staticType, Expression value,
+      {bool voidContext: false, CoreTypes coreTypes}) {
     if (voidContext) {
       return _finish(new ConditionalExpression(
-          buildIsNull(_makeRead()),
-          _makeWrite(value, voidContext), new NullLiteral()));
+          staticType,
+          buildIsNull(_makeRead(), coreTypes: coreTypes),
+          _makeWrite(value, voidContext),
+          new NullLiteral()));
     }
     var tmp = new VariableDeclaration.forValue(_makeRead());
-    return _finish(makeLet(tmp, new ConditionalExpression(
-        buildIsNull(new VariableGet(tmp)),
-        _makeWrite(value, voidContext), new VariableGet(tmp))));
+    return _finish(makeLet(
+        tmp,
+        new ConditionalExpression(
+            staticType,
+            buildIsNull(new VariableGet(tmp), coreTypes: coreTypes),
+            _makeWrite(value, voidContext),
+            new VariableGet(tmp))));
   }
 
-  Expression buildCompoundAssignment(Name binaryOperator, Expression value,
+  Expression buildCompoundAssignment(
+      DartType staticType, Name binaryOperator, Expression value,
       {bool voidContext: false}) {
     return _finish(_makeWrite(
-        makeBinary(_makeRead(), binaryOperator, value), voidContext));
+        makeBinary(staticType, _makeRead(), binaryOperator, value),
+        voidContext));
   }
 
-  Expression buildPrefixIncrement(Name binaryOperator,
+  Expression buildPrefixIncrement(DartType staticType, Name binaryOperator,
       {bool voidContext: false}) {
-    return buildCompoundAssignment(binaryOperator, new IntLiteral(1),
+    return buildCompoundAssignment(
+        staticType, binaryOperator, new IntLiteral(1),
         voidContext: voidContext);
   }
 
-  Expression buildPostfixIncrement(Name binaryOperator,
+  Expression buildPostfixIncrement(DartType staticType, Name binaryOperator,
       {bool voidContext: false}) {
     if (voidContext) {
-      return buildPrefixIncrement(binaryOperator, voidContext: true);
+      return buildPrefixIncrement(staticType, binaryOperator,
+          voidContext: true);
     }
     var value = new VariableDeclaration.forValue(_makeRead());
     valueAccess() => new VariableGet(value);
     var dummy = new VariableDeclaration.forValue(_makeWrite(
-        makeBinary(valueAccess(), binaryOperator, new IntLiteral(1)), true));
+        makeBinary(
+            staticType, valueAccess(), binaryOperator, new IntLiteral(1)),
+        true));
     return _finish(makeLet(value, makeLet(dummy, valueAccess())));
   }
 
@@ -93,14 +106,17 @@ class PropertyAccessor extends Accessor {
   VariableDeclaration _receiverVariable;
   Expression receiver;
   Name name;
+  DartType readStaticType;
 
-  static Accessor make(Expression receiver, Name name) {
-    return new PropertyAccessor._internal(receiver, name);
+  static Accessor make(DartType readStaticType,
+      Expression receiver, Name name) {
+    return new PropertyAccessor._internal(readStaticType, receiver, name);
   }
 
-  PropertyAccessor._internal(this.receiver, this.name);
+  PropertyAccessor._internal(this.readStaticType, this.receiver, this.name);
 
-  _makeSimpleRead() => new PropertyGet(receiver, name);
+  _makeSimpleRead() => new PropertyGet(readStaticType, receiver, name);
+
   _makeSimpleWrite(Expression value, bool voidContext) {
     return new PropertySet(receiver, name, value);
   }
@@ -110,7 +126,7 @@ class PropertyAccessor extends Accessor {
     return new VariableGet(_receiverVariable);
   }
 
-  _makeRead() => new PropertyGet(receiverAccess(), name);
+  _makeRead() => new PropertyGet(readStaticType, receiverAccess(), name);
 
   _makeWrite(Expression value, bool voidContext) {
     return new PropertySet(receiverAccess(), name, value);
@@ -122,13 +138,16 @@ class PropertyAccessor extends Accessor {
 class NullAwarePropertyAccessor extends Accessor {
   VariableDeclaration receiver;
   Name name;
+  DartType readStaticType;
+  CoreTypes coreTypes;
 
-  NullAwarePropertyAccessor(Expression receiver, this.name)
+  NullAwarePropertyAccessor(this.readStaticType, Expression receiver, this.name,
+      {this.coreTypes})
       : this.receiver = makeOrReuseVariable(receiver);
 
   receiverAccess() => new VariableGet(receiver);
 
-  _makeRead() => new PropertyGet(receiverAccess(), name);
+  _makeRead() => new PropertyGet(readStaticType, receiverAccess(), name);
 
   _makeWrite(Expression value, bool voidContext) {
     return new PropertySet(receiverAccess(), name, value);
@@ -137,18 +156,22 @@ class NullAwarePropertyAccessor extends Accessor {
   _finish(Expression body) => makeLet(
       receiver,
       new ConditionalExpression(
-          buildIsNull(receiverAccess()), new NullLiteral(), body));
+          body.staticType,
+          buildIsNull(receiverAccess(), coreTypes: coreTypes),
+          new NullLiteral(),
+          body));
 }
 
 class SuperPropertyAccessor extends Accessor {
   Member readTarget;
   Member writeTarget;
+  DartType readStaticType;
 
-  SuperPropertyAccessor(this.readTarget, this.writeTarget);
+  SuperPropertyAccessor(this.readStaticType, this.readTarget, this.writeTarget);
 
   _makeRead() => readTarget == null
       ? makeInvalidRead()
-      : new SuperPropertyGet(readTarget);
+      : new SuperPropertyGet(readStaticType, readTarget);
 
   _makeWrite(Expression value, bool voidContext) {
     return writeTarget == null
@@ -165,24 +188,21 @@ class IndexAccessor extends Accessor {
   Expression index;
   VariableDeclaration receiverVariable;
   VariableDeclaration indexVariable;
+  DartType readStaticType;
 
-  static Accessor make(Expression receiver, Expression index) {
-    if (receiver is ThisExpression) {
-      return new ThisIndexAccessor(index);
-    } else {
-      return new IndexAccessor._internal(receiver, index);
-    }
+  static Accessor make(DartType readStaticType, Expression receiver, Expression index) {
+    return new IndexAccessor._internal(readStaticType, receiver, index);
   }
 
-  IndexAccessor._internal(this.receiver, this.index);
+  IndexAccessor._internal(this.readStaticType, this.receiver, this.index);
 
   _makeSimpleRead() => new MethodInvocation(
-      receiver, _indexGet, new Arguments(<Expression>[index]));
+      readStaticType, receiver, _indexGet, new Arguments(<Expression>[index]));
 
   _makeSimpleWrite(Expression value, bool voidContext) {
     if (!voidContext) return _makeWriteAndReturn(value);
-    return new MethodInvocation(
-        receiver, _indexSet, new Arguments(<Expression>[index, value]));
+    return new MethodInvocation(const VoidType(), receiver, _indexSet,
+        new Arguments(<Expression>[index, value]));
   }
 
   receiverAccess() {
@@ -198,13 +218,13 @@ class IndexAccessor extends Accessor {
   }
 
   _makeRead() {
-    return new MethodInvocation(receiverAccess(), _indexGet,
+    return new MethodInvocation(readStaticType, receiverAccess(), _indexGet,
         new Arguments(<Expression>[indexAccess()]));
   }
 
   _makeWrite(Expression value, bool voidContext) {
     if (!voidContext) return _makeWriteAndReturn(value);
-    return new MethodInvocation(receiverAccess(), _indexSet,
+    return new MethodInvocation(const VoidType(), receiverAccess(), _indexSet,
         new Arguments(<Expression>[indexAccess(), value]));
   }
 
@@ -213,6 +233,7 @@ class IndexAccessor extends Accessor {
     // do.  We need to bind the value in a let.
     var valueVariable = new VariableDeclaration.forValue(value);
     var dummy = new VariableDeclaration.forValue(new MethodInvocation(
+        const DynamicType(),
         receiverAccess(),
         _indexSet,
         new Arguments(
@@ -226,60 +247,14 @@ class IndexAccessor extends Accessor {
   }
 }
 
-/// Special case of [IndexAccessor] to avoid creating an indirect access to
-/// 'this'.
-class ThisIndexAccessor extends Accessor {
-  Expression index;
-  VariableDeclaration indexVariable;
-
-  ThisIndexAccessor(this.index);
-
-  _makeSimpleRead() {
-    return new MethodInvocation(
-        new ThisExpression(), _indexGet, new Arguments(<Expression>[index]));
-  }
-
-  _makeSimpleWrite(Expression value, bool voidContext) {
-    if (!voidContext) return _makeWriteAndReturn(value);
-    return new MethodInvocation(new ThisExpression(), _indexSet,
-        new Arguments(<Expression>[index, value]));
-  }
-
-  indexAccess() {
-    indexVariable ??= new VariableDeclaration.forValue(index);
-    return new VariableGet(indexVariable);
-  }
-
-  _makeRead() => new MethodInvocation(new ThisExpression(), _indexGet,
-      new Arguments(<Expression>[indexAccess()]));
-
-  _makeWrite(Expression value, bool voidContext) {
-    if (!voidContext) return _makeWriteAndReturn(value);
-    return new MethodInvocation(new ThisExpression(), _indexSet,
-        new Arguments(<Expression>[indexAccess(), value]));
-  }
-
-  _makeWriteAndReturn(Expression value) {
-    var valueVariable = new VariableDeclaration.forValue(value);
-    var dummy = new VariableDeclaration.forValue(new MethodInvocation(
-        new ThisExpression(),
-        _indexSet,
-        new Arguments(
-            <Expression>[indexAccess(), new VariableGet(valueVariable)])));
-    return makeLet(
-        valueVariable, makeLet(dummy, new VariableGet(valueVariable)));
-  }
-
-  Expression _finish(Expression body) => makeLet(indexVariable, body);
-}
-
 class SuperIndexAccessor extends Accessor {
   Expression index;
   Member readTarget;
   Member writeTarget;
   VariableDeclaration indexVariable;
+  DartType readStaticType;
 
-  SuperIndexAccessor(this.index, this.readTarget, this.writeTarget);
+  SuperIndexAccessor(this.readStaticType, this.index, this.readTarget, this.writeTarget);
 
   indexAccess() {
     indexVariable ??= new VariableDeclaration.forValue(index);
@@ -289,27 +264,29 @@ class SuperIndexAccessor extends Accessor {
   _makeSimpleRead() => readTarget == null
       ? makeInvalidRead()
       : new SuperMethodInvocation(
-          readTarget, new Arguments(<Expression>[index]));
+          readStaticType, readTarget, new Arguments(<Expression>[index]));
 
   _makeSimpleWrite(Expression value, bool voidContext) {
     return writeTarget == null
         ? makeInvalidWrite(value)
-        : new SuperMethodInvocation(
-            writeTarget, new Arguments(<Expression>[index, value]));
+        : new SuperMethodInvocation(const VoidType(), writeTarget,
+            new Arguments(<Expression>[index, value]));
   }
 
   _makeRead() {
     return readTarget == null
         ? makeInvalidRead()
-        : new SuperMethodInvocation(
-            readTarget, new Arguments(<Expression>[indexAccess()]));
+        : new SuperMethodInvocation(readStaticType, readTarget,
+            new Arguments(<Expression>[indexAccess()]));
   }
 
   _makeWrite(Expression value, bool voidContext) {
     return writeTarget == null
         ? makeInvalidWrite(value)
         : new SuperMethodInvocation(
-            writeTarget, new Arguments(<Expression>[indexAccess(), value]));
+            voidContext ? const VoidType() : const DynamicType(),
+            writeTarget,
+            new Arguments(<Expression>[indexAccess(), value]));
   }
 
   Expression _finish(Expression body) {
@@ -320,11 +297,13 @@ class SuperIndexAccessor extends Accessor {
 class StaticAccessor extends Accessor {
   Member readTarget;
   Member writeTarget;
+  DartType readStaticType;
 
-  StaticAccessor(this.readTarget, this.writeTarget);
+  StaticAccessor(this.readStaticType, this.readTarget, this.writeTarget);
 
-  _makeRead() =>
-      readTarget == null ? makeInvalidRead() : new StaticGet(readTarget);
+  _makeRead() => readTarget == null
+      ? makeInvalidRead()
+      : new StaticGet(readStaticType, readTarget);
 
   _makeWrite(Expression value, bool voidContext) {
     return writeTarget == null
@@ -356,15 +335,20 @@ Expression makeLet(VariableDeclaration variable, Expression body) {
   return new Let(variable, body);
 }
 
-Expression makeBinary(Expression left, Name operator, Expression right) {
+Expression makeBinary(
+    DartType staticType, Expression left, Name operator, Expression right) {
   return new MethodInvocation(
-      left, operator, new Arguments(<Expression>[right]));
+      staticType, left, operator, new Arguments(<Expression>[right]));
 }
 
 final Name _equalOperator = new Name('==');
 
-Expression buildIsNull(Expression value) {
-  return makeBinary(value, _equalOperator, new NullLiteral());
+Expression buildIsNull(Expression value, {CoreTypes coreTypes}) {
+  return makeBinary(
+      new InterfaceType((coreTypes ?? CoreTypes.instance).boolClass),
+      value,
+      _equalOperator,
+      new NullLiteral());
 }
 
 VariableDeclaration makeOrReuseVariable(Expression value) {

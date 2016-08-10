@@ -435,9 +435,9 @@ class MemberScope extends TypeScope {
 
   ast.Expression buildThis() {
     if (allowThis) {
-      return new ast.ThisExpression()..staticType = currentClass.thisType;
+      return new ast.ThisExpression(currentClass.thisType);
     } else {
-      return new ast.InvalidExpression()..staticType = const ast.InvalidType();
+      return new ast.InvalidExpression();
     }
   }
 
@@ -861,13 +861,11 @@ class ExpressionBuilder
 
   ast.Expression build(Expression node) {
     var result = node.accept(this);
-    ast.Expression expression;
     if (result is Accessor) {
-      expression = result.buildSimpleRead();
+      return result.buildSimpleRead();
     } else {
-      expression = result;
+      return result;
     }
-    return expression..staticType = scope.buildType(node.staticType);
   }
 
   Accessor buildLeftHandValue(Expression node) {
@@ -892,18 +890,21 @@ class ExpressionBuilder
     if (operator == '=') {
       return leftHand.buildAssignment(rightHand, voidContext: voidContext);
     } else if (operator == '??=') {
-      return leftHand.buildNullAwareAssignment(rightHand,
+      return leftHand.buildNullAwareAssignment(
+          scope.buildType(node.staticType), rightHand,
           voidContext: voidContext);
     } else {
       // Cut off the trailing '='.
       var name = new ast.Name(operator.substring(0, operator.length - 1));
-      return leftHand.buildCompoundAssignment(name, rightHand,
+      return leftHand.buildCompoundAssignment(
+          scope.buildType(node.staticType), name, rightHand,
           voidContext: voidContext);
     }
   }
 
   ast.Expression visitAwaitExpression(AwaitExpression node) {
-    return new ast.AwaitExpression(build(node.expression));
+    return new ast.AwaitExpression(
+        scope.buildType(node.staticType), build(node.expression));
   }
 
   ast.Arguments buildSingleArgument(Expression node) {
@@ -912,8 +913,11 @@ class ExpressionBuilder
 
   ast.Expression visitBinaryExpression(BinaryExpression node) {
     String operator = node.operator.value();
-    if (operator == '&&' || operator == '||' || operator == '??') {
-      return new ast.LogicalExpression(
+    if (operator == '&&' || operator == '||') {
+      return new ast.LogicalExpression.boolean(
+          build(node.leftOperand), operator, build(node.rightOperand));
+    } else if (operator == '??') {
+      return new ast.LogicalExpression(scope.buildType(node.staticType),
           build(node.leftOperand), operator, build(node.rightOperand));
     }
     bool isNegated = false;
@@ -930,10 +934,15 @@ class ExpressionBuilder
         return new ast.InvalidExpression();
       }
       expression = new ast.SuperMethodInvocation(
-          method, buildSingleArgument(node.rightOperand));
+          scope.buildType(node.staticType),
+          method,
+          buildSingleArgument(node.rightOperand));
     } else {
-      expression = new ast.MethodInvocation(build(node.leftOperand),
-          new ast.Name(operator), buildSingleArgument(node.rightOperand));
+      expression = new ast.MethodInvocation(
+          scope.buildType(node.staticType),
+          build(node.leftOperand),
+          new ast.Name(operator),
+          buildSingleArgument(node.rightOperand));
     }
     return isNegated ? new ast.Not(expression) : expression;
   }
@@ -992,8 +1001,11 @@ class ExpressionBuilder
   }
 
   ast.Expression visitConditionalExpression(ConditionalExpression node) {
-    return new ast.ConditionalExpression(build(node.condition),
-        build(node.thenExpression), build(node.elseExpression));
+    return new ast.ConditionalExpression(
+        scope.buildType(node.staticType),
+        build(node.condition),
+        build(node.thenExpression),
+        build(node.elseExpression));
   }
 
   ast.Expression visitFunctionExpression(FunctionExpression node) {
@@ -1039,7 +1051,7 @@ class ExpressionBuilder
 
   ast.Expression visitFunctionExpressionInvocation(
       FunctionExpressionInvocation node) {
-    return new ast.MethodInvocation(
+    return new ast.MethodInvocation(scope.buildType(node.staticType),
         build(node.function), callName, buildArgumentsForInvocation(node));
   }
 
@@ -1075,7 +1087,7 @@ class ExpressionBuilder
       case ElementKind.SETTER:
       case ElementKind.LOCAL_VARIABLE:
       case ElementKind.PARAMETER:
-        return PropertyAccessor.make(
+        return PropertyAccessor.make(scope.buildType(node.staticType),
             build(node.prefix), scope.buildName(node.identifier));
 
       case ElementKind.UNIVERSE:
@@ -1117,7 +1129,8 @@ class ExpressionBuilder
         return new ast.InvalidExpression();
 
       case ElementKind.ERROR: // This covers the case where nothing was found.
-        return PropertyAccessor.make(scope.buildThis(), scope.buildName(node));
+        return PropertyAccessor.make(scope.buildType(node.staticType),
+            scope.buildThis(), scope.buildName(node));
 
       case ElementKind.FIELD:
       case ElementKind.TOP_LEVEL_VARIABLE:
@@ -1128,15 +1141,19 @@ class ExpressionBuilder
           Element auxiliary = node.auxiliaryElements?.staticElement;
           // TODO: If the getter and/or setter is unresolved then preserve
           // enough information to throw the right exception.
-          return new StaticAccessor(scope.resolveGet(element, auxiliary),
+          return new StaticAccessor(
+              scope.buildType(node.staticType),
+              scope.resolveGet(element, auxiliary),
               scope.resolveSet(element, auxiliary));
         }
-        return PropertyAccessor.make(scope.buildThis(), scope.buildName(node));
+        return PropertyAccessor.make(scope.buildType(node.staticType),
+            scope.buildThis(), scope.buildName(node));
 
       case ElementKind.FUNCTION:
         FunctionElement function = element;
         if (scope.isTopLevelFunction(function)) {
-          return new StaticAccessor(scope.getMemberReference(function), null);
+          return new StaticAccessor(scope.buildType(node.staticType),
+              scope.getMemberReference(function), null);
         }
         return new VariableAccessor(scope.getVariableReference(function));
 
@@ -1154,18 +1171,21 @@ class ExpressionBuilder
 
   visitIndexExpression(IndexExpression node) {
     if (node.isCascaded) {
-      return IndexAccessor.make(makeCascadeReceiver(), build(node.index));
+      return IndexAccessor.make(scope.buildType(node.staticType),
+          makeCascadeReceiver(), build(node.index));
     } else if (node.target is SuperExpression) {
       Element element = node.staticElement;
       Element auxiliary = node.auxiliaryElements?.staticElement;
       // TODO: If the getter and/or setter is unresolved then preserve
       // enough information to throw the right exception.
       return new SuperIndexAccessor(
+          scope.buildType(node.staticType),
           build(node.index),
           scope.resolveIndexGet(element, auxiliary),
           scope.resolveIndexSet(element, auxiliary));
     } else {
-      return IndexAccessor.make(build(node.target), build(node.index));
+      return IndexAccessor.make(scope.buildType(node.staticType),
+          build(node.target), build(node.index));
     }
   }
 
@@ -1216,12 +1236,16 @@ class ExpressionBuilder
         if (element.isExternal && element.isConst && element.isFactory) {
           ast.Member target = scope.resolveMethod(element);
           return target is ast.Procedure
-              ? new ast.StaticInvocation(target, arguments, isConst: true)
+              ? new ast.StaticInvocation(
+                  scope.buildType(node.staticType), target, arguments,
+                  isConst: true)
               : new ast.InvalidExpression();
         } else if (element.isConst && !element.enclosingElement.isAbstract) {
           ast.Constructor target = scope.resolveConstructor(element);
           return target != null
-              ? new ast.ConstructorInvocation(target, arguments, isConst: true)
+              ? new ast.ConstructorInvocation(
+                  scope.buildType(node.staticType), target, arguments,
+                  isConst: true)
               : new ast.InvalidExpression();
         } else {
           return new ast.InvalidExpression();
@@ -1233,7 +1257,8 @@ class ExpressionBuilder
           // TODO: Preserve enough information to throw the right exception.
           return new ast.InvalidExpression();
         }
-        return new ast.StaticInvocation(procedure, arguments);
+        return new ast.StaticInvocation(
+            scope.buildType(node.staticType), procedure, arguments);
       }
     } else {
       // Ordinary constructor call.
@@ -1244,7 +1269,8 @@ class ExpressionBuilder
         // TODO: Preserve enough information to throw the right exception.
         return new ast.InvalidExpression();
       }
-      return new ast.ConstructorInvocation(constructor, arguments,
+      return new ast.ConstructorInvocation(
+          scope.buildType(node.staticType), constructor, arguments,
           isConst: node.isConst);
     }
   }
@@ -1262,18 +1288,22 @@ class ExpressionBuilder
   ast.Expression visitMethodInvocation(MethodInvocation node) {
     Element element = node.methodName.staticElement;
     if (node.isCascaded) {
-      return new ast.MethodInvocation(makeCascadeReceiver(),
-          scope.buildName(node.methodName), buildArgumentsForInvocation(node));
+      return new ast.MethodInvocation(
+          scope.buildType(node.staticType),
+          makeCascadeReceiver(),
+          scope.buildName(node.methodName),
+          buildArgumentsForInvocation(node));
     } else if (node.target is SuperExpression) {
       var target = scope.resolveMethod(element);
       if (target == null) {
         // TODO: Preserve enough information to throw the right exception.
         return new ast.InvalidExpression();
       }
-      return new ast.SuperMethodInvocation(
+      return new ast.SuperMethodInvocation(scope.buildType(node.staticType),
           target, buildArgumentsForInvocation(node));
     } else if (scope.isLocal(element)) {
       return new ast.MethodInvocation(
+          scope.buildType(node.staticType),
           new ast.VariableGet(scope.getVariableReference(element)),
           callName,
           buildArgumentsForInvocation(node));
@@ -1283,33 +1313,45 @@ class ExpressionBuilder
         // TODO: Preserve enough information to throw the right exception.
         return new ast.InvalidExpression();
       }
-      return new ast.StaticInvocation(
-          target, buildArgumentsForInvocation(node));
+      return new ast.StaticInvocation(scope.buildType(node.staticType), target,
+          buildArgumentsForInvocation(node));
     } else if (scope.isStaticVariableOrGetter(element)) {
       var target = scope.resolveGet(element, null);
       if (target == null) {
         // TODO: Preserve enough information to throw the right exception.
         return new ast.InvalidExpression();
       }
-      return new ast.MethodInvocation(new ast.StaticGet(target), callName,
+      return new ast.MethodInvocation(
+          scope.buildType(node.staticType),
+          new ast.StaticGet(
+              scope.buildType(node.methodName.staticType), target),
+          callName,
           buildArgumentsForInvocation(node));
     } else if (node.target == null) {
-      return new ast.MethodInvocation(scope.buildThis(),
-          scope.buildName(node.methodName), buildArgumentsForInvocation(node));
+      return new ast.MethodInvocation(
+          scope.buildType(node.staticType),
+          scope.buildThis(),
+          scope.buildName(node.methodName),
+          buildArgumentsForInvocation(node));
     } else if (node.operator.value() == '?.') {
       var receiver = makeOrReuseVariable(build(node.target));
       return makeLet(
           receiver,
           new ast.ConditionalExpression(
+              scope.buildType(node.staticType),
               buildIsNull(new ast.VariableGet(receiver)),
               new ast.NullLiteral(),
               new ast.MethodInvocation(
+                  scope.buildType(node.staticType),
                   new ast.VariableGet(receiver),
                   scope.buildName(node.methodName),
                   buildArgumentsForInvocation(node))));
     } else {
-      return new ast.MethodInvocation(build(node.target),
-          scope.buildName(node.methodName), buildArgumentsForInvocation(node));
+      return new ast.MethodInvocation(
+          scope.buildType(node.staticType),
+          build(node.target),
+          scope.buildName(node.methodName),
+          buildArgumentsForInvocation(node));
     }
   }
 
@@ -1335,7 +1377,8 @@ class ExpressionBuilder
       case '--':
         var leftHand = buildLeftHandValue(node.operand);
         var binaryOperator = new ast.Name(operator[0]);
-        return leftHand.buildPostfixIncrement(binaryOperator,
+        return leftHand.buildPostfixIncrement(
+            scope.buildType(node.staticType), binaryOperator,
             voidContext: isInVoidContext(node));
 
       default:
@@ -1354,11 +1397,11 @@ class ExpressionBuilder
             // TODO: Preserve enough information to throw the right exception.
             return new ast.InvalidExpression();
           }
-          return new ast.SuperMethodInvocation(
+          return new ast.SuperMethodInvocation(scope.buildType(node.staticType),
               target, new ast.Arguments.empty());
         }
         var name = new ast.Name(operator == '-' ? 'unary-' : '~');
-        return new ast.MethodInvocation(
+        return new ast.MethodInvocation(scope.buildType(node.staticType),
             build(node.operand), name, new ast.Arguments.empty());
 
       case '!':
@@ -1368,7 +1411,8 @@ class ExpressionBuilder
       case '--':
         var leftHand = buildLeftHandValue(node.operand);
         var binaryOperator = new ast.Name(operator[0]);
-        return leftHand.buildPrefixIncrement(binaryOperator);
+        return leftHand.buildPrefixIncrement(
+            scope.buildType(node.staticType), binaryOperator);
 
       default:
         return new ast.InvalidExpression();
@@ -1378,14 +1422,16 @@ class ExpressionBuilder
   visitPropertyAccess(PropertyAccess node) {
     Expression target = node.target;
     if (node.isCascaded) {
-      return PropertyAccessor.make(
+      return PropertyAccessor.make(scope.buildType(node.staticType),
           makeCascadeReceiver(), scope.buildName(node.propertyName));
     } else if (target is SuperExpression) {
       Element element = node.propertyName.staticElement;
       Element auxiliary = node.propertyName.auxiliaryElements?.staticElement;
       // TODO: If the getter and/or setter is unresolved, preserve enough
       // information to throw the right exception.
-      return new SuperPropertyAccessor(scope.resolveGet(element, auxiliary),
+      return new SuperPropertyAccessor(
+          scope.buildType(node.staticType),
+          scope.resolveGet(element, auxiliary),
           scope.resolveSet(element, auxiliary));
     } else if (target is Identifier && target.staticElement is ClassElement) {
       // Note that this case also covers null-aware static access on a class,
@@ -1394,13 +1440,15 @@ class ExpressionBuilder
       Element auxiliary = node.propertyName.auxiliaryElements?.staticElement;
       // TODO: If the getter and/or setter is unresolved, preserve enough
       // information to throw the right exception.
-      return new StaticAccessor(scope.resolveGet(element, auxiliary),
+      return new StaticAccessor(
+          scope.buildType(node.staticType),
+          scope.resolveGet(element, auxiliary),
           scope.resolveSet(element, auxiliary));
     } else if (node.operator.value() == '?.') {
-      return new NullAwarePropertyAccessor(
+      return new NullAwarePropertyAccessor(scope.buildType(node.staticType),
           build(target), scope.buildName(node.propertyName));
     } else {
-      return PropertyAccessor.make(
+      return PropertyAccessor.make(scope.buildType(node.staticType),
           build(target), scope.buildName(node.propertyName));
     }
   }
@@ -1847,7 +1895,7 @@ class ClassBodyBuilder extends GeneralizingAstVisitor<Null> {
     var enumConstantFields = <ast.Field>[];
     for (var constant in node.constants) {
       ast.Field field = scope.getMemberReference(constant.element);
-      field.initializer = new ast.ConstructorInvocation(
+      field.initializer = new ast.ConstructorInvocation(classNode.thisType,
           constructor, new ast.Arguments([new ast.IntLiteral(index)]),
           isConst: true);
       field.type = new ast.InterfaceType(classNode);
@@ -2082,8 +2130,12 @@ class MemberBodyBuilder extends GeneralizingAstVisitor<Null> {
         var arguments =
             new ast.Arguments(positional, named: named, types: types);
         var invocation = target is ast.Constructor
-            ? new ast.ConstructorInvocation(target, arguments)
-            : new ast.StaticInvocation(target, arguments);
+            ? new ast.ConstructorInvocation(
+                scope.buildType(targetElement.enclosingElement.type),
+                target,
+                arguments)
+            : new ast.StaticInvocation(
+                scope.buildType(targetElement.returnType), target, arguments);
         function.body = new ast.ReturnStatement(invocation)..parent = function;
       }
     }
@@ -2140,7 +2192,7 @@ ast.VariableGet _makeVariableGet(ast.VariableDeclaration variable) {
 
 /// Constructor alias for [ast.StaticGet], use instead of a closure.
 ast.StaticGet _makeStaticGet(ast.Field field) {
-  return new ast.StaticGet(field);
+  return new ast.StaticGet(field.type, field);
 }
 
 /// Create a named expression with the name and value of the given variable.

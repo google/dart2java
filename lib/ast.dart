@@ -87,10 +87,10 @@ library kernel.ast;
 import 'package:analyzer/dart/constant/value.dart' show DartObject;
 export 'package:analyzer/dart/constant/value.dart' show DartObject;
 
-
 import 'visitor.dart';
 export 'visitor.dart';
 
+import 'core_types.dart';
 import 'text/ast_to_text.dart';
 import 'type_algebra.dart';
 
@@ -923,7 +923,9 @@ enum AsyncMarker {
 // ------------------------------------------------------------------------
 
 abstract class Expression extends TreeNode {
-  DartType staticType;
+  Expression(this.staticType);
+
+  final DartType staticType;
 
   accept(ExpressionVisitor v);
 }
@@ -932,6 +934,8 @@ abstract class Expression extends TreeNode {
 ///
 /// Should throw a runtime error when evaluated.
 class InvalidExpression extends Expression {
+  InvalidExpression() : super(const InvalidType());
+
   accept(ExpressionVisitor v) => v.visitInvalidExpression(this);
 
   visitChildren(Visitor v) {}
@@ -942,7 +946,9 @@ class InvalidExpression extends Expression {
 class VariableGet extends Expression {
   VariableDeclaration variable;
 
-  VariableGet(this.variable);
+  VariableGet(VariableDeclaration variable)
+      : variable = variable,
+        super(variable.type);
 
   accept(ExpressionVisitor v) => v.visitVariableGet(this);
 
@@ -954,8 +960,9 @@ class VariableGet extends Expression {
 class VariableSet extends Expression {
   VariableDeclaration variable;
   Expression value;
-
-  VariableSet(this.variable, this.value) {
+  VariableSet(this.variable, Expression value)
+      : value = value,
+        super(value.staticType) {
     value?.parent = this;
   }
 
@@ -980,7 +987,8 @@ class PropertyGet extends Expression {
   Expression receiver;
   Name name;
 
-  PropertyGet(this.receiver, this.name) {
+  PropertyGet(DartType staticType, this.receiver, this.name)
+      : super(staticType) {
     receiver?.parent = this;
   }
 
@@ -1007,7 +1015,9 @@ class PropertySet extends Expression {
   Name name;
   Expression value;
 
-  PropertySet(this.receiver, this.name, this.value) {
+  PropertySet(this.receiver, this.name, Expression value)
+      : value = value,
+        super(value.staticType) {
     receiver?.parent = this;
     value?.parent = this;
   }
@@ -1041,7 +1051,7 @@ class SuperPropertyGet extends Expression {
   /// Cannot be static or abstract.
   Member target;
 
-  SuperPropertyGet(this.target);
+  SuperPropertyGet(DartType staticType, this.target) : super(staticType);
 
   accept(ExpressionVisitor v) => v.visitSuperPropertyGet(this);
 
@@ -1060,7 +1070,9 @@ class SuperPropertySet extends Expression {
   Member target;
   Expression value;
 
-  SuperPropertySet(this.target, this.value) {
+  SuperPropertySet(this.target, Expression value)
+      : value = value,
+        super(value.staticType) {
     value?.parent = this;
   }
 
@@ -1084,7 +1096,7 @@ class StaticGet extends Expression {
   /// A static field, getter, or method (for tear-off).
   Member target;
 
-  StaticGet(this.target);
+  StaticGet(DartType staticType, this.target) : super(staticType);
 
   accept(ExpressionVisitor v) => v.visitStaticGet(this);
 
@@ -1101,7 +1113,9 @@ class StaticSet extends Expression {
   Member target;
   Expression value;
 
-  StaticSet(this.target, this.value) {
+  StaticSet(this.target, Expression value)
+      : value = value,
+        super(value.staticType) {
     value?.parent = this;
   }
 
@@ -1180,6 +1194,8 @@ class NamedExpression extends TreeNode {
 /// Common super class for [MethodInvocation], [SuperMethodInvocation],
 /// [StaticInvocation], and [ConstructorInvocation].
 abstract class InvocationExpression extends Expression {
+  InvocationExpression(DartType staticType) : super(staticType);
+
   Arguments get arguments;
   set arguments(Arguments value);
 
@@ -1199,7 +1215,9 @@ class MethodInvocation extends InvocationExpression {
   Name name;
   Arguments arguments;
 
-  MethodInvocation(this.receiver, this.name, this.arguments) {
+  MethodInvocation(
+      DartType staticType, this.receiver, this.name, this.arguments)
+      : super(staticType) {
     receiver?.parent = this;
     arguments?.parent = this;
   }
@@ -1235,7 +1253,8 @@ class SuperMethodInvocation extends InvocationExpression {
 
   Name get name => target?.name;
 
-  SuperMethodInvocation(this.target, this.arguments) {
+  SuperMethodInvocation(DartType staticType, this.target, this.arguments)
+      : super(staticType) {
     arguments?.parent = this;
   }
 
@@ -1267,7 +1286,9 @@ class StaticInvocation extends InvocationExpression {
 
   Name get name => target?.name;
 
-  StaticInvocation(this.target, this.arguments, {this.isConst: false}) {
+  StaticInvocation(DartType staticType, this.target, this.arguments,
+      {this.isConst: false})
+      : super(staticType) {
     arguments?.parent = this;
   }
 
@@ -1300,7 +1321,9 @@ class ConstructorInvocation extends InvocationExpression {
 
   Name get name => target?.name;
 
-  ConstructorInvocation(this.target, this.arguments, {this.isConst: false}) {
+  ConstructorInvocation(DartType staticType, this.target, this.arguments,
+      {this.isConst: false})
+      : super(staticType) {
     arguments?.parent = this;
   }
 
@@ -1332,7 +1355,8 @@ class ConstructorInvocation extends InvocationExpression {
 class Not extends Expression {
   Expression operand;
 
-  Not(this.operand) {
+  Not(this.operand, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).boolClass)) {
     operand?.parent = this;
   }
 
@@ -1356,10 +1380,15 @@ class LogicalExpression extends Expression {
   String operator; // && or || or ??
   Expression right;
 
-  LogicalExpression(this.left, this.operator, this.right) {
+  LogicalExpression(DartType staticType, this.left, this.operator, this.right)
+      : super(staticType) {
     left?.parent = this;
     right?.parent = this;
   }
+
+  LogicalExpression.boolean(this.left, this.operator, this.right,
+      {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).boolClass));
 
   accept(ExpressionVisitor v) => v.visitLogicalExpression(this);
 
@@ -1386,7 +1415,9 @@ class ConditionalExpression extends Expression {
   Expression then;
   Expression otherwise;
 
-  ConditionalExpression(this.condition, this.then, this.otherwise) {
+  ConditionalExpression(
+      DartType staticType, this.condition, this.then, this.otherwise)
+      : super(staticType) {
     condition?.parent = this;
     then?.parent = this;
     otherwise?.parent = this;
@@ -1426,7 +1457,9 @@ class ConditionalExpression extends Expression {
 class StringConcatenation extends Expression {
   final List<Expression> expressions;
 
-  StringConcatenation(this.expressions) {
+  StringConcatenation(this.expressions, {CoreTypes coreTypes})
+      : super(
+            new InterfaceType((coreTypes ?? CoreTypes.instance).stringClass)) {
     setParents(expressions, this);
   }
 
@@ -1446,7 +1479,8 @@ class IsExpression extends Expression {
   Expression operand;
   DartType type;
 
-  IsExpression(this.operand, this.type) {
+  IsExpression(this.operand, this.type, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).boolClass)) {
     operand?.parent = this;
   }
 
@@ -1470,7 +1504,9 @@ class AsExpression extends Expression {
   Expression operand;
   DartType type;
 
-  AsExpression(this.operand, this.type) {
+  AsExpression(this.operand, DartType type)
+      : type = type,
+        super(type) {
     operand?.parent = this;
   }
 
@@ -1491,6 +1527,8 @@ class AsExpression extends Expression {
 
 /// An integer, double, boolean, string, or null constant.
 abstract class BasicLiteral extends Expression {
+  BasicLiteral(DartType staticType) : super(staticType);
+
   Object get value;
 
   visitChildren(Visitor v) {}
@@ -1500,7 +1538,8 @@ abstract class BasicLiteral extends Expression {
 class StringLiteral extends BasicLiteral {
   String value;
 
-  StringLiteral(this.value);
+  StringLiteral(this.value, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).stringClass));
 
   accept(ExpressionVisitor v) => v.visitStringLiteral(this);
 }
@@ -1508,7 +1547,8 @@ class StringLiteral extends BasicLiteral {
 class IntLiteral extends BasicLiteral {
   int value;
 
-  IntLiteral(this.value);
+  IntLiteral(this.value, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).intClass));
 
   accept(ExpressionVisitor v) => v.visitIntLiteral(this);
 }
@@ -1516,7 +1556,8 @@ class IntLiteral extends BasicLiteral {
 class DoubleLiteral extends BasicLiteral {
   double value;
 
-  DoubleLiteral(this.value);
+  DoubleLiteral(this.value, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).doubleClass));
 
   accept(ExpressionVisitor v) => v.visitDoubleLiteral(this);
 }
@@ -1524,12 +1565,15 @@ class DoubleLiteral extends BasicLiteral {
 class BoolLiteral extends BasicLiteral {
   bool value;
 
-  BoolLiteral(this.value);
+  BoolLiteral(this.value, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).boolClass));
 
   accept(ExpressionVisitor v) => v.visitBoolLiteral(this);
 }
 
 class NullLiteral extends BasicLiteral {
+  NullLiteral() : super(const BottomType());
+
   Object get value => null;
 
   accept(ExpressionVisitor v) => v.visitNullLiteral(this);
@@ -1538,7 +1582,8 @@ class NullLiteral extends BasicLiteral {
 class SymbolLiteral extends Expression {
   String value; // Everything strictly after the '#'.
 
-  SymbolLiteral(this.value);
+  SymbolLiteral(this.value, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).symbolClass));
 
   accept(ExpressionVisitor v) => v.visitSymbolLiteral(this);
 
@@ -1549,7 +1594,8 @@ class SymbolLiteral extends Expression {
 class TypeLiteral extends Expression {
   DartType type;
 
-  TypeLiteral(this.type);
+  TypeLiteral(this.type, {CoreTypes coreTypes})
+      : super(new InterfaceType((coreTypes ?? CoreTypes.instance).typeClass));
 
   accept(ExpressionVisitor v) => v.visitTypeLiteral(this);
 
@@ -1561,6 +1607,8 @@ class TypeLiteral extends Expression {
 }
 
 class ThisExpression extends Expression {
+  ThisExpression(DartType staticType) : super(staticType);
+
   accept(ExpressionVisitor v) => v.visitThisExpression(this);
 
   visitChildren(Visitor v) {}
@@ -1568,6 +1616,8 @@ class ThisExpression extends Expression {
 }
 
 class Rethrow extends Expression {
+  Rethrow() : super(const InvalidType());
+
   accept(ExpressionVisitor v) => v.visitRethrow(this);
 
   visitChildren(Visitor v) {}
@@ -1577,7 +1627,7 @@ class Rethrow extends Expression {
 class Throw extends Expression {
   Expression expression;
 
-  Throw(this.expression) {
+  Throw(this.expression) : super(const BottomType()) {
     expression?.parent = this;
   }
 
@@ -1601,7 +1651,12 @@ class ListLiteral extends Expression {
   final List<Expression> expressions;
 
   ListLiteral(this.expressions,
-      {this.typeArgument: const DynamicType(), this.isConst: false}) {
+      {DartType typeArgument: const DynamicType(),
+      this.isConst: false,
+      CoreTypes coreTypes})
+      : typeArgument = typeArgument,
+        super(new InterfaceType(
+            (coreTypes ?? CoreTypes.instance).listClass, [typeArgument])) {
     assert(typeArgument != null);
     setParents(expressions, this);
   }
@@ -1625,9 +1680,14 @@ class MapLiteral extends Expression {
   final List<MapEntry> entries;
 
   MapLiteral(this.entries,
-      {this.keyType: const DynamicType(),
-      this.valueType: const DynamicType(),
-      this.isConst: false}) {
+      {DartType keyType: const DynamicType(),
+      DartType valueType: const DynamicType(),
+      this.isConst: false,
+      CoreTypes coreTypes})
+      : keyType = keyType,
+        valueType = valueType,
+        super(new InterfaceType(
+            (coreTypes ?? CoreTypes.instance).mapClass, [keyType, valueType])) {
     assert(keyType != null);
     assert(valueType != null);
     setParents(entries, this);
@@ -1678,7 +1738,7 @@ class MapEntry extends TreeNode {
 class AwaitExpression extends Expression {
   Expression operand;
 
-  AwaitExpression(this.operand) {
+  AwaitExpression(DartType staticType, this.operand) : super(staticType) {
     operand?.parent = this;
   }
 
@@ -1702,7 +1762,18 @@ class AwaitExpression extends Expression {
 class FunctionExpression extends Expression {
   FunctionNode function;
 
-  FunctionExpression(this.function) {
+  FunctionExpression(FunctionNode function)
+      : function = function,
+        super(new FunctionType(
+            function.positionalParameters
+                .map((VariableDeclaration vd) => vd.type)
+                .toList(),
+            function.returnType,
+            namedParameters: new Map.fromIterable(function.namedParameters,
+                key: (VariableDeclaration vd) => vd.name,
+                value: (VariableDeclaration vd) => vd.type),
+            typeParameters: function.typeParameters,
+            requiredParameterCount: function.requiredParameterCount)) {
     function?.parent = this;
   }
 
@@ -1725,7 +1796,9 @@ class Let extends Expression {
   VariableDeclaration variable; // Must have an initializer.
   Expression body;
 
-  Let(this.variable, this.body) {
+  Let(this.variable, Expression body)
+      : body = body,
+        super(body.staticType) {
     variable?.parent = this;
     body?.parent = this;
   }
@@ -1753,7 +1826,9 @@ class BlockExpression extends Expression {
   Block body;
   Expression value;
 
-  BlockExpression(this.body, this.value) {
+  BlockExpression(this.body, Expression value)
+      : value = value,
+        super(value.staticType) {
     body?.parent = this;
     value?.parent = this;
   }
@@ -2290,8 +2365,7 @@ class YieldStatement extends Statement {
   int flags = 0;
 
   YieldStatement(this.expression,
-      {bool isYieldStar: false,
-       bool isNative: false}) {
+      {bool isYieldStar: false, bool isNative: false}) {
     expression?.parent = this;
     this.isYieldStar = isYieldStar;
     this.isNative = isNative;
@@ -2361,11 +2435,10 @@ class VariableDeclaration extends Statement {
   }
 
   /// Creates a synthetic variable with the given expression as initializer.
-  VariableDeclaration.forValue(this.initializer,
-      {bool isFinal: true,
-      bool isConst: false,
-      this.type: const DynamicType()}) {
-    assert(type != null);
+  VariableDeclaration.forValue(Expression initializer,
+      {bool isFinal: true, bool isConst: false, DartType type})
+      : initializer = initializer,
+        type = type ?? initializer.staticType {
     initializer?.parent = this;
     this.isFinal = isFinal;
     this.isConst = isConst;
