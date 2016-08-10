@@ -20,43 +20,76 @@ class DebugPrinter extends Visitor {
 
   /// Print a node, if no other implementation is present.
   /// When overriding a more specialized method:
-  ///   1. Call `_print('$nodeType[property=${property.value, ...]');`
-  ///   2. Either call `_recurse(node)`, or else increment _depth,
-  ///      recursively visit the node's children, then decrement _depth.
-  /// See [defaultClass] for an example.
+  ///   1. Call `defaultNode(node)`, `defaultExpression`, or another default
+  ///      method, possibly passing `extraProps`
+  ///   2. Ideally, pass `recurse: false` to the default method from step 1, and
+  ///      manually visit the children with labels. Be sure to increment depth
+  ///      before the call and decrement it after.
+  /// See [visitMethodInvocation] for an example.
   @override
-  defaultNode(Node node) {
-    _print(node.runtimeType);
-    _recurse(node);
+  defaultNode(Node node,
+      {bool recurse: true, List<String> extraProps: const []}) {
+    var props = ['hash=${node.hashCode}'];
+    props.addAll(extraProps);
+    _print('${node.runtimeType}[${props.join(", ")}]');
+    if (recurse) {
+      _recurse(node);
+    }
   }
 
   @override
-  defaultTreeNode(TreeNode node) => defaultNode(node);
+  defaultTreeNode(TreeNode node,
+          {bool recurse: true, List<String> extraProps: const []}) =>
+      defaultNode(node, recurse: recurse, extraProps: extraProps);
 
   // --- Expressions ---
   @override
-  defaultExpression(Expression node) {
-    _print('${node.runtimeType}[staticType=${node.staticType}]');
-    _recurse(node);
+  defaultExpression(Expression node,
+      {bool recurse: true, List<String> extraProps: const []}) {
+    extraProps = ['staticType=${node.staticType}']..addAll(extraProps);
+    defaultTreeNode(node, recurse: recurse, extraProps: extraProps);
   }
 
-  @override
-  defaultBasicLiteral(BasicLiteral node) => defaultExpression(node);
-  
   @override
   visitInvalidExpression(InvalidExpression node) => defaultExpression(node);
 
   @override
-  visitVariableGet(VariableGet node) => defaultExpression(node);
+  visitVariableGet(VariableGet node) {
+    defaultExpression(node, recurse: false);
+    _depth++;
+    _label = 'variable';
+    visitVariableDeclarationReference(node.variable);
+    _depth--;
+  }
 
   @override
-  visitVariableSet(VariableSet node) => defaultExpression(node);
+  visitVariableSet(VariableSet node) {
+    defaultExpression(node, recurse: false);
+    _depth++;
+    _label = 'variable';
+    visitVariableDeclarationReference(node.variable);
+    _visitWithLabel(node.value, 'value');
+    _depth--;
+  }
 
   @override
-  visitPropertyGet(PropertyGet node) => defaultExpression(node);
+  visitPropertyGet(PropertyGet node) {
+    defaultExpression(node, recurse: false);
+    _depth++;
+    _visitWithLabel(node.receiver, 'receiver');
+    _visitWithLabel(node.name, 'name');
+    _depth--;
+  }
 
   @override
-  visitPropertySet(PropertySet node) => defaultExpression(node);
+  visitPropertySet(PropertySet node) {
+    defaultExpression(node, recurse: false);
+    _depth++;
+    _visitWithLabel(node.receiver, 'receiver');
+    _visitWithLabel(node.name, 'name');
+    _visitWithLabel(node.value, 'value');
+    _depth--;
+  }
 
   @override
   visitSuperPropertyGet(SuperPropertyGet node) => defaultExpression(node);
@@ -72,7 +105,8 @@ class DebugPrinter extends Visitor {
 
   @override
   visitMethodInvocation(MethodInvocation node) {
-    _print("MethodInvocation[name=${node.name}, staticType=${node.staticType}]");
+    defaultExpression(node,
+        recurse: false, extraProps: ['name=${node.name.name}']);
     _depth++;
     _visitWithLabel(node.receiver, 'receiver');
     _visitWithLabel(node.arguments, 'arguments');
@@ -101,8 +135,7 @@ class DebugPrinter extends Visitor {
       defaultExpression(node);
 
   @override
-  visitStringConcatenation(StringConcatenation node) =>
-      defaultExpression(node);
+  visitStringConcatenation(StringConcatenation node) => defaultExpression(node);
 
   @override
   visitIsExpression(IsExpression node) => defaultExpression(node);
@@ -138,6 +171,11 @@ class DebugPrinter extends Visitor {
   visitFunctionExpression(FunctionExpression node) => defaultExpression(node);
 
   @override
+  defaultBasicLiteral(BasicLiteral node) {
+    defaultExpression(node, recurse: true, extraProps: ['value=${node.value}']);
+  }
+
+  @override
   visitStringLiteral(StringLiteral node) => defaultBasicLiteral(node);
 
   @override
@@ -153,8 +191,14 @@ class DebugPrinter extends Visitor {
   visitNullLiteral(NullLiteral node) => defaultBasicLiteral(node);
 
   @override
-  visitLet(Let node) => defaultExpression(node);
-  
+  visitLet(Let node) {
+    defaultExpression(node, recurse: false);
+    _depth++;
+    _visitWithLabel(node.variable, 'variable');
+    _visitWithLabel(node.body, 'body');
+    _depth--;
+  }
+
   // --- Statements ---
   @override
   defaultStatement(Statement node) => defaultTreeNode(node);
@@ -163,8 +207,7 @@ class DebugPrinter extends Visitor {
   visitInvalidStatement(InvalidStatement node) => defaultStatement(node);
 
   @override
-  visitExpressionStatement(ExpressionStatement node) =>
-      defaultStatement(node);
+  visitExpressionStatement(ExpressionStatement node) => defaultStatement(node);
 
   @override
   visitBlock(Block node) => defaultStatement(node);
@@ -217,21 +260,33 @@ class DebugPrinter extends Visitor {
 
   @override
   visitVariableDeclaration(VariableDeclaration node) {
-    _print('VariableDeclaration[name=${node.name}]');
+    // `VariableDeclaration.toString` will return the actual name if this
+    // variable is named, and a (consistent) synthetic name if not.
+    defaultTreeNode(node, recurse: false, extraProps: ['name=$node}']);
     _depth++;
     _visitWithLabel(node.type, 'type');
     _visitWithLabel(node.initializer, 'initializer');
     _depth--;
   }
 
+  /// Visits a [VariableDeclaration] in a reference context, such as from a
+  /// [VariableGet].
+  ///
+  /// Does not recursively visit the VariableDeclaration. This is not an
+  /// override, so it's only called directly by other methods in this class.
+  visitVariableDeclarationReference(VariableDeclaration node) {
+    // `VariableDeclaration.toString` will return the actual name if this
+    // variable is named, and a (consistent) synthetic name if not.
+    defaultTreeNode(node, recurse: false, extraProps: ['name=$node}']);
+  }
+
   @override
-  visitFunctionDeclaration(FunctionDeclaration node) =>
-      defaultStatement(node);
+  visitFunctionDeclaration(FunctionDeclaration node) => defaultStatement(node);
 
   // -- Members --
   @override
   defaultMember(Member node) {
-    _print(node.runtimeType);
+    defaultTreeNode(node, recurse: false);
     _recurse(node);
     _depth++;
     _printMetadata(node.analyzerMetadata);
@@ -250,9 +305,11 @@ class DebugPrinter extends Visitor {
   // -- Classes --
   @override
   defaultClass(Class node) {
-    var lib = node.enclosingLibrary;
-    _print('Class[name="${node.name}", lib=${_libraryToString(lib)}, '
-        'abstract=${node.isAbstract}]');
+    defaultTreeNode(node, recurse: false, extraProps: [
+      'name=${node.name}',
+      'lib=${_libraryToString(node.enclosingLibrary)}',
+      'abstract=${node.isAbstract}'
+    ]);
     _depth++;
     _visitListWithLabel(node.typeParameters, 'typeParameter');
     _visitWithLabel(node.supertype, 'supertype');
@@ -275,8 +332,7 @@ class DebugPrinter extends Visitor {
   defaultInitializer(Initializer node) => defaultTreeNode(node);
 
   @override
-  visitInvalidInitializer(InvalidInitializer node) =>
-      defaultInitializer(node);
+  visitInvalidInitializer(InvalidInitializer node) => defaultInitializer(node);
 
   @override
   visitFieldInitializer(FieldInitializer node) => defaultInitializer(node);
@@ -304,8 +360,16 @@ class DebugPrinter extends Visitor {
 
   @override
   visitFunctionNode(FunctionNode node) {
-    _print('FunctionNode[asyncMarker=${node.asyncMarker}, '
-        'requiredParamCount=${node.requiredParameterCount}]');
+    defaultTreeNode(node, recurse: false, extraProps: [
+      'requiredParameterCount=${node.requiredParameterCount}',
+      const {
+            AsyncMarker.Sync: 'sync',
+            AsyncMarker.SyncStar: 'sync*',
+            AsyncMarker.Async: 'async',
+            AsyncMarker.AsyncStar: 'async*'
+          }[node.asyncMarker] ??
+          '${node.asyncMarker}'
+    ]);
     _depth++;
     _visitListWithLabel(node.typeParameters, 'typeParameter');
     _visitListWithLabel(node.positionalParameters, 'positionalParameter');
@@ -391,14 +455,12 @@ class DebugPrinter extends Visitor {
 
   @override
   visitName(Name node) {
-    if (node.isPrivate) {
-      _print('Name[private, name=${node.name}, '
-          'lib=${_libraryToString(node.library)}]');
-    } else {
-      _print('Name[public, name=${node.name}]');
-    }
+    defaultNode(node, extraArgs: [
+      'name=${node.name}',
+      'lib=${_libraryToString(node.library)}',
+      node.isPrivate ? 'private' : 'public'
+    ]);
   }
-
 
   // --- Helper methods ---
 
@@ -459,7 +521,7 @@ class DebugPrinter extends Visitor {
   String get _indentStr {
     String result = ('│ ' * _depth) + '├ ';
     if (_label.isNotEmpty) {
-       result += _label + ': ';
+      result += _label + ': ';
       _label = "";
     }
     return result;
