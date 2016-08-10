@@ -9,8 +9,7 @@ import 'package:args/src/usage_exception.dart' show UsageException;
 import 'package:analyzer/src/generated/engine.dart' show AnalysisContext;
 import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:cli_util/cli_util.dart' show getSdkDir;
-import 'package:kernel/analyzer/analyzer_repository.dart'
-    show AnalyzerRepository;
+import 'package:kernel/kernel.dart' show Repository;
 import 'package:kernel/ast.dart' as dart;
 
 import 'code_generator.dart' show CodeGenerator;
@@ -35,18 +34,18 @@ import 'writer.dart' show FileWriter;
 /// be useful during early development. But, we should try to only interact with
 /// analyzer through [Loader] to keep the interactions in one place.
 class ModuleCompiler {
-  final AnalyzerRepository repository;
+  final Repository repository;
   final Loader loader;
   final CompilerOptions options;
 
   factory ModuleCompiler(CompilerOptions options) {
     var repository =
-        new AnalyzerRepository(sdk: options.dartSdkPath, strongMode: true);
+        new Repository(sdk: options.dartSdkPath);
     return new ModuleCompiler.withRepository(repository, options);
   }
 
   ModuleCompiler.withRepository(
-      AnalyzerRepository repository, CompilerOptions options)
+      Repository repository, CompilerOptions options)
       : repository = repository,
         loader = new Loader(repository),
         options = options;

@@ -8,15 +8,12 @@
 import 'package:cli_util/cli_util.dart' show getSdkDir;
 import 'package:dart2java/src/compiler/debug_printer.dart' show DebugPrinter;
 import 'package:kernel/kernel.dart';
-import 'package:kernel/analyzer/analyzer_repository.dart'
-    show AnalyzerRepository;
 import 'package:kernel/analyzer/loader.dart' show AnalyzerLoader;
 import 'package:path/path.dart' as path;
 
 void main(List<String> args) {
-  AnalyzerRepository repository = new AnalyzerRepository(sdk: getSdkDir().path,
-      strongMode: true);
-  AnalyzerLoader loader = repository.getAnalyzerLoader();
+  Repository repository = new Repository(sdk: getSdkDir().path);
+  AnalyzerLoader loader = new AnalyzerLoader(repository, strongMode: true);
   List<Library> librariesToDump = <Library>[];
 
   loader.ensureLibraryIsLoaded(

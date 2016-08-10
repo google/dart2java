@@ -4,10 +4,8 @@
 
 import 'package:analyzer/analyzer.dart' show AnalysisError;
 import 'package:analyzer/src/generated/engine.dart' show AnalysisContext;
-import 'package:kernel/analyzer/analyzer_repository.dart'
-    show AnalyzerRepository;
 import 'package:kernel/analyzer/loader.dart' show AnalyzerLoader;
-import 'package:kernel/kernel.dart' show Library;
+import 'package:kernel/kernel.dart' show Library, Repository;
 import 'package:path/path.dart' as path;
 
 /// The results returned by loader: a Kernel IR [Library] and a list of Analyzer
@@ -24,7 +22,7 @@ class LoaderResult {
 ///
 /// Currently, this just calls [AnalyzerLoader] to load everything.
 class Loader {
-  final AnalyzerRepository repository;
+  final Repository repository;
   final AnalyzerLoader _loader;
 
   /// Initializes an instance of [Loader] which loads libraries into an
@@ -32,9 +30,9 @@ class Loader {
   ///
   /// This involves loading the Dart core libraries. The current implementation
   /// takes several seconds to parse and load these core libraries.
-  Loader(AnalyzerRepository repository)
+  Loader(Repository repository)
       : repository = repository,
-        _loader = repository.getAnalyzerLoader() {
+        _loader = new AnalyzerLoader(repository, strongMode: true) {
     // Load the core libraries
     _loader.ensureLibraryIsLoaded(
         _loader.getLibraryReference(_loader.getDartCoreLibrary()));

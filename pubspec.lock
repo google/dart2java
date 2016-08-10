@@ -24,7 +24,7 @@ packages:
       name: barback
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.15.2+8"
+    version: "0.15.2+9"
   bazel_worker:
     description:
       name: bazel_worker
@@ -103,6 +103,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.2+2"
+  http:
+    description:
+      name: http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.11.3+9"
   http_multi_server:
     description:
       name: http_multi_server
@@ -124,7 +130,7 @@ packages:
   kernel:
     description:
       ref: HEAD
-      resolved-ref: "59413a05d8508ddbb40f70e6011ac43ae5217b00"
+      resolved-ref: d8fcc3b0568670b922e040b135d391b05fbb7aa3
       url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
     source: git
     version: "0.0.0"
@@ -152,6 +158,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  package_resolver:
+    description:
+      name: package_resolver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   path:
     description:
       name: path
@@ -188,6 +200,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.5+2"
+  shelf_packages_handler:
+    description:
+      name: shelf_packages_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   shelf_static:
     description:
       name: shelf_static
@@ -205,7 +223,7 @@ packages:
       name: source_map_stack_trace
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "1.1.2"
   source_maps:
     description:
       name: source_maps
@@ -241,7 +259,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.15+1"
+    version: "0.12.15+3"
   typed_data:
     description:
       name: typed_data
@@ -296,4 +314,4 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.10"
-sdk: ">=1.16.0 <1.20.0"
+sdk: ">=1.16.0 <2.0.0"

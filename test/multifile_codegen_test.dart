@@ -155,8 +155,13 @@ main(List<String> arguments) {
 
       // Invoke dart2java.
       for (ProgramInvocation d2j in t.dart2javaInvocations) {
-        var args = ['--output-dir', compiledDir]..addAll(d2j.args);
-        ProcessResult result = Process.runSync('dart2java', args,
+        var args = [
+          '-c',
+          path.join(repoDirectory, 'bin', 'dart2java.dart'),
+          '--output-dir',
+          compiledDir
+        ]..addAll(d2j.args);
+        ProcessResult result = Process.runSync('dart', args,
             workingDirectory: path.join(multifileTestDir, t.name));
         var output = _writeResult(expectDir, 'dart2java_${d2j.id}', result);
         expect(result.exitCode, isZero,
