@@ -416,7 +416,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       bool isInsideStaticMethod) {
     // Translate receiver
     java.Expression recv;
-    dart.InterfaceType recvType;
+    dart.DartType recvType;
     if (receiver == null) {
       // Implicit "this" receiver
       recv = buildDefaultReceiver(isInsideStaticMethod);
@@ -425,6 +425,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       recv = receiver.accept(this);
       recvType = getType(receiver);
     }
+
+    // TODO(springerm): Handle other argument types
+    List<java.Expression> args = positionalArguments
+        .map((a) => a.accept(this) as java.Expression)
+        .toList();
+
+    if (Constants.objectMethods.contains(methodName)) {
+      // This method is defined on Object and must dispatch to ObjectHelper
+      // directly to handle "null" values correctly
+      java.ClassOrInterfaceType helperClass =
+          compilerState.getHelperClass(compilerState.objectClass);
+      // Generate static call to helper function.
+      java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
+
+      return new java.MethodInvocation(
+        helperRefExpr, methodName, [recv]..addAll(args));
+    } 
 
     if (recvType is! dart.InterfaceType) {
       throw new CompileErrorException(
@@ -437,11 +454,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       methodName = compilerState.getJavaMethodName(
         recvType.classNode, methodName);
     }
-
-    // TODO(springerm): Handle other argument types
-    List<java.Expression> args = positionalArguments
-        .map((a) => a.accept(this) as java.Expression)
-        .toList();
 
     // Intercept method call if necessary
     if (compilerState.usesHelperFunction(recvType.classNode, methodName)) {

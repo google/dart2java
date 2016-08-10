@@ -25,6 +25,14 @@ class Constants {
     "~": "operatorUnaryBitNegate"
   };
 
+  static const objectMethods = const [
+    "toString", 
+    "operatorEqual", 
+    "getHashCode", 
+    "getRuntimeType", 
+    "noSuchMethod"
+  ];
+  
   static const String javaCallAnnotation = "JavaCall";
   static const String javaMethodAnnotation = "JavaMethod";
   static const String javaClassAnnotation = "JavaClass";
