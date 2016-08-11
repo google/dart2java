@@ -14,6 +14,7 @@ part 'list.dart';
 part 'null.dart';
 part 'num.dart';
 part 'object.dart';
+part 'stopwatch.dart';
 part 'string.dart';
 
 external void print(Object o);

@@ -20,6 +20,17 @@ class Object {
 }
 
 @patch
+class Stopwatch {
+  @patch
+  @JavaCall("dart._runtime.helpers.StopwatchHelper.initTicker")
+  external static void _initTicker();
+
+  @patch
+  @JavaCall("dart._runtime.helpers.StopwatchHelper.now")
+  external static int _now();
+}
+
+@patch
 abstract class String {
   @patch
   external factory String.fromCharCode(int charCode);

@@ -105,7 +105,7 @@ main(List<String> arguments) {
         file.copySync(newPath);
       }
 
-      files.forEach(_javaCompile);
+      files.forEach((f) => _javaCompile(f, codegenOutputDir));
       _run(name);
     }, skip: skip);
   }
@@ -158,8 +158,12 @@ Iterable<String> _listFiles(String dir, RegExp filePattern,
 }
 
 /// Compiles a .java [File] and returns the .class [File].
-File _javaCompile(File javaFile) {
-  var args = ['-cp', compiledSdkJar, javaFile.path];
+File _javaCompile(File javaFile, String classPathRoot) {
+  var args = [
+    '-cp',
+    compiledSdkJar + ":${classPathRoot}",
+    javaFile.path
+  ];
   ProcessResult result =
       Process.runSync('javac', args, workingDirectory: codegenOutputDir);
   expect(result.exitCode, isZero,
@@ -185,8 +189,8 @@ void _run(String testName) {
   var output = _writeResult(expectDir, "run", result);
   expect(result.exitCode, isZero,
       reason: 'Reason: java failed.\n'
-          '  stdout: ${output.stdout}\n'
           '  stderr: ${output.stderr}\n');
+  print(result.stdout);
 }
 
 class _StdOutErr {
