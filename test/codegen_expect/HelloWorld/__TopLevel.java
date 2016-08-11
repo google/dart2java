@@ -1,6 +1,6 @@
 package HelloWorld;
 
-public class __TopLevel extends dart._runtime.base.DartObject
+public class __TopLevel
 {
   
   

@@ -33,9 +33,10 @@ class _JavaAstEmitter extends Visitor<String> {
     var constructors = cls.constructors.map((m) => 
       indent(m.accept(this))).join("\n");
     var content = indent(fields + "\n\n" + constructors + "\n\n" + methods);
-    var extendsClause = cls.supertype == null
-        ? ""
-        : " extends ${cls.supertype.fullyQualifiedName}";
+    var extendsClause =
+        (cls.supertype == null || cls.supertype == JavaType.object)
+            ? ""
+            : " extends ${cls.supertype.fullyQualifiedName}";
     var abstractClause = cls.isAbstract ? "abstract " : "";
 
     return "${cls.access} ${abstractClause}class ${cls.type.name}${extendsClause}"

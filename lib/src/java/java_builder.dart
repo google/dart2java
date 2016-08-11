@@ -16,13 +16,12 @@ import '../compiler/runner.dart' show CompileErrorException;
 java.ClassDecl buildWrapperClass(
     dart.Library library, CompilerState compilerState) {
   var type = compilerState.getTopLevelClass(library);
-  java.ClassDecl result = new java.ClassDecl(type);
+  java.ClassDecl result =
+      new java.ClassDecl(type, supertype: java.JavaType.object);
 
   var instance = new _JavaAstBuilder(compilerState);
   result.fields = library.fields.map(instance.visitField).toList();
   result.methods = library.procedures.map(instance.visitProcedure).toList();
-  result.constructors = <java.Constructor>[
-    instance.buildEmptyConstructor(type)];
 
   return result;
 }
