@@ -36,7 +36,7 @@ class _JavaAstEmitter extends Visitor<String> {
     var extendsClause = cls.supertype == null
         ? ""
         : " extends ${cls.supertype.fullyQualifiedName}";
-    var abstractClause = cls.isAbstract ? "abstract " : " ";
+    var abstractClause = cls.isAbstract ? "abstract " : "";
 
     return "${cls.access} ${abstractClause}class ${cls.type.name}${extendsClause}"
       "\n{\n${content}\n}\n";

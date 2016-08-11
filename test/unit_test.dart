@@ -118,6 +118,8 @@ main(List<String> arguments) {
 }
 
 List<String> _setUpTests(RegExp dirPattern) {
+  // Prune 'packages' symlinks from unit test directory
+  Process.runSync('find', [ unitDir, '-name', 'packages', '-delete' ]);
   _ensureDirectory(unitTestDir);
 
   var testDirs = <String>[];
