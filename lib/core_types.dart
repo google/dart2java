@@ -27,26 +27,12 @@ class CoreTypes {
   Class typeClass;
   Class functionClass;
 
-  static CoreTypes _instance;
-
   /// A global [CoreTypes] instance, for the common case where only a single
-  /// program is being processed.
+  /// program is being processed at once.
   ///
-  /// This property must be set before being read.  After setting up the
-  /// repository and loading core libraries to the reference level, you should
-  /// set this to a new [CoreTypes] instance.  If you need to work with multiple
-  /// copies of the core libraries, you should not use this global instance.
-  static CoreTypes get instance {
-    return _instance ??
-      (throw new StateError('No global CoreTypes instance set'));
-  }
-
-  static void set instance(CoreTypes inst) {
-    if (_instance != null) {
-      throw new StateError('Global CoreTypes instance already set');
-    }
-    _instance = inst;
-  }
+  /// Make sure to set this property before accessing it, and don't use this if
+  /// you are processing more than one source tree at once.
+  static CoreTypes instance;
 
   Library getCoreLibrary(String uri) => _dartLibraries[uri].library;
 
