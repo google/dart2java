@@ -4,6 +4,7 @@
 
 import 'ast.dart';
 import 'visitor.dart';
+import 'constants.dart';
 
 /// Emits the full file contents for a Java source file defining a top-level
 /// Java [Class].
@@ -46,7 +47,9 @@ class _JavaAstEmitter extends Visitor<String> {
     var parts = <String>[];
     parts.add(decl.access.toString());
     if (decl.isStatic) parts.add("static");
-    if (decl.isFinal) parts.add("final");
+    // TODO(springerm): Final fields are not supported at the moment, because
+    // Dart constructors compile to Java instance methods.
+    // if (decl.isFinal) parts.add("final");
     parts.add(decl.type.accept(this));
     parts.add(decl.name);
 
@@ -204,7 +207,7 @@ class _JavaAstEmitter extends Visitor<String> {
     SuperConstructorInvocation invocation) {
     var arguments =
       invocation.arguments.map((arg) => arg.accept(this)).join(", ");
-    return "super(${arguments})";
+    return "super(${arguments});";
   }
   
   @override

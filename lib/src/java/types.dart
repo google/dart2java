@@ -42,6 +42,10 @@ abstract class JavaType extends Node {
   static ClassOrInterfaceType letHelper = 
       new ClassOrInterfaceType("dart._runtime.helpers", "LetExpressionHelper");
 
+  static ClassOrInterfaceType emptyConstructorMarker = 
+      new ClassOrInterfaceType("dart._runtime.helpers.ConstructorHelper",
+        "EmptyConstructorMarker");
+      
   // Numeric types.
   // Numeric types / Integral types.
   /// 8-bit signed two's complement integer.

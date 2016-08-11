@@ -325,7 +325,7 @@ class SuperMethodInvocation extends Expression {
 }
 
 /// Invokes a constructor in the superclass.
-class SuperConstructorInvocation extends Expression {
+class SuperConstructorInvocation extends Statement {
   // TODO(springerm): Add support for named constructors
   List<Expression> arguments;
 

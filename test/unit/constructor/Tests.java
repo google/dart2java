@@ -15,4 +15,15 @@ public class Tests {
     assertEquals(5, (int) __TopLevel.createClass3());
     assertEquals(4, (int) __TopLevel.createClass4());
   }
+
+  @Test
+  public void testIntializerOrder() {
+    assertEquals(101, (int) __TopLevel.createClass6());
+
+    __TopLevel.createB();
+    String[] initOrderExpected = new String[] {"fieldB2", "fieldB1", 
+      "fieldA3", "fieldA2", "fieldA1", "bodyA", "bodyB"};
+    String[] initOrder = __TopLevel.initOrder.toArray();
+    assertEquals(initOrderExpected, initOrder);
+  }
 }

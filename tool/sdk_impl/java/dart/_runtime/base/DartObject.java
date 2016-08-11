@@ -1,6 +1,20 @@
 package dart._runtime.base;
 
+import dart._runtime.helpers.ConstructorHelper;
+
 public class DartObject {
+  public DartObject() {
+    _constructor();
+  }
+  
+  public DartObject(ConstructorHelper.EmptyConstructorMarker marker) {
+
+  }
+
+  protected void _constructor() {
+
+  }
+
   public Integer getHashCode() {
     return this.hashCode();
   }

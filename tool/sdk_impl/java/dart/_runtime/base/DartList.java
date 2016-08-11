@@ -47,6 +47,10 @@ public class DartList<T> {
     return size == array.length;
   }
 
+  public T[] toArray() {
+    return Arrays.copyOf(array, size, genericArrayType);
+  }
+
 
   // --- Methods defined in List ---
 

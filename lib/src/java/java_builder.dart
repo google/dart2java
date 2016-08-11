@@ -21,6 +21,8 @@ java.ClassDecl buildWrapperClass(
   var instance = new _JavaAstBuilder(compilerState);
   result.fields = library.fields.map(instance.visitField).toList();
   result.methods = library.procedures.map(instance.visitProcedure).toList();
+  result.constructors = <java.Constructor>[
+    instance.buildEmptyConstructor(type)];
 
   return result;
 }
@@ -44,6 +46,18 @@ class TemporaryVariable {
   dart.DartType type;
 
   TemporaryVariable(this.name, this.type);
+}
+
+/// A container for a delegator (actual Java constructor) and an instance
+/// method whose body contains the Dart constructor.
+/// 
+/// See also comment of `buildConstructor`
+class _JavaConstructor {
+  final java.Constructor delegator;
+
+  final java.MethodDef body;
+
+  _JavaConstructor(this.delegator, this.body);
 }
 
 /// Builds a Java class from Dart IR.
@@ -97,15 +111,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     assert(thisDartClass == null);
     thisDartClass = node;
     java.ClassOrInterfaceType type = compilerState.getClass(node);
-    List<java.FieldDecl> fields = node.fields.map(this.visitField).toList();
+    List<java.FieldDecl> fields = node.fields.map(buildClassField).toList();
     List<java.MethodDef> implicitGetters = 
       node.fields.map(this.buildGetter).toList();
     List<java.MethodDef> implicitSetters = node.fields.where((f) => !f.isFinal)
         .map(this.buildSetter).toList();
     List<java.MethodDef> methods =
         node.procedures.map(this.visitProcedure).toList();
-    List<java.Constructor> constructors = 
-        node.constructors.map(this.visitConstructor).toList();
+
+    List<_JavaConstructor> constructors = 
+        node.constructors.map((c) => 
+          this.buildConstructor(c, node.fields)).toList();
+    List<java.Constructor> constructorDelegators = constructors.map((c) =>
+      c.delegator).toList();
+    methods.insertAll(0, constructors.map((c) => c.body));
+
+    // Add empty constructor (for implementing Dart constructor semantics)
+    constructorDelegators.add(buildEmptyConstructor(type));
 
     // Merge getters/setters
     if (methods.any((m) => implicitGetters.any((g) => m.name == g.name))) {
@@ -131,9 +153,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         access: java.Access.Public, 
         fields: fields, 
         methods: methods, 
-        constructors: constructors,
+        constructors: constructorDelegators,
         supertype: supertype,
         isAbstract: node.isAbstract);
+  }
+
+  @override
+  java.FieldDecl buildClassField(dart.Field node) {
+    // Non-static fields are initialized in the constructor
+    java.Expression initializer = node.isStatic
+      ? buildCovariantCompatibleExpression(node.initializer)
+      : new java.NullLiteral();
+
+    return new java.FieldDecl(node.name.name, node.type.accept(this),
+        initializer: initializer,
+        access: java.Access.Public,
+        isStatic: node.isStatic,
+        isFinal: node.isFinal);
   }
 
   @override
@@ -187,7 +223,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.Statement visitSuperInitializer(dart.SuperInitializer node) {
-    return new java.ExpressionStmt(new java.SuperConstructorInvocation(
+    return new java.ExpressionStmt(new java.SuperMethodInvocation(
+      Constants.constructorMethodPrefix,
       node.arguments.positional.map(buildCovariantCompatibleExpression)
         .toList()));
   }
@@ -313,13 +350,65 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       isAbstract: procedure.isAbstract);
   }
 
-  @override
-  java.Constructor visitConstructor(dart.Constructor node) {
-    // TODO(springerm): Handle initializers other than [FieldInitializer]
+  /// Builds an empty constructor invoking the super empty constructor.
+  ///
+  /// An empty constructor contains an empty body and calls the empty
+  /// super constructor. It is necessary to prevent Java from calling the
+  /// default super constructor. The parameter is merely used as a marker
+  /// to dispatch to the correct (overloaded) constructor.
+  java.Constructor buildEmptyConstructor(java.ClassOrInterfaceType classType) {
+    java.Statement superCall = 
+      new java.SuperConstructorInvocation(<java.Expression>[
+        new java.IdentifierExpr("arg")]);
+
+    return new java.Constructor(
+      classType,
+      wrapInJavaBlock(superCall),
+      <java.VariableDecl>[
+        new java.VariableDecl("arg", java.JavaType.emptyConstructorMarker)]);
+  }
+
+  /// Translates a Kernel AST constructor to a Java constructor and method.
+  /// 
+  /// Creates a Java constructor consisting of a delegator (actual Java
+  /// constructor that delegates to an instance method) and a body method
+  /// (Java instance method). The constructor performs the following steps:
+  /// 
+  /// 1. Direct field initializations (at VariableDecl site)
+  /// 2. Field initializer list
+  /// 3. Super constructor
+  /// 4. Constructor body
+  /// 
+  /// It is hard to implement these semantics with a plain Java constructor
+  /// because the super constructor invocation must always be the first
+  /// statement in a Java constructor. Therefore, we put the body of the
+  /// constructor in an instance method.
+  /// 
+  /// A Java super constructor should only be invoked if that is explicitly
+  /// specified in the code. We do not want Java to automatically call the 
+  /// super constructor (since Dart and Java have different semantics regarding
+  /// the execution order). For that reason, every class has an "empty"
+  /// constructor, which is invoked at the beginning of the delegator. That
+  /// constructor does nothing except for invoking the empty constructor of
+  /// its superclass.
+  /// 
+  /// Note, that we could have used a static method as an entry point for
+  /// instance creation (instead of the Java constructor), avoiding the empty
+  /// constructor, but that would mess up interoperability.
+  _JavaConstructor buildConstructor(dart.Constructor node,
+    List<dart.Field> fields) {
     Iterable<dart.Initializer> fieldInitializers = 
       node.initializers.where((i) => i.runtimeType == dart.FieldInitializer);
     Iterable<java.Statement> javaFieldInitializers = 
       fieldInitializers.map((i) => i.accept(this));
+
+    // Field initializers that are part of VariableDecls
+    Iterable<java.Statement> javaDirectFieldInitializers =
+      fields.where((f) => f.initializer != null)
+        .map((f) => new java.ExpressionStmt(new java.AssignmentExpr(
+          new java.FieldAccess(buildDefaultReceiver(false),
+            new java.IdentifierExpr(f.name.name)),
+          buildCovariantCompatibleExpression(f.initializer))));
 
     // There is either 0 or 1 super initializers
     Iterable<dart.Initializer> superInitializers = 
@@ -335,18 +424,37 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     } else {
       body = wrapInJavaBlock(buildStatement(node.function.body));
     }
-    body.statements.insertAll(0, javaFieldInitializers);
     body.statements.insertAll(0, javaSuperInitializers);
+    body.statements.insertAll(0, javaFieldInitializers);
+    body.statements.insertAll(0, javaDirectFieldInitializers);
 
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = node.function.positionalParameters
         .map(visitVariableDeclaration)
         .toList();
 
-    return new java.Constructor(
+    var constructorCall = new java.MethodInvocation(
+      buildDefaultReceiver(false),
+      Constants.constructorMethodPrefix,
+      parameters.map((p) => new java.IdentifierExpr(p.name)).toList());
+
+    var delegatorBlock = new java.Block(<java.Statement>[
+      new java.SuperConstructorInvocation([new java.CastExpr(
+        new java.NullLiteral(), java.JavaType.emptyConstructorMarker)]),
+      new java.ExpressionStmt(constructorCall)]);
+
+    java.Constructor delegator = new java.Constructor(
       getJavaType(thisDartClass), 
-      body, 
+      delegatorBlock,
       parameters);
+
+    java.MethodDef constructorBody = new java.MethodDef(
+      Constants.constructorMethodPrefix,
+      body,
+      parameters,
+      access: java.Access.Protected);
+
+    return new _JavaConstructor(delegator, constructorBody);
   }
 
   /// Wraps a Java statement in a block, if [stmt] is not already a block.
@@ -775,6 +883,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         return false;
       case dart.Procedure:
         return (node as dart.Procedure).isStatic;
+      case dart.Field:
+        return (node as dart.Field).isStatic;
       default:
         throw new CompileErrorException(
           "Expression is found under unknown Member ${node.runtimeType}");
