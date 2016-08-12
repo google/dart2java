@@ -7,8 +7,9 @@
 
 import 'package:cli_util/cli_util.dart' show getSdkDir;
 import 'package:dart2java/src/compiler/debug_printer.dart' show DebugPrinter;
-import 'package:kernel/kernel.dart';
 import 'package:kernel/analyzer/loader.dart' show AnalyzerLoader;
+import 'package:kernel/core_types.dart' show CoreTypes;
+import 'package:kernel/kernel.dart';
 import 'package:path/path.dart' as path;
 
 void main(List<String> args) {
@@ -16,8 +17,14 @@ void main(List<String> args) {
   AnalyzerLoader loader = new AnalyzerLoader(repository, strongMode: true);
   List<Library> librariesToDump = <Library>[];
 
-  loader.ensureLibraryIsLoaded(
-      loader.getLibraryReference(loader.getDartCoreLibrary()));
+  if (args.isEmpty) {
+    print('No files specified. Exiting.');
+    return;
+  }
+
+  loader.ensureLibraryIsLoaded(repository.getLibrary('dart:core'));
+  loader.ensureLibraryIsLoaded(repository.getLibrary('dart:async'));
+  loader.ensureLibraryIsLoaded(repository.getLibrary('dart:_internal'));
   for (var sourcePath in args) {
     var sourceUri = Uri.parse(sourcePath);
     if (sourceUri.scheme == '') {
@@ -27,11 +34,8 @@ void main(List<String> args) {
     loader.ensureLibraryIsLoaded(library);
     librariesToDump.add(library);
   }
-  if (librariesToDump.isEmpty) {
-    print('No files specified. Exiting.');
-    return;
-  }
 
+  CoreTypes.instance = new CoreTypes.fromRepository(repository);
   loader.loadEverything();
   for (var l in librariesToDump) {
     print('***** Library ${l.importUri} *****');

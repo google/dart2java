@@ -5,6 +5,7 @@
 import 'package:analyzer/analyzer.dart' show AnalysisError;
 import 'package:analyzer/src/generated/engine.dart' show AnalysisContext;
 import 'package:kernel/analyzer/loader.dart' show AnalyzerLoader;
+import 'package:kernel/core_types.dart' show CoreTypes;
 import 'package:kernel/kernel.dart' show Library, Repository;
 import 'package:path/path.dart' as path;
 
@@ -34,8 +35,10 @@ class Loader {
       : repository = repository,
         _loader = new AnalyzerLoader(repository, strongMode: true) {
     // Load the core libraries
-    _loader.ensureLibraryIsLoaded(
-        _loader.getLibraryReference(_loader.getDartCoreLibrary()));
+    load('dart:_internal');
+    load('dart:core');
+    load('dart:async');
+    CoreTypes.instance = new CoreTypes.fromLibraries(repository.libraries);
   }
 
   /// Provides access to the underlying [AnalyzerLoader]'s [AnalysisContext].

@@ -4,3 +4,5 @@
 
 library dart._internal;
 
+// Internal Symbol class; part of standard Dart SDK.
+class Symbol {}
