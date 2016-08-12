@@ -50,7 +50,8 @@ public class Planner extends dart._runtime.base.DartObject
     }
     public java.lang.Integer newMark()
     {
-      return this.setCurrentMark(dart._runtime.helpers.IntegerHelper.operatorPlus(this.getCurrentMark(), 1));
+      deltablue.Planner __tempVar_0;
+      return dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_0 = this, __tempVar_0.setCurrentMark(dart._runtime.helpers.IntegerHelper.operatorPlus(__tempVar_0.getCurrentMark(), 1)));
     }
     public deltablue.Plan makePlan(dart._runtime.base.DartList<deltablue.Constraint> sources)
     {

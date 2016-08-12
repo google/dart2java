@@ -534,19 +534,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Builds a method invocation where the call target is not statically known.
   java.MethodInvocation buildDynamicMethodInvocation(dart.Expression receiver, 
-      String methodName, List<dart.Expression> positionalArguments,
-      bool isInsideStaticMethod) {
+      String methodName, List<dart.Expression> positionalArguments) {
     // Translate receiver
-    java.Expression recv;
-    dart.DartType recvType;
-    if (receiver == null) {
-      // Implicit "this" receiver
-      recv = buildDefaultReceiver(isInsideStaticMethod);
-      recvType = getThisClassDartType();
-    } else {
-      recv = receiver.accept(this);
-      recvType = getType(receiver);
-    }
+    java.Expression recv = receiver.accept(this);
+    dart.DartType recvType = receiver.staticType;
 
     // TODO(springerm): Handle other argument types
     List<java.Expression> args = positionalArguments
@@ -597,8 +588,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Getter);
-    return buildDynamicMethodInvocation(node.receiver, methodName, [], 
-      isInsideStaticMethod(node));
+    return buildDynamicMethodInvocation(node.receiver, methodName, []);
   }
 
   @override
@@ -606,7 +596,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Setter);
     return buildDynamicMethodInvocation(node.receiver, methodName, 
-        [node.value], isInsideStaticMethod(node));
+        [node.value]);
   }
 
   @override
@@ -615,8 +605,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // Expand operator symbol to Java-compatible method name
     name = Constants.operatorToMethodName[name] ?? name;
     return buildDynamicMethodInvocation(
-        node.receiver, name, node.arguments.positional, 
-        isInsideStaticMethod(node));
+        node.receiver, name, node.arguments.positional);
   }
 
   @override
@@ -801,44 +790,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       node.operator);
   }
 
-
-  /// Retrieves the [DartType] for a kernel [Expression] node.
-  dart.DartType getType(dart.Expression node) {
-    if (node.runtimeType == dart.VariableGet) {
-      // TODO(springerm, andrewkrieger): Workaround for temporary variables
-      // inside let expressions until we get types for let expressions working.
-      dart.VariableGet varGetNode = node as dart.VariableGet;
-      dart.DartType nodeType = varGetNode.variable.type;
-
-      if (nodeType.runtimeType == dart.DynamicType) {
-        if (tempVars.containsKey(varGetNode.variable)) {
-          // This is a temporary variable
-          return tempVars[varGetNode.variable].type;
-        }
-      } else {
-        return nodeType;
-      }
-    }
-
-    if (node.staticType == null) {
-      if (node.toString() == "this") {
-        // TODO(andrewkrieger): Workaround until we get types for implicit 
-        // "this" working.
-        return getThisClassDartType();
-      } else {
-        // TODO(springerm, andrewkrieger): Kernel AST does currently not expose
-        // types of expressions in let expressions. Assume for the moment that 
-        // everything is int to make "i++" etc. working
-        print('Warning: Unable to retrieve type for Kernel AST expression '
-          '"$node" of type ${node.runtimeType}. Assuming int.');
-        return compilerState.intClass.thisType;
-        // TODO(springerm): throw new CompileErrorException
-      }
-    } else {
-      return node.staticType;
-    }
-  }
-
   /// Assuming that [node] has a single annotation of type [annotation] and
   /// that annotation has a single String parameter, return the parameter
   /// value. If the assumptions do not apply, throw an exception.
@@ -869,27 +820,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return buildClassReference(thisDartClass);
   }
 
-  /// Determine if an expression occurs in a static method.
-  bool isInsideStaticMethod(dart.Expression expression) {
-    dart.TreeNode node = expression;
-
-    while (node is! dart.Member) {
-      node = node.parent;
-    }
-
-    switch (node.runtimeType) {
-      case dart.Constructor:
-        return false;
-      case dart.Procedure:
-        return (node as dart.Procedure).isStatic;
-      case dart.Field:
-        return (node as dart.Field).isStatic;
-      default:
-        throw new CompileErrorException(
-          "Expression is found under unknown Member ${node.runtimeType}");
-    }
-  }
-
   /// Build a reference to "this".
   java.Expression buildDefaultReceiver(bool isStatic) {
     if (isStatic) {
@@ -907,7 +837,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.IdentifierExpr visitThisExpression(dart.ThisExpression node) {
-    return buildDefaultReceiver(isInsideStaticMethod(node));
+    return buildDefaultReceiver(false);
   }
 
   @override
@@ -971,7 +901,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       return null;
     }
 
-    dart.DartType type = getType(node);
+    dart.DartType type = node.staticType;
     java.ClassOrInterfaceType targetType;
 
     if (type.runtimeType == dart.InterfaceType) {
@@ -1008,10 +938,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     String tempIdentifier = nextTempVarIdentifier();
     tempVars[node.variable] = new TemporaryVariable(
       tempIdentifier,
-      // TODO(springerm, andrewkrieger): Kernel AST does currently not expose
-      // types of expressions in let expressions. Assume for the moment that 
-      // everything is int to make "i++" etc. working
-      compilerState.intClass.thisType /* node.variable.type */);
+      node.variable.type);
 
     var assignment = new java.AssignmentExpr(
       new java.IdentifierExpr(tempIdentifier),
