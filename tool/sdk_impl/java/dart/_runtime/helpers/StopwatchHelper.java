@@ -1,13 +1,11 @@
 package dart._runtime.helpers;
 
-import java.util.Calendar;
-
 public class StopwatchHelper {
   public static void initTicker() {
-    dart.core.Stopwatch._frequency = 1;
+    dart.core.Stopwatch._frequency = 1000 * 1000;
   }
 
   public static int now() {
-    return Calendar.getInstance().get(Calendar.MILLISECOND);
+    return (int)((System.nanoTime() + 500L) / 1000L);
   }
 }

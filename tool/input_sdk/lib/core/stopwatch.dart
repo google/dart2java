@@ -111,14 +111,14 @@ class Stopwatch {
    * Returns the [elapsedTicks] counter converted to microseconds.
    */
   int get elapsedMicroseconds {
-    return (elapsedTicks * 1000000) ~/ frequency;
+    return ((elapsedTicks / frequency) * 1000000).round();
   }
 
   /**
    * Returns the [elapsedTicks] counter converted to milliseconds.
    */
   int get elapsedMilliseconds {
-    return (elapsedTicks * 1000) ~/ frequency;
+    return ((elapsedTicks / frequency) * 1000).round();
   }
 
 

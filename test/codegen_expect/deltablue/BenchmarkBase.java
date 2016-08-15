@@ -3,6 +3,7 @@ package deltablue;
 public class BenchmarkBase extends dart._runtime.base.DartObject
 {
     public java.lang.String name = null;
+    public static java.lang.Integer iters = 1000;
   
     public BenchmarkBase(java.lang.String name)
     {
@@ -16,6 +17,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
   
     protected void _constructor(java.lang.String name)
     {
+      this.iters = 1000;
       this.name = name;
       super._constructor();
     }
@@ -29,7 +31,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     }
     public void exercise()
     {
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 10); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, deltablue.BenchmarkBase.iters); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         this.run();
       }
@@ -55,7 +57,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
         elapsed = watch.getElapsedMilliseconds();
         iter = dart._runtime.helpers.IntegerHelper.operatorPlus(iter, 1);
       }
-      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter);
+      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), deltablue.BenchmarkBase.iters);
     }
     public java.lang.Double measureForExercise(java.lang.Integer timeMinimum)
     {
@@ -70,13 +72,13 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
         elapsed = watch.getElapsedMilliseconds();
         iter = dart._runtime.helpers.IntegerHelper.operatorPlus(iter, 1);
       }
-      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter);
+      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), deltablue.BenchmarkBase.iters);
     }
     public java.lang.Double measure()
     {
       this.setup();
       this.measureForWarumup(100);
-      java.lang.Double result = this.measureForExercise(2000);
+      java.lang.Double result = this.measureForExercise(dart._runtime.helpers.IntegerHelper.operatorStar(10, 1000));
       this.teardown();
       return result;
     }
@@ -88,5 +90,14 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     public java.lang.String getName()
     {
       return this.name;
+    }
+    public static java.lang.Integer getIters()
+    {
+      return deltablue.BenchmarkBase.iters;
+    }
+    public static java.lang.Integer setIters(java.lang.Integer value)
+    {
+      deltablue.BenchmarkBase.iters = value;
+      return value;
     }
 }

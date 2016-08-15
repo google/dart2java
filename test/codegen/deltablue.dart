@@ -34,6 +34,8 @@ class BenchmarkBase {
   // Empty constructor.
   const BenchmarkBase(String name) : this.name = name;
 
+  static const int iters = 1000;
+
   // The benchmark code.
   // This function is not used, if both [warmup] and [exercise] are overwritten.
   void run() { }
@@ -45,7 +47,7 @@ class BenchmarkBase {
 
   // Exercices the benchmark. By default invokes [run] 10 times.
   void exercise() {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < iters; i++) {
       run();
     }
   }
@@ -69,7 +71,7 @@ class BenchmarkBase {
       elapsed = watch.elapsedMilliseconds;
       iter++;
     }
-    return 1000.0 * elapsed / iter;
+    return (1000.0 * elapsed / iter) / iters;
   }
 
   // Measures the score for this benchmark by executing it repeately until
@@ -85,7 +87,7 @@ class BenchmarkBase {
       elapsed = watch.elapsedMilliseconds;
       iter++;
     }
-    return 1000.0 * elapsed / iter;
+    return (1000.0 * elapsed / iter) / iters;
   }
 
   // Measures the score for the benchmark and returns it.
@@ -94,7 +96,7 @@ class BenchmarkBase {
     // Warmup for at least 100ms. Discard result.
     measureForWarumup(100);
     // Run the benchmark for at least 2000ms.
-    double result = measureForExercise(2000);
+    double result = measureForExercise(10 * 1000);
     teardown();
     return result;
   }
