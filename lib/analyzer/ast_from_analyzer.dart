@@ -861,11 +861,18 @@ class ExpressionBuilder
 
   ast.Expression build(Expression node) {
     var result = node.accept(this);
+    ast.Expression expression;
     if (result is Accessor) {
-      return result.buildSimpleRead();
+      expression = result.buildSimpleRead();
     } else {
-      return result;
+      expression = result;
     }
+    var cast = getImplicitCast(node);
+    if (cast != null) {
+      expression = new ast.TypeCheckExpression(expression,
+          scope.buildType(cast));
+    }
+    return expression;
   }
 
   Accessor buildLeftHandValue(Expression node) {

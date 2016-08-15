@@ -1525,6 +1525,33 @@ class AsExpression extends Expression {
   }
 }
 
+/// Synthetic expression like `x as T`, but that fails with a TypeError instead
+/// of a CastError.
+class TypeCheckExpression extends Expression {
+  Expression operand;
+  DartType type;
+
+  TypeCheckExpression(this.operand, DartType type)
+    : type = type,
+    super(type) {
+      operand?.parent = this;
+    }
+
+  accept(Visitor v) => v.visitTypeCheckExpression(this);
+
+  visitChildren(Visitor v) {
+    operand?.accept(v);
+    type?.accept(v);
+  }
+
+  transformChildren(Transformer v) {
+    if (operand != null) {
+      operand = operand.accept(v);
+      operand?.parent = this;
+    }
+  }
+}
+
 /// An integer, double, boolean, string, or null constant.
 abstract class BasicLiteral extends Expression {
   BasicLiteral(DartType staticType) : super(staticType);

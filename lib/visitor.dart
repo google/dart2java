@@ -32,6 +32,8 @@ abstract class ExpressionVisitor<R> {
       defaultExpression(node);
   R visitIsExpression(IsExpression node) => defaultExpression(node);
   R visitAsExpression(AsExpression node) => defaultExpression(node);
+  R visitTypeCheckExpression(TypeCheckExpression node) =>
+      defaultExpression(node);
   R visitSymbolLiteral(SymbolLiteral node) => defaultExpression(node);
   R visitTypeLiteral(TypeLiteral node) => defaultExpression(node);
   R visitThisExpression(ThisExpression node) => defaultExpression(node);
@@ -139,6 +141,8 @@ class TreeVisitor<R> implements ExpressionVisitor<R>,
       defaultExpression(node);
   R visitIsExpression(IsExpression node) => defaultExpression(node);
   R visitAsExpression(AsExpression node) => defaultExpression(node);
+  R visitTypeCheckExpression(TypeCheckExpression node) =>
+      defaultExpression(node);
   R visitSymbolLiteral(SymbolLiteral node) => defaultExpression(node);
   R visitTypeLiteral(TypeLiteral node) => defaultExpression(node);
   R visitThisExpression(ThisExpression node) => defaultExpression(node);
