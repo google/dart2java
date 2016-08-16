@@ -16,7 +16,7 @@ The easy way to build the SDK is to run the `tool/build_sdk.sh` script.
 
 Here are the full steps, for those who are interested:
 
-    * Patch the SDK: `tool/patch_sdk.sh`
-    * Compile the SDK: `dart2java --dart-sdk=gen/patched_sdk --output=gen/compiled_sdk --package-prefix=dart dart:_internal ...`
-    * Compile the generated `.java` files with `javac`
-    * Archive the generated `.class` files with `jar`
+ * Patch the SDK: `tool/patch_sdk.sh`
+ * Compile the SDK: `dart2java --dart-sdk=gen/patched_sdk --output=gen/compiled_sdk --package-prefix=dart dart:_internal ...`
+ * Compile the generated `.java` files with `javac`
+ * Archive the generated `.class` files with `jar`
