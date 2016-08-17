@@ -62,10 +62,22 @@ public final class TypeEnvironment {
   public Type evaluate(TypeExpr expr) {
     Type result = cache.get(expr.key);
     if (result == null) {
-      result = expr.evaluate(this);
+      result = expr.evaluateUncached(this);
       cache.put(expr.key, result);
     }
     return result;
+  }
+
+  /**
+   * Evaluates a {@link InterfaceTypeExpr} in this {@code TypeEnvironment}.
+   *
+   * This is a convenience method that calls {@link #evaluate(TypeExpr)} and casts the result.
+   *
+   * @param expr type expression to evaluate
+   * @return value of the type expression
+   */
+  public InterfaceType evaluate(InterfaceTypeExpr expr) {
+    return (InterfaceType) evaluate((TypeExpr) expr);
   }
 
   /**
@@ -93,7 +105,7 @@ public final class TypeEnvironment {
    */
   Type tryResolve(TypeVariableExpr var) {
     Type result = values.get(var);
-    if (result == null) {
+    if (result == null && parent != null) {
       result = parent.tryResolve(var);
     }
     return result;

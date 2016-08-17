@@ -16,7 +16,7 @@ public class TypeVariableExpr extends TypeExpr {
   }
 
   @Override
-  Type evaluate(TypeEnvironment env) {
+  Type evaluateUncached(TypeEnvironment env) {
     return env.resolve(this);
   }
 }

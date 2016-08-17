@@ -17,6 +17,7 @@ public final class InterfaceTypeInfo {
   public InterfaceTypeExpr[] interfaces = EMPTY_ITE_ARRAY;
   public final TypeVariableExpr[] typeVariables;
   public final String fullName;
+  final Map<List<Type>, InterfaceType> instantiationCache = new HashMap<>();
 
   private static final String[] EMTPY_STRING_ARRAY = new String[0];
   private static final InterfaceTypeExpr[] EMPTY_ITE_ARRAY = new InterfaceTypeExpr[0];
@@ -44,30 +45,5 @@ public final class InterfaceTypeInfo {
     for (int i = 0; i < typeVariables.length; i++) {
       this.typeVariables[i] = new TypeVariableExpr(libraryName, className, typeVariableNames[i]);
     }
-  }
-
-  private final Map<List<Type>, InterfaceType> instantiateCache = new HashMap<>();
-
-  /**
-   * Instantiates this raw class type with the given {@code actualTypeParams}.
-   */
-  InterfaceType instantiate(List<Type> actualTypeParams) {
-    InterfaceType result = instantiateCache.get(actualTypeParams);
-    if (result == null) {
-      Type[] actualTypeParamsArray = actualTypeParams.toArray(new Type[actualTypeParams.size()]);
-      TypeEnvironment classDeclEnv =
-          TypeEnvironment.ROOT.extend(typeVariables, actualTypeParamsArray);
-      InterfaceType superclass =
-          this.superclass != null ? (InterfaceType) classDeclEnv.evaluate(this.superclass) : null;
-      InterfaceType mixin =
-          this.mixin != null ? (InterfaceType) classDeclEnv.evaluate(this.mixin) : null;
-      InterfaceType[] interfaces = new InterfaceType[this.interfaces.length];
-      for (int i = 0; i < interfaces.length; i++) {
-        interfaces[i] = (InterfaceType) classDeclEnv.evaluate(this.interfaces[i]);
-      }
-      result = new InterfaceType(this, superclass, mixin, interfaces, actualTypeParamsArray);
-      instantiateCache.put(actualTypeParams, result);
-    }
-    return result;
   }
 }

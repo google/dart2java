@@ -10,5 +10,5 @@ public abstract class TypeExpr {
     this.key = key;
   }
 
-  abstract Type evaluate(TypeEnvironment env);
+  abstract Type evaluateUncached(TypeEnvironment env);
 }
