@@ -26,6 +26,7 @@ public class Variable extends dart._runtime.base.DartObject
       this.mark = 0;
       this.walkStrength = deltablue.__TopLevel.WEAKEST;
       this.stay = true;
+      this.value = 0;
       this.name = name;
       this.value = value;
       super._constructor();

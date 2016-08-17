@@ -546,7 +546,7 @@ class Variable {
   int mark = 0;
   Strength walkStrength = WEAKEST;
   bool stay = true;
-  int value;
+  int value = 0;
   final String name;
 
   Variable(this.name, this.value);

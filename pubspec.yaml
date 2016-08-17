@@ -8,7 +8,7 @@ author: Dart Dev Compiler team <dev-compiler@dartlang.org>
 homepage: https://github.com/dart-lang/dev_compiler
 
 dependencies:
-  analyzer: ^0.27.4-alpha.9
+  analyzer: ^0.28.0-alpha.1
   args: ^0.13.0
   bazel_worker: ^0.1.0
   cli_util: ^0.0.1
@@ -22,6 +22,9 @@ dependencies:
   pub_semver: ^1.1.0
   source_maps: ^0.10.0
   source_span: ^1.0.2
+
+dependency_overrides:
+  analyzer: ^0.28.0-alpha.1
 
 dev_dependencies:
   # We pin a specific version to ensure everyone is formatting the code exactly

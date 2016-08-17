@@ -1,5 +1,5 @@
 class Class1 {
-  int v;
+  int v = 0;
 
   Class1() {
     v = 12;
@@ -13,8 +13,8 @@ int createClass1() {
 
 
 class Class2 {
-  int v1;
-  int v2;
+  int v1 = 0;
+  int v2 = 0;
 
   Class2(int v) {
     v1 = 2;
@@ -29,8 +29,8 @@ int createClass2() {
 
 
 class Class3 {
-  int v1;
-  int v2;
+  int v1 = 0;
+  int v2 = 0;
 
   Class3(this.v1) {
     v2 = 3;
@@ -44,8 +44,8 @@ int createClass3() {
 
 
 class Class4 {
-  int v1;
-  int v2;
+  int v1 = 0;
+  int v2 = 0;
 
   Class4(this.v1, int v2) {
     this.v2 = v2 + 1;
@@ -110,9 +110,9 @@ int getValueForInit(String field) {
 }
 
 class ClassA {
-  int fieldA1;
+  int fieldA1 = 0;
   int fieldA2 = getValueForInit("fieldA2");
-  int fieldA3;
+  int fieldA3 = 0;
 
   ClassA(this.fieldA3) : this.fieldA1 = getValueForInit("fieldA1") {
     getValueForInit("bodyA");
@@ -120,7 +120,7 @@ class ClassA {
 }
 
 class ClassB extends ClassA {
-  int fieldB1;
+  int fieldB1 = 0;
   int fieldB2 = getValueForInit("fieldB2");
 
   ClassB() : 

@@ -3,12 +3,12 @@ bool nullEqualsNull1() {
 }
 
 bool nullEqualsNull2() {
-  int val = null;
+  var val = null;
   return val == null;
 }
 
 bool nullEqualsNull3() {
-  int val = null;
+  var val = null;
   return null == val;
 }
 
@@ -29,7 +29,7 @@ String nullToString1() {
 }
 
 String nullToString2() {
-  int val = null;
+  var val = null;
   return val.toString();
 }
 

@@ -1,5 +1,5 @@
 class IntWrapper {
-  int value;
+  int value = 0;
 
   IntWrapper(this.value);
 }

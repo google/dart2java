@@ -1,5 +1,5 @@
 int var1 = 10;
-int var2;
+int var2 = 0;
 
 int method1() {
   return 5;
