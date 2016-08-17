@@ -4,7 +4,7 @@ colors = "#A0000F #FF6900 #F7A500 #FFDE01 #00D45D #0BDEC3 #008EC7 #0145DE #1100A
 titles = "invokeinterface_type_1a invokeinterface_type_1b invokeinterface_type_1c invokeinterface_type_2 invokestatic invokevitrual_type_1a invokevitrual_type_1b invokevitrual_type_1c invokevitrual_type_2"
 
 set terminal png size 1680,1050
-set yrange [0.1:200]
+set yrange [0.1:1000]
 set key outside
 set datafile separator ','
 set logscale y
@@ -17,8 +17,7 @@ set logscale y
 
 set output 'results/all.png'
 
-plot for [i=1:words(files)] word(files, i).'.csv' using 0:1 with lines title word(titles, i).' pre-JIT' lc rgb word(colors, i), \
-    for [i=1:words(files)] word(files, i).'.csv' using 0:2 with lines title word(titles, i).' post-JIT' lc rgb word(colors, i)
+plot for [i=1:words(files)] word(files, i).'.csv' using 0:2 with lines title word(titles, i).' post-JIT' lc rgb word(colors, i)
 
 files_iv = word(files, 6).' '.word(files, 7).' '.word(files, 8).' '.word(files, 9)
 colors_iv = word(colors, 6).' '.word(colors, 7).' '.word(colors, 8).' '.word(colors, 9)
