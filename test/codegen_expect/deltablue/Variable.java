@@ -22,7 +22,7 @@ public class Variable extends dart._runtime.base.DartObject
   
     protected void _constructor(java.lang.String name, java.lang.Integer value)
     {
-      this.constraints = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Constraint.class);
+      this.constraints = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
       this.mark = 0;
       this.walkStrength = deltablue.__TopLevel.WEAKEST;
       this.stay = true;

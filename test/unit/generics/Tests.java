@@ -15,4 +15,12 @@ public class Tests {
   public void testSubtype() {
     assertEquals(36, (int) __TopLevel.testTypeSubtypeInList());
   }
+
+  @Test
+  public void testSpecialization() {
+    // Cannot test if the correct specialization was chosen,
+    // have to look at the generated code!
+    assertEquals(60, (int) __TopLevel.testSingleTypeArgumentSpecialization());
+    assertEquals("102030",  __TopLevel.testAssignmentOfSpecialization());
+  }
 }

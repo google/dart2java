@@ -16,7 +16,7 @@ public class Plan extends dart._runtime.base.DartObject
   
     protected void _constructor()
     {
-      this.list = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Constraint.class);
+      this.list = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
       super._constructor();
     }
     public void addConstraint(deltablue.Constraint c)

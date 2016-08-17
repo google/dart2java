@@ -47,7 +47,7 @@ public class __TopLevel
       }
       new deltablue.StayConstraint(last, deltablue.__TopLevel.STRONG_DEFAULT);
       deltablue.EditConstraint edit = new deltablue.EditConstraint(first, deltablue.__TopLevel.PREFERRED);
-      deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Constraint.class, edit));
+      deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class, edit));
       for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 100); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         first.setValue(i);
@@ -66,7 +66,7 @@ public class __TopLevel
       deltablue.Variable offset = new deltablue.Variable("offset", 1000);
       deltablue.Variable src = null;
       deltablue.Variable dst = null;
-      dart._runtime.base.DartList<deltablue.Variable> dests = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Variable.class);
+      dart._runtime.base.DartList<deltablue.Variable> dests = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable.class);
       for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, n); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         src = new deltablue.Variable("src", i);
@@ -105,7 +105,7 @@ public class __TopLevel
     public static void change(deltablue.Variable v, java.lang.Integer newValue)
     {
       deltablue.EditConstraint edit = new deltablue.EditConstraint(v, deltablue.__TopLevel.PREFERRED);
-      deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.EditConstraint.class, edit));
+      deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.EditConstraint.class, edit));
       for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 10); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         v.setValue(newValue);

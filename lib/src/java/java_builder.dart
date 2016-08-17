@@ -157,11 +157,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         isAbstract: node.isAbstract);
   }
 
-  @override
   java.FieldDecl buildClassField(dart.Field node) {
     // Non-static fields are initialized in the constructor
     java.Expression initializer = node.isStatic
-      ? buildCovariantCompatibleExpression(node.initializer)
+      ? buildCastedExpression(node.initializer, node.type)
       : new java.NullLiteral();
 
     return new java.FieldDecl(node.name.name, node.type.accept(this),
@@ -174,7 +173,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.FieldDecl visitField(dart.Field node) {
     return new java.FieldDecl(node.name.name, node.type.accept(this),
-        initializer: buildCovariantCompatibleExpression(node.initializer),
+        initializer: buildCastedExpression(node.initializer, node.type),
         access: java.Access.Public,
         isStatic: node.isStatic,
         isFinal: node.isFinal);
@@ -215,17 +214,44 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var fieldAssignment = new java.AssignmentExpr(
       new java.FieldAccess(buildDefaultReceiver(false), 
         new java.IdentifierExpr(node.field.name.name)), 
-      buildCovariantCompatibleExpression(node.value));
+      buildCastedExpression(node.value, node.field.type));
 
     return new java.ExpressionStmt(fieldAssignment);
+  }
+
+  /// Translates arguments for method calls and constructor invocations.
+  /// 
+  /// Handles positional arguments, type arguments, and optional arguments,
+  /// but not named arguments at the moment.
+  /// 
+  /// This method takes a function node as a parameter determine if a
+  /// type cast must be inserted before passing an argument.
+  List<java.Expression> buildArguments(dart.Arguments node, 
+    dart.FunctionNode target) {
+    // TODO(springerm): Handle parameters other than positional
+    var result = new List<java.Expression>();
+
+    Iterable<java.JavaType> typeArguments = node.types.map((t) 
+      => t.accept(this)) as Iterable<JavaType>;
+    // Calling convention: Type arguments as first arguments 
+    // for static invocations, then positional arguments
+    // TODO(springerm, andrewkrieger): Use proper types once implemented
+    result.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
+
+    for (int i = 0; i < node.positional.length; i++) {
+      result.add(buildCastedExpression(
+        node.positional[i],
+        target.positionalParameters[i].type));
+    }
+
+    return result;
   }
 
   @override
   java.Statement visitSuperInitializer(dart.SuperInitializer node) {
     return new java.ExpressionStmt(new java.SuperMethodInvocation(
       Constants.constructorMethodPrefix,
-      node.arguments.positional.map(buildCovariantCompatibleExpression)
-        .toList()));
+      buildArguments(node.arguments, node.target.function)));
   }
 
   String capitalizeString(String str) =>
@@ -407,7 +433,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         .map((f) => new java.ExpressionStmt(new java.AssignmentExpr(
           new java.FieldAccess(buildDefaultReceiver(false),
             new java.IdentifierExpr(f.name.name)),
-          buildCovariantCompatibleExpression(f.initializer))));
+          buildCastedExpression(f.initializer, f.type))));
 
     // There is either 0 or 1 super initializers
     Iterable<dart.Initializer> superInitializers = 
@@ -523,8 +549,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.ReturnStmt visitReturnStatement(dart.ReturnStatement node) {
+    // Find procedure
+    dart.TreeNode procNode = node;
+    while (procNode is! dart.Procedure) {
+      procNode = procNode.parent;
+    }
+
     return new java.ReturnStmt(
-      buildCovariantCompatibleExpression(node.expression));
+      buildCastedExpression(
+        node.expression,
+        (procNode as dart.Procedure).function.returnType));
   }
 
   @override
@@ -534,27 +568,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Builds a method invocation where the call target is not statically known.
   java.MethodInvocation buildDynamicMethodInvocation(dart.Expression receiver, 
-      String methodName, List<dart.Expression> positionalArguments) {
+      String methodName, List<java.Expression> arguments) {
     // Translate receiver
     java.Expression recv = receiver.accept(this);
     dart.DartType recvType = receiver.staticType;
-
-    // TODO(springerm): Handle other argument types
-    List<java.Expression> args = positionalArguments
-        .map(buildCovariantCompatibleExpression)
-        .toList();
-
-    if (Constants.objectMethods.contains(methodName)) {
-      // This method is defined on Object and must dispatch to ObjectHelper
-      // directly to handle "null" values correctly
-      java.ClassOrInterfaceType helperClass =
-          compilerState.getHelperClass(compilerState.objectClass);
-      // Generate static call to helper function.
-      java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
-
-      return new java.MethodInvocation(
-        helperRefExpr, methodName, [recv]..addAll(args));
-    } 
 
     if (recvType is! dart.InterfaceType) {
       throw new CompileErrorException(
@@ -578,10 +595,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
         // Dynamic method invocation
       return new java.MethodInvocation(
-        helperRefExpr, methodName, [recv]..addAll(args));
+        helperRefExpr, methodName, [recv]..addAll(arguments));
     }
 
-    return new java.MethodInvocation(recv, methodName, args);
+    return new java.MethodInvocation(recv, methodName, arguments);
   }
 
   @override
@@ -591,12 +608,69 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return buildDynamicMethodInvocation(node.receiver, methodName, []);
   }
 
+  /// Finds a [dart.Procedure] in a class and its superclasses.
+  dart.Procedure findProcedureInClassHierarchy(
+    // TODO(springerm): Check mixins
+    String name, dart.Class class_) {
+    dart.Class nextClass = class_;
+    do {
+      Iterable<dart.Procedure> matches = nextClass.procedures.where((p) =>
+        p.name.name == name);
+      if (matches.isNotEmpty) {
+        return matches.single;
+      }
+      nextClass = nextClass.superclass;
+    } while (nextClass != null);
+    return null;
+  }
+
+  /// Find a [dart.Field] in a class and its superclasses.
+  dart.Field findFieldInClassHierarchy(
+    // TODO(springerm): Check mixins
+    String name, dart.Class class_) {
+    dart.Class nextClass = class_;
+    do {
+      Iterable<dart.Field> matches = nextClass.fields.where((p) =>
+        p.name.name == name);
+      if (matches.isNotEmpty) {
+        return matches.single;
+      }
+      nextClass = nextClass.superclass;
+    } while (nextClass != null);
+    return null;
+  }
+
   @override
   java.MethodInvocation visitPropertySet(dart.PropertySet node) {
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+
+    if (node.receiver.staticType is! dart.InterfaceType) {
+      throw new CompileErrorException(
+        "Can only handle property set where receiver is an InterfaceType "
+        "(found ${node.staticType.runtimeType})");
+    }
+
+    dart.DartType expectedType;
+    dart.Class classNode = (node.receiver.staticType as dart.InterfaceType)
+      .classNode;
+
+    dart.Procedure procedure = findProcedureInClassHierarchy(
+      node.name.name, classNode);
+    dart.Field field = findFieldInClassHierarchy(
+      node.name.name, classNode);
+
+    if (procedure != null && procedure.kind == dart.ProcedureKind.Setter) {
+      expectedType = procedure.function.positionalParameters.first.type;
+    } else if (field != null) {
+      expectedType = field.type;
+    } else {
+      throw new CompileErrorException(
+        "Field or setter not found in receiver class."); 
+    }
+
     return buildDynamicMethodInvocation(node.receiver, methodName, 
-        [node.value]);
+        [buildCastedExpression(node.value, expectedType)]);
   }
 
   @override
@@ -604,8 +678,50 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     String name = node.name.name;
     // Expand operator symbol to Java-compatible method name
     name = Constants.operatorToMethodName[name] ?? name;
+
+    if (Constants.objectMethods.contains(name)) {
+      // This method is defined on Object and must dispatch to ObjectHelper
+      // directly to handle "null" values correctly
+      java.ClassOrInterfaceType helperClass =
+          compilerState.getHelperClass(compilerState.objectClass);
+      // Generate static call to helper function.
+      java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
+      List<java.Expression> javaArgs = [node.receiver.accept(this)]..addAll(
+        node.arguments.positional.map((i) => i.accept(this)));
+
+      return new java.MethodInvocation(
+        helperRefExpr, name, javaArgs);
+    } 
+
+    if (node.receiver.staticType is! dart.InterfaceType) {
+      throw new CompileErrorException(
+        "Can only handle property set where receiver is an InterfaceType "
+        "(found ${node.staticType.runtimeType})");
+    }
+
+    dart.FunctionNode targetFunction;
+    var interfaceType = node.receiver.staticType as dart.InterfaceType;
+    dart.Class classNode = interfaceType.classNode;
+
+    dart.Procedure procedure = findProcedureInClassHierarchy(
+      node.name.name, classNode);
+
+    if (procedure != null) {
+      targetFunction = procedure.function;
+    } else {
+      throw new CompileErrorException(
+        "Method ${node.name.name} not found in receiver class ${classNode}."); 
+    }
+
+    // Call specialized generic method is available
+    Iterable<java.JavaType> javaTypeArguments = 
+      interfaceType.typeArguments.map((t) => t.accept(this));
+    if (java.JavaType.hasGenericSpecialization(javaTypeArguments)) {
+      name = name + Constants.primitiveSpecializationSuffix;
+    }
+
     return buildDynamicMethodInvocation(
-        node.receiver, name, node.arguments.positional);
+        node.receiver, name, buildArguments(node.arguments, targetFunction));
   }
 
   @override
@@ -613,8 +729,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     dart.SuperMethodInvocation node) {
     return new java.SuperMethodInvocation(
       node.name.name,
-      node.arguments.positional.map(buildCovariantCompatibleExpression)
-        .toList());
+      buildArguments(node.arguments, node.target.function));
   }
 
   @override
@@ -637,16 +752,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       methodName = compilerState.getJavaMethodName(receiverClass, methodName);
     }
 
-    // TODO(springerm): Handle named arguments
-    var args = <java.Expression>[];
-    // Calling convention: Type arguments as first arguments 
-    // for static invocations, then positional arguments
-    // TODO(springerm, andrewkrieger): Use proper types once implemented
-    args.addAll(node.arguments.types.map(
-      (t) => new java.TypeExpr(t.accept(this))));
-    // Positional arguments
-    args.addAll(node.arguments.positional
-        .map(buildCovariantCompatibleExpression));
+    List<java.Expression> args = buildArguments(
+      node.arguments, node.target.function);
+    Iterable<java.JavaType> typeArguments = node.arguments.types.map((t) 
+      => t.accept(this)) as Iterable<JavaType>;
 
     // Intercept method call if necessary
     if (compilerState.usesHelperFunction(receiverClass, methodName)) {
@@ -662,6 +771,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       return new java.MethodInvocation(staticNested, methodName, args);
     }
 
+    if (typeArguments.isNotEmpty) {
+      // This is a call to a generic class, make sure to choose the correct
+      // specialization
+      receiver = new java.FieldAccess(receiver, new java.IdentifierExpr(
+        java.JavaType.getGenericImplementation(typeArguments)));
+    }
+
     return new java.MethodInvocation(receiver, methodName, args);
   }
 
@@ -669,9 +785,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.NewExpr visitConstructorInvocation(dart.ConstructorInvocation node) {
     // TODO(springerm): Check for usesHelperFunction
     // TODO(springerm): Handle other parameter types
-    List<java.Expression> args = node.arguments.positional
-      .map(buildCovariantCompatibleExpression)
-      .toList();
+    List<java.Expression> args = buildArguments(
+      node.arguments, node.target.function);
 
     java.ClassOrInterfaceType type = 
       node.target.enclosingClass.thisType.accept(this);
@@ -750,9 +865,19 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         java.Expression fieldAccess = new java.FieldAccess(
           new java.ClassRefExpr(getEnclosingOfMember(node.target)), 
           new java.IdentifierExpr(field.name.name));
-        return new java.AssignmentExpr(
-          fieldAccess, 
-          buildCovariantCompatibleExpression(node.value));
+
+        java.Expression newValue;
+        if (node.target is dart.Field) {
+          newValue = buildCastedExpression(node.value, 
+            (node.target as dart.Field).type);
+        } else if (node.target is dart.Procedure) {
+          // Calling a setter
+          newValue = buildCastedExpression(node.value, 
+            (node.target as dart.Procedure)
+              .function.positionalParameters.first.type);
+        }
+
+        return new java.AssignmentExpr(fieldAccess, newValue);
       }
     } else {
       throw new CompileErrorException(
@@ -860,9 +985,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.AssignmentExpr visitVariableSet(dart.VariableSet node) {
     return new java.AssignmentExpr(
         new java.IdentifierExpr(node.variable.name), 
-        buildCovariantCompatibleExpression(node.value));
+        buildCastedExpression(node.value, node.variable.type));
   }
 
+  /// Translates a node and inserts a cast depending on the expected type.
+  /// 
+  /// This method is currently used only for supporting covariant generics.
+  /// This will likely change in the future; plans are to remove Java generics
+  /// and to use Java Object. Casts will then have to be inserted at a
+  /// different point.
+  /// 
   /// Java generics are not covariant but Dart generics are. The current 
   /// implementation uses both Java generics and an additional field for 
   /// reified generics in generated Java code. Using Java generics has the
@@ -895,7 +1027,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// it is not possible to get rid of the runtime type check when accessing
   /// an element in the list in Java without writing bytecode directly. Even
   /// then, the bytecode verifier might reject the code.
-  java.Expression buildCovariantCompatibleExpression(dart.Expression node) {
+  /// 
+  /// No cast is inserted if both object and expected type are specializations,
+  /// e.g., assigning a List<int> to a List<int>-typed variable
+  java.Expression buildCastedExpression(dart.Expression node, 
+    dart.DartType expectedType) {
     if (node == null) {
       // This method is sometimes called on optional nodes, e.g. initializers
       return null;
@@ -904,12 +1040,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     dart.DartType type = node.staticType;
     java.ClassOrInterfaceType targetType;
 
-    if (type.runtimeType == dart.InterfaceType) {
-      var interfaceType = type as dart.InterfaceType;
+    if (type is dart.InterfaceType && expectedType is dart.InterfaceType) {
+      Iterable<java.JavaType> javaTypeArguments = 
+        type.typeArguments.map((t) => t.accept(this));
+      Iterable<java.JavaType> expectedJavaTypeArguments = 
+        expectedType.typeArguments.map((t) => t.accept(this));
 
-      if (interfaceType.typeArguments.isNotEmpty) {
+      if (javaTypeArguments.isNotEmpty 
+        && !(
+          java.JavaType.hasGenericSpecialization(javaTypeArguments) &&
+          java.JavaType.hasGenericSpecialization(expectedJavaTypeArguments))) {
         // Insert a cast
-        targetType = interfaceType.accept(this);
+        targetType = expectedType.accept(this);
         targetType.typeArguments.clear();
 
         return new java.CastExpr(node.accept(this), targetType);
@@ -942,24 +1084,38 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     var assignment = new java.AssignmentExpr(
       new java.IdentifierExpr(tempIdentifier),
-      buildCovariantCompatibleExpression(node.variable.initializer));
+      buildCastedExpression(node.variable.initializer, node.variable.type));
 
     return new java.MethodInvocation(
       new java.ClassRefExpr(java.JavaType.letHelper),
       Constants.sequencePointMethodName,
       <java.Expression>[
         assignment,
-        buildCovariantCompatibleExpression(node.body)]);
+        node.body.accept(this)]);
   }
 
   @override
   java.Expression visitListLiteral(dart.ListLiteral node) {
     var args = <java.Expression>[];
-    args.add(new java.TypeExpr(node.typeArgument.accept(this)));
-    args.addAll(node.expressions.map(buildCovariantCompatibleExpression));
+
+    List<java.JavaType> typeArguments = 
+      <JavaType>[node.typeArgument.accept(this)];
+    // Calling convention: Type arguments as first arguments 
+    // for static invocations, then positional arguments
+    // TODO(springerm, andrewkrieger): Use proper types once implemented
+    args.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
+    args.addAll(node.expressions.map((e) =>
+      buildCastedExpression(e, node.typeArgument)));
 
     java.Expression listClass = new java.ClassRefExpr(
       compilerState.getClass(compilerState.listClass));
+
+    if (typeArguments.isNotEmpty) {
+      // This is a call to a generic class, make sure to choose the correct
+      // specialization
+      listClass = new java.FieldAccess(listClass, new java.IdentifierExpr(
+        java.JavaType.getGenericImplementation(typeArguments)));
+    }
 
     return new java.MethodInvocation(
       listClass, 
@@ -1038,6 +1194,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.VariableDecl visitVariableDeclaration(dart.VariableDeclaration node) {
     return new java.VariableDecl(node.name, node.type.accept(this),
         isFinal: node.isFinal, 
-        initializer: buildCovariantCompatibleExpression(node.initializer));
+        initializer: buildCastedExpression(node.initializer, node.type));
   }
 }

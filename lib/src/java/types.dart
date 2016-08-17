@@ -39,6 +39,15 @@ abstract class JavaType extends Node {
   static ClassOrInterfaceType string =
       new ClassOrInterfaceType("java.lang", "String");
 
+  static ClassOrInterfaceType javaBooleanClass = 
+    new ClassOrInterfaceType("java.lang", "Boolean");
+    
+  static ClassOrInterfaceType javaIntegerClass = 
+    new ClassOrInterfaceType("java.lang", "Integer");
+    
+  static ClassOrInterfaceType javaDoubleClass = 
+    new ClassOrInterfaceType("java.lang", "Double");
+
   static ClassOrInterfaceType letHelper = 
       new ClassOrInterfaceType("dart._runtime.helpers", "LetExpressionHelper");
 
@@ -69,6 +78,25 @@ abstract class JavaType extends Node {
 
   /// 64-bit IEEE 754 floating-point number.
   static const PrimitiveType double_ = const PrimitiveType._("double");
+
+  static Map<JavaType, String> genericSpecializations = {
+    javaBooleanClass: "_bool",
+    javaIntegerClass: "_int",
+    javaDoubleClass: "_double"
+  };
+
+  static bool hasGenericSpecialization(Iterable<JavaType> typeArguments) {
+    return typeArguments.length == 1 
+      && genericSpecializations.containsKey(typeArguments.single);
+  }
+
+  static String getGenericImplementation(Iterable<JavaType> typeArguments) {
+    if (hasGenericSpecialization(typeArguments)) {
+      return genericSpecializations[typeArguments.single];
+    } else {
+      return "Generic";
+    }
+  }
 }
 
 /// A convenience class to allow handling of methods that don't return a value.
@@ -208,6 +236,11 @@ class ClassOrInterfaceType extends ReferenceType {
     String identifier = fullyQualifiedName;
 
     if (isGeneric) {
+      if (JavaType.hasGenericSpecialization(typeArguments)) {
+        return identifier + "." 
+          + JavaType.getGenericImplementation(typeArguments);
+      }
+
       String typeArgs = typeArguments.map((a) => a.toString()).join(", ");
       return "$identifier<$typeArgs>";
     } else {

@@ -33,3 +33,26 @@ int testTypeSubtypeInList() {
 
   return result;
 }
+
+int testSingleTypeArgumentSpecialization() {
+  List<int> list = <int>[10, 20, 30];
+  int result = 0;
+
+  for (int i = 0; i < list.length; i++) {
+    result = result + list[i];
+  }
+
+  return result;
+}
+
+String testAssignmentOfSpecialization() {
+  List<int> list = <int>[10, 20, 30];
+  List<Object> objectList = list;
+  String result = "";
+
+  for (int i = 0; i < objectList.length; i++) {
+    result = result + objectList[i].toString();
+  }
+
+  return result;
+}

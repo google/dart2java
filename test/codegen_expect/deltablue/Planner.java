@@ -72,7 +72,7 @@ public class Planner extends dart._runtime.base.DartObject
     }
     public deltablue.Plan extractPlanFromConstraints(dart._runtime.base.DartList<deltablue.Constraint> constraints)
     {
-      dart._runtime.base.DartList<deltablue.Constraint> sources = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Constraint.class);
+      dart._runtime.base.DartList<deltablue.Constraint> sources = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
       for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, constraints.getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         deltablue.Constraint c = constraints.operatorAt(i);
@@ -85,7 +85,7 @@ public class Planner extends dart._runtime.base.DartObject
     }
     public java.lang.Boolean addPropagate(deltablue.Constraint c, java.lang.Integer mark)
     {
-      dart._runtime.base.DartList<deltablue.Constraint> todo = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Constraint.class, c);
+      dart._runtime.base.DartList<deltablue.Constraint> todo = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class, c);
       while (dart._runtime.helpers.IntegerHelper.operatorGreater(todo.getLength(), 0))
       {
         deltablue.Constraint d = todo.removeLast();
@@ -104,8 +104,8 @@ public class Planner extends dart._runtime.base.DartObject
       out.setDeterminedBy(null);
       out.setWalkStrength(deltablue.__TopLevel.WEAKEST);
       out.setStay(true);
-      dart._runtime.base.DartList<deltablue.Constraint> unsatisfied = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Constraint.class);
-      dart._runtime.base.DartList<deltablue.Variable> todo = (dart._runtime.base.DartList) dart._runtime.base.DartList._fromArguments(deltablue.Variable.class, out);
+      dart._runtime.base.DartList<deltablue.Constraint> unsatisfied = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
+      dart._runtime.base.DartList<deltablue.Variable> todo = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable.class, out);
       while (dart._runtime.helpers.IntegerHelper.operatorGreater(todo.getLength(), 0))
       {
         deltablue.Variable v = todo.removeLast();

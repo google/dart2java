@@ -76,14 +76,14 @@ class CompilerState {
           new java.ClassOrInterfaceType(
               "dart._runtime.helpers", "ObjectHelper")),
       boolClass: new ClassImpl(
-          new java.ClassOrInterfaceType("java.lang", "Boolean"),
+          java.JavaType.javaBooleanClass,
           new java.ClassOrInterfaceType("dart._runtime.helpers", "BoolHelper")),
       intClass: new ClassImpl(
-          new java.ClassOrInterfaceType("java.lang", "Integer"),
+          java.JavaType.javaIntegerClass,
           new java.ClassOrInterfaceType(
               "dart._runtime.helpers", "IntegerHelper")),
       doubleClass: new ClassImpl(
-          new java.ClassOrInterfaceType("java.lang", "Double"),
+          java.JavaType.javaDoubleClass,
           new java.ClassOrInterfaceType(
               "dart._runtime.helpers", "DoubleHelper")),
       stringClass: new ClassImpl(
