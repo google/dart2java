@@ -23,7 +23,7 @@ public class Tests {
     __TopLevel.createB();
     String[] initOrderExpected = new String[] {"fieldB2", "fieldB1", 
       "fieldA3", "fieldA2", "fieldA1", "bodyA", "bodyB"};
-    String[] initOrder = __TopLevel.initOrder.toArray();
+    String[] initOrder = __TopLevel.initOrder.toArray(new String[] {});
     assertEquals(initOrderExpected, initOrder);
   }
 }

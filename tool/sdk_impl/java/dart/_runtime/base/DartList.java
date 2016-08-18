@@ -2,6 +2,11 @@ package dart._runtime.base;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /** 
  * An interface for Dart lists. 
@@ -9,16 +14,22 @@ import java.util.Arrays;
  * This interface is implemented by both generic lists and specialized lists.
  * Specialized lists are more efficient implementations for primitive types.
  */
-public interface DartList<T> {
+public interface DartList<T> extends List<T> {
 
+  // For interoperability: extends Java List Interface
   // TODO(springerm): Replace by compiled interface from dart:core
   
+  // Dart List Interface
   T operatorAt(int index);
   void operatorAtPut(int index, T value);
   int getLength();
-  void add(T value);
-  int indexOf(T element);
-  int indexOf(T element, int start);
+
+  // Return type must be boolean as per java.util.List
+  boolean add(T value);
+  // Parameter must be Object as per java.util.List
+  int indexOf(Object element);
+  int indexOf(Object element, int start);
+
   void clear();
   void insert(int index, T element);
   boolean remove(Object value);
@@ -31,8 +42,6 @@ public interface DartList<T> {
   T getLast();
   T getSingle();
 
-  // For interoperability
-  T[] toArray();
 
   /**
   * The generic implementation of DartList. 
@@ -84,10 +93,6 @@ public interface DartList<T> {
       return size == array.length;
     }
 
-    public T[] toArray() {
-      return Arrays.copyOf(array, size, genericArrayType);
-    }
-
 
     // --- Methods defined in List ---
 
@@ -119,13 +124,15 @@ public interface DartList<T> {
       array = Arrays.copyOf(array, size, genericArrayType);
     }
 
-    public void add(T value) {
+    public boolean add(T value) {
       if (isArrayFull()) {
         increaseSize();
       }
 
       array[size] = value;
       size++;
+
+      return true;
     }
 
     // TODO(springerm): addAll
@@ -133,11 +140,11 @@ public interface DartList<T> {
     // TODO(springerm): sort
     // TODO(springerm): shuffle
 
-    public int indexOf(T element) {
+    public int indexOf(Object element) {
       return indexOf(element, 0);
     }
 
-    public int indexOf(T element, int start) {
+    public int indexOf(Object element, int start) {
       for (int i = start; i < size; i++) {
         if (array[i].equals(element)) {
           return i;
@@ -297,6 +304,117 @@ public interface DartList<T> {
     // TODO(springerm): singleWhere
     // TODO(springerm): elementAt
     // TODO(springerm): toString
+
+
+    // --- Methods defined in java.util.List ---
+    public void add(int index, T element) {
+      insert(index, element);
+    }
+
+    public boolean addAll(Collection<? extends T> c) {
+      for (T element : c) {
+        add(element);
+      }
+
+      return true;
+    }
+
+    public boolean addAll(int index, Collection<? extends T> c) {
+      // TODO(springerm): Implement
+      return false;
+    }
+
+    public boolean containsAll(Collection<?> c) {
+      for (Object element : c) {
+        if (!contains(c)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    public T get(int index) {
+      return operatorAt(index);
+    }
+
+    public Iterator<T> iterator() {
+      return new Iterator() {
+        int nextIndex = 0;
+
+        public boolean hasNext() {
+          return nextIndex < size;
+        }
+
+        public T next() {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          return array[nextIndex];
+        }
+      };
+    }
+
+    public int lastIndexOf(Object o) {
+      for (int i = size - 1; i > -1; i--) {
+        if (array[i] == o) {
+          return i;
+        }
+      }
+
+      return -1;
+    }
+
+    public ListIterator<T> listIterator() {
+      // TODO(springerm): Implement
+      return null;
+    }
+
+    public ListIterator<T> listIterator(int index) {
+      // TODO(springerm): Implement
+      return null;
+    }
+
+    public T remove(int index) {
+      return removeAt(index);
+    }
+
+    public boolean removeAll(Collection<?> c) {
+      boolean changed = false;
+      for (Object element : c) {
+        changed = remove(element) || changed;
+      }
+      return changed;
+    }
+
+    public boolean retainAll(Collection<?> c) {
+      // TODO(springerm): Implement
+      return false;
+    }
+
+    public T set(int index, T element) {
+      T oldValue = operatorAt(index);
+      operatorAtPut(index, element);
+      return oldValue;
+    }
+
+    public int size() {
+      return getLength();
+    }
+
+    public List<T> subList(int fromIndex, int toIndex) {
+      // TODO(springerm): Implement
+      return null;
+    }
+    
+    public Object[] toArray() {
+      return Arrays.copyOf(array, size, 
+        (Class<Object[]>) Array.newInstance(Object.class, 0).getClass());
+    }
+
+    public <E> E[] toArray(E[] a) {
+      return Arrays.copyOf(array, size, (Class<E[]>) a.getClass());
+    }
   }
 
   /**
@@ -344,17 +462,6 @@ public interface DartList<T> {
       return size == array.length;
     }
 
-    public int[] toArray_primitive() {
-      return Arrays.copyOf(array, size);
-    }
-
-    public Integer[] toArray() {
-      Integer[] result = new Integer[size];
-      for (int i = 0; i < size; i++) {
-        result[i] = array[i];
-      }
-      return result;
-    }
 
     // --- Methods defined in List ---
 
@@ -397,17 +504,19 @@ public interface DartList<T> {
       setLength_primitive(newLength);
     }
 
-    public void add_primitive(int value) {
+    public boolean add_primitive(int value) {
       if (isArrayFull()) {
         increaseSize();
       }
 
       array[size] = value;
       size++;
+
+      return true;
     }
 
-    public void add(Integer value) {
-      add_primitive(value);
+    public boolean add(Integer value) {
+      return add_primitive(value);
     }
 
     // TODO(springerm): addAll
@@ -419,8 +528,12 @@ public interface DartList<T> {
       return indexOf_primitive(element, 0);
     }
 
-    public int indexOf(Integer element) {
-      return indexOf_primitive(element);
+    public int indexOf(Object element) {
+      if (!(element instanceof Integer)) {
+        return -1;
+      }
+
+      return indexOf_primitive((Integer) element);
     }
 
     public int indexOf_primitive(int element, int start) {
@@ -433,8 +546,12 @@ public interface DartList<T> {
       return -1;
     }
 
-    public int indexOf(Integer element, int start) {
-      return indexOf_primitive(element, start);
+    public int indexOf(Object element, int start) {
+      if (!(element instanceof Integer)) {
+        return -1;
+      }
+
+      return indexOf_primitive((Integer) element, start);
     }
 
     // TODO(springerm): lastIndexOf
@@ -643,5 +760,123 @@ public interface DartList<T> {
     // TODO(springerm): singleWhere
     // TODO(springerm): elementAt
     // TODO(springerm): toString
+
+
+    // --- Methods defined in java.util.List ---
+    public void add(int index, Integer element) {
+      insert(index, element);
+    }
+
+    public boolean addAll(Collection<? extends Integer> c) {
+      for (Integer element : c) {
+        add(element);
+      }
+
+      return true;
+    }
+
+    public boolean addAll(int index, Collection<? extends Integer> c) {
+      // TODO(springerm): Implement
+      return false;
+    }
+
+    public boolean containsAll(Collection<?> c) {
+      for (Object element : c) {
+        if (!contains(c)) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    public Integer get(int index) {
+      return operatorAt(index);
+    }
+
+    public Iterator<Integer> iterator() {
+      return new Iterator() {
+        int nextIndex = 0;
+
+        public boolean hasNext() {
+          return nextIndex < size;
+        }
+
+        public Integer next() {
+          if (!hasNext()) {
+            throw new NoSuchElementException();
+          }
+          return array[nextIndex++];
+        }
+      };
+    }
+
+    public int lastIndexOf(Object o) {
+      if (!(o instanceof Integer)) {
+        return -1;
+      }
+
+      for (int i = size - 1; i > -1; i--) {
+        if (array[i] == (Integer) o) {
+          return i;
+        }
+      }
+
+      return -1;
+    }
+
+    public ListIterator<Integer> listIterator() {
+      // TODO(springerm): Implement
+      return null;
+    }
+
+    public ListIterator<Integer> listIterator(int index) {
+      // TODO(springerm): Implement
+      return null;
+    }
+
+    public Integer remove(int index) {
+      return removeAt(index);
+    }
+
+    public boolean removeAll(Collection<?> c) {
+      boolean changed = false;
+      for (Object element : c) {
+        changed = remove(element) || changed;
+      }
+      return changed;
+    }
+
+    public boolean retainAll(Collection<?> c) {
+      // TODO(springerm): Implement
+      return false;
+    }
+
+    public Integer set(int index, Integer element) {
+      Integer oldValue = operatorAt(index);
+      operatorAtPut(index, element);
+      return oldValue;
+    }
+
+    public int size() {
+      return getLength();
+    }
+
+    public List<Integer> subList(int fromIndex, int toIndex) {
+      // TODO(springerm): Implement
+      return null;
+    }
+    
+    public Object[] toArray() {
+      Object[] result = new Object[size];
+      for (int i = 0; i < size; i++) {
+        result[i] = array[i];
+      }
+      return result;
+    }
+
+    public <E> E[] toArray(E[] a) {
+      return Arrays.copyOf(toArray(), size, (Class<E[]>) a.getClass());
+    }
   }
 }

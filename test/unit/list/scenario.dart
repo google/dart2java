@@ -59,3 +59,7 @@ int listLiteral() {
 
   return result;
 }
+
+List<int> getIntList() {
+  return <int>[5, 8, 10];
+}
