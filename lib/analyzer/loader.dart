@@ -382,7 +382,8 @@ AnalysisContext createContext(String sdk, String packageRoot, bool strongMode) {
     ..strongMode = strongMode
     ..preserveComments = false
     ..hint = false
-    ..generateImplicitErrors = false;
+    ..generateImplicitErrors = false
+    ..nonnullableTypes = ['dart:core,int'];
 
   return context;
 }
