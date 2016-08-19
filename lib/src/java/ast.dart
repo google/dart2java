@@ -252,6 +252,16 @@ class ReturnStmt extends Statement {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitReturnStmt(this);
 }
 
+/// A throw statement.
+class ThrowStmt extends Statement {
+  Expression value;
+
+  ThrowStmt(this.value);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitThrowStmt(this);
+}
+
 /// An expression that acts as a statement.
 class ExpressionStmt extends Statement {
   Expression expression;

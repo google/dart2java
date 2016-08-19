@@ -53,7 +53,30 @@ part of dart.core;
  */
 // TODO(springerm): Should implement EfficientLength
 abstract class List<E> implements Iterable<E> {
-  external factory List();
+  /**
+   * Creates a list of the given length.
+   *
+   * The created list is fixed-length if [length] is provided.
+   *
+   *     List fixedLengthList = new List(3);
+   *     fixedLengthList.length;     // 3
+   *     fixedLengthList.length = 1; // Error
+   *
+   * The list has length 0 and is growable if [length] is omitted.
+   *
+   *     List growableList = new List();
+   *     growableList.length; // 0;
+   *     growableList.length = 3;
+   *
+   * To create a growable list with a given length, just assign the length
+   * right after creation:
+   *
+   *     List growableList = new List()..length = 500;
+   *
+   * The [length] must not be negative or null, if it is provided.
+   * Zero indicates no argument given.
+   */
+  external factory List([int length = 0]);
 
   /**
    * Returns the object at the given [index] in the list

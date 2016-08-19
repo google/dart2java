@@ -233,11 +233,20 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // TODO(springerm, andrewkrieger): Use proper types once implemented
     result.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
 
+    // Provided positional parameters
     for (int i = 0; i < node.positional.length; i++) {
       result.add(buildCastedExpression(
           node.positional[i], target.positionalParameters[i].type));
     }
 
+    // Fill up with default values of optional positional parameters
+    for (
+      int i = node.positional.length; 
+      i < target.positionalParameters.length; 
+      i++) {
+      result.add(target.positionalParameters[i].initializer.accept(this));
+    }
+    
     return result;
   }
 
@@ -504,6 +513,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
+  java.ThrowStmt visitThrow(dart.Throw node) {
+    // TODO(springerm): Implement proper exception handling
+    // TODO(springerm): "throw" is an expression in Dart but a statement
+    // in Java
+    return new java.ThrowStmt(node.expression.accept(this));
+  }
+
+  @override
   java.ConditionalExpr visitConditionalExpression(
       dart.ConditionalExpression node) {
     return new java.ConditionalExpr(node.condition.accept(this),
@@ -546,8 +563,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.ExpressionStmt visitExpressionStatement(dart.ExpressionStatement node) {
-    return new java.ExpressionStmt(node.expression.accept(this));
+  java.Statement visitExpressionStatement(dart.ExpressionStatement node) {
+    java.Node translated = node.expression.accept(this);
+    if (translated is java.Statement) {
+      // This is already a statement (e.g., when translating [dart.Throw])
+      return translated;
+    } else {
+      return new java.ExpressionStmt(node.expression.accept(this));
+    }
   }
 
   /// Builds a method invocation where the call target is not statically known.

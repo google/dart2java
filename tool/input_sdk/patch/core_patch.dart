@@ -40,7 +40,7 @@ abstract class String {
 class List<E> {
   @patch
   @JavaMethod("newInstance")
-  external factory List();
+  external factory List([int length = 0]);
 }
 
 @patch

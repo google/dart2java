@@ -61,31 +61,37 @@ public interface DartList<T> extends List<T> {
 
     Class<T[]> genericArrayType;
 
-    Generic(Class<T> genericType) {
+    Generic(Class<T> genericType, int parameterSize) {
       this.genericType = genericType;
       this.genericArrayType = (Class<T[]>) Array.newInstance(genericType, 0)
         .getClass();
       
-      this.array = (T[]) Array.newInstance(genericType, DEFAULT_SIZE);
-      size = 0;
+      if (parameterSize == 0) {
+        // No size argument given ("null")
+        this.array = (T[]) Array.newInstance(genericType, DEFAULT_SIZE);
+        this.size = 0;
+      } else {
+        this.array = (T[]) Array.newInstance(genericType, parameterSize);
+        this.size = parameterSize;
+      }
     }
 
-    public static <T> Generic<T> newInstance(Class<T> genericType) {
-      return new Generic<T>(genericType);
+    public static <T> Generic<T> newInstance(Class<T> genericType, int size) {
+      return new Generic<T>(genericType, size);
     }
 
     public static <T> Generic<T> _fromArguments(
       Class<T> genericType, T... elements) {
-      Generic<T> instance = newInstance(genericType);
+      Generic<T> instance = newInstance(genericType, elements.length);
 
       for (int i = 0; i < elements.length; i++) {
-        instance.add(elements[i]);
+        instance.operatorAtPut(i, elements[i]);
       }
       return instance;
     }
     
     private void increaseSize() {
-      array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR), 
+      array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR) + 1, 
         genericArrayType);
     }
 
@@ -433,29 +439,35 @@ public interface DartList<T> extends List<T> {
 
     int[] array;
 
-    _int() {     
-      this.array = new int[DEFAULT_SIZE];
-      size = 0;
+    _int(int parameterSize) {     
+      if (parameterSize == 0) {
+        // No parameter given ("null")
+        this.array = new int[DEFAULT_SIZE];
+        this.size = 0;
+      } else {
+        this.array = new int[parameterSize];
+        this.size = parameterSize;
+      }
     }
 
     // Generic type is not necessary, but convention is to pass type arguments
     // as first parameters.
-    public static _int newInstance(Class<Integer> genericType) {
-      return new _int();
+    public static _int newInstance(Class<Integer> genericType, int size) {
+      return new _int(size);
     }
 
     public static _int _fromArguments(Class<Integer> genericType, 
       int... elements) {
-      _int instance = newInstance(genericType);
+      _int instance = newInstance(genericType, elements.length);
 
       for (int i = 0; i < elements.length; i++) {
-        instance.add(elements[i]);
+        instance.operatorAtPut_primitive(i, elements[i]);
       }
       return instance;
     }
     
     private void increaseSize() {
-      array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR));
+      array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR) + 1);
     }
 
     private boolean isArrayFull() {

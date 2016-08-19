@@ -173,6 +173,12 @@ class _JavaAstEmitter extends Visitor<String> {
   }
   
   @override
+  String visitThrowStmt(ThrowStmt stmt) {
+    // TODO(springerm): Implement proper exception handling
+    return "throw new RuntimeException(${stmt.value.accept(this)});";
+  }
+
+  @override
   String visitNewExpr(NewExpr expr) {
     var className = expr.classRef.accept(this);
     var arguments =
