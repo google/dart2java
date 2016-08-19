@@ -290,9 +290,9 @@ class NewExpr extends Expression {
 class FieldAccess extends Expression {
   Expression receiver;
 
-  IdentifierExpr identifier;
+  String name;
 
-  FieldAccess(this.receiver, this.identifier);
+  FieldAccess(this.receiver, this.name);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldAccess(this);

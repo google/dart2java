@@ -4,7 +4,6 @@
 
 import 'ast.dart';
 import 'visitor.dart';
-import 'constants.dart';
 
 /// Emits the full file contents for a Java source file defining a top-level
 /// Java [Class].
@@ -184,8 +183,7 @@ class _JavaAstEmitter extends Visitor<String> {
   @override
   String visitFieldAccess(FieldAccess expr) {
     var receiver = expr.receiver.accept(this);
-    var identifier = expr.identifier.accept(this);
-    return "${receiver}.${identifier}";
+    return "${receiver}.${expr.name}";
   }
 
   @override
