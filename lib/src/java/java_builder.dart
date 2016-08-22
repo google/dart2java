@@ -248,13 +248,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     // Fill up with default values of optional positional parameters
-    for (
-      int i = node.positional.length; 
-      i < target.positionalParameters.length; 
-      i++) {
+    for (int i = node.positional.length;
+        i < target.positionalParameters.length;
+        i++) {
       result.add(target.positionalParameters[i].initializer.accept(this));
     }
-    
+
     return result;
   }
 
@@ -915,12 +914,35 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.Expression visitStringConcatenation(dart.StringConcatenation node) {
-    Iterable<java.Expression> strings = node.expressions.map((e) =>
-        new java.MethodInvocation(
-            e.accept(this), Constants.toStringMethodName));
+    // The logic here is as follows:
+    // 1. If there is a single expression X that is not of static type String,
+    //    then "" is prepended to the list to be combined (makes Java treat all
+    //    `+` operations as string concatenations);
+    // 2. For every literal or value typed-variable X, just X is generated and
+    //    for everything else X.toString() is generated;
+    // 3. All are combined by `+`.
+    var strings = <java.Expression>[];
 
-    return strings
-        .reduce((value, element) => new java.BinaryExpr(value, element, "+"));
+    if (node.expressions.isNotEmpty &&
+        node.expressions[0].staticType.accept(this) == java.JavaType.string) {
+      strings.add(new java.StringLiteral(""));
+    }
+
+    for (var e in node.expressions) {
+      if (e is dart.BasicLiteral || isPrimitive(e)) {
+        strings.add(e.accept(this));
+      } else {
+        strings.add(new java.MethodInvocation(
+            e.accept(this), Constants.toStringMethodName));
+      }
+    }
+
+    return strings.reduce((v, e) => new java.BinaryExpr(v, e, "+"));
+  }
+
+  bool isPrimitive(dart.Expression expression) {
+    java.JavaType javaType = expression.staticType.accept(this);
+    return javaType is java.PrimitiveType;
   }
 
   @override

@@ -170,13 +170,37 @@ String getStringToString() {
   return "HelloWorld".toString();
 }
 
-String getIntStringInterpolation() {
+String getIntStringInterpolation1() {
   return "${42}";
 }
 
 String getIntStringInterpolation2() {
   int i = 42;
-  return "${i}";
+  return "$i";
+}
+
+String getIntStringInterpolation3() {
+  int i = 21;
+  return "${i + 21}";
+}
+
+String getIntStringInterpolation4() {
+  int i = 21;
+  return "${i + i}";
+}
+
+String getIntStringInterpolation5() {
+  return "${21 + 21}";
+}
+
+String getIntStringInterpolation6() {
+  int i = 4;
+  int j = 2;
+  return "$i$j";
+}
+
+String getIntStringInterpolation7() {
+  return "${4}${2}";
 }
 
 String getDoubleStringInterpolation() {
@@ -195,8 +219,13 @@ String getNumStringInterpolation(num number) {
   return "${number}";
 }
 
-String getStringStringInterpolation() {
+String getStringStringInterpolation1() {
   return "${"HelloWorld"}";
+}
+
+String getStringStringInterpolation2() {
+  String string = "HelloWorld";
+  return "$string";
 }
 
 bool getEqualsBools(bool v1, bool v2) {

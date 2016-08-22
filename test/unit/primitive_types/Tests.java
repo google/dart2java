@@ -119,9 +119,15 @@ public class Tests {
 
   @Test
   public void testStringInterpolation() {
-    assertEquals("HelloWorld", __TopLevel.getStringStringInterpolation());
-    assertEquals("42", __TopLevel.getIntStringInterpolation());
+    assertEquals("HelloWorld", __TopLevel.getStringStringInterpolation1());
+    assertEquals("HelloWorld", __TopLevel.getStringStringInterpolation2());
+    assertEquals("42", __TopLevel.getIntStringInterpolation1());
     assertEquals("42", __TopLevel.getIntStringInterpolation2());
+    assertEquals("42", __TopLevel.getIntStringInterpolation3());
+    assertEquals("42", __TopLevel.getIntStringInterpolation4());
+    assertEquals("42", __TopLevel.getIntStringInterpolation5());
+    assertEquals("42", __TopLevel.getIntStringInterpolation6());
+    assertEquals("42", __TopLevel.getIntStringInterpolation7());
     assertEquals("42.12", __TopLevel.getDoubleStringInterpolation());
     assertEquals("42", __TopLevel.getNumStringInterpolation(42));
     assertEquals("42.12", __TopLevel.getNumStringInterpolation(42.12));
