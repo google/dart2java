@@ -74,22 +74,23 @@ class CompilerState {
       objectClass: new ClassImpl(
           java.JavaType.object,
           new java.ClassOrInterfaceType(
-              "dart._runtime.helpers", "ObjectHelper")),
+              java.Constants.dartHelperPackage, "ObjectHelper")),
       boolClass: new ClassImpl(
           java.JavaType.javaBooleanClass,
-          new java.ClassOrInterfaceType("dart._runtime.helpers", "BoolHelper")),
+          new java.ClassOrInterfaceType(
+            java.Constants.dartHelperPackage, "BoolHelper")),
       intClass: new ClassImpl(
           java.JavaType.javaIntegerClass,
           new java.ClassOrInterfaceType(
-              "dart._runtime.helpers", "IntegerHelper")),
+              java.Constants.dartHelperPackage, "IntegerHelper")),
       doubleClass: new ClassImpl(
           java.JavaType.javaDoubleClass,
           new java.ClassOrInterfaceType(
-              "dart._runtime.helpers", "DoubleHelper")),
+              java.Constants.dartHelperPackage, "DoubleHelper")),
       stringClass: new ClassImpl(
           new java.ClassOrInterfaceType("java.lang", "String"),
           new java.ClassOrInterfaceType(
-              "dart._runtime.helpers", "StringHelper")),
+              java.Constants.dartHelperPackage, "StringHelper")),
       // Arrays are not growable and Java lists do not have reified generics,
       // so we are implementing our own DartList
       listClass: new ClassImpl(
@@ -98,7 +99,7 @@ class CompilerState {
       numClass: new ClassImpl(
           new java.ClassOrInterfaceType("java.lang", "Number"),
           new java.ClassOrInterfaceType(
-              "dart._runtime.helpers", "NumberHelper")),
+              java.Constants.dartHelperPackage, "NumberHelper")),
     });
 
     initializeJavaClasses(classesToCompile);
@@ -157,7 +158,7 @@ class CompilerState {
       [String fieldName = "name"]) {
     // TODO(springerm): Try to use DartTypes here instead of Strings
     // TODO(springerm): Potential duplication with method in java_builder
-    var obj = node.analyzerMetadata
+    var obj = (node as dynamic).analyzerMetadata
         .firstWhere((i) => i.type.toString() == annotation, 
           orElse: () => null);
     return obj?.getField(fieldName)?.toStringValue();
@@ -289,8 +290,8 @@ class CompilerState {
   /// function, returns the Java class enclosing the helper function.
   ///
   /// This method should only be called if
-  /// `usesHelperFunction(receiverClass, someMethod)` returns true. Always check
-  /// [usesHelperFunction] before calling this method!
+  /// `hasJavaImpl(reveiverClass)` returns true. Always check [hasJavaImpl]
+  /// before calling this method!
   java.ClassOrInterfaceType getHelperClass(dart.Class receiverClass) {
     assert(classImpls[receiverClass] != null);
     return classImpls[receiverClass].helperClass;

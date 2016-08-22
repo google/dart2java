@@ -1,6 +1,16 @@
 package dart._runtime.helpers;
 
+import dart._runtime.types.simple.InterfaceTypeExpr;
+import dart._runtime.types.simple.InterfaceTypeInfo;
+
 public class StringHelper {
+  public static final InterfaceTypeInfo dart2java$typeInfo
+      = new InterfaceTypeInfo("dart:core", "String");
+
+  static {
+    StringHelper.dart2java$typeInfo.superclass
+        = new InterfaceTypeExpr(ObjectHelper.dart2java$typeInfo);
+  }
 
   // --- Methods defined in Object ---
 

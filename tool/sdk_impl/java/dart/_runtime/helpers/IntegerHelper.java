@@ -1,6 +1,15 @@
 package dart._runtime.helpers;
 
+import dart._runtime.types.simple.InterfaceTypeExpr;
+import dart._runtime.types.simple.InterfaceTypeInfo;
+
 public class IntegerHelper {
+  public static final InterfaceTypeInfo dart2java$typeInfo
+      = new InterfaceTypeInfo("dart:core", "int");
+
+  static {
+    IntegerHelper.dart2java$typeInfo.superclass = new InterfaceTypeExpr(NumberHelper.dart2java$typeInfo);
+  }
 
   // --- Methods defined in Object ---
 

@@ -27,19 +27,21 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitClassDecl(ClassDecl cls) {
-    var fields = cls.fields.map((v) => indent(v.accept(this)) + ";").join("\n");
+    var fieldsAndInitializers =
+        cls.orderedMembers.map((v) => indent(v.accept(this))).join("\n");
     var methods = cls.methods.map((m) => indent(m.accept(this))).join("\n");
-    var constructors = cls.constructors.map((m) => 
-      indent(m.accept(this))).join("\n");
-    var content = indent(fields + "\n\n" + constructors + "\n\n" + methods);
+    var constructors =
+        cls.constructors.map((m) => indent(m.accept(this))).join("\n");
+    var content = indent(
+        fieldsAndInitializers + "\n\n" + constructors + "\n\n" + methods);
     var extendsClause =
         (cls.supertype == null || cls.supertype == JavaType.object)
             ? ""
             : " extends ${cls.supertype.fullyQualifiedName}";
     var abstractClause = cls.isAbstract ? "abstract " : "";
 
-    return "${cls.access} ${abstractClause}class ${cls.type.name}${extendsClause}"
-      "\n{\n${content}\n}\n";
+    return "${cls.access} ${abstractClause}class "
+        "${cls.type.name}${extendsClause}\n{\n${content}\n}\n";
   }
 
   @override
@@ -58,7 +60,12 @@ class _JavaAstEmitter extends Visitor<String> {
       parts.add(decl.initializer.accept(this));
     }
 
-    return parts.join(" ");
+    return parts.join(" ") + ";";
+  }
+
+  @override
+  String visitInitializerBlock(InitializerBlock node) {
+    return (node.isStatic ? 'static ' : '') + node.block.accept(this);
   }
 
   @override
@@ -96,9 +103,7 @@ class _JavaAstEmitter extends Visitor<String> {
     var parameterList =
         "(" + meth.parameters.map((p) => p.accept(this)).join(", ") + ")";
 
-    var methodBody = meth.isAbstract
-      ? ";"
-      : "\n" + meth.body.accept(this);
+    var methodBody = meth.isAbstract ? ";" : "\n" + meth.body.accept(this);
 
     return frontPart.join(" ") + parameterList + methodBody;
   }
@@ -110,10 +115,10 @@ class _JavaAstEmitter extends Visitor<String> {
     var parameterList =
         "(" + constr.parameters.map((p) => p.accept(this)).join(", ") + ")";
 
-    return "public $classType" 
-      + parameterList 
-      + "\n" 
-      + constr.body.accept(this);
+    return "public $classType" +
+        parameterList +
+        "\n" +
+        constr.body.accept(this);
   }
 
   @override
@@ -164,14 +169,14 @@ class _JavaAstEmitter extends Visitor<String> {
   String visitForStmt(ForStmt stmt) {
     // TODO(springerm): Multiple VarDecls are currently not emitted correctly.
     // The type should only be emitted once (e.g. not: int a = 1, int b = 2).
-    var varDecls = stmt.variableDeclarations.map((d) => d.accept(this))
-      .join(", ");
+    var varDecls =
+        stmt.variableDeclarations.map((d) => d.accept(this)).join(", ");
     var updates = stmt.updates.map((u) => u.accept(this)).join(", ");
     var condition = stmt.condition.accept(this);
     var body = stmt.body.accept(this);
     return "for ($varDecls; $condition; $updates)\n$body";
   }
-  
+
   @override
   String visitThrowStmt(ThrowStmt stmt) {
     // TODO(springerm): Implement proper exception handling
@@ -181,8 +186,7 @@ class _JavaAstEmitter extends Visitor<String> {
   @override
   String visitNewExpr(NewExpr expr) {
     var className = expr.classRef.accept(this);
-    var arguments =
-        expr.arguments.map((arg) => arg.accept(this)).join(", ");
+    var arguments = expr.arguments.map((arg) => arg.accept(this)).join(", ");
     return "new ${className}(${arguments})";
   }
 
@@ -209,12 +213,17 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitSuperConstructorInvocation(
-    SuperConstructorInvocation invocation) {
+      SuperConstructorInvocation invocation) {
     var arguments =
-      invocation.arguments.map((arg) => arg.accept(this)).join(", ");
+        invocation.arguments.map((arg) => arg.accept(this)).join(", ");
     return "super(${arguments});";
   }
-  
+
+  @override
+  String visitArrayAccess(ArrayAccess node) {
+    return "${node.receiver.accept(this)}[${node.indexExpr.accept(this)}]";
+  }
+
   @override
   String visitBinaryExpr(BinaryExpr expr) {
     var left = expr.leftOperand.accept(this);
@@ -278,6 +287,16 @@ class _JavaAstEmitter extends Visitor<String> {
   @override
   String visitNullLiteral(NullLiteral literal) {
     return "null";
+  }
+
+  @override
+  String visitArrayInitializer(ArrayInitializer node) {
+    if (node.initializers.isEmpty) {
+      return "new ${node.type.accept(this)}[0]";
+    } else {
+      return "new ${node.type.accept(this)}[] {"
+        "${node.initializers.map((e) => e.accept(this)).join(", ")}}";
+    }
   }
 
   @override

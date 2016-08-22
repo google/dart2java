@@ -39,22 +39,25 @@ abstract class JavaType extends Node {
   static ClassOrInterfaceType string =
       new ClassOrInterfaceType("java.lang", "String");
 
-  static ClassOrInterfaceType javaBooleanClass = 
-    new ClassOrInterfaceType("java.lang", "Boolean");
-    
-  static ClassOrInterfaceType javaIntegerClass = 
-    new ClassOrInterfaceType("java.lang", "Integer");
-    
-  static ClassOrInterfaceType javaDoubleClass = 
-    new ClassOrInterfaceType("java.lang", "Double");
+  static ClassOrInterfaceType javaBooleanClass =
+      new ClassOrInterfaceType("java.lang", "Boolean");
 
-  static ClassOrInterfaceType letHelper = 
-      new ClassOrInterfaceType("dart._runtime.helpers", "LetExpressionHelper");
+  static ClassOrInterfaceType javaIntegerClass =
+      new ClassOrInterfaceType("java.lang", "Integer");
 
-  static ClassOrInterfaceType emptyConstructorMarker = 
-      new ClassOrInterfaceType("dart._runtime.helpers.ConstructorHelper",
-        "EmptyConstructorMarker");
-      
+  static ClassOrInterfaceType javaDoubleClass =
+      new ClassOrInterfaceType("java.lang", "Double");
+
+  static ClassOrInterfaceType letHelper = new ClassOrInterfaceType(
+      Constants.dartHelperPackage, "LetExpressionHelper");
+
+  static ClassOrInterfaceType emptyConstructorMarker =
+      new ClassOrInterfaceType.nested(
+          new ClassOrInterfaceType(
+              Constants.dartHelperPackage, "ConstructorHelper"),
+          "EmptyConstructorMarker",
+          isStatic: true);
+
   // Numeric types.
   // Numeric types / Integral types.
   /// 8-bit signed two's complement integer.
@@ -211,7 +214,7 @@ class ClassOrInterfaceType extends ReferenceType {
   /// For member types, it includes the names of the enclosing types.
   String get packageRelativeName => enclosingType == null
       ? name
-      : "${enclosingType.packageRelativeName}.name";
+      : "${enclosingType.packageRelativeName}.$name";
 
   /// The fully-qualified name of this type.
   String get fullyQualifiedName => "$package.$packageRelativeName";

@@ -2,6 +2,10 @@ package deltablue;
 
 public class Planner extends dart._runtime.base.DartObject
 {
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "Planner");
+    static {
+      deltablue.Planner.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
     public java.lang.Integer currentMark = null;
   
     public Planner()

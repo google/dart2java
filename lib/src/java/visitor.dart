@@ -12,6 +12,7 @@ abstract class Visitor<R> {
   R visitMethodDef(MethodDef node) => null;
   R visitConstructor(Constructor node) => null;
   R visitFieldDecl(FieldDecl node) => null;
+  R visitInitializerBlock(InitializerBlock node) => null;
   R visitVariableDecl(VariableDecl node) => null;
 
   // Statements
@@ -32,6 +33,7 @@ abstract class Visitor<R> {
   R visitMethodInvocation(MethodInvocation node) => null;
   R visitSuperMethodInvocation(SuperMethodInvocation node) => null;
   R visitSuperConstructorInvocation(SuperConstructorInvocation node) => null;
+  R visitArrayAccess(ArrayAccess node) => null;
   R visitBinaryExpr(BinaryExpr node) => null;
   R visitUnaryExpr(UnaryExpr node) => null;
   R visitConditionalExpr(ConditionalExpr node) => null;
@@ -44,6 +46,7 @@ abstract class Visitor<R> {
   R visitDoubleLiteral(DoubleLiteral node) => null;
   R visitStringLiteral(StringLiteral node) => null;
   R visitNullLiteral(NullLiteral node) => null;
+  R visitArrayInitializer(ArrayInitializer node) => null;
 
   // Types
   R visitJavaType(JavaType node) => null;

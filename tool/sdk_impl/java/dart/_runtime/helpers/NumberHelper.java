@@ -1,6 +1,17 @@
 package dart._runtime.helpers;
 
+import dart._runtime.types.simple.InterfaceTypeExpr;
+import dart._runtime.types.simple.InterfaceTypeInfo;
+
 public class NumberHelper {
+  public static final InterfaceTypeInfo dart2java$typeInfo
+      = new InterfaceTypeInfo("dart:core", "num");
+
+  static {
+    NumberHelper.dart2java$typeInfo.superclass
+        = new InterfaceTypeExpr(ObjectHelper.dart2java$typeInfo);
+    // TODO(andrewkrieger): Add Comparable<num> in interfaces
+  }
 
   // --- Methods defined in Object ---
 

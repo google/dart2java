@@ -2,6 +2,10 @@ package deltablue;
 
 public class ScaleConstraint extends deltablue.BinaryConstraint
 {
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "ScaleConstraint");
+    static {
+      deltablue.ScaleConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BinaryConstraint.dart2java$typeInfo);
+    }
     public deltablue.Variable scale = null;
     public deltablue.Variable offset = null;
   

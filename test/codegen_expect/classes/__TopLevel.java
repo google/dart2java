@@ -1,7 +1,9 @@
-package minimal;
+package classes;
 
-public class minimal
+public class __TopLevel
 {
+  
+  
   
   
     public static void main(String[] args)

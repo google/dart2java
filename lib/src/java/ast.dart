@@ -63,16 +63,20 @@ class ClassDecl extends Node {
 
   List<MethodDef> methods;
 
-  List<FieldDecl> fields;
+  /// The initializers for this class; order matters for these elements!
+  ///
+  /// Currently, this list includes both the fields in the class (which may have
+  /// initializers) and the initializer blocks.
+  List<OrderedClassMember> orderedMembers;
 
   List<Constructor> constructors;
 
   ClassDecl(this.type,
-      {this.access: Access.Public, this.fields, this.methods, 
+      {this.access: Access.Public, this.orderedMembers, this.methods, 
         this.constructors, this.supertype, this.isAbstract: false}) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
     methods ??= <MethodDef>[];
-    fields ??= <FieldDecl>[];
+    orderedMembers ??= <OrderedClassMember>[];
     constructors ??= <Constructor>[];
     supertype ??= JavaType.dartObject;
   }
@@ -133,8 +137,13 @@ class Constructor extends Node {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitConstructor(this);
 }
 
+/// A common subtype for members of a Java class whose declaration order has an
+/// effect on program behavior (fields, initializaer blocks, and static
+/// initializer blocks).
+abstract class OrderedClassMember extends Node {}
+
 /// An instance variable declaration for fields.
-class FieldDecl extends Node {
+class FieldDecl extends OrderedClassMember {
   String name;
   JavaType type;
   Access access;
@@ -150,6 +159,22 @@ class FieldDecl extends Node {
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitFieldDecl(this);
+}
+
+/// A Java static/instance initializer block.
+///
+/// If this is a static initializer block, then it is executed while the class
+/// is being loaded (see the JLS ed. 8 section 12.4 for the gory details). If
+/// this is an instance initializer, it is effectively added to the beginning of
+/// every constructor in the class.
+class InitializerBlock extends OrderedClassMember {
+  bool isStatic;
+  Block block;
+
+  InitializerBlock(this.block, {this.isStatic: false});
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitInitializerBlock(this);
 }
 
 /// A variable declaration for parameters and local variables.
@@ -346,6 +371,17 @@ class SuperConstructorInvocation extends Statement {
   v.visitSuperConstructorInvocation(this);
 }
 
+/// An array access expression, i.e. `x[i]`.
+class ArrayAccess extends Expression {
+  Expression receiver;
+  Expression indexExpr;
+
+  ArrayAccess(this.receiver, this.indexExpr);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitArrayAccess(this);
+}
+
 /// A binary expression (e.g., arithmetic operators).
 class BinaryExpr extends Expression {
   Expression leftOperand;
@@ -485,4 +521,15 @@ class NullLiteral extends Literal {
   factory NullLiteral() {
     return instance;
   }
+}
+
+class ArrayInitializer extends Expression {
+  JavaType type;
+  List<Expression> initializers;
+
+  ArrayInitializer(this.type, List<Expression> initializers)
+    : initializers = initializers ?? const[];
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitArrayInitializer(this);
 }

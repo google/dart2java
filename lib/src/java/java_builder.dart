@@ -7,6 +7,7 @@ import 'package:kernel/ast.dart' as dart;
 import 'ast.dart' as java;
 import 'visitor.dart' as java;
 import 'types.dart' as java;
+import 'type_system.dart' as ts;
 import 'constants.dart';
 import '../compiler/compiler_state.dart';
 import '../compiler/runner.dart' show CompileErrorException;
@@ -20,7 +21,7 @@ java.ClassDecl buildWrapperClass(
       new java.ClassDecl(type, supertype: java.JavaType.object);
 
   var instance = new _JavaAstBuilder(compilerState);
-  result.fields = library.fields.map(instance.visitField).toList();
+  result.orderedMembers = library.fields.map(instance.visitField).toList();
   result.methods = library.procedures.map(instance.visitProcedure).toList();
 
   return result;
@@ -110,7 +111,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     assert(thisDartClass == null);
     thisDartClass = node;
     java.ClassOrInterfaceType type = compilerState.getClass(node);
-    List<java.FieldDecl> fields = node.fields.map(buildClassField).toList();
+    List<java.OrderedClassMember> orderedMembers =
+        node.fields.map/*<java.OrderedClassMember>*/(buildClassField).toList();
     List<java.MethodDef> implicitGetters =
         node.fields.map(this.buildGetter).toList();
     List<java.MethodDef> implicitSetters =
@@ -148,9 +150,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       supertype = java.JavaType.dartObject;
     }
 
+    // Add fields and initializers from type system
+    orderedMembers = [
+      ts.makeTypeInfoField(node, compilerState),
+      ts.makeTypeInfoInitializer(node, compilerState)
+    ]..addAll(orderedMembers);
+
     return new java.ClassDecl(type,
         access: java.Access.Public,
-        fields: fields,
+        orderedMembers: orderedMembers,
         methods: methods,
         constructors: constructorDelegators,
         supertype: supertype,
@@ -385,6 +393,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// default super constructor. The parameter is merely used as a marker
   /// to dispatch to the correct (overloaded) constructor.
   java.Constructor buildEmptyConstructor(java.ClassOrInterfaceType classType) {
+    // TODO(andrewkrieger): pass reified type of this instance.
     java.Statement superCall = new java.SuperConstructorInvocation(
         <java.Expression>[new java.IdentifierExpr("arg")]);
 
@@ -421,6 +430,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// Note, that we could have used a static method as an entry point for
   /// instance creation (instead of the Java constructor), avoiding the empty
   /// constructor, but that would mess up interoperability.
+  // TODO(andrewkrieger): Add type parameter arguments via
+  // ts.getExtraConstructorDeclArg
   _JavaConstructor buildConstructor(
       dart.Constructor node, List<dart.Field> fields) {
     Iterable<dart.Initializer> fieldInitializers =
@@ -482,6 +493,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   /// Wraps a Java statement in a block, if [stmt] is not already a block.
+  // TODO(andrewkrieger): It seems like this is often used for function bodies.
+  // Move function bodies to a different helper method that also initializes the
+  // type system's local type environment variable correctly.
   java.Block wrapInJavaBlock(java.Statement stmt) {
     if (stmt is java.Block) {
       return stmt;
@@ -790,6 +804,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.NewExpr visitConstructorInvocation(dart.ConstructorInvocation node) {
     // TODO(springerm): Check for usesHelperFunction
     // TODO(springerm): Handle other parameter types
+    // TODO(andrewkrieger): Insert type parameters via ts.getExtraConstructorArg
     List<java.Expression> args =
         buildArguments(node.arguments, node.target.function);
 
@@ -1067,7 +1082,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.Expression visitLet(dart.Let node) {
     // TODO(springerm): Need to seriously optimize this for simple
-    // incremenets/decrements
+    // increments/decrements
 
     // Let expressions require two operations: (1) create and assign a
     // temporary variable and (2) evaluate and return an expression.
