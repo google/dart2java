@@ -170,6 +170,35 @@ String getStringToString() {
   return "HelloWorld".toString();
 }
 
+String getIntStringInterpolation() {
+  return "${42}";
+}
+
+String getIntStringInterpolation2() {
+  int i = 42;
+  return "${i}";
+}
+
+String getDoubleStringInterpolation() {
+  return "${(42.12)}";
+}
+
+String getFalseStringInterpolation() {
+  return "${false}";
+}
+
+String getTrueStringInterpolation() {
+  return "${true}";
+}
+
+String getNumStringInterpolation(num number) {
+  return "${number}";
+}
+
+String getStringStringInterpolation() {
+  return "${"HelloWorld"}";
+}
+
 bool getEqualsBools(bool v1, bool v2) {
   return v1 == v2;
 }

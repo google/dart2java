@@ -118,6 +118,18 @@ public class Tests {
   }
 
   @Test
+  public void testStringInterpolation() {
+    assertEquals("HelloWorld", __TopLevel.getStringStringInterpolation());
+    assertEquals("42", __TopLevel.getIntStringInterpolation());
+    assertEquals("42", __TopLevel.getIntStringInterpolation2());
+    assertEquals("42.12", __TopLevel.getDoubleStringInterpolation());
+    assertEquals("42", __TopLevel.getNumStringInterpolation(42));
+    assertEquals("42.12", __TopLevel.getNumStringInterpolation(42.12));
+    assertEquals("false", __TopLevel.getFalseStringInterpolation());
+    assertEquals("true", __TopLevel.getTrueStringInterpolation());
+  }
+
+  @Test
   public void testEquals() {
     assertTrue(__TopLevel.getEqualsBools(true, true));
     assertFalse(__TopLevel.getEqualsBools(false, true));
