@@ -666,6 +666,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
+    // TODO(springerm): Implement dynamic
+    
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Getter);
     return buildDynamicMethodInvocation(node.receiver, methodName, []);
@@ -707,6 +709,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitPropertySet(dart.PropertySet node) {
+    // TODO(springerm): Implement dynamic
+
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Setter);
 
@@ -749,17 +753,33 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       java.ClassOrInterfaceType helperClass =
           compilerState.getHelperClass(compilerState.objectClass);
       // Generate static call to helper function.
-      java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
+      var helperRefExpr = new java.ClassRefExpr(helperClass);
       List<java.Expression> javaArgs = [node.receiver.accept(this)]
         ..addAll(node.arguments.positional.map((i) => i.accept(this)));
 
       return new java.MethodInvocation(helperRefExpr, name, javaArgs);
     }
 
+    if (node.receiver.staticType is dart.DynamicType) {
+      // Generate dynamic method invocation
+      // Generate static call to helper function
+      var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
+
+      List<java.Expression> javaArgs = [ 
+        new java.StringLiteral(name),
+        node.receiver.accept(this)]..addAll(
+          node.arguments.positional.map((i) => i.accept(this)));
+
+      return new java.MethodInvocation(
+        helperRefExpr, 
+        Constants.dynamicHelperInvoke, 
+        javaArgs);
+    }
+
     if (node.receiver.staticType is! dart.InterfaceType) {
       throw new CompileErrorException(
-          "Can only handle property set where receiver is an InterfaceType "
-          "(found ${node.staticType.runtimeType})");
+        "Expected InterfaceType in method invocation "
+        "(found ${node.staticType.runtimeType})");
     }
 
     dart.FunctionNode targetFunction;
@@ -1072,12 +1092,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   /// Translates a node and inserts a cast depending on the expected type.
-  ///
-  /// This method is currently used only for supporting covariant generics.
-  /// This will likely change in the future; plans are to remove Java generics
-  /// and to use Java Object. Casts will then have to be inserted at a
-  /// different point.
-  ///
+  /// 
+  /// Inserts automatic downcasts if an expression is assigned to an lvalue
+  /// with a more specific type.
+  /// 
+  /// This method is also used for supporting covariant generics.
+  /// 
   /// Java generics are not covariant but Dart generics are. The current
   /// implementation uses both Java generics and an additional field for
   /// reified generics in generated Java code. Using Java generics has the
@@ -1121,8 +1141,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     dart.DartType type = node.staticType;
-    java.ClassOrInterfaceType targetType;
 
+    // Handle covariant generics
     if (type is dart.InterfaceType && expectedType is dart.InterfaceType) {
       Iterable<java.JavaType> javaTypeArguments =
           type.typeArguments.map((t) => t.accept(this));
@@ -1134,9 +1154,26 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
               java.JavaType
                   .hasGenericSpecialization(expectedJavaTypeArguments))) {
         // Insert a cast
-        targetType = expectedType.accept(this);
+        java.ClassOrInterfaceType targetType = expectedType.accept(this);
         targetType.typeArguments.clear();
 
+        return new java.CastExpr(node.accept(this), targetType);
+      }
+    }
+
+    // Handle automatic upcasts
+    if (expectedType is dart.InterfaceType) {
+      java.JavaType targetType = expectedType.accept(this);
+      
+      // Handle assignment of dynamic
+      if (type is dart.DynamicType) {
+        return new java.CastExpr(node.accept(this), targetType);
+      }
+
+      // Handle general case with InterfaceTypes
+      if (type is dart.InterfaceType
+        && type.classNode != expectedType.classNode
+        && compilerState.isSubclassOf(expectedType.classNode, type.classNode)) {
         return new java.CastExpr(node.accept(this), targetType);
       }
     }

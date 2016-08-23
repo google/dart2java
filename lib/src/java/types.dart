@@ -39,13 +39,13 @@ abstract class JavaType extends Node {
   static ClassOrInterfaceType string =
       new ClassOrInterfaceType("java.lang", "String");
 
-  static ClassOrInterfaceType javaBooleanClass =
+  static ClassOrInterfaceType javaBooleanClass = 
       new ClassOrInterfaceType("java.lang", "Boolean");
-
-  static ClassOrInterfaceType javaIntegerClass =
+    
+  static ClassOrInterfaceType javaIntegerClass = 
       new ClassOrInterfaceType("java.lang", "Integer");
-
-  static ClassOrInterfaceType javaDoubleClass =
+    
+  static ClassOrInterfaceType javaDoubleClass = 
       new ClassOrInterfaceType("java.lang", "Double");
 
   static ClassOrInterfaceType letHelper = new ClassOrInterfaceType(
@@ -58,6 +58,9 @@ abstract class JavaType extends Node {
           "EmptyConstructorMarker",
           isStatic: true);
 
+  static ClassOrInterfaceType dynamicHelper = 
+      new ClassOrInterfaceType("dart._runtime.helpers", "DynamicHelper");
+      
   // Numeric types.
   // Numeric types / Integral types.
   /// 8-bit signed two's complement integer.

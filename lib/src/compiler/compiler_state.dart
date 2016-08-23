@@ -5,6 +5,7 @@
 import 'dart:collection' show HashMap;
 
 import 'package:kernel/ast.dart' as dart;
+import 'package:kernel/class_hierarchy.dart' as dart;
 import 'package:kernel/repository.dart' as dart;
 import 'package:path/path.dart' as path;
 
@@ -65,6 +66,9 @@ class CompilerState {
   dart.Class listClass;
   dart.Class mapClass;
 
+  dart.Program _program;
+  dart.ClassHierarchy _classHierarchy;
+
   CompilerState(
       this.options, this.repository, Iterable<dart.Class> classesToCompile) {
     objectClass = getDartClass("dart:core", "Object");
@@ -114,6 +118,9 @@ class CompilerState {
     });
 
     initializeJavaClasses(classesToCompile);
+
+    _program = new dart.Program(repository.libraries);
+    _classHierarchy = new dart.ClassHierarchy(_program);
   }
 
   /// Find classes that are annotated with @JavaClass and add them
@@ -162,6 +169,10 @@ class CompilerState {
     }
   }
 
+  bool isSubclassOf(dart.Class subclass, dart.Class superclass) {
+    return _classHierarchy.isSubclassOf(subclass, superclass);
+  }
+  
   /// Assuming that [node] has a single annotation of type [annotation] and
   /// that annotation has a single String parameter, return the parameter,
   /// otherwise return null.

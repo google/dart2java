@@ -49,6 +49,7 @@ class Constants {
   static const String topLevelClassName = "__TopLevel";
   static const String constructorMethodPrefix = "_constructor";
   static const String primitiveSpecializationSuffix = "_primitive";
+  static const String dynamicHelperInvoke = "invoke";
 
   // Source: https://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.8
   static final reservedWords = new HashSet<String>.from([
