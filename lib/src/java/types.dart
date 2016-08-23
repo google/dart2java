@@ -84,7 +84,7 @@ abstract class JavaType extends Node {
 
   static Map<JavaType, String> genericSpecializations = {
     javaBooleanClass: "_bool",
-    javaIntegerClass: "_int",
+    int_: "_int",
     javaDoubleClass: "_double"
   };
 

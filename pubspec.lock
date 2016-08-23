@@ -3,10 +3,16 @@
 packages:
   analyzer:
     description:
-      name: analyzer
+      path: "/usr/local/google/home/stanm/f/d/dart/sdk/pkg/analyzer"
+      relative: false
+    source: path
+    version: "0.28.0-alpha.2"
+  archive:
+    description:
+      name: archive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.4-alpha.9"
+    version: "1.0.25"
   args:
     description:
       name: args
@@ -54,19 +60,19 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.0"
+    version: "1.9.1"
   convert:
     description:
       name: convert
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "2.0.1"
   crypto:
     description:
       name: crypto
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "2.0.1"
   csslib:
     description:
       name: csslib
@@ -121,6 +127,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  isolate:
+    description:
+      name: isolate
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.3"
   js:
     description:
       name: js
@@ -130,7 +142,7 @@ packages:
   kernel:
     description:
       ref: HEAD
-      resolved-ref: "2a31f5801b873553701f1fde68c12132d56f05b7"
+      resolved-ref: "7bba79a4817cf974e2aaa2ed84d4a52dce40a85a"
       url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
     source: git
     version: "0.0.0"
@@ -146,6 +158,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.0+2"
+  meta:
+    description:
+      name: meta
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   mime:
     description:
       name: mime
@@ -157,7 +175,7 @@ packages:
       name: package_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.5"
+    version: "1.0.0"
   package_resolver:
     description:
       name: package_resolver
@@ -295,7 +313,7 @@ packages:
       name: webdriver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.2.0"
   when:
     description:
       name: when
@@ -314,4 +332,4 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.10"
-sdk: ">=1.16.0 <2.0.0"
+sdk: ">=1.17.0-dev.6.2 <2.0.0"

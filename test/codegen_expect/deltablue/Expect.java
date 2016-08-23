@@ -2,7 +2,7 @@ package deltablue;
 
 public class Expect extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "Expect");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "Expect");
     static {
       deltablue.Expect.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -40,7 +40,7 @@ public class Expect extends dart._runtime.base.DartObject
         dart.core.__TopLevel.print("vs ");
         dart.core.__TopLevel.print(actual.getLength());
       }
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, actual.getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, actual.getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         deltablue.Expect.equals(expected.operatorAt(i), actual.operatorAt(i));
       }

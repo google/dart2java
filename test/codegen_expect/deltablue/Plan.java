@@ -2,11 +2,11 @@ package deltablue;
 
 public class Plan extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "Plan");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "Plan");
     static {
       deltablue.Plan.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> list = null;
+    public dart._runtime.base.DartList<deltablue.Constraint> list;
   
     public Plan()
     {
@@ -27,13 +27,13 @@ public class Plan extends dart._runtime.base.DartObject
     {
       this.getList().add(c);
     }
-    public java.lang.Integer size()
+    public int size()
     {
       return this.getList().getLength();
     }
     public void execute()
     {
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, this.getList().getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, this.getList().getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         this.getList().operatorAt(i).execute();
       }

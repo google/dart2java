@@ -2,14 +2,14 @@ package deltablue;
 
 public class Strength extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "Strength");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "Strength");
     static {
       deltablue.Strength.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public java.lang.Integer value = null;
-    public java.lang.String name = null;
+    public int value;
+    public java.lang.String name;
   
-    public Strength(java.lang.Integer value, java.lang.String name)
+    public Strength(int value, java.lang.String name)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
       this._constructor(value, name);
@@ -19,7 +19,7 @@ public class Strength extends dart._runtime.base.DartObject
       super(arg);
     }
   
-    protected void _constructor(java.lang.Integer value, java.lang.String name)
+    protected void _constructor(int value, java.lang.String name)
     {
       this.value = value;
       this.name = name;
@@ -45,7 +45,7 @@ public class Strength extends dart._runtime.base.DartObject
     {
       return (deltablue.Strength.stronger(s1, s2)) ? (s1) : (s2);
     }
-    public java.lang.Integer getValue()
+    public int getValue()
     {
       return this.value;
     }

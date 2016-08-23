@@ -15,9 +15,9 @@ class Stopwatch {
 
   // The _start and _stop fields capture the time when [start] and [stop]
   // are called respectively.
-  // If _start is null, then the [Stopwatch] has not been started yet.
-  // If _stop is null, then the [Stopwatch] has not been stopped yet,
-  // or is running.
+  // If _start is 0, then the [Stopwatch] has not been started yet.
+  // If _stop is 0, then the [Stopwatch] has not been stopped yet, or is
+  // running.
   int _start;
   int _stop;
 
@@ -44,14 +44,14 @@ class Stopwatch {
    */
   void start() {
     if (isRunning) return;
-    if (_start == null) {
+    if (_start == 0) {
       // This stopwatch has never been started.
       _start = _now();
     } else {
       // Restart this stopwatch. Prepend the elapsed time to the current
       // start time.
       _start = _now() - (_stop - _start);
-      _stop = null;
+      _stop = 0;
     }
   }
 
@@ -73,11 +73,11 @@ class Stopwatch {
    * This method does not stop or start the [Stopwatch].
    */
   void reset() {
-    if (_start == null) return;
-    // If [_start] is not null, then the stopwatch had already been started. It
+    if (_start == 0) return;
+    // If [_start] is not 0, then the stopwatch had already been started. It
     // may running right now.
     _start = _now();
-    if (_stop != null) {
+    if (_stop != 0) {
       // The watch is not running. So simply set the [_stop] to [_start] thus
       // having an elapsed time of 0.
       _stop = _start;
@@ -96,10 +96,10 @@ class Stopwatch {
    * The elapsed number of clock ticks increases by [frequency] every second.
    */
   int get elapsedTicks {
-    if (_start == null) {
+    if (_start == 0) {
       return 0;
     }
-    return (_stop == null) ? (_now() - _start) : (_stop - _start);
+    return (_stop == 0) ? (_now() - _start) : (_stop - _start);
   }
 
   /**
@@ -125,7 +125,7 @@ class Stopwatch {
   /**
    * Returns wether the [StopWatch] is currently running.
    */
-  bool get isRunning => _start != null && _stop == null;
+  bool get isRunning => _start != 0 && _stop == 0;
 
   /**
    * Cached frequency of the system. Must be initialized in [_initTicker];

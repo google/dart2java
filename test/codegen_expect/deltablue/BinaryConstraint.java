@@ -2,13 +2,13 @@ package deltablue;
 
 public abstract class BinaryConstraint extends deltablue.Constraint
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "BinaryConstraint");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "BinaryConstraint");
     static {
       deltablue.BinaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }
-    public deltablue.Variable v1 = null;
-    public deltablue.Variable v2 = null;
-    public java.lang.Integer direction = null;
+    public deltablue.Variable v1;
+    public deltablue.Variable v2;
+    public int direction;
   
     public BinaryConstraint(deltablue.Variable v1, deltablue.Variable v2, deltablue.Strength strength)
     {
@@ -28,7 +28,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
       super._constructor(strength);
       this.addConstraint();
     }
-    public void chooseMethod(java.lang.Integer mark)
+    public void chooseMethod(int mark)
     {
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1().getMark(), mark))
       {
@@ -57,7 +57,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     {
       return (!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDirection(), deltablue.__TopLevel.NONE));
     }
-    public void markInputs(java.lang.Integer mark)
+    public void markInputs(int mark)
     {
       this.input().setMark(mark);
     }
@@ -84,7 +84,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     {
       this.setDirection(deltablue.__TopLevel.NONE);
     }
-    public java.lang.Boolean inputsKnown(java.lang.Integer mark)
+    public java.lang.Boolean inputsKnown(int mark)
     {
       deltablue.Variable i = this.input();
       return ((dart._runtime.helpers.ObjectHelper.operatorEqual(i.getMark(), mark) || i.getStay()) || dart._runtime.helpers.ObjectHelper.operatorEqual(i.getDeterminedBy(), null));
@@ -109,7 +109,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     {
       return this.v2;
     }
-    public java.lang.Integer getDirection()
+    public int getDirection()
     {
       return this.direction;
     }
@@ -123,7 +123,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
       this.v2 = value;
       return value;
     }
-    public java.lang.Integer setDirection(java.lang.Integer value)
+    public int setDirection(int value)
     {
       this.direction = value;
       return value;

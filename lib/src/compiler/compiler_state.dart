@@ -23,12 +23,17 @@ class ClassImpl {
   /// The java class named by the @JavaClass metadata.
   ///
   /// May not be [:null:].
-  final java.ClassOrInterfaceType javaClass;
+  final java.JavaType javaClass;
+
+  /// If [javaType] is a [java.PrimitiveType] then [javaBoxedClass] should be
+  /// the reference type that represents that primitive type in Java, e.g.
+  /// java.lang.Integer for int, etc. Otherwise it should be null.
+  final java.ClassOrInterfaceType javaBoxedClass;
 
   /// The Java class containing implementations of the instance methods on this
   /// class.
   ///
-  /// May be [:null:]. All classes with a [ClassImpl] must be `@JavaClass` 
+  /// May be [:null:]. All classes with a [ClassImpl] must be `@JavaClass`
   /// classes. These classes can use helper methods or map Dart method names
   /// to Java method names.
   final java.ClassOrInterfaceType helperClass;
@@ -38,8 +43,8 @@ class ClassImpl {
   /// Dart that are not valid Dart method names.
   final Map<String, String> mappedMethodNames;
 
-  ClassImpl(this.javaClass, this.helperClass) : 
-    mappedMethodNames = new Map<String, String>();
+  ClassImpl(this.javaClass, this.helperClass, {this.javaBoxedClass})
+      : mappedMethodNames = new Map<String, String>();
 
   /// Intended for debugging only.
   String toString() =>
@@ -59,8 +64,8 @@ class CompilerState {
   dart.Class stringClass;
   dart.Class listClass;
 
-  CompilerState(this.options, this.repository, 
-    Iterable<dart.Class> classesToCompile) {
+  CompilerState(
+      this.options, this.repository, Iterable<dart.Class> classesToCompile) {
     objectClass = getDartClass("dart:core", "Object");
     boolClass = getDartClass("dart:core", "bool");
     intClass = getDartClass("dart:core", "int");
@@ -80,9 +85,10 @@ class CompilerState {
           new java.ClassOrInterfaceType(
             java.Constants.dartHelperPackage, "BoolHelper")),
       intClass: new ClassImpl(
-          java.JavaType.javaIntegerClass,
+          java.JavaType.int_,
           new java.ClassOrInterfaceType(
-              java.Constants.dartHelperPackage, "IntegerHelper")),
+              java.Constants.dartHelperPackage, "IntegerHelper"),
+          javaBoxedClass: java.JavaType.javaIntegerClass),
       doubleClass: new ClassImpl(
           java.JavaType.javaDoubleClass,
           new java.ClassOrInterfaceType(
@@ -120,32 +126,31 @@ class CompilerState {
   /// Then, go through all methods of these classes and look for @JavaMethod
   /// annotations.
   void initializeJavaClass(dart.Class cls) {
-    String fullClassName = getSimpleAnnotation(
-      cls, java.Constants.javaClassAnnotation);
+    String fullClassName =
+        getSimpleAnnotation(cls, java.Constants.javaClassAnnotation);
 
     if (fullClassName != null) {
       // This class is an @JavaClass
       List<String> classTokens = fullClassName.split(".");
-      String package = classTokens.getRange(
-        0, classTokens.length - 1).join(".");
+      String package =
+          classTokens.getRange(0, classTokens.length - 1).join(".");
       String className = classTokens.last;
 
       // helperClass == null means no intercepting
       classImpls[cls] = new ClassImpl(
-        new java.ClassOrInterfaceType(package, className), null);
+          new java.ClassOrInterfaceType(package, className), null);
     }
 
     bool checkMethods = hasJavaImpl(cls) || fullClassName != null;
     if (checkMethods) {
       // Add method mappings
       for (dart.Procedure proc in cls.procedures) {
-        String mappedMethodName = getSimpleAnnotation(
-          proc, java.Constants.javaMethodAnnotation);
+        String mappedMethodName =
+            getSimpleAnnotation(proc, java.Constants.javaMethodAnnotation);
 
         if (mappedMethodName != null) {
           // This method should have a different name in Dart
-          classImpls[cls].mappedMethodNames[proc.name.name] = 
-            mappedMethodName;
+          classImpls[cls].mappedMethodNames[proc.name.name] = mappedMethodName;
         }
       }
     }
@@ -234,7 +239,7 @@ class CompilerState {
   ///
   /// For most Dart classes, this is a compiler-generated class. For @JavaClass
   /// classes, it is the class named in the @JavaClass metadata.
-  java.ClassOrInterfaceType getClass(dart.Class class_) {
+  java.JavaType getClass(dart.Class class_) {
     var javaClass = classImpls[class_]?.javaClass;
     if (javaClass != null) {
       return javaClass;
@@ -249,8 +254,8 @@ class CompilerState {
   /// Dart library.
   java.ClassOrInterfaceType getTopLevelClass(dart.Library library) {
     String package = getJavaPackageName(library);
-    return new java.ClassOrInterfaceType(package, 
-      java.Constants.topLevelClassName);
+    return new java.ClassOrInterfaceType(
+        package, java.Constants.topLevelClassName);
   }
 
   /// Checks whether a Dart class is a @JavaClass.
@@ -268,8 +273,8 @@ class CompilerState {
   bool usesHelperFunction(dart.Class receiverClass, String method) {
     // TODO(andrewkrieger): #implementDynamic We'll probably want to use helper
     // functions for dcalls.
-    return classImpls.containsKey(receiverClass) 
-      && classImpls[receiverClass].helperClass != null;
+    return classImpls.containsKey(receiverClass) &&
+        classImpls[receiverClass].helperClass != null;
   }
 
   bool hasJavaImpl(dart.Class receiverClass) {
@@ -279,11 +284,11 @@ class CompilerState {
   String getJavaMethodName(dart.Class receiverClass, String dartMethod) {
     if (!classImpls.containsKey(receiverClass)) {
       throw new CompileErrorException(
-        "No implementation class defined for $receiverClass");
+          "No implementation class defined for $receiverClass");
     }
 
-    return classImpls[receiverClass].
-      mappedMethodNames[dartMethod] ?? dartMethod;
+    return classImpls[receiverClass].mappedMethodNames[dartMethod] ??
+        dartMethod;
   }
 
   /// If [receiverClass] has any methods that need to be invoked via a helper

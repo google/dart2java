@@ -2,19 +2,19 @@ package deltablue;
 
 public class Variable extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "Variable");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "Variable");
     static {
       deltablue.Variable.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> constraints = null;
-    public deltablue.Constraint determinedBy = null;
-    public java.lang.Integer mark = null;
-    public deltablue.Strength walkStrength = null;
-    public java.lang.Boolean stay = null;
-    public java.lang.Integer value = null;
-    public java.lang.String name = null;
+    public dart._runtime.base.DartList<deltablue.Constraint> constraints;
+    public deltablue.Constraint determinedBy;
+    public int mark;
+    public deltablue.Strength walkStrength;
+    public java.lang.Boolean stay;
+    public int value;
+    public java.lang.String name;
   
-    public Variable(java.lang.String name, java.lang.Integer value)
+    public Variable(java.lang.String name, int value)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
       this._constructor(name, value);
@@ -24,7 +24,7 @@ public class Variable extends dart._runtime.base.DartObject
       super(arg);
     }
   
-    protected void _constructor(java.lang.String name, java.lang.Integer value)
+    protected void _constructor(java.lang.String name, int value)
     {
       this.constraints = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
       this.mark = 0;
@@ -55,7 +55,7 @@ public class Variable extends dart._runtime.base.DartObject
     {
       return this.determinedBy;
     }
-    public java.lang.Integer getMark()
+    public int getMark()
     {
       return this.mark;
     }
@@ -67,7 +67,7 @@ public class Variable extends dart._runtime.base.DartObject
     {
       return this.stay;
     }
-    public java.lang.Integer getValue()
+    public int getValue()
     {
       return this.value;
     }
@@ -85,7 +85,7 @@ public class Variable extends dart._runtime.base.DartObject
       this.determinedBy = value;
       return value;
     }
-    public java.lang.Integer setMark(java.lang.Integer value)
+    public int setMark(int value)
     {
       this.mark = value;
       return value;
@@ -100,7 +100,7 @@ public class Variable extends dart._runtime.base.DartObject
       this.stay = value;
       return value;
     }
-    public java.lang.Integer setValue(java.lang.Integer value)
+    public int setValue(int value)
     {
       this.value = value;
       return value;

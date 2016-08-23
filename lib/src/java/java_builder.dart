@@ -127,16 +127,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         constructors.map((c) => c.delegator).toList();
     methods.insertAll(0, constructors.map((c) => c.body));
 
-    // Add empty constructor (for implementing Dart constructor semantics)
+    // Add empty constructor (for implementing Dart constructor semantics).
     constructorDelegators.add(buildEmptyConstructor(type));
 
     // Merge getters/setters
     if (methods.any((m) => implicitGetters.any((g) => m.name == g.name))) {
-      // This can happen because we simple prepend getters with "get"
+      // This can happen because we simply prepend getters with "get".
       throw new CompileErrorException("Name clash between getter and method");
     }
     if (methods.any((m) => implicitSetters.any((s) => m.name == s.name))) {
-      // This can happen because we simple prepend getters with "set"
+      // This can happen because we simply prepend getters with "set".
       throw new CompileErrorException("Name clash between setter and method");
     }
     methods.addAll(implicitGetters);
@@ -169,7 +169,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // Non-static fields are initialized in the constructor
     java.Expression initializer = node.isStatic
         ? buildCastedExpression(node.initializer, node.type)
-        : new java.NullLiteral();
+        : null;
 
     return new java.FieldDecl(node.name.name, node.type.accept(this),
         initializer: initializer,
@@ -1213,13 +1213,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.ClassOrInterfaceType visitInterfaceType(dart.InterfaceType node) {
-    java.ClassOrInterfaceType type = compilerState.getClass(node.classNode);
+  java.JavaType visitInterfaceType(dart.InterfaceType node) {
+    java.JavaType type = compilerState.getClass(node.classNode);
 
     if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
-      return type.withTypeArguments(node.typeArguments
-          .map((t) => t.accept(this) as java.JavaType)
-          .toList());
+      if (type is java.ClassOrInterfaceType) {
+        return type.withTypeArguments(node.typeArguments
+            .map((t) => t.accept(this) as java.JavaType)
+            .toList());
+      } else {
+        throw new CompileErrorException(
+            "'$type' is a primitive type and cannot be parametrized.");
+      }
     } else {
       return type;
     }

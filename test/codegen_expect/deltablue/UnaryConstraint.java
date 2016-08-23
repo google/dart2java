@@ -2,12 +2,12 @@ package deltablue;
 
 public abstract class UnaryConstraint extends deltablue.Constraint
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "UnaryConstraint");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "UnaryConstraint");
     static {
       deltablue.UnaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }
-    public deltablue.Variable myOutput = null;
-    public java.lang.Boolean satisfied = null;
+    public deltablue.Variable myOutput;
+    public java.lang.Boolean satisfied;
   
     public UnaryConstraint(deltablue.Variable myOutput, deltablue.Strength strength)
     {
@@ -31,7 +31,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint
       this.getMyOutput().addConstraint(this);
       this.setSatisfied(false);
     }
-    public void chooseMethod(java.lang.Integer mark)
+    public void chooseMethod(int mark)
     {
       this.setSatisfied(((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getMyOutput().getMark(), mark)) && deltablue.Strength.stronger(this.getStrength(), this.getMyOutput().getWalkStrength())));
     }
@@ -39,7 +39,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint
     {
       return this.getSatisfied();
     }
-    public void markInputs(java.lang.Integer mark)
+    public void markInputs(int mark)
     {
       
     }
@@ -60,7 +60,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint
     {
       this.setSatisfied(false);
     }
-    public java.lang.Boolean inputsKnown(java.lang.Integer mark)
+    public java.lang.Boolean inputsKnown(int mark)
     {
       return true;
     }

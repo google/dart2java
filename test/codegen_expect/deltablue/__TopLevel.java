@@ -9,9 +9,9 @@ public class __TopLevel
     public static deltablue.Strength NORMAL = new deltablue.Strength(4, "normal");
     public static deltablue.Strength WEAK_DEFAULT = new deltablue.Strength(5, "weakDefault");
     public static deltablue.Strength WEAKEST = new deltablue.Strength(6, "weakest");
-    public static java.lang.Integer NONE = 1;
-    public static java.lang.Integer FORWARD = 2;
-    public static java.lang.Integer BACKWARD = 0;
+    public static int NONE = 1;
+    public static int FORWARD = 2;
+    public static int BACKWARD = 0;
     public static deltablue.Planner planner;
   
   
@@ -22,13 +22,13 @@ public class __TopLevel
       new deltablue.DeltaBlue().report();
       dart.core.__TopLevel.print("Done.");
     }
-    public static void chainTest(java.lang.Integer n)
+    public static void chainTest(int n)
     {
       deltablue.__TopLevel.planner = new deltablue.Planner();
       deltablue.Variable prev = null;
       deltablue.Variable first = null;
       deltablue.Variable last = null;
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLessEqual(i, n); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLessEqual(i, n); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         deltablue.Variable v = new deltablue.Variable("v", 0);
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(prev, null)))
@@ -48,18 +48,18 @@ public class __TopLevel
       new deltablue.StayConstraint(last, deltablue.__TopLevel.STRONG_DEFAULT);
       deltablue.EditConstraint edit = new deltablue.EditConstraint(first, deltablue.__TopLevel.PREFERRED);
       deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class, edit));
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 100); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 100); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         first.setValue(i);
         plan.execute();
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(last.getValue(), i)))
         {
           dart.core.__TopLevel.print("Chain test failed:");
-          dart.core.__TopLevel.print((((("Expected last value to be ".toString() + i.toString()) + " but it was ".toString()) + last.getValue().toString()) + ".".toString()));
+          dart.core.__TopLevel.print((((("Expected last value to be " + i) + " but it was ") + last.getValue()) + "."));
         }
       }
     }
-    public static void projectionTest(java.lang.Integer n)
+    public static void projectionTest(int n)
     {
       deltablue.__TopLevel.planner = new deltablue.Planner();
       deltablue.Variable scale = new deltablue.Variable("scale", 10);
@@ -67,7 +67,7 @@ public class __TopLevel
       deltablue.Variable src = null;
       deltablue.Variable dst = null;
       dart._runtime.base.DartList<deltablue.Variable> dests = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable.class);
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, n); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, n); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         src = new deltablue.Variable("src", i);
         dst = new deltablue.Variable("dst", i);
@@ -86,7 +86,7 @@ public class __TopLevel
         dart.core.__TopLevel.print("Projection 2 failed");
       }
       deltablue.__TopLevel.change(scale, 5);
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, dart._runtime.helpers.IntegerHelper.operatorMinus(n, 1)); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, dart._runtime.helpers.IntegerHelper.operatorMinus(n, 1)); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(dests.operatorAt(i).getValue(), dart._runtime.helpers.IntegerHelper.operatorPlus(dart._runtime.helpers.IntegerHelper.operatorStar(i, 5), 1000))))
         {
@@ -94,7 +94,7 @@ public class __TopLevel
         }
       }
       deltablue.__TopLevel.change(offset, 2000);
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, dart._runtime.helpers.IntegerHelper.operatorMinus(n, 1)); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, dart._runtime.helpers.IntegerHelper.operatorMinus(n, 1)); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(dests.operatorAt(i).getValue(), dart._runtime.helpers.IntegerHelper.operatorPlus(dart._runtime.helpers.IntegerHelper.operatorStar(i, 5), 2000))))
         {
@@ -102,11 +102,11 @@ public class __TopLevel
         }
       }
     }
-    public static void change(deltablue.Variable v, java.lang.Integer newValue)
+    public static void change(deltablue.Variable v, int newValue)
     {
       deltablue.EditConstraint edit = new deltablue.EditConstraint(v, deltablue.__TopLevel.PREFERRED);
       deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.EditConstraint.class, edit));
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 10); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, 10); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         v.setValue(newValue);
         plan.execute();
