@@ -81,6 +81,7 @@ class CompilerState {
     var numClass = getDartClass("dart:core", "num");
 
     // Initialize the data structures.
+    // Keep classImpls in sync with DynamicHelper.java!
     classImpls.addAll({
       objectClass: new ClassImpl(
           java.JavaType.object,

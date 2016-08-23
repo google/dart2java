@@ -304,13 +304,22 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         new java.VariableDecl(v.name, v.type.accept(this))));
   }
 
+  java.VariableDecl buildPositionalParameter(dart.VariableDeclaration node) {
+    java.VariableDecl varDecl = node.accept(this);
+
+    // Default values are passed at call site
+    varDecl.initializer = null;
+
+    return varDecl;
+  }
+
   @override
   java.MethodDef visitProcedure(dart.Procedure procedure) {
     String methodName = javaMethodName(procedure.name.name, procedure.kind);
     java.JavaType returnType = procedure.function.returnType.accept(this);
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = procedure.function.positionalParameters
-        .map(visitVariableDeclaration)
+        .map(buildPositionalParameter)
         .toList();
     var isStatic = procedure.isStatic;
 
@@ -476,7 +485,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = node.function.positionalParameters
-        .map(visitVariableDeclaration)
+        .map(buildPositionalParameter)
         .toList();
 
     var constructorCall = new java.MethodInvocation(
@@ -665,11 +674,25 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
-    // TODO(springerm): Implement dynamic
-    
+  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {   
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Getter);
+
+    if (node.receiver.staticType is dart.DynamicType) {
+      // Generate dynamic method invocation
+      // Generate static call to helper function
+      var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
+
+      List<java.Expression> javaArgs = [ 
+        new java.StringLiteral(methodName),
+        node.receiver.accept(this)];
+
+      return new java.MethodInvocation(
+        helperRefExpr, 
+        Constants.dynamicHelperInvoke, 
+        javaArgs);
+    }
+
     return buildDynamicMethodInvocation(node.receiver, methodName, []);
   }
 
@@ -709,10 +732,24 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitPropertySet(dart.PropertySet node) {
-    // TODO(springerm): Implement dynamic
-
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+
+    if (node.receiver.staticType is dart.DynamicType) {
+      // Generate dynamic method invocation
+      // Generate static call to helper function
+      var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
+
+      List<java.Expression> javaArgs = [ 
+        new java.StringLiteral(methodName),
+        node.receiver.accept(this),
+        node.value.accept(this)];
+
+      return new java.MethodInvocation(
+        helperRefExpr, 
+        Constants.dynamicHelperInvoke, 
+        javaArgs);
+    }
 
     if (node.receiver.staticType is! dart.InterfaceType) {
       throw new CompileErrorException(

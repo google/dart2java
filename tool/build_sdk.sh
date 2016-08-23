@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DART_SDK_LIBS="dart:_internal dart:core"
+DART_SDK_LIBS="dart:_internal dart:core dart:async dart:math"
 
 # Switch to the root directory of dart2java.
 cd $( dirname "${BASH_SOURCE[0]}" )/..

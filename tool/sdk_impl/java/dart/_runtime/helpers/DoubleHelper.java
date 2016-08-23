@@ -111,9 +111,22 @@ public class DoubleHelper {
     }
   }
 
-  // TODO(springerm): operatorModulus for Integer
-  // TODO(springerm): operatorModulus for Double
-  // TODO(springerm): operatorModulus for Number
+  public static Double operatorModulus(Double self, Integer other) {
+    return self % other;
+  }
+
+  public static Double operatorModulus(Double self, Double other) {
+    return self % other;
+  }
+
+  public static Number operatorModulus(Double self, Number other) {
+    if (other instanceof Integer) {
+      return operatorModulus(self, (Integer) other);
+    } else {
+      // Must be double
+      return operatorModulus(self, (Double) other);
+    }
+  }
 
   public static Double operatorDivide(Double self, Integer other) {
     return self / other;
