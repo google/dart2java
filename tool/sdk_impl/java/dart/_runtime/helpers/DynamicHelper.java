@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 public class DynamicHelper {
   public static Object invoke(String methodName, Object... recvAndArgs) {
     // TODO(springerm): Proper exception handling
+    // TODO(springerm): Need to do Dart type checks for arguments
     try {
       MethodHandles.Lookup lookup = MethodHandles.publicLookup();
       Object receiver = recvAndArgs[0];

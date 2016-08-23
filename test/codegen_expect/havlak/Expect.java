@@ -26,9 +26,9 @@ public class Expect extends dart._runtime.base.DartObject
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(expected, actual)))
       {
         dart.core.__TopLevel.print("Values not equal: ");
-        dart.core.__TopLevel.print(expected);
+        dart.core.__TopLevel.print((java.lang.Object) expected);
         dart.core.__TopLevel.print("vs ");
-        dart.core.__TopLevel.print(actual);
+        dart.core.__TopLevel.print((java.lang.Object) actual);
       }
     }
     public static void listEquals(dart._runtime.base.DartList<java.lang.Object> expected, dart._runtime.base.DartList<java.lang.Object> actual)

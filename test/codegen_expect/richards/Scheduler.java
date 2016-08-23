@@ -2,12 +2,16 @@ package richards;
 
 public class Scheduler extends dart._runtime.base.DartObject
 {
-    public java.lang.Integer queueCount = null;
-    public java.lang.Integer holdCount = null;
-    public richards.TaskControlBlock currentTcb = null;
-    public java.lang.Integer currentId = null;
-    public richards.TaskControlBlock list = null;
-    public dart._runtime.base.DartList<richards.TaskControlBlock> blocks = null;
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "Scheduler");
+    static {
+      richards.Scheduler.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
+    public int queueCount;
+    public int holdCount;
+    public richards.TaskControlBlock currentTcb;
+    public int currentId;
+    public richards.TaskControlBlock list;
+    public dart._runtime.base.DartList<richards.TaskControlBlock> blocks;
   
     public Scheduler()
     {
@@ -23,31 +27,32 @@ public class Scheduler extends dart._runtime.base.DartObject
     {
       this.queueCount = 0;
       this.holdCount = 0;
+      this.currentId = 0;
       this.blocks = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic.newInstance(richards.TaskControlBlock.class, richards.Richards.NUMBER_OF_IDS);
       super._constructor();
     }
-    public void addIdleTask(java.lang.Integer id, java.lang.Integer priority, richards.Packet queue, java.lang.Integer count)
+    public void addIdleTask(int id, int priority, richards.Packet queue, int count)
     {
       this.addRunningTask(id, priority, queue, new richards.IdleTask(this, 1, count));
     }
-    public void addWorkerTask(java.lang.Integer id, java.lang.Integer priority, richards.Packet queue)
+    public void addWorkerTask(int id, int priority, richards.Packet queue)
     {
       this.addTask(id, priority, queue, new richards.WorkerTask(this, richards.Richards.ID_HANDLER_A, 0));
     }
-    public void addHandlerTask(java.lang.Integer id, java.lang.Integer priority, richards.Packet queue)
+    public void addHandlerTask(int id, int priority, richards.Packet queue)
     {
       this.addTask(id, priority, queue, new richards.HandlerTask(this));
     }
-    public void addDeviceTask(java.lang.Integer id, java.lang.Integer priority, richards.Packet queue)
+    public void addDeviceTask(int id, int priority, richards.Packet queue)
     {
       this.addTask(id, priority, queue, new richards.DeviceTask(this));
     }
-    public void addRunningTask(java.lang.Integer id, java.lang.Integer priority, richards.Packet queue, richards.Task task)
+    public void addRunningTask(int id, int priority, richards.Packet queue, richards.Task task)
     {
       this.addTask(id, priority, queue, task);
       this.getCurrentTcb().setRunning();
     }
-    public void addTask(java.lang.Integer id, java.lang.Integer priority, richards.Packet queue, richards.Task task)
+    public void addTask(int id, int priority, richards.Packet queue, richards.Task task)
     {
       this.setCurrentTcb(new richards.TaskControlBlock(this.getList(), id, priority, queue, task));
       this.setList(this.getCurrentTcb());
@@ -69,7 +74,7 @@ public class Scheduler extends dart._runtime.base.DartObject
         }
       }
     }
-    public richards.TaskControlBlock release(java.lang.Integer id)
+    public richards.TaskControlBlock release(int id)
     {
       richards.TaskControlBlock tcb = this.getBlocks().operatorAt(id);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(tcb, null))
@@ -108,11 +113,11 @@ public class Scheduler extends dart._runtime.base.DartObject
       packet.setId(this.getCurrentId());
       return t.checkPriorityAdd(this.getCurrentTcb(), packet);
     }
-    public java.lang.Integer getQueueCount()
+    public int getQueueCount()
     {
       return this.queueCount;
     }
-    public java.lang.Integer getHoldCount()
+    public int getHoldCount()
     {
       return this.holdCount;
     }
@@ -120,7 +125,7 @@ public class Scheduler extends dart._runtime.base.DartObject
     {
       return this.currentTcb;
     }
-    public java.lang.Integer getCurrentId()
+    public int getCurrentId()
     {
       return this.currentId;
     }
@@ -132,12 +137,12 @@ public class Scheduler extends dart._runtime.base.DartObject
     {
       return this.blocks;
     }
-    public java.lang.Integer setQueueCount(java.lang.Integer value)
+    public int setQueueCount(int value)
     {
       this.queueCount = value;
       return value;
     }
-    public java.lang.Integer setHoldCount(java.lang.Integer value)
+    public int setHoldCount(int value)
     {
       this.holdCount = value;
       return value;
@@ -147,7 +152,7 @@ public class Scheduler extends dart._runtime.base.DartObject
       this.currentTcb = value;
       return value;
     }
-    public java.lang.Integer setCurrentId(java.lang.Integer value)
+    public int setCurrentId(int value)
     {
       this.currentId = value;
       return value;

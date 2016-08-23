@@ -2,7 +2,11 @@ package richards;
 
 public abstract class Task extends dart._runtime.base.DartObject
 {
-    public richards.Scheduler scheduler = null;
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "Task");
+    static {
+      richards.Task.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
+    public richards.Scheduler scheduler;
   
     public Task(richards.Scheduler scheduler)
     {

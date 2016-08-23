@@ -2,8 +2,12 @@ package richards;
 
 public class BenchmarkBase extends dart._runtime.base.DartObject
 {
-    public java.lang.String name = null;
-    public static java.lang.Integer iters = 1000;
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "BenchmarkBase");
+    static {
+      richards.BenchmarkBase.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
+    public java.lang.String name;
+    public static int iters = 1000;
   
     public BenchmarkBase(java.lang.String name)
     {
@@ -31,7 +35,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     }
     public void exercise()
     {
-      for (java.lang.Integer i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, richards.BenchmarkBase.iters); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, richards.BenchmarkBase.iters); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
       {
         this.run();
       }
@@ -44,13 +48,13 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     {
       
     }
-    public java.lang.Double measureForWarumup(java.lang.Integer timeMinimum)
+    public java.lang.Double measureForWarumup(int timeMinimum)
     {
-      java.lang.Integer time = 0;
-      java.lang.Integer iter = 0;
+      int time = 0;
+      int iter = 0;
       dart.core.Stopwatch watch = new dart.core.Stopwatch();
       watch.start();
-      java.lang.Integer elapsed = 0;
+      int elapsed = 0;
       while (dart._runtime.helpers.IntegerHelper.operatorLess(elapsed, timeMinimum))
       {
         this.warmup();
@@ -59,13 +63,13 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
       }
       return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), richards.BenchmarkBase.iters);
     }
-    public java.lang.Double measureForExercise(java.lang.Integer timeMinimum)
+    public java.lang.Double measureForExercise(int timeMinimum)
     {
-      java.lang.Integer time = 0;
-      java.lang.Integer iter = 0;
+      int time = 0;
+      int iter = 0;
       dart.core.Stopwatch watch = new dart.core.Stopwatch();
       watch.start();
-      java.lang.Integer elapsed = 0;
+      int elapsed = 0;
       while (dart._runtime.helpers.IntegerHelper.operatorLess(elapsed, timeMinimum))
       {
         this.exercise();
@@ -85,17 +89,17 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     public void report()
     {
       java.lang.Double score = this.measure();
-      dart.core.__TopLevel.print((((("".toString() + this.getName().toString()) + "(RunTime): ".toString()) + score.toString()) + " us.".toString()));
+      dart.core.__TopLevel.print((((("" + this.getName().toString()) + "(RunTime): ") + score.toString()) + " us."));
     }
     public java.lang.String getName()
     {
       return this.name;
     }
-    public static java.lang.Integer getIters()
+    public static int getIters()
     {
       return richards.BenchmarkBase.iters;
     }
-    public static java.lang.Integer setIters(java.lang.Integer value)
+    public static int setIters(int value)
     {
       richards.BenchmarkBase.iters = value;
       return value;

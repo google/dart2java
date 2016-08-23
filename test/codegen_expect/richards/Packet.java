@@ -2,13 +2,17 @@ package richards;
 
 public class Packet extends dart._runtime.base.DartObject
 {
-    public richards.Packet link = null;
-    public java.lang.Integer id = null;
-    public java.lang.Integer kind = null;
-    public java.lang.Integer a1 = null;
-    public dart._runtime.base.DartList._int a2 = null;
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "Packet");
+    static {
+      richards.Packet.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
+    public richards.Packet link;
+    public int id;
+    public int kind;
+    public int a1;
+    public dart._runtime.base.DartList._int a2;
   
-    public Packet(richards.Packet link, java.lang.Integer id, java.lang.Integer kind)
+    public Packet(richards.Packet link, int id, int kind)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
       this._constructor(link, id, kind);
@@ -18,10 +22,12 @@ public class Packet extends dart._runtime.base.DartObject
       super(arg);
     }
   
-    protected void _constructor(richards.Packet link, java.lang.Integer id, java.lang.Integer kind)
+    protected void _constructor(richards.Packet link, int id, int kind)
     {
+      this.id = 0;
+      this.kind = 0;
       this.a1 = 0;
-      this.a2 = dart._runtime.base.DartList._int.newInstance(java.lang.Integer.class, richards.Richards.DATA_SIZE);
+      this.a2 = dart._runtime.base.DartList._int.newInstance(int.class, richards.Richards.DATA_SIZE);
       this.link = link;
       this.id = id;
       this.kind = kind;
@@ -51,15 +57,15 @@ public class Packet extends dart._runtime.base.DartObject
     {
       return this.link;
     }
-    public java.lang.Integer getId()
+    public int getId()
     {
       return this.id;
     }
-    public java.lang.Integer getKind()
+    public int getKind()
     {
       return this.kind;
     }
-    public java.lang.Integer getA1()
+    public int getA1()
     {
       return this.a1;
     }
@@ -72,17 +78,17 @@ public class Packet extends dart._runtime.base.DartObject
       this.link = value;
       return value;
     }
-    public java.lang.Integer setId(java.lang.Integer value)
+    public int setId(int value)
     {
       this.id = value;
       return value;
     }
-    public java.lang.Integer setKind(java.lang.Integer value)
+    public int setKind(int value)
     {
       this.kind = value;
       return value;
     }
-    public java.lang.Integer setA1(java.lang.Integer value)
+    public int setA1(int value)
     {
       this.a1 = value;
       return value;

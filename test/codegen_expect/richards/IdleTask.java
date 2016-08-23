@@ -2,10 +2,14 @@ package richards;
 
 public class IdleTask extends richards.Task
 {
-    public java.lang.Integer v1 = null;
-    public java.lang.Integer count = null;
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "IdleTask");
+    static {
+      richards.IdleTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
+    }
+    public int v1;
+    public int count;
   
-    public IdleTask(richards.Scheduler scheduler, java.lang.Integer v1, java.lang.Integer count)
+    public IdleTask(richards.Scheduler scheduler, int v1, int count)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
       this._constructor(scheduler, v1, count);
@@ -15,8 +19,10 @@ public class IdleTask extends richards.Task
       super(arg);
     }
   
-    protected void _constructor(richards.Scheduler scheduler, java.lang.Integer v1, java.lang.Integer count)
+    protected void _constructor(richards.Scheduler scheduler, int v1, int count)
     {
+      this.v1 = 0;
+      this.count = 0;
       this.v1 = v1;
       this.count = count;
       super._constructor(scheduler);
@@ -41,20 +47,20 @@ public class IdleTask extends richards.Task
     {
       return "IdleTask";
     }
-    public java.lang.Integer getV1()
+    public int getV1()
     {
       return this.v1;
     }
-    public java.lang.Integer getCount()
+    public int getCount()
     {
       return this.count;
     }
-    public java.lang.Integer setV1(java.lang.Integer value)
+    public int setV1(int value)
     {
       this.v1 = value;
       return value;
     }
-    public java.lang.Integer setCount(java.lang.Integer value)
+    public int setCount(int value)
     {
       this.count = value;
       return value;

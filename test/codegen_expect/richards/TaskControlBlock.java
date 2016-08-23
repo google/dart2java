@@ -2,20 +2,24 @@ package richards;
 
 public class TaskControlBlock extends dart._runtime.base.DartObject
 {
-    public richards.TaskControlBlock link = null;
-    public java.lang.Integer id = null;
-    public java.lang.Integer priority = null;
-    public richards.Packet queue = null;
-    public richards.Task task = null;
-    public java.lang.Integer state = null;
-    public static java.lang.Integer STATE_RUNNING = 0;
-    public static java.lang.Integer STATE_RUNNABLE = 1;
-    public static java.lang.Integer STATE_SUSPENDED = 2;
-    public static java.lang.Integer STATE_HELD = 4;
-    public static java.lang.Integer STATE_SUSPENDED_RUNNABLE = dart._runtime.helpers.IntegerHelper.operatorBitOr(richards.TaskControlBlock.STATE_SUSPENDED, richards.TaskControlBlock.STATE_RUNNABLE);
-    public static java.lang.Integer STATE_NOT_HELD = dart._runtime.helpers.IntegerHelper.operatorUnaryBitNegate(richards.TaskControlBlock.STATE_HELD);
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "TaskControlBlock");
+    static {
+      richards.TaskControlBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
+    public richards.TaskControlBlock link;
+    public int id;
+    public int priority;
+    public richards.Packet queue;
+    public richards.Task task;
+    public int state;
+    public static int STATE_RUNNING = 0;
+    public static int STATE_RUNNABLE = 1;
+    public static int STATE_SUSPENDED = 2;
+    public static int STATE_HELD = 4;
+    public static int STATE_SUSPENDED_RUNNABLE = dart._runtime.helpers.IntegerHelper.operatorBitOr(richards.TaskControlBlock.STATE_SUSPENDED, richards.TaskControlBlock.STATE_RUNNABLE);
+    public static int STATE_NOT_HELD = dart._runtime.helpers.IntegerHelper.operatorUnaryBitNegate(richards.TaskControlBlock.STATE_HELD);
   
-    public TaskControlBlock(richards.TaskControlBlock link, java.lang.Integer id, java.lang.Integer priority, richards.Packet queue, richards.Task task)
+    public TaskControlBlock(richards.TaskControlBlock link, int id, int priority, richards.Packet queue, richards.Task task)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
       this._constructor(link, id, priority, queue, task);
@@ -25,8 +29,11 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
       super(arg);
     }
   
-    protected void _constructor(richards.TaskControlBlock link, java.lang.Integer id, java.lang.Integer priority, richards.Packet queue, richards.Task task)
+    protected void _constructor(richards.TaskControlBlock link, int id, int priority, richards.Packet queue, richards.Task task)
     {
+      this.id = 0;
+      this.priority = 0;
+      this.state = 0;
       this.STATE_RUNNING = 0;
       this.STATE_RUNNABLE = 1;
       this.STATE_SUSPENDED = 2;
@@ -99,17 +106,17 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     }
     public java.lang.String toString()
     {
-      return (((("tcb { ".toString() + this.getTask().toString()) + "@".toString()) + this.getState().toString()) + " }".toString());
+      return (((("tcb { " + this.getTask().toString()) + "@") + this.getState()) + " }");
     }
     public richards.TaskControlBlock getLink()
     {
       return this.link;
     }
-    public java.lang.Integer getId()
+    public int getId()
     {
       return this.id;
     }
-    public java.lang.Integer getPriority()
+    public int getPriority()
     {
       return this.priority;
     }
@@ -121,31 +128,31 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     {
       return this.task;
     }
-    public java.lang.Integer getState()
+    public int getState()
     {
       return this.state;
     }
-    public static java.lang.Integer getSTATE_RUNNING()
+    public static int getSTATE_RUNNING()
     {
       return richards.TaskControlBlock.STATE_RUNNING;
     }
-    public static java.lang.Integer getSTATE_RUNNABLE()
+    public static int getSTATE_RUNNABLE()
     {
       return richards.TaskControlBlock.STATE_RUNNABLE;
     }
-    public static java.lang.Integer getSTATE_SUSPENDED()
+    public static int getSTATE_SUSPENDED()
     {
       return richards.TaskControlBlock.STATE_SUSPENDED;
     }
-    public static java.lang.Integer getSTATE_HELD()
+    public static int getSTATE_HELD()
     {
       return richards.TaskControlBlock.STATE_HELD;
     }
-    public static java.lang.Integer getSTATE_SUSPENDED_RUNNABLE()
+    public static int getSTATE_SUSPENDED_RUNNABLE()
     {
       return richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE;
     }
-    public static java.lang.Integer getSTATE_NOT_HELD()
+    public static int getSTATE_NOT_HELD()
     {
       return richards.TaskControlBlock.STATE_NOT_HELD;
     }
@@ -154,12 +161,12 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
       this.link = value;
       return value;
     }
-    public java.lang.Integer setId(java.lang.Integer value)
+    public int setId(int value)
     {
       this.id = value;
       return value;
     }
-    public java.lang.Integer setPriority(java.lang.Integer value)
+    public int setPriority(int value)
     {
       this.priority = value;
       return value;
@@ -174,37 +181,37 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
       this.task = value;
       return value;
     }
-    public java.lang.Integer setState(java.lang.Integer value)
+    public int setState(int value)
     {
       this.state = value;
       return value;
     }
-    public static java.lang.Integer setSTATE_RUNNING(java.lang.Integer value)
+    public static int setSTATE_RUNNING(int value)
     {
       richards.TaskControlBlock.STATE_RUNNING = value;
       return value;
     }
-    public static java.lang.Integer setSTATE_RUNNABLE(java.lang.Integer value)
+    public static int setSTATE_RUNNABLE(int value)
     {
       richards.TaskControlBlock.STATE_RUNNABLE = value;
       return value;
     }
-    public static java.lang.Integer setSTATE_SUSPENDED(java.lang.Integer value)
+    public static int setSTATE_SUSPENDED(int value)
     {
       richards.TaskControlBlock.STATE_SUSPENDED = value;
       return value;
     }
-    public static java.lang.Integer setSTATE_HELD(java.lang.Integer value)
+    public static int setSTATE_HELD(int value)
     {
       richards.TaskControlBlock.STATE_HELD = value;
       return value;
     }
-    public static java.lang.Integer setSTATE_SUSPENDED_RUNNABLE(java.lang.Integer value)
+    public static int setSTATE_SUSPENDED_RUNNABLE(int value)
     {
       richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE = value;
       return value;
     }
-    public static java.lang.Integer setSTATE_NOT_HELD(java.lang.Integer value)
+    public static int setSTATE_NOT_HELD(int value)
     {
       richards.TaskControlBlock.STATE_NOT_HELD = value;
       return value;

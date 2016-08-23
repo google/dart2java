@@ -2,8 +2,12 @@ package richards;
 
 public class HandlerTask extends richards.Task
 {
-    public richards.Packet v1 = null;
-    public richards.Packet v2 = null;
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "HandlerTask");
+    static {
+      richards.HandlerTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
+    }
+    public richards.Packet v1;
+    public richards.Packet v2;
   
     public HandlerTask(richards.Scheduler scheduler)
     {
@@ -34,7 +38,7 @@ public class HandlerTask extends richards.Task
       }
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1(), null)))
       {
-        java.lang.Integer count = this.getV1().getA1();
+        int count = this.getV1().getA1();
         richards.Packet v = null;
         if (dart._runtime.helpers.IntegerHelper.operatorLess(count, richards.Richards.DATA_SIZE))
         {

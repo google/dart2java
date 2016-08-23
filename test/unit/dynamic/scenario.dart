@@ -13,8 +13,8 @@ class Class2 {
 int testDynamicDispatch() {
   int result = 0;
   dynamic d = new Class1();
-  result = result + d.foo(10, 20);
+  result = result + (d.foo(10, 20) as int);
   d = new Class2();
-  result = result + d.foo(100, 200);
+  result = result + (d.foo(100, 200) as int);
   return result;
 }

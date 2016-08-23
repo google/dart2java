@@ -230,7 +230,7 @@ class Scheduler {
   int queueCount = 0;
   int holdCount = 0;
   TaskControlBlock currentTcb;
-  int currentId;
+  int currentId = 0;
   TaskControlBlock list;
   List<TaskControlBlock> blocks =
     new List<TaskControlBlock>(Richards.NUMBER_OF_IDS);
@@ -337,11 +337,11 @@ class Scheduler {
 class TaskControlBlock {
 
   TaskControlBlock link;
-  int id;       // The id of this block.
-  int priority; // The priority of this block.
+  int id = 0;       // The id of this block.
+  int priority = 0; // The priority of this block.
   Packet queue; // The queue of packages to be processed by the task.
   Task task;
-  int state;
+  int state = 0;
 
   TaskControlBlock(this.link, this.id, this.priority, this.queue, this.task) {
     state = queue == null ? STATE_SUSPENDED : STATE_SUSPENDED_RUNNABLE;
@@ -440,8 +440,8 @@ abstract class Task {
  */
 class IdleTask extends Task {
 
-  int v1;    // A seed value that controls how the device tasks are scheduled.
-  int count; // The number of times this task should be scheduled.
+  int v1 = 0;    // A seed value that controls how the device tasks are scheduled.
+  int count = 0; // The number of times this task should be scheduled.
 
   IdleTask(Scheduler scheduler, this.v1, this.count) : super(scheduler);
 
@@ -490,8 +490,8 @@ class DeviceTask extends Task {
  */
 class WorkerTask extends Task {
 
-  int v1; // A seed used to specify how work packets are manipulated.
-  int v2; // Another seed used to specify how work packets are manipulated.
+  int v1 = 0; // A seed used to specify how work packets are manipulated.
+  int v2 = 0; // Another seed used to specify how work packets are manipulated.
 
   WorkerTask(Scheduler scheduler, this.v1, this.v2) : super(scheduler);
 
@@ -570,8 +570,8 @@ class HandlerTask extends Task {
 class Packet {
 
   Packet link; // The tail of the linked list of packets.
-  int id;      // An ID for this packet.
-  int kind;    // The type of this packet.
+  int id = 0;      // An ID for this packet.
+  int kind = 0;    // The type of this packet.
   int a1 = 0;
 
   List<int> a2 = new List(Richards.DATA_SIZE);
