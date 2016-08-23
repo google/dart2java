@@ -79,12 +79,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// A counter for generating unique identifiers for temporary variables.
   int tempVarCounter = 0;
 
+  /// A counter for generating unique identifiers for labels.
+  int labelCounter = 0;
+
   /// A map assigning Kernel AST variables to temporary variables.
   Map<dart.VariableDeclaration, TemporaryVariable> tempVars = null;
+
+  /// A map assigning Kernel AST labeled statements to label identifiers.
+  var codeLabels = new Map<dart.LabeledStatement, String>();
 
   /// Generates a unique variable identifier.
   String nextTempVarIdentifier() {
     return "__tempVar_${tempVarCounter++}";
+  }
+
+  /// Generates a unique label identifier.
+  String nextCodeLabel() {
+    return "__codeLabel_${labelCounter++}";
   }
 
   final CompilerState compilerState;
@@ -564,15 +575,47 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.ReturnStmt visitReturnStatement(dart.ReturnStatement node) {
+  java.ForInStmt visitForInStatement(dart.ForInStatement node) {
+    return new java.ForInStmt(
+      node.variable.accept(this),
+      node.iterable.accept(this),
+      wrapInJavaBlock(buildStatement(node.body)));
+  }
+
+  @override
+  java.BreakStmt visitBreakStatement(dart.BreakStatement node) {
+    String label = codeLabels[node.target];
+    return new java.BreakStmt(label);
+  }
+
+  @override
+  java.LabeledStmt visitLabeledStatement(dart.LabeledStatement node) {
+    // TODO(springerm): Handle labels in places other than loops
+    String label = nextCodeLabel();
+    codeLabels[node] = label;
+
+    return new java.LabeledStmt(label, 
+      wrapInJavaBlock(buildStatement(node.body)));
+  }
+
+  @override
+  java.Statement visitReturnStatement(dart.ReturnStatement node) {
     // Find procedure
     dart.TreeNode procNode = node;
     while (procNode is! dart.Procedure) {
       procNode = procNode.parent;
     }
 
-    return new java.ReturnStmt(buildCastedExpression(
+    if (node.expression != null 
+      && node.expression.staticType is dart.VoidType) {
+      // Return statement with expression of type "void"
+      return new java.Block([
+        new java.ExpressionStmt(node.expression.accept(this)),
+        new java.ReturnStmt()]);
+    } else {
+      return new java.ReturnStmt(buildCastedExpression(
         node.expression, (procNode as dart.Procedure).function.returnType));
+    }
   }
 
   @override
@@ -596,7 +639,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     if (recvType is! dart.InterfaceType) {
       throw new CompileErrorException(
           "Can only handle method invocation where receiver is an InterfaceType "
-          "(found ${recvType.runtimeType})");
+          "(found ${recvType.runtimeType} for ${receiver})");
     }
 
     dart.Class classNode = (recvType as dart.InterfaceType).classNode;

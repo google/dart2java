@@ -267,6 +267,41 @@ class ForStmt extends Statement {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitForStmt(this);
 }
 
+class ForInStmt extends Statement {
+  VariableDecl variableDeclaration;
+
+  Expression iterable;
+
+  Block body;
+
+  ForInStmt(this.variableDeclaration, this.iterable, this.body);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitForInStmt(this);
+}
+
+/// A break statement for loops and switch-case statements.
+class BreakStmt extends Statement {
+  String label;
+
+  BreakStmt([this.label]);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitBreakStmt(this);
+}
+
+/// A statement preceeded by a label.
+class LabeledStmt extends Statement {
+  String label;
+
+  Block body;
+
+  LabeledStmt(this.label, this.body);
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitLabeledStmt(this);
+}
+
 /// A method return statement.
 class ReturnStmt extends Statement {
   Expression value;

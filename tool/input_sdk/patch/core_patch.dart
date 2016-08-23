@@ -44,5 +44,15 @@ class List<E> {
 }
 
 @patch
+class Map<K, V> {
+  @patch
+  @JavaMethod("newInstance")
+  external factory Map();
+
+  @patch
+  external factory Map.unmodifiable(Map other);
+}
+
+@patch
 @JavaCall("java.lang.System.out.println")
 external void print(Object o);

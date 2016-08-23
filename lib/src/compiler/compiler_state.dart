@@ -63,6 +63,7 @@ class CompilerState {
   dart.Class doubleClass;
   dart.Class stringClass;
   dart.Class listClass;
+  dart.Class mapClass;
 
   CompilerState(
       this.options, this.repository, Iterable<dart.Class> classesToCompile) {
@@ -72,6 +73,7 @@ class CompilerState {
     doubleClass = getDartClass("dart:core", "double");
     stringClass = getDartClass("dart:core", "String");
     listClass = getDartClass("dart:core", "List");
+    mapClass = getDartClass("dart:core", "Map");
     var numClass = getDartClass("dart:core", "num");
 
     // Initialize the data structures.
@@ -102,6 +104,9 @@ class CompilerState {
       listClass: new ClassImpl(
           new java.ClassOrInterfaceType("dart._runtime.base", "DartList"),
           null),
+      mapClass: new ClassImpl(
+          new java.ClassOrInterfaceType("dart._runtime.base", "DartMap"),
+          null),
       numClass: new ClassImpl(
           new java.ClassOrInterfaceType("java.lang", "Number"),
           new java.ClassOrInterfaceType(
@@ -120,6 +125,7 @@ class CompilerState {
 
     // Initialize SDK classes
     initializeJavaClass(listClass);
+    initializeJavaClass(mapClass);
   }
 
   /// Find methods that have a Java implementation. Add them to classImpls.

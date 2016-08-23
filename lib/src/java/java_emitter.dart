@@ -133,6 +133,11 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
+  String visitLabeledStmt(LabeledStmt stmt) {
+    return "${stmt.label}: " + stmt.body.accept(this);
+  }
+  
+  @override
   String visitVariableDeclStmt(VariableDeclStmt stmt) {
     return "${stmt.decl.accept(this)};";
   }
@@ -175,6 +180,23 @@ class _JavaAstEmitter extends Visitor<String> {
     var condition = stmt.condition.accept(this);
     var body = stmt.body.accept(this);
     return "for ($varDecls; $condition; $updates)\n$body";
+  }
+
+  @override
+  String visitForInStmt(ForInStmt stmt) {
+    var varDecl = stmt.variableDeclaration.accept(this);
+    var iterable = stmt.iterable.accept(this);
+    var body = stmt.body.accept(this);
+    return "for ($varDecl : $iterable)\n$body";
+  }
+
+  @override
+  String visitBreakStmt(BreakStmt stmt) {
+    if (stmt.label != null) {
+      return "break ${stmt.label};";
+    } else {
+      return "break;";
+    }
   }
 
   @override

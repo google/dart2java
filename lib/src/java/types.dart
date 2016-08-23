@@ -244,11 +244,24 @@ class ClassOrInterfaceType extends ReferenceType {
           + JavaType.getGenericImplementation(typeArguments);
       }
 
-      String typeArgs = typeArguments.map((a) => a.toString()).join(", ");
+      String typeArgs = typeArguments.map(
+        (a) => unboxedToBoxedType(a).toString()).join(", ");
       return "$identifier<$typeArgs>";
     } else {
       return identifier;
     }
+  }
+}
+
+JavaType unboxedToBoxedType(JavaType unboxed) {
+  if (unboxed == JavaType.int_) {
+    return JavaType.javaIntegerClass;
+  } else if (unboxed == JavaType.double_) {
+    return JavaType.javaDoubleClass;
+  } else if (unboxed == JavaType.boolean) {
+    return JavaType.javaBooleanClass;
+  } else {
+    return unboxed;
   }
 }
 

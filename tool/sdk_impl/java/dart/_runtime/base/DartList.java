@@ -356,7 +356,7 @@ public interface DartList<T> extends List<T> {
           if (!hasNext()) {
             throw new NoSuchElementException();
           }
-          return array[nextIndex];
+          return array[nextIndex++];
         }
       };
     }

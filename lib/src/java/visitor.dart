@@ -22,6 +22,9 @@ abstract class Visitor<R> {
   R visitWhileStmt(WhileStmt node) => null;
   R visitDoStmt(DoStmt node) => null;
   R visitForStmt(ForStmt node) => null;
+  R visitForInStmt(ForInStmt node) => null;
+  R visitBreakStmt(BreakStmt node) => null;
+  R visitLabeledStmt(LabeledStmt node) => null;
   R visitReturnStmt(ReturnStmt node) => null;
   R visitThrowStmt(ThrowStmt node) => null;
   R visitExpressionStmt(ExpressionStmt node) => null;
