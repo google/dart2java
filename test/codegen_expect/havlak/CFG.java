@@ -2,7 +2,7 @@ package havlak;
 
 public class CFG extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/havlak.dart", "CFG");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "CFG");
     static {
       havlak.CFG.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -34,7 +34,7 @@ public class CFG extends dart._runtime.base.DartObject
         node = new havlak.BasicBlock(name);
         this.getBasicBlockMap().operatorAtPut(name, node);
       }
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getNumNodes(), 1))
+      if ((this.getNumNodes() == 1))
       {
         this.setStartNode(node);
       }

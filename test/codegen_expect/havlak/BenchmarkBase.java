@@ -2,7 +2,7 @@ package havlak;
 
 public class BenchmarkBase extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/havlak.dart", "BenchmarkBase");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "BenchmarkBase");
     static {
       havlak.BenchmarkBase.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -35,7 +35,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     }
     public void exercise()
     {
-      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, havlak.BenchmarkBase.iters); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; (i < havlak.BenchmarkBase.iters); i = (i + 1))
       {
         this.run();
       }
@@ -55,11 +55,11 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
       dart.core.Stopwatch watch = new dart.core.Stopwatch();
       watch.start();
       int elapsed = 0;
-      while (dart._runtime.helpers.IntegerHelper.operatorLess(elapsed, timeMinimum))
+      while ((elapsed < timeMinimum))
       {
         this.warmup();
         elapsed = watch.getElapsedMilliseconds();
-        iter = dart._runtime.helpers.IntegerHelper.operatorPlus(iter, 1);
+        iter = (iter + 1);
       }
       return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), havlak.BenchmarkBase.iters);
     }
@@ -70,11 +70,11 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
       dart.core.Stopwatch watch = new dart.core.Stopwatch();
       watch.start();
       int elapsed = 0;
-      while (dart._runtime.helpers.IntegerHelper.operatorLess(elapsed, timeMinimum))
+      while ((elapsed < timeMinimum))
       {
         this.exercise();
         elapsed = watch.getElapsedMilliseconds();
-        iter = dart._runtime.helpers.IntegerHelper.operatorPlus(iter, 1);
+        iter = (iter + 1);
       }
       return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), havlak.BenchmarkBase.iters);
     }
@@ -82,7 +82,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject
     {
       this.setup();
       this.measureForWarumup(100);
-      java.lang.Double result = this.measureForExercise(dart._runtime.helpers.IntegerHelper.operatorStar(10, 1000));
+      java.lang.Double result = this.measureForExercise((10 * 1000));
       this.teardown();
       return result;
     }

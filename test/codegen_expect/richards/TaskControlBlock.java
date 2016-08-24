@@ -2,7 +2,7 @@ package richards;
 
 public class TaskControlBlock extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "TaskControlBlock");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "TaskControlBlock");
     static {
       richards.TaskControlBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -16,8 +16,8 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     public static int STATE_RUNNABLE = 1;
     public static int STATE_SUSPENDED = 2;
     public static int STATE_HELD = 4;
-    public static int STATE_SUSPENDED_RUNNABLE = dart._runtime.helpers.IntegerHelper.operatorBitOr(richards.TaskControlBlock.STATE_SUSPENDED, richards.TaskControlBlock.STATE_RUNNABLE);
-    public static int STATE_NOT_HELD = dart._runtime.helpers.IntegerHelper.operatorUnaryBitNegate(richards.TaskControlBlock.STATE_HELD);
+    public static int STATE_SUSPENDED_RUNNABLE = (richards.TaskControlBlock.STATE_SUSPENDED | richards.TaskControlBlock.STATE_RUNNABLE);
+    public static int STATE_NOT_HELD = (~richards.TaskControlBlock.STATE_HELD);
   
     public TaskControlBlock(richards.TaskControlBlock link, int id, int priority, richards.Packet queue, richards.Task task)
     {
@@ -38,8 +38,8 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
       this.STATE_RUNNABLE = 1;
       this.STATE_SUSPENDED = 2;
       this.STATE_HELD = 4;
-      this.STATE_SUSPENDED_RUNNABLE = dart._runtime.helpers.IntegerHelper.operatorBitOr(richards.TaskControlBlock.STATE_SUSPENDED, richards.TaskControlBlock.STATE_RUNNABLE);
-      this.STATE_NOT_HELD = dart._runtime.helpers.IntegerHelper.operatorUnaryBitNegate(richards.TaskControlBlock.STATE_HELD);
+      this.STATE_SUSPENDED_RUNNABLE = (richards.TaskControlBlock.STATE_SUSPENDED | richards.TaskControlBlock.STATE_RUNNABLE);
+      this.STATE_NOT_HELD = (~richards.TaskControlBlock.STATE_HELD);
       this.link = link;
       this.id = id;
       this.priority = priority;
@@ -54,28 +54,28 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     }
     public void markAsNotHeld()
     {
-      this.setState(dart._runtime.helpers.IntegerHelper.operatorBitAnd(this.getState(), richards.TaskControlBlock.STATE_NOT_HELD));
+      this.setState((this.getState() & richards.TaskControlBlock.STATE_NOT_HELD));
     }
     public void markAsHeld()
     {
-      this.setState(dart._runtime.helpers.IntegerHelper.operatorBitOr(this.getState(), richards.TaskControlBlock.STATE_HELD));
+      this.setState((this.getState() | richards.TaskControlBlock.STATE_HELD));
     }
     public java.lang.Boolean isHeldOrSuspended()
     {
-      return ((!dart._runtime.helpers.ObjectHelper.operatorEqual(dart._runtime.helpers.IntegerHelper.operatorBitAnd(this.getState(), richards.TaskControlBlock.STATE_HELD), 0)) || dart._runtime.helpers.ObjectHelper.operatorEqual(this.getState(), richards.TaskControlBlock.STATE_SUSPENDED));
+      return ((!((this.getState() & richards.TaskControlBlock.STATE_HELD) == 0)) || (this.getState() == richards.TaskControlBlock.STATE_SUSPENDED));
     }
     public void markAsSuspended()
     {
-      this.setState(dart._runtime.helpers.IntegerHelper.operatorBitOr(this.getState(), richards.TaskControlBlock.STATE_SUSPENDED));
+      this.setState((this.getState() | richards.TaskControlBlock.STATE_SUSPENDED));
     }
     public void markAsRunnable()
     {
-      this.setState(dart._runtime.helpers.IntegerHelper.operatorBitOr(this.getState(), richards.TaskControlBlock.STATE_RUNNABLE));
+      this.setState((this.getState() | richards.TaskControlBlock.STATE_RUNNABLE));
     }
     public richards.TaskControlBlock run()
     {
       richards.Packet packet = null;
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getState(), richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE))
+      if ((this.getState() == richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE))
       {
         packet = this.getQueue();
         this.setQueue(packet.getLink());
@@ -93,7 +93,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
       {
         this.setQueue(packet);
         this.markAsRunnable();
-        if (dart._runtime.helpers.IntegerHelper.operatorGreater(this.getPriority(), task.getPriority()))
+        if ((this.getPriority() > task.getPriority()))
         {
           return this;
         }

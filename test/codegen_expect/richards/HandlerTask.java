@@ -2,7 +2,7 @@ package richards;
 
 public class HandlerTask extends richards.Task
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "HandlerTask");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "HandlerTask");
     static {
       richards.HandlerTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
@@ -27,7 +27,7 @@ public class HandlerTask extends richards.Task
     {
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(packet, null)))
       {
-        if (dart._runtime.helpers.ObjectHelper.operatorEqual(packet.getKind(), richards.Richards.KIND_WORK))
+        if ((packet.getKind() == richards.Richards.KIND_WORK))
         {
           this.setV1(packet.addTo(this.getV1()));
         }
@@ -40,14 +40,14 @@ public class HandlerTask extends richards.Task
       {
         int count = this.getV1().getA1();
         richards.Packet v = null;
-        if (dart._runtime.helpers.IntegerHelper.operatorLess(count, richards.Richards.DATA_SIZE))
+        if ((count < richards.Richards.DATA_SIZE))
         {
           if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV2(), null)))
           {
             v = this.getV2();
             this.setV2(this.getV2().getLink());
             v.setA1(this.getV1().getA2().operatorAt_primitive(count));
-            this.getV1().setA1(dart._runtime.helpers.IntegerHelper.operatorPlus(count, 1));
+            this.getV1().setA1((count + 1));
             return this.getScheduler().queue(v);
           }
         }

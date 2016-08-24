@@ -30,13 +30,13 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     }
     public void chooseMethod(int mark)
     {
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1().getMark(), mark))
+      if ((this.getV1().getMark() == mark))
       {
-        this.setDirection((((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV2().getMark(), mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV2().getWalkStrength()))) ? (deltablue.__TopLevel.FORWARD) : (deltablue.__TopLevel.NONE));
+        this.setDirection((((!(this.getV2().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV2().getWalkStrength()))) ? (deltablue.__TopLevel.FORWARD) : (deltablue.__TopLevel.NONE));
       }
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV2().getMark(), mark))
+      if ((this.getV2().getMark() == mark))
       {
-        this.setDirection((((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1().getMark(), mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV1().getWalkStrength()))) ? (deltablue.__TopLevel.BACKWARD) : (deltablue.__TopLevel.NONE));
+        this.setDirection((((!(this.getV1().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV1().getWalkStrength()))) ? (deltablue.__TopLevel.BACKWARD) : (deltablue.__TopLevel.NONE));
       }
       if (deltablue.Strength.weaker(this.getV1().getWalkStrength(), this.getV2().getWalkStrength()))
       {
@@ -55,7 +55,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     }
     public java.lang.Boolean isSatisfied()
     {
-      return (!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDirection(), deltablue.__TopLevel.NONE));
+      return (!(this.getDirection() == deltablue.__TopLevel.NONE));
     }
     public void markInputs(int mark)
     {
@@ -63,11 +63,11 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     }
     public deltablue.Variable input()
     {
-      return (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDirection(), deltablue.__TopLevel.FORWARD)) ? (this.getV1()) : (this.getV2());
+      return ((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV1()) : (this.getV2());
     }
     public deltablue.Variable output()
     {
-      return (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDirection(), deltablue.__TopLevel.FORWARD)) ? (this.getV2()) : (this.getV1());
+      return ((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV2()) : (this.getV1());
     }
     public void recalculate()
     {
@@ -87,7 +87,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint
     public java.lang.Boolean inputsKnown(int mark)
     {
       deltablue.Variable i = this.input();
-      return ((dart._runtime.helpers.ObjectHelper.operatorEqual(i.getMark(), mark) || i.getStay()) || dart._runtime.helpers.ObjectHelper.operatorEqual(i.getDeterminedBy(), null));
+      return (((i.getMark() == mark) || i.getStay()) || dart._runtime.helpers.ObjectHelper.operatorEqual(i.getDeterminedBy(), null));
     }
     public void removeFromGraph()
     {

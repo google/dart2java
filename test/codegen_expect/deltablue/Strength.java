@@ -31,11 +31,11 @@ public class Strength extends dart._runtime.base.DartObject
     }
     public static java.lang.Boolean stronger(deltablue.Strength s1, deltablue.Strength s2)
     {
-      return dart._runtime.helpers.IntegerHelper.operatorLess(s1.getValue(), s2.getValue());
+      return (s1.getValue() < s2.getValue());
     }
     public static java.lang.Boolean weaker(deltablue.Strength s1, deltablue.Strength s2)
     {
-      return dart._runtime.helpers.IntegerHelper.operatorGreater(s1.getValue(), s2.getValue());
+      return (s1.getValue() > s2.getValue());
     }
     public static deltablue.Strength weakest(deltablue.Strength s1, deltablue.Strength s2)
     {

@@ -33,7 +33,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint
     }
     public void chooseMethod(int mark)
     {
-      this.setSatisfied(((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getMyOutput().getMark(), mark)) && deltablue.Strength.stronger(this.getStrength(), this.getMyOutput().getWalkStrength())));
+      this.setSatisfied(((!(this.getMyOutput().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getMyOutput().getWalkStrength())));
     }
     public java.lang.Boolean isSatisfied()
     {

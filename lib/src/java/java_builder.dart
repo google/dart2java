@@ -585,10 +585,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.ForInStmt visitForInStatement(dart.ForInStatement node) {
-    return new java.ForInStmt(
-      node.variable.accept(this),
-      node.iterable.accept(this),
-      wrapInJavaBlock(buildStatement(node.body)));
+    return new java.ForInStmt(node.variable.accept(this),
+        node.iterable.accept(this), wrapInJavaBlock(buildStatement(node.body)));
   }
 
   @override
@@ -603,8 +601,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     String label = nextCodeLabel();
     codeLabels[node] = label;
 
-    return new java.LabeledStmt(label, 
-      wrapInJavaBlock(buildStatement(node.body)));
+    return new java.LabeledStmt(
+        label, wrapInJavaBlock(buildStatement(node.body)));
   }
 
   @override
@@ -615,15 +613,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       procNode = procNode.parent;
     }
 
-    if (node.expression != null 
-      && node.expression.staticType is dart.VoidType) {
+    if (node.expression != null &&
+        node.expression.staticType is dart.VoidType) {
       // Return statement with expression of type "void"
       return new java.Block([
         new java.ExpressionStmt(node.expression.accept(this)),
-        new java.ReturnStmt()]);
+        new java.ReturnStmt()
+      ]);
     } else {
       return new java.ReturnStmt(buildCastedExpression(
-        node.expression, (procNode as dart.Procedure).function.returnType));
+          node.expression, (procNode as dart.Procedure).function.returnType));
     }
   }
 
@@ -697,10 +696,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   /// Finds a [dart.Procedure] in a class and its superclasses.
-  dart.Procedure findProcedureInClassHierarchy(
-      // TODO(springerm): Check mixins
-      String name,
-      dart.Class class_) {
+  // TODO(springerm): Check mixins
+  dart.Procedure findProcedureInClassHierarchy(String name, dart.Class class_) {
     dart.Class nextClass = class_;
     do {
       Iterable<dart.Procedure> matches =
@@ -714,10 +711,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   /// Find a [dart.Field] in a class and its superclasses.
-  dart.Field findFieldInClassHierarchy(
-      // TODO(springerm): Check mixins
-      String name,
-      dart.Class class_) {
+  // TODO(springerm): Check mixins
+  dart.Field findFieldInClassHierarchy(String name, dart.Class class_) {
     dart.Class nextClass = class_;
     do {
       Iterable<dart.Field> matches =
@@ -778,13 +773,59 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         [buildCastedExpression(node.value, expectedType)]);
   }
 
-  @override
-  java.MethodInvocation visitMethodInvocation(dart.MethodInvocation node) {
-    String name = node.name.name;
-    // Expand operator symbol to Java-compatible method name
-    name = Constants.operatorToMethodName[name] ?? name;
+  // Returns [:null:] on failure.
+  java.Expression tryOptimizingOperatorInvocation(dart.MethodInvocation node) {
+    String methodName = node.name.name;
+    if (Constants.operatorToMethodName.containsKey(methodName)) {
+      if (node.receiver.staticType is! dart.InterfaceType) {
+        return null;
+      }
+      dart.InterfaceType type = node.receiver.staticType;
+      ClassImpl classImpl = compilerState.classImpls[type.classNode];
+      if (classImpl?.javaClass is java.PrimitiveType &&
+          (classImpl.javaClass as java.PrimitiveType)
+              .operators
+              .contains(methodName)) {
+        // There is an operator for the type of the receiver that has the same
+        // name as the invocation being compiled.
+        int length = node.arguments.positional.length;
+        if (length == 0) {
+          if (methodName.startsWith('unary')) {
+            // Some unary operators are identified by prepending the string
+            // 'unary' to their name. This needs to be removed when outputting
+            // Java code.
+            methodName = methodName.substring('unary'.length);
+          }
+          return new java.UnaryExpr(node.receiver.accept(this), methodName);
+        }
+        if (length != 1) {
+          throw new CompileErrorException(
+              "Operator $methodName received too many arguments ($length).");
+        }
+        dart.Expression rhs = node.arguments.positional[0];
+        if (rhs.staticType == type) {
+          return new java.BinaryExpr(
+              node.receiver.accept(this), rhs.accept(this), methodName);
+        }
+        // If the static types of the left hand side and the right hand side
+        // (rhs) are different, then default on the optimization.
+      }
+    }
+    return null;
+  }
 
-    if (Constants.objectMethods.contains(name)) {
+  @override
+  java.Expression visitMethodInvocation(dart.MethodInvocation node) {
+    // Try to generate a Java binary or unary expression in case [node] is an
+    // operator on a primitive type.
+    java.Expression expression = tryOptimizingOperatorInvocation(node);
+    if (expression != null) return expression;
+
+    String methodName = node.name.name;
+    // Expand operator symbol to Java-compatible method name
+    String javaName = Constants.operatorToMethodName[methodName] ?? methodName;
+
+    if (Constants.objectMethods.contains(javaName)) {
       // This method is defined on Object and must dispatch to ObjectHelper
       // directly to handle "null" values correctly
       java.ClassOrInterfaceType helperClass =
@@ -794,7 +835,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       List<java.Expression> javaArgs = [node.receiver.accept(this)]
         ..addAll(node.arguments.positional.map((i) => i.accept(this)));
 
-      return new java.MethodInvocation(helperRefExpr, name, javaArgs);
+      return new java.MethodInvocation(helperRefExpr, javaName, javaArgs);
     }
 
     if (node.receiver.staticType is dart.DynamicType) {
@@ -802,46 +843,43 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // Generate static call to helper function
       var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
 
-      List<java.Expression> javaArgs = [ 
-        new java.StringLiteral(name),
-        node.receiver.accept(this)]..addAll(
-          node.arguments.positional.map((i) => i.accept(this)));
+      List<java.Expression> javaArgs = [
+        new java.StringLiteral(javaName),
+        node.receiver.accept(this)
+      ]..addAll(node.arguments.positional.map((i) => i.accept(this)));
 
       return new java.MethodInvocation(
-        helperRefExpr, 
-        Constants.dynamicHelperInvoke, 
-        javaArgs);
+          helperRefExpr, Constants.dynamicHelperInvoke, javaArgs);
     }
 
     if (node.receiver.staticType is! dart.InterfaceType) {
       throw new CompileErrorException(
-        "Expected InterfaceType in method invocation "
-        "(found ${node.staticType.runtimeType})");
+          "Expected InterfaceType in method invocation "
+          "(found ${node.staticType.runtimeType})");
     }
 
-    dart.FunctionNode targetFunction;
     var interfaceType = node.receiver.staticType as dart.InterfaceType;
     dart.Class classNode = interfaceType.classNode;
-
     dart.Procedure procedure =
-        findProcedureInClassHierarchy(node.name.name, classNode);
+        findProcedureInClassHierarchy(methodName, classNode);
 
+    dart.FunctionNode targetFunction;
     if (procedure != null) {
       targetFunction = procedure.function;
     } else {
       throw new CompileErrorException(
-          "Method ${node.name.name} not found in receiver class ${classNode}.");
+          "Method ${methodName} not found in receiver class ${classNode}.");
     }
 
-    // Call specialized generic method is available
+    // Call the specialized generic method if it is available.
     Iterable<java.JavaType> javaTypeArguments =
         interfaceType.typeArguments.map((t) => t.accept(this));
     if (java.JavaType.hasGenericSpecialization(javaTypeArguments)) {
-      name = name + Constants.primitiveSpecializationSuffix;
+      javaName = javaName + Constants.primitiveSpecializationSuffix;
     }
 
-    return buildDynamicMethodInvocation(
-        node.receiver, name, buildArguments(node.arguments, targetFunction));
+    return buildDynamicMethodInvocation(node.receiver, javaName,
+        buildArguments(node.arguments, targetFunction));
   }
 
   @override
@@ -1131,18 +1169,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.CastExpr visitAsExpression(dart.AsExpression node) {
     // TODO(springerm): Add Dart type checks
-    return new java.CastExpr(
-      node.operand.accept(this),
-      node.type.accept(this));
+    return new java.CastExpr(node.operand.accept(this), node.type.accept(this));
   }
 
   /// Translates a node and inserts a cast depending on the expected type.
-  /// 
+  ///
   /// Inserts automatic downcasts if an expression is assigned to an lvalue
   /// with a more specific type.
-  /// 
+  ///
   /// This method is also used for supporting covariant generics.
-  /// 
+  ///
   /// Java generics are not covariant but Dart generics are. The current
   /// implementation uses both Java generics and an additional field for
   /// reified generics in generated Java code. Using Java generics has the
@@ -1209,16 +1245,16 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // Handle automatic upcasts
     if (expectedType is dart.InterfaceType) {
       java.JavaType targetType = expectedType.accept(this);
-      
+
       // Handle assignment of dynamic
       if (type is dart.DynamicType) {
         return new java.CastExpr(node.accept(this), targetType);
       }
 
       // Handle general case with InterfaceTypes
-      if (type is dart.InterfaceType
-        && type.classNode != expectedType.classNode
-        && compilerState.isSubclassOf(expectedType.classNode, type.classNode)) {
+      if (type is dart.InterfaceType &&
+          type.classNode != expectedType.classNode &&
+          compilerState.isSubclassOf(expectedType.classNode, type.classNode)) {
         return new java.CastExpr(node.accept(this), targetType);
       }
     }

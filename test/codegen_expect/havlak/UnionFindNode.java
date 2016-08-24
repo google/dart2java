@@ -2,7 +2,7 @@ package havlak;
 
 public class UnionFindNode extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/havlak.dart", "UnionFindNode");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "UnionFindNode");
     static {
       havlak.UnionFindNode.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -44,7 +44,7 @@ public class UnionFindNode extends dart._runtime.base.DartObject
         }
         node = node.getParent();
       }
-      for (int iter = 0; dart._runtime.helpers.IntegerHelper.operatorLess(iter, nodeList.getLength()); iter = dart._runtime.helpers.IntegerHelper.operatorPlus(iter, 1))
+      for (int iter = 0; (iter < nodeList.getLength()); iter = (iter + 1))
       {
         nodeList.operatorAt(iter).setParent(node.getParent());
       }

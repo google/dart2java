@@ -2,7 +2,7 @@ package richards;
 
 public class WorkerTask extends richards.Task
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "WorkerTask");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "WorkerTask");
     static {
       richards.WorkerTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
@@ -34,7 +34,7 @@ public class WorkerTask extends richards.Task
       {
         return this.getScheduler().suspendCurrent();
       }
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1(), richards.Richards.ID_HANDLER_A))
+      if ((this.getV1() == richards.Richards.ID_HANDLER_A))
       {
         this.setV1(richards.Richards.ID_HANDLER_B);
       }
@@ -44,10 +44,10 @@ public class WorkerTask extends richards.Task
       }
       packet.setId(this.getV1());
       packet.setA1(0);
-      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, richards.Richards.DATA_SIZE); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; (i < richards.Richards.DATA_SIZE); i = (i + 1))
       {
-        dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setV2(dart._runtime.helpers.IntegerHelper.operatorPlus(__tempVar_1.getV2(), 1)));
-        if (dart._runtime.helpers.IntegerHelper.operatorGreater(this.getV2(), 26))
+        dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setV2((__tempVar_1.getV2() + 1)));
+        if ((this.getV2() > 26))
         {
           this.setV2(1);
         }

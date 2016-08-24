@@ -33,14 +33,14 @@ public class Expect extends dart._runtime.base.DartObject
     }
     public static void listEquals(dart._runtime.base.DartList<java.lang.Object> expected, dart._runtime.base.DartList<java.lang.Object> actual)
     {
-      if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(expected.getLength(), actual.getLength())))
+      if ((!(expected.getLength() == actual.getLength())))
       {
         dart.core.__TopLevel.print("Lists have different lengths: ");
         dart.core.__TopLevel.print(expected.getLength());
         dart.core.__TopLevel.print("vs ");
         dart.core.__TopLevel.print(actual.getLength());
       }
-      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, actual.getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; (i < actual.getLength()); i = (i + 1))
       {
         deltablue.Expect.equals(expected.operatorAt(i), actual.operatorAt(i));
       }

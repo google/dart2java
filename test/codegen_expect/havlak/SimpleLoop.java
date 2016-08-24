@@ -2,7 +2,7 @@ package havlak;
 
 public class SimpleLoop extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/havlak.dart", "SimpleLoop");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "SimpleLoop");
     static {
       havlak.SimpleLoop.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -60,7 +60,7 @@ public class SimpleLoop extends dart._runtime.base.DartObject
     public void setNestingLevel_(int level)
     {
       this.setNestingLevel(level);
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(level, 0))
+      if ((level == 0))
       {
         this.setIsRoot(true);
       }

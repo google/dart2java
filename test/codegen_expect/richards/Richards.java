@@ -2,7 +2,7 @@ package richards;
 
 public class Richards extends richards.BenchmarkBase
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "Richards");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "Richards");
     static {
       richards.Richards.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.BenchmarkBase.dart2java$typeInfo);
     }
@@ -65,15 +65,15 @@ public class Richards extends richards.BenchmarkBase
       scheduler.addDeviceTask(richards.Richards.ID_DEVICE_A, 4000, null);
       scheduler.addDeviceTask(richards.Richards.ID_DEVICE_B, 5000, null);
       scheduler.schedule();
-      if (((!dart._runtime.helpers.ObjectHelper.operatorEqual(scheduler.getQueueCount(), richards.Richards.EXPECTED_QUEUE_COUNT)) || (!dart._runtime.helpers.ObjectHelper.operatorEqual(scheduler.getHoldCount(), richards.Richards.EXPECTED_HOLD_COUNT))))
+      if (((!(scheduler.getQueueCount() == richards.Richards.EXPECTED_QUEUE_COUNT)) || (!(scheduler.getHoldCount() == richards.Richards.EXPECTED_HOLD_COUNT))))
       {
         dart.core.__TopLevel.print(((((("Error during execution: queueCount = " + scheduler.getQueueCount()) + "") + ", holdCount = ") + scheduler.getHoldCount()) + "."));
       }
-      if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(richards.Richards.EXPECTED_QUEUE_COUNT, scheduler.getQueueCount())))
+      if ((!(richards.Richards.EXPECTED_QUEUE_COUNT == scheduler.getQueueCount())))
       {
         throw new RuntimeException("bad scheduler queue-count");
       }
-      if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(richards.Richards.EXPECTED_HOLD_COUNT, scheduler.getHoldCount())))
+      if ((!(richards.Richards.EXPECTED_HOLD_COUNT == scheduler.getHoldCount())))
       {
         throw new RuntimeException("bad scheduler hold-count");
       }

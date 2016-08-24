@@ -2,7 +2,7 @@ package richards;
 
 public class Scheduler extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/richards.dart", "Scheduler");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "Scheduler");
     static {
       richards.Scheduler.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -82,7 +82,7 @@ public class Scheduler extends dart._runtime.base.DartObject
         return tcb;
       }
       tcb.markAsNotHeld();
-      if (dart._runtime.helpers.IntegerHelper.operatorGreater(tcb.getPriority(), this.getCurrentTcb().getPriority()))
+      if ((tcb.getPriority() > this.getCurrentTcb().getPriority()))
       {
         return tcb;
       }
@@ -91,7 +91,7 @@ public class Scheduler extends dart._runtime.base.DartObject
     public richards.TaskControlBlock holdCurrent()
     {
       richards.Scheduler __tempVar_1;
-      dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setHoldCount(dart._runtime.helpers.IntegerHelper.operatorPlus(__tempVar_1.getHoldCount(), 1)));
+      dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setHoldCount((__tempVar_1.getHoldCount() + 1)));
       this.getCurrentTcb().markAsHeld();
       return this.getCurrentTcb().getLink();
     }
@@ -108,7 +108,7 @@ public class Scheduler extends dart._runtime.base.DartObject
       {
         return t;
       }
-      dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_3 = this, __tempVar_3.setQueueCount(dart._runtime.helpers.IntegerHelper.operatorPlus(__tempVar_3.getQueueCount(), 1)));
+      dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_3 = this, __tempVar_3.setQueueCount((__tempVar_3.getQueueCount() + 1)));
       packet.setLink(null);
       packet.setId(this.getCurrentId());
       return t.checkPriorityAdd(this.getCurrentTcb(), packet);

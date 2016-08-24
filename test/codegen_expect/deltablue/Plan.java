@@ -33,7 +33,7 @@ public class Plan extends dart._runtime.base.DartObject
     }
     public void execute()
     {
-      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, this.getList().getLength()); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; (i < this.getList().getLength()); i = (i + 1))
       {
         this.getList().operatorAt(i).execute();
       }

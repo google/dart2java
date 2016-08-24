@@ -12,7 +12,7 @@ public class __TopLevel
     }
     public static int mix(int existing, int value)
     {
-      return dart._runtime.helpers.IntegerHelper.operatorPlus(dart._runtime.helpers.IntegerHelper.operatorShiftLeft(dart._runtime.helpers.IntegerHelper.operatorBitAnd(existing, 268435455), 1), value);
+      return (((existing & 268435455) << 1) + value);
     }
     public static int getNumBasicBlocks()
     {
@@ -21,11 +21,11 @@ public class __TopLevel
     public static int buildDiamond(havlak.CFG cfg, int start)
     {
       int bb0 = start;
-      new havlak.BasicBlockEdge(cfg, bb0, dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 1));
-      new havlak.BasicBlockEdge(cfg, bb0, dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 2));
-      new havlak.BasicBlockEdge(cfg, dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 1), dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 3));
-      new havlak.BasicBlockEdge(cfg, dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 2), dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 3));
-      return dart._runtime.helpers.IntegerHelper.operatorPlus(bb0, 3);
+      new havlak.BasicBlockEdge(cfg, bb0, (bb0 + 1));
+      new havlak.BasicBlockEdge(cfg, bb0, (bb0 + 2));
+      new havlak.BasicBlockEdge(cfg, (bb0 + 1), (bb0 + 3));
+      new havlak.BasicBlockEdge(cfg, (bb0 + 2), (bb0 + 3));
+      return (bb0 + 3);
     }
     public static void buildConnect(havlak.CFG cfg, int start, int end)
     {
@@ -33,11 +33,11 @@ public class __TopLevel
     }
     public static int buildStraight(havlak.CFG cfg, int start, int n)
     {
-      for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, n); i = dart._runtime.helpers.IntegerHelper.operatorPlus(i, 1))
+      for (int i = 0; (i < n); i = (i + 1))
       {
-        havlak.__TopLevel.buildConnect(cfg, dart._runtime.helpers.IntegerHelper.operatorPlus(start, i), dart._runtime.helpers.IntegerHelper.operatorPlus(dart._runtime.helpers.IntegerHelper.operatorPlus(start, i), 1));
+        havlak.__TopLevel.buildConnect(cfg, (start + i), ((start + i) + 1));
       }
-      return dart._runtime.helpers.IntegerHelper.operatorPlus(start, n);
+      return (start + n);
     }
     public static int buildBaseLoop(havlak.CFG cfg, int from)
     {

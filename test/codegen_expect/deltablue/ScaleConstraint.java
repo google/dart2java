@@ -50,13 +50,13 @@ public class ScaleConstraint extends deltablue.BinaryConstraint
     }
     public void execute()
     {
-      if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDirection(), deltablue.__TopLevel.FORWARD))
+      if ((this.getDirection() == deltablue.__TopLevel.FORWARD))
       {
-        this.getV2().setValue(dart._runtime.helpers.IntegerHelper.operatorPlus(dart._runtime.helpers.IntegerHelper.operatorStar(this.getV1().getValue(), this.getScale().getValue()), this.getOffset().getValue()));
+        this.getV2().setValue(((this.getV1().getValue() * this.getScale().getValue()) + this.getOffset().getValue()));
       }
       else
       {
-        this.getV1().setValue(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide(dart._runtime.helpers.IntegerHelper.operatorMinus(this.getV2().getValue(), this.getOffset().getValue()), this.getScale().getValue()));
+        this.getV1().setValue(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide((this.getV2().getValue() - this.getOffset().getValue()), this.getScale().getValue()));
       }
     }
     public void recalculate()

@@ -2,7 +2,7 @@ package havlak;
 
 public class BasicBlock extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/havlak.dart", "BasicBlock");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "BasicBlock");
     static {
       havlak.BasicBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -26,7 +26,7 @@ public class BasicBlock extends dart._runtime.base.DartObject
       this.outEdges = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock.class);
       this.name = name;
       super._constructor();
-      havlak.__TopLevel.numBasicBlocks = dart._runtime.helpers.IntegerHelper.operatorPlus(havlak.__TopLevel.numBasicBlocks, 1);
+      havlak.__TopLevel.numBasicBlocks = (havlak.__TopLevel.numBasicBlocks + 1);
     }
     public java.lang.String toString()
     {

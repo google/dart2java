@@ -24,12 +24,24 @@ abstract class JavaType extends Node {
   /// There is no "void" type in Java.
   static const VoidType void_ = const VoidType._();
 
+  static const booleanOperators = const [
+    '==',
+    '!=',
+    '!',
+    '&',
+    '^',
+    '|',
+    '&&',
+    '||'
+  ];
+
   /// The boolean type has exactly two values: `true` and `false`.
-  static const PrimitiveType boolean = const PrimitiveType._("boolean");
+  static const PrimitiveType boolean =
+      const PrimitiveType._("boolean", booleanOperators);
 
   /// The default superclass of all Dart classes.
   static ClassOrInterfaceType dartObject = new ClassOrInterfaceType(
-    Constants.dartObjectPackage, Constants.dartObjectClassname);
+      Constants.dartObjectPackage, Constants.dartObjectClassname);
 
   /// The Java Object type.
   static ClassOrInterfaceType object =
@@ -63,27 +75,72 @@ abstract class JavaType extends Node {
       
   // Numeric types.
   // Numeric types / Integral types.
+
+  static const integerOperators = const [
+    '<',
+    '<=',
+    '>',
+    '>=',
+    '==',
+    '!=',
+    'unary+',
+    'unary-',
+    '*',
+//    '/', Dart division is not truncated by default!
+    '%',
+    '+',
+    '-',
+    '++',
+    '--',
+    '<<',
+    '>>',
+    '>>>',
+    '~',
+    '&',
+    '^',
+    '|'
+  ];
+
   /// 8-bit signed two's complement integer.
-  static const PrimitiveType byte = const PrimitiveType._("byte");
+  static const PrimitiveType byte = const PrimitiveType._("byte", integerOperators);
 
   /// 16-bit signed two's complement integer.
-  static const PrimitiveType short = const PrimitiveType._("short");
+  static const PrimitiveType short = const PrimitiveType._("short", integerOperators);
 
   /// 32-bit signed two's complement integer.
-  static const PrimitiveType int_ = const PrimitiveType._("int");
+  static const PrimitiveType int_ = const PrimitiveType._("int", integerOperators);
 
   /// 64-bit signed two's complement integer.
-  static const PrimitiveType long = const PrimitiveType._("long");
+  static const PrimitiveType long = const PrimitiveType._("long", integerOperators);
 
   /// 16-bit unsigned integers representing UTF-16 code units.
-  static const PrimitiveType char = const PrimitiveType._("char");
+  static const PrimitiveType char = const PrimitiveType._("char", integerOperators);
 
+  static const floatingPointOperators = const [
+    '<',
+    '<=',
+    '>',
+    '>=',
+    '==',
+    '!=',
+    'unary+',
+    'unary-',
+    '*',
+    '/',
+    '%',
+    '+',
+    '-',
+    '++',
+    '--'
+  ];
   // Numeric types / Floating-point types.
   /// 32-bit IEEE 754 floating-point number.
-  static const PrimitiveType float = const PrimitiveType._("float");
+  static const PrimitiveType float =
+      const PrimitiveType._("float", floatingPointOperators);
 
   /// 64-bit IEEE 754 floating-point number.
-  static const PrimitiveType double_ = const PrimitiveType._("double");
+  static const PrimitiveType double_ =
+      const PrimitiveType._("double", floatingPointOperators);
 
   static Map<JavaType, String> genericSpecializations = {
     javaBooleanClass: "_bool",
@@ -92,8 +149,8 @@ abstract class JavaType extends Node {
   };
 
   static bool hasGenericSpecialization(Iterable<JavaType> typeArguments) {
-    return typeArguments.length == 1 
-      && genericSpecializations.containsKey(typeArguments.single);
+    return typeArguments.length == 1 &&
+        genericSpecializations.containsKey(typeArguments.single);
   }
 
   static String getGenericImplementation(Iterable<JavaType> typeArguments) {
@@ -115,7 +172,11 @@ class VoidType extends JavaType {
 ///
 /// Primitive values do not share state with other primitive values.
 class PrimitiveType extends JavaType {
-  const PrimitiveType._(String name) : super(name);
+  /// A list of operators this [PrimitiveType] supports in Java. See
+  /// [Constants.operatorToMethodNames] for examples.
+  final List<String> operators;
+
+  const PrimitiveType._(String name, this.operators) : super(name);
 }
 
 // TODO(stanm): consider the null type.
@@ -124,7 +185,6 @@ abstract class ReferenceType extends JavaType {
 }
 
 class ClassOrInterfaceType extends ReferenceType {
-
   /// The package containing this class or interface.
   ///
   /// This is only the package; it does not contain any enclosing classes. To
@@ -199,12 +259,13 @@ class ClassOrInterfaceType extends ReferenceType {
         isInterface: isInterface, typeArguments: typeArguments);
   }
 
-  ClassOrInterfaceType._copy(String name, this.package, this.isInterface, 
-    this.isStatic, this.enclosingType, this.typeArguments) : super(name);
+  ClassOrInterfaceType._copy(String name, this.package, this.isInterface,
+      this.isStatic, this.enclosingType, this.typeArguments)
+      : super(name);
 
   ClassOrInterfaceType withTypeArguments(List<JavaType> typeArgs) {
-    return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
-      enclosingType, typeArgs);
+    return new ClassOrInterfaceType._copy(
+        name, package, isInterface, isStatic, enclosingType, typeArgs);
   }
 
   /// Returns [true] if this type is generic.
@@ -243,8 +304,9 @@ class ClassOrInterfaceType extends ReferenceType {
 
     if (isGeneric) {
       if (JavaType.hasGenericSpecialization(typeArguments)) {
-        return identifier + "." 
-          + JavaType.getGenericImplementation(typeArguments);
+        return identifier +
+            "." +
+            JavaType.getGenericImplementation(typeArguments);
       }
 
       String typeArgs = typeArguments.map(
