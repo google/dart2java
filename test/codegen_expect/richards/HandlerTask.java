@@ -2,29 +2,31 @@ package richards;
 
 public class HandlerTask extends richards.Task
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "HandlerTask");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/richards.dart", "HandlerTask");
     static {
       richards.HandlerTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
     public richards.Packet v1;
     public richards.Packet v2;
   
-    public HandlerTask(richards.Scheduler scheduler)
+    public HandlerTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler);
     }
-    public HandlerTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public HandlerTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(richards.Scheduler scheduler)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(scheduler);
     }
     public richards.TaskControlBlock run(richards.Packet packet)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(packet, null)))
       {
         if ((packet.getKind() == richards.Richards.KIND_WORK))
@@ -62,6 +64,7 @@ public class HandlerTask extends richards.Task
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "HandlerTask";
     }
     public richards.Packet getV1()

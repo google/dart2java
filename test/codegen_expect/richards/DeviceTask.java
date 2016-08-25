@@ -2,28 +2,30 @@ package richards;
 
 public class DeviceTask extends richards.Task
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "DeviceTask");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/richards.dart", "DeviceTask");
     static {
       richards.DeviceTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
     public richards.Packet v1;
   
-    public DeviceTask(richards.Scheduler scheduler)
+    public DeviceTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler);
     }
-    public DeviceTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public DeviceTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(richards.Scheduler scheduler)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(scheduler);
     }
     public richards.TaskControlBlock run(richards.Packet packet)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(packet, null))
       {
         if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1(), null))
@@ -39,6 +41,7 @@ public class DeviceTask extends richards.Task
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "DeviceTask";
     }
     public richards.Packet getV1()

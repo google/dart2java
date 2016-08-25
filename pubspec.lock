@@ -3,10 +3,10 @@
 packages:
   analyzer:
     description:
-      path: "/usr/local/google/home/stanm/f/d/dart/sdk/pkg/analyzer"
-      relative: false
-    source: path
-    version: "0.28.0-alpha.2"
+      name: analyzer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.28.0"
   archive:
     description:
       name: archive
@@ -181,7 +181,7 @@ packages:
       name: package_resolver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   path:
     description:
       name: path
@@ -277,7 +277,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.15+3"
+    version: "0.12.15+6"
   typed_data:
     description:
       name: typed_data

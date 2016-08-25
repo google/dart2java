@@ -2,25 +2,26 @@ package havlak;
 
 public class Havlak extends havlak.BenchmarkBase
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "Havlak");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/havlak.dart", "Havlak");
     static {
       havlak.Havlak.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BenchmarkBase.dart2java$typeInfo);
     }
     public havlak.CFG cfg;
   
-    public Havlak()
+    public Havlak(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor();
     }
-    public Havlak(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public Havlak(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor()
     {
-      this.cfg = new havlak.CFG();
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.cfg = new havlak.CFG(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.CFG.dart2java$typeInfo)));
       super._constructor("Havlak");
       this.getCfg().createNode(0);
       havlak.__TopLevel.buildBaseLoop(this.getCfg(), 0);
@@ -48,8 +49,9 @@ public class Havlak extends havlak.BenchmarkBase
     }
     public void exercise()
     {
-      havlak.LSG lsg = new havlak.LSG();
-      havlak.HavlakLoopFinder finder = new havlak.HavlakLoopFinder(this.getCfg(), lsg);
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      havlak.LSG lsg = new havlak.LSG(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.LSG.dart2java$typeInfo)));
+      havlak.HavlakLoopFinder finder = new havlak.HavlakLoopFinder(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.HavlakLoopFinder.dart2java$typeInfo)), this.getCfg(), lsg);
       int numLoops = finder.findLoops();
       if ((!(numLoops == 1522)))
       {
@@ -58,10 +60,11 @@ public class Havlak extends havlak.BenchmarkBase
     }
     public void warmup()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       for (int dummyloop = 0; (dummyloop < 20); dummyloop = (dummyloop + 1))
       {
-        havlak.LSG lsg = new havlak.LSG();
-        havlak.HavlakLoopFinder finder = new havlak.HavlakLoopFinder(this.getCfg(), lsg);
+        havlak.LSG lsg = new havlak.LSG(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.LSG.dart2java$typeInfo)));
+        havlak.HavlakLoopFinder finder = new havlak.HavlakLoopFinder(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.HavlakLoopFinder.dart2java$typeInfo)), this.getCfg(), lsg);
         finder.findLoops();
         int checksum = lsg.checksum();
         if ((!(checksum == 435630002)))

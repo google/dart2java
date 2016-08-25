@@ -2,7 +2,7 @@ package richards;
 
 public class Packet extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "Packet");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/richards.dart", "Packet");
     static {
       richards.Packet.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -12,18 +12,19 @@ public class Packet extends dart._runtime.base.DartObject
     public int a1;
     public dart._runtime.base.DartList._int a2;
   
-    public Packet(richards.Packet link, int id, int kind)
+    public Packet(dart._runtime.types.simple.Type type, richards.Packet link, int id, int kind)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(link, id, kind);
     }
-    public Packet(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public Packet(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(richards.Packet link, int id, int kind)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.id = 0;
       this.kind = 0;
       this.a1 = 0;
@@ -35,6 +36,7 @@ public class Packet extends dart._runtime.base.DartObject
     }
     public richards.Packet addTo(richards.Packet queue)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setLink(null);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(queue, null))
       {
@@ -51,6 +53,7 @@ public class Packet extends dart._runtime.base.DartObject
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "Packet";
     }
     public richards.Packet getLink()

@@ -9,12 +9,10 @@
 ///
 /// * Type environments are objects of the Java class [typeEnvType] (or one of
 ///   its subtypes). They hold the values of type variables at some point in
-///   execution. There is a top-level type environment (accessed via
-///   [getTopLevelTypeEnv]) that should be used in static initializers, but
-///   inside the body of a function, the compiler should use [getLocalTypeEnv]
-///   instead. This retrieves the correct type environment at the current point
-///   in execution (which might belong to the enclosing (generic) class or
-///   (generic) function).
+///   execution. The compiler should insert code in certain places (described
+///   below) to create local variables that describe the current type
+///   environment. When needed, the compiler can use the code from [getTypeEnv]
+///   to access the type environment (even inside of nested functions, etc.)
 /// * Type expressions are objects of the Java class [typeExprType] (or one of
 ///   its subtypes). They are symbolic representations of a type, analogous to
 ///   `List<int>` or `Map<String,T>`. Type expressions may involve type
@@ -24,10 +22,8 @@
 /// * Type representations are objects of the Java class [typeRepType] (or one
 ///   of its subclasses). These representations are stored on Dart objects, and
 ///   are used for type testing. In addition, the type representations for
-///   classes and functions have an associated type environment. This
-///   environment is currently only accessible to the compiler indirectly via
-///   [getLocalTypeEnv], but it might need to be exposed in the future for
-///   closures.
+///   classes and functions have an associated type environment, but this is not
+///   directly accessible by the compiler.
 /// * Type info records are objects of unspecified Java classes. They are used
 ///   to store semantic information like the signature of a class (i.e. its
 ///   superclass, interfaces, etc.) or the signature of a function (i.e. its
@@ -54,40 +50,51 @@
 ///     * Under the current class model, each generated class will have one
 ///       initializing constructor (called an empty constructor, because its
 ///       body is empty) that just calls the superclass empty constructor. These
-///       empty constructors should take a type representation as their only
-///       argument, which they pass to their superconstructors. The constructor
-///       for the synthetic base classes (like DartObject, and any other base
-///       classes generated for @JavaClasses) should accept and store this type.
+///       empty constructors should take two parameters: first, a parameter of
+///       type `ConstructorHelper.EmptyConstructorMarker` (typically, the value
+///       passed for this parameter will be `null`)  and second, a type rep (or
+///       static type [typeRepType]). The empty constructor should pass these
+///       arguments verbatim to its super-constructor. The `DartObject`
+///       constructor will save the type rep in a field (and ignore the marker).
 ///     * The non-synthetic constructors need to receive the actual type
-///       parameters for the object under construction, if there are any. The
-///       compiler should call [getExtraConstructorDeclArg], which will either
-///       return a [VariableDecl] (in which case, this [VariableDecl] should be
-///       inserted as the first argument to the constructor) or [:null:] (in
-///       which case, no argument should be added to the constructor signature).
-///       In either case, the non-synthetic constructor must delegate to the
-///       empty constructor, which expects a [typeRepType] as its argument. Call
-///       [makeThisTypeInCtor], which returns an [Expression] that should be
-///       used as the argument to the empty constructor invocation.
+///       of the object under construction. The compiler should add an argument
+///       of type [typeRepType] as the first formal parameter to every generated
+///       constructor (each _delegator_, in the language used in the
+///       documentation comment on [JavaBuilder.buildConstructor]). This
+///       argument should be passed verbatim to the empty constructor (along
+///       with the marker object, which should be passed as
+///       `(EmptyConstructorMarker) null`).
+///
+/// * When compiling the static initialization block that contains all static
+///   field initializers (we assume that all static field initializers are moved
+///   into a single static initialization block, in order to declare this local
+///   variable):
+///
+///     * Insert the variable declaration returned by [makeTopLevelEnvVar] at
+///       the beginning of the block.
+///
+/// * When compiling a constructor body (which includes instance initializers
+///   and Dart code), and when compiling a method body (instance method, static
+///   method, or top-level method):
+///
+///      * Insert the variable declaration returned by [makeMethodEnvVar] at the
+///        beginning of the method body.
 ///
 /// * When compiling a constructor invocation:
 ///
-///     * There might be an extra parameter needed, which was inserted by the
-///       type system (to pass the actual type parameters). Call
-///       [getExtraConstructorArg], which will either return an [Expression] or
-///       [:null:]. If not null, insert the expression as the first parameter to
-///       the constructor call.
+///     * Build a type expression via [makeTypeExprForConstructorInvocation].
+///     * Evaluate the type expression as described below.
 ///
-/// * When compiling a reference to a type (`is` expression, parameterized
-///   constructor, etc.):
+/// * When compiling a reference to a type (`is` expression, constructor, etc.)
+///   stored as a [dart.DartType]:
 ///
-///      * Build the type expression via [makeTypeExpr].
-///      * If the type occurs in a top-level environment (such as a top-level
-///        variable initializer), retrieve the top-level type environment via
-///        [getTopLevelTypeEnv].  Otherwise, if the type occurs inside a class
-///        context (including field initializers) or inside a function
-///        (including both instance methods and static functions), retrieve the
-///        type environment for that context via [getLocalTypeEnv].
-///      * Call [evaluateTypeExpr] with these two parameters.
+///     * Build the type expression via [makeTypeExpr].
+///     * Evaluate the type expression as described below.
+///
+/// * To evaluate a type expression:
+///
+///     * Call [evaluateTypeExpr] with the type environment (accessed via
+///     [getTypeEnv] and the type expression in question.
 library dart2java.src.java.type_system;
 
 import 'package:kernel/ast.dart' as dart;
@@ -149,7 +156,7 @@ FieldDecl makeTypeInfoField(dart.Class node, CompilerState compilerState) {
       initializer: constructorCall);
 }
 
-/// Generate a static intializer block that completes initialization of the
+/// Generate a static initializer block that completes initialization of the
 /// type info field for a Dart class.
 ///
 /// This initializer block should be inserted directly after the type info field
@@ -200,43 +207,61 @@ Expression getTypeOf(Expression object) {
       new ClassRefExpr(_typeHelperType), 'getTrueType', [object]);
 }
 
-/// Retrieve the top-level type environment.
+/// Insert this variable declaration at the top of the static initializer block
+/// generated for Dart static field initializers.
 ///
-/// This should be used for evaluating types in a top-level scope, such as a
-/// global variable initializer. Most of the time, the compiler should use
-/// [getLocalTypeEnv] instead.
-Expression getTopLevelTypeEnv() {
-  return new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT');
+/// The resulting variable is used by the type system to implement [getTypeEnv].
+VariableDeclStmt makeTopLevelEnvVar() {
+  return new VariableDeclStmt(new VariableDecl(
+      _localTypeEnvVarName, _typeEnvironmentType,
+      isFinal: true,
+      initializer:
+          new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT')));
 }
 
-/// Retrieve the type environment for the current local context.
+/// Insert this variable declaration at the top of each method body.
 ///
-/// Ultimately, every "local context" will be a Java method body (even instance
-/// field initializers are moved into a synthetic method body in our current
-/// object model; the constructors will call these generated methods). The local
-/// type environment will be saved in an instance variable in the function; how
-/// that variable is initialized is still TBD.
+/// The resulting variable is used by the type system to implement [getTypeEnv].
+/// The [member] must be either a [dart.Procedure] or a [dart.Constructor].
+VariableDeclStmt makeMethodEnvVar(
+    dart.Member member, CompilerState compilerState) {
+  bool isStatic;
+  if (member is dart.Constructor) {
+    isStatic = false;
+  } else if (member is dart.Procedure) {
+    isStatic = member.isStatic;
+    if (member.function.typeParameters.isNotEmpty) {
+      // TODO(andrewkrieger): Extend the type environment with additional
+      // parameters. This will be needed for generic constructors as well.
+      throw new UnimplementedError('Generic methods not implemented.');
+    }
+  } else {
+    throw new StateError('Invalid member $member of type ${member.runtimeType} '
+        'passed to makeMethodEnvVar');
+  }
+
+  Expression initializer;
+  if (isStatic) {
+    initializer =
+        new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT');
+  } else {
+    initializer = new FieldAccess(
+        new FieldAccess(new IdentifierExpr('this'), _typeFieldName), 'env');
+  }
+
+  return new VariableDeclStmt(new VariableDecl(
+      _localTypeEnvVarName, _typeEnvironmentType,
+      isFinal: true, initializer: initializer));
+}
+
+/// Retrieve the current type environment.
 ///
-/// This type environment is constant throughout the body of the immediately
-/// enclosing function. The environment for nested functions might be an
-/// extension of the current function's environment, so it is not generally safe
-/// to reuse the outer function's type environment directly in the inner
-/// function. For example, in the following Dart code, the expression `Set<S>`
-/// must be evaluated in the inner function's type environment:
-///
-///     void outer<T>(T t) {
-///       void inner<S>(S s1, S s2) {
-///         foo(new Set<S>([s1, s2]));
-///       }
-///
-///       inner<List<T>>([t], [t, t]);
-///     }
-// TODO(andrewkrieger): Once function types are implemented, add local type
-// environment support (a method for generating and initializing the local
-// variable, and appropriate comments here, on that method, and in the library
-// documentation comment).
-Expression getLocalTypeEnv() {
-  return new IdentifierExpr(_localTypeVarName);
+/// The compiler will always generate code in blocks (usually function bodies;
+/// occasionally initialization blocks) that store the correct type environment
+/// in a local variable. The expression returned by this method accesses that
+/// variable.
+Expression getTypeEnv() {
+  return new IdentifierExpr(_localTypeEnvVarName);
 }
 
 /// Make a type expression for a Dart type.
@@ -248,10 +273,18 @@ Expression getLocalTypeEnv() {
 /// The expression may be stored in any variable (including static variables).
 /// It may be reused in any type environment in which [type] is valid (i.e., any
 /// type context that includes any type parameters on which [type] depends).
-/// In particular, if [type] does not depend on any type variables, then the
-/// expression can be reused in any type environment.
 Expression makeTypeExpr(dart.DartType type, CompilerState compilerState) {
   return type.accept(new _TypeExprBuilder(compilerState));
+}
+
+/// Make a type expression for a Dart constructor invocation.
+///
+/// The expression may be computed once and the same value used for every
+/// execution of the [dart.ConstructorInvocation].
+Expression makeTypeExprForConstructorInvocation(
+    dart.ConstructorInvocation node, CompilerState compilerState) {
+  return _makeInterfaceTypeExpr(
+      node.target.enclosingClass, node.arguments.types, compilerState);
 }
 
 /// Evaluate a type expression in the context of a type environment.
@@ -274,6 +307,19 @@ Expression makeSubtypeCheck(Expression leftType, Expression rightType) {
   return new MethodInvocation(leftType, 'isSubtypeOf', [rightType]);
 }
 
+Expression _makeInterfaceTypeExpr(dart.Class classNode,
+    Iterable<dart.DartType> typeParams, CompilerState compilerState) {
+  var typeParamExprs =
+      typeParams.map((t) => makeTypeExpr(t, compilerState)).toList();
+  var constructorArgs = <Expression>[
+    _makeTypeInfoGetter(classNode, compilerState)
+  ];
+  if (typeParamExprs.isNotEmpty) {
+    constructorArgs.add(new ArrayInitializer(_typeExprType, typeParamExprs));
+  }
+  return new NewExpr(new ClassRefExpr(_interfaceTypeExprType), constructorArgs);
+}
+
 class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
   final CompilerState compilerState;
 
@@ -286,23 +332,15 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
 
   @override
   Expression visitInterfaceType(dart.InterfaceType type) {
-    var constructorArgs = <Expression>[_makeTypeInfoGetter(type.classNode)];
-    if (type.typeArguments.isNotEmpty) {
-      constructorArgs.add(new ArrayInitializer(
-          _typeExprType,
-          type.typeArguments
-              .map((dart.DartType t) => t.accept(this) as Expression)
-              .toList()));
-    }
-    return new NewExpr(
-        new ClassRefExpr(_interfaceTypeExprType), constructorArgs);
+    return _makeInterfaceTypeExpr(
+        type.classNode, type.typeArguments, compilerState);
   }
 
   @override
   Expression visitTypeParameterType(dart.TypeParameterType type) {
     var parent = type.parameter.parent;
     if (parent is dart.Class) {
-      var typeInfoGetter = _makeTypeInfoGetter(parent);
+      var typeInfoGetter = _makeTypeInfoGetter(parent, compilerState);
       var typeVarIndex = parent.typeParameters.indexOf(type.parameter);
       if (typeVarIndex < 0) {
         throw new Exception('Type parameter "${type.parameter}" not found in '
@@ -318,19 +356,20 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
           'parent "$parent" of runtime-type ${parent.runtimeType}');
     }
   }
-
-  Expression _makeTypeInfoGetter(dart.Class forClass) {
-    return new FieldAccess(
-        new ClassRefExpr(compilerState.hasJavaImpl(forClass)
-            ? compilerState.getHelperClass(forClass)
-            : compilerState.getClass(forClass)),
-        _typeInfoFieldName);
-  }
 }
 
-// These constants are declared here, rather than in constants., since they are
+Expression _makeTypeInfoGetter(
+    dart.Class forClass, CompilerState compilerState) {
+  return new FieldAccess(
+      new ClassRefExpr(compilerState.hasJavaImpl(forClass)
+          ? compilerState.getHelperClass(forClass)
+          : compilerState.getClass(forClass)),
+      _typeInfoFieldName);
+}
+
+// These constants are declared here, rather than in constants, since they are
 // type-system specific.
-const _localTypeVarName = 'dart2java\$currType';
+const _localTypeEnvVarName = 'dart2java\$localTypeEnv';
 const _typeFieldName = 'dart2java\$type';
 const _typeInfoFieldName = 'dart2java\$typeInfo';
 const _typePackage = 'dart._runtime.types.simple';

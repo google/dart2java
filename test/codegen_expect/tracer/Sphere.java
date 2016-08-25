@@ -2,30 +2,32 @@ package tracer;
 
 public class Sphere extends tracer.BaseShape
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/tracer.dart", "Sphere");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/tracer.dart", "Sphere");
     static {
       tracer.Sphere.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.BaseShape.dart2java$typeInfo);
     }
     public java.lang.Double radius;
   
-    public Sphere(java.lang.Object pos, java.lang.Double radius, java.lang.Object material)
+    public Sphere(dart._runtime.types.simple.Type type, java.lang.Object pos, java.lang.Double radius, java.lang.Object material)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(pos, radius, material);
     }
-    public Sphere(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public Sphere(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(java.lang.Object pos, java.lang.Double radius, java.lang.Object material)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.radius = radius;
       super._constructor(pos, material);
     }
     public tracer.IntersectionInfo intersect(tracer.Ray ray)
     {
-      tracer.IntersectionInfo info = new tracer.IntersectionInfo();
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      tracer.IntersectionInfo info = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.IntersectionInfo.dart2java$typeInfo)));
       info.setShape(this);
       java.lang.Object dst = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", ray.getPosition(), this.getPosition());
       java.lang.Object B = dart._runtime.helpers.DynamicHelper.invoke("dot", dst, ray.getDirection());
@@ -47,6 +49,7 @@ public class Sphere extends tracer.BaseShape
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (((("Sphere [position=" + this.getPosition().toString()) + ", radius=") + this.getRadius().toString()) + "]");
     }
     public java.lang.Double getRadius()

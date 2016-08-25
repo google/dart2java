@@ -2,25 +2,26 @@ package richards;
 
 public class IdleTask extends richards.Task
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "IdleTask");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/richards.dart", "IdleTask");
     static {
       richards.IdleTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
     public int v1;
     public int count;
   
-    public IdleTask(richards.Scheduler scheduler, int v1, int count)
+    public IdleTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler, int v1, int count)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler, v1, count);
     }
-    public IdleTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public IdleTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(richards.Scheduler scheduler, int v1, int count)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.v1 = 0;
       this.count = 0;
       this.v1 = v1;
@@ -29,6 +30,7 @@ public class IdleTask extends richards.Task
     }
     public richards.TaskControlBlock run(richards.Packet packet)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       richards.IdleTask __tempVar_1;
       dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setCount((__tempVar_1.getCount() - 1)));
       if ((this.getCount() == 0))
@@ -45,6 +47,7 @@ public class IdleTask extends richards.Task
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "IdleTask";
     }
     public int getV1()

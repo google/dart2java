@@ -2,53 +2,59 @@ package havlak;
 
 public class HavlakLoopFinder extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "HavlakLoopFinder");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/havlak.dart", "HavlakLoopFinder");
     static {
       havlak.HavlakLoopFinder.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
+    static {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
+      havlak.HavlakLoopFinder.BB_TOP = 0;
+      havlak.HavlakLoopFinder.BB_NONHEADER = 1;
+      havlak.HavlakLoopFinder.BB_REDUCIBLE = 2;
+      havlak.HavlakLoopFinder.BB_SELF = 3;
+      havlak.HavlakLoopFinder.BB_IRREDUCIBLE = 4;
+      havlak.HavlakLoopFinder.BB_DEAD = 5;
+      havlak.HavlakLoopFinder.BB_LAST = 6;
+      havlak.HavlakLoopFinder.UNVISITED = (-1);
+      havlak.HavlakLoopFinder.MAXNONBACKPREDS = (32 * 1024);
+    }
     public havlak.CFG cfg;
     public havlak.LSG lsg;
-    public static int BB_TOP = 0;
-    public static int BB_NONHEADER = 1;
-    public static int BB_REDUCIBLE = 2;
-    public static int BB_SELF = 3;
-    public static int BB_IRREDUCIBLE = 4;
-    public static int BB_DEAD = 5;
-    public static int BB_LAST = 6;
-    public static int UNVISITED = (-1);
-    public static int MAXNONBACKPREDS = (32 * 1024);
+    public static int BB_TOP;
+    public static int BB_NONHEADER;
+    public static int BB_REDUCIBLE;
+    public static int BB_SELF;
+    public static int BB_IRREDUCIBLE;
+    public static int BB_DEAD;
+    public static int BB_LAST;
+    public static int UNVISITED;
+    public static int MAXNONBACKPREDS;
   
-    public HavlakLoopFinder(havlak.CFG cfg, havlak.LSG lsg)
+    public HavlakLoopFinder(dart._runtime.types.simple.Type type, havlak.CFG cfg, havlak.LSG lsg)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(cfg, lsg);
     }
-    public HavlakLoopFinder(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public HavlakLoopFinder(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(havlak.CFG cfg, havlak.LSG lsg)
     {
-      this.BB_TOP = 0;
-      this.BB_NONHEADER = 1;
-      this.BB_REDUCIBLE = 2;
-      this.BB_SELF = 3;
-      this.BB_IRREDUCIBLE = 4;
-      this.BB_DEAD = 5;
-      this.BB_LAST = 6;
-      this.UNVISITED = (-1);
-      this.MAXNONBACKPREDS = (32 * 1024);
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.cfg = cfg;
       this.lsg = lsg;
       super._constructor();
     }
     public java.lang.Boolean isAncestor(int w, int v, dart._runtime.base.DartList._int last)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return ((w <= v) && (v <= last.operatorAt_primitive(w)));
     }
     public int DFS(havlak.BasicBlock currentNode, dart._runtime.base.DartList<havlak.UnionFindNode> nodes, dart._runtime.base.DartList._int number, dart._runtime.base.DartList._int last, int current)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       nodes.operatorAt(current).initNode(currentNode, current);
       number.operatorAtPut_primitive(currentNode.getName(), current);
       int lastid = current;
@@ -64,6 +70,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject
     }
     public int findLoops()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getCfg().getStartNode(), null))
       {
         return 0;
@@ -84,7 +91,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject
         header.operatorAtPut_primitive(i, 0);
         types.operatorAtPut_primitive(i, havlak.HavlakLoopFinder.BB_NONHEADER);
         last.operatorAtPut_primitive(i, 0);
-        nodes.operatorAtPut(i, new havlak.UnionFindNode());
+        nodes.operatorAtPut(i, new havlak.UnionFindNode(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo))));
       }
       this.DFS(this.getCfg().getStartNode(), (dart._runtime.base.DartList) nodes, number, last, 0);
       for (int w = 0; (w < size); w = (w + 1))

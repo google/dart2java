@@ -2,7 +2,7 @@ package deltablue;
 
 public class Variable extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/deltablue.dart", "Variable");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "Variable");
     static {
       deltablue.Variable.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -14,18 +14,19 @@ public class Variable extends dart._runtime.base.DartObject
     public int value;
     public java.lang.String name;
   
-    public Variable(java.lang.String name, int value)
+    public Variable(dart._runtime.types.simple.Type type, java.lang.String name, int value)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(name, value);
     }
-    public Variable(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public Variable(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(java.lang.String name, int value)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.constraints = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
       this.mark = 0;
       this.walkStrength = deltablue.__TopLevel.WEAKEST;
@@ -37,10 +38,12 @@ public class Variable extends dart._runtime.base.DartObject
     }
     public void addConstraint(deltablue.Constraint c)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getConstraints().add(c);
     }
     public void removeConstraint(deltablue.Constraint c)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getConstraints().remove(c);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDeterminedBy(), c))
       {

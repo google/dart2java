@@ -2,7 +2,7 @@ package tracer;
 
 public class IntersectionInfo extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/springerm/ddc-java/gen/codegen_tests/tracer.dart", "IntersectionInfo");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/tracer.dart", "IntersectionInfo");
     static {
       tracer.IntersectionInfo.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -14,25 +14,27 @@ public class IntersectionInfo extends dart._runtime.base.DartObject
     public java.lang.Object color;
     public java.lang.Object distance;
   
-    public IntersectionInfo()
+    public IntersectionInfo(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor();
     }
-    public IntersectionInfo(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public IntersectionInfo(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.isHit = false;
       this.hitCount = 0;
       super._constructor();
-      this.setColor(new tracer.Color(0.0, 0.0, 0.0));
+      this.setColor(new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), 0.0, 0.0, 0.0));
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (("Intersection [" + this.getPosition().toString()) + "]");
     }
     public java.lang.Boolean getIsHit()

@@ -2,7 +2,7 @@ package havlak;
 
 public class SimpleLoop extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/havlak.dart", "SimpleLoop");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/havlak.dart", "SimpleLoop");
     static {
       havlak.SimpleLoop.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
@@ -16,18 +16,19 @@ public class SimpleLoop extends dart._runtime.base.DartObject
     public int nestingLevel;
     public int depthLevel;
   
-    public SimpleLoop(int counter)
+    public SimpleLoop(dart._runtime.types.simple.Type type, int counter)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(counter);
     }
-    public SimpleLoop(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public SimpleLoop(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(int counter)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.basicBlocks = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock.class);
       this.children = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.SimpleLoop.class);
       this.isRoot = false;
@@ -39,26 +40,31 @@ public class SimpleLoop extends dart._runtime.base.DartObject
     }
     public void addNode(havlak.BasicBlock bb)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getBasicBlocks().add(bb);
       return;
     }
     public void addChildLoop(havlak.SimpleLoop loop)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getChildren().add(loop);
       return;
     }
     public void setParent_(havlak.SimpleLoop p)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setParent(p);
       p.addChildLoop(this);
     }
     public void setHeader_(havlak.BasicBlock bb)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getBasicBlocks().add(bb);
       this.setHeader(bb);
     }
     public void setNestingLevel_(int level)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setNestingLevel(level);
       if ((level == 0))
       {
@@ -67,6 +73,7 @@ public class SimpleLoop extends dart._runtime.base.DartObject
     }
     public int checksum()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int result = this.getCounter();
       result = havlak.__TopLevel.mix(result, (this.getIsRoot()) ? (1) : (0));
       result = havlak.__TopLevel.mix(result, (this.getIsReducible()) ? (1) : (0));

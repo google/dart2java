@@ -2,9 +2,18 @@ package richards;
 
 public class TaskControlBlock extends dart._runtime.base.DartObject
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/stanm/f/d/ddc-java/gen/codegen_tests/richards.dart", "TaskControlBlock");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/richards.dart", "TaskControlBlock");
     static {
       richards.TaskControlBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    }
+    static {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
+      richards.TaskControlBlock.STATE_RUNNING = 0;
+      richards.TaskControlBlock.STATE_RUNNABLE = 1;
+      richards.TaskControlBlock.STATE_SUSPENDED = 2;
+      richards.TaskControlBlock.STATE_HELD = 4;
+      richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE = (richards.TaskControlBlock.STATE_SUSPENDED | richards.TaskControlBlock.STATE_RUNNABLE);
+      richards.TaskControlBlock.STATE_NOT_HELD = (~richards.TaskControlBlock.STATE_HELD);
     }
     public richards.TaskControlBlock link;
     public int id;
@@ -12,34 +21,29 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     public richards.Packet queue;
     public richards.Task task;
     public int state;
-    public static int STATE_RUNNING = 0;
-    public static int STATE_RUNNABLE = 1;
-    public static int STATE_SUSPENDED = 2;
-    public static int STATE_HELD = 4;
-    public static int STATE_SUSPENDED_RUNNABLE = (richards.TaskControlBlock.STATE_SUSPENDED | richards.TaskControlBlock.STATE_RUNNABLE);
-    public static int STATE_NOT_HELD = (~richards.TaskControlBlock.STATE_HELD);
+    public static int STATE_RUNNING;
+    public static int STATE_RUNNABLE;
+    public static int STATE_SUSPENDED;
+    public static int STATE_HELD;
+    public static int STATE_SUSPENDED_RUNNABLE;
+    public static int STATE_NOT_HELD;
   
-    public TaskControlBlock(richards.TaskControlBlock link, int id, int priority, richards.Packet queue, richards.Task task)
+    public TaskControlBlock(dart._runtime.types.simple.Type type, richards.TaskControlBlock link, int id, int priority, richards.Packet queue, richards.Task task)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null);
+      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(link, id, priority, queue, task);
     }
-    public TaskControlBlock(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg)
+    public TaskControlBlock(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
-      super(arg);
+      super(arg, type);
     }
   
     protected void _constructor(richards.TaskControlBlock link, int id, int priority, richards.Packet queue, richards.Task task)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.id = 0;
       this.priority = 0;
       this.state = 0;
-      this.STATE_RUNNING = 0;
-      this.STATE_RUNNABLE = 1;
-      this.STATE_SUSPENDED = 2;
-      this.STATE_HELD = 4;
-      this.STATE_SUSPENDED_RUNNABLE = (richards.TaskControlBlock.STATE_SUSPENDED | richards.TaskControlBlock.STATE_RUNNABLE);
-      this.STATE_NOT_HELD = (~richards.TaskControlBlock.STATE_HELD);
       this.link = link;
       this.id = id;
       this.priority = priority;
@@ -50,30 +54,37 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     }
     public void setRunning()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setState(richards.TaskControlBlock.STATE_RUNNING);
     }
     public void markAsNotHeld()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setState((this.getState() & richards.TaskControlBlock.STATE_NOT_HELD));
     }
     public void markAsHeld()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setState((this.getState() | richards.TaskControlBlock.STATE_HELD));
     }
     public java.lang.Boolean isHeldOrSuspended()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return ((!((this.getState() & richards.TaskControlBlock.STATE_HELD) == 0)) || (this.getState() == richards.TaskControlBlock.STATE_SUSPENDED));
     }
     public void markAsSuspended()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setState((this.getState() | richards.TaskControlBlock.STATE_SUSPENDED));
     }
     public void markAsRunnable()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setState((this.getState() | richards.TaskControlBlock.STATE_RUNNABLE));
     }
     public richards.TaskControlBlock run()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       richards.Packet packet = null;
       if ((this.getState() == richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE))
       {
@@ -89,6 +100,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     }
     public richards.TaskControlBlock checkPriorityAdd(richards.TaskControlBlock task, richards.Packet packet)
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getQueue(), null))
       {
         this.setQueue(packet);
@@ -106,6 +118,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject
     }
     public java.lang.String toString()
     {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (((("tcb { " + this.getTask().toString()) + "@") + this.getState()) + " }");
     }
     public richards.TaskControlBlock getLink()
