@@ -5,7 +5,7 @@ import dart._runtime.types.simple.InterfaceTypeInfo;
 
 public class ObjectHelper {
   public static final InterfaceTypeInfo dart2java$typeInfo
-      = new InterfaceTypeInfo("dart:core", "Object");
+      = new InterfaceTypeInfo("java.lang.Object");
 
   public static Integer getHashCode(Object self) {
     // Hash code of null in Dart VM is 2011 ;)

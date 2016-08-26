@@ -283,6 +283,15 @@ class ClassOrInterfaceType extends ReferenceType {
   /// The fully-qualified name of this type.
   String get fullyQualifiedName => "$package.$packageRelativeName";
 
+  /// The binary name of this type.
+  ///
+  /// This name will be unique, as long as the JVM only has one class loader.
+  /// Classes from different class loaders could potentially have identical
+  /// names.
+  String get binaryName => enclosingType == null
+      ? "$package.$name"
+      : "${enclosingType.binaryName}\$name";
+
   /// All type arguments in scope in this class.
   ///
   /// If this class is a non-static inner class, then the type arguments of its

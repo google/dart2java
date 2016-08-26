@@ -2,7 +2,7 @@ package richards;
 
 public class Richards extends richards.BenchmarkBase
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/richards.dart", "Richards");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.Richards");
     static {
       richards.Richards.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.BenchmarkBase.dart2java$typeInfo);
     }

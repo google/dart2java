@@ -25,25 +25,30 @@ public final class InterfaceTypeInfo {
   /**
    * Creates an {@code InterfaceTypeInfo} for a class without type variables.
    *
-   * @param libraryName name of enclosing library
-   * @param className name of class
+   * The {@code fullyQualifiedJavaName} is used to create a unique key; it is assumed that there
+   * will never be two distinct Dart types that are implemented by Java classes with identical
+   * fully-qualified names. (This assumption can be violated in the presence of alternate class
+   * loaders!)
+   *
+   * @param fullyQualifiedJavaName fully qualified Java name of the Java class implementing this
+   * type!).
    */
-  public InterfaceTypeInfo(String libraryName, String className) {
-    this(EMTPY_STRING_ARRAY, libraryName, className);
+  public InterfaceTypeInfo(String fullyQualifiedJavaName) {
+    this(EMTPY_STRING_ARRAY, fullyQualifiedJavaName);
   }
 
   /**
    * Creates an {@code InterfaceTypeInfo} for a class with type variables.
    *
    * @param typeVariableNames name of type parameters
-   * @param libraryName name of enclosing library
-   * @param className name of class
+   * @param fullyQualifiedJavaName fully qualified Java name of the Java class implementing this
+   * type!).
    */
-  public InterfaceTypeInfo(String[] typeVariableNames, String libraryName, String className) {
-    this.fullName = libraryName + "#" + className;
+  public InterfaceTypeInfo(String[] typeVariableNames, String fullyQualifiedJavaName) {
+    this.fullName = fullyQualifiedJavaName;
     this.typeVariables = new TypeVariableExpr[typeVariableNames.length];
     for (int i = 0; i < typeVariables.length; i++) {
-      this.typeVariables[i] = new TypeVariableExpr(libraryName, className, typeVariableNames[i]);
+      this.typeVariables[i] = new TypeVariableExpr(this.fullName, typeVariableNames[i]);
     }
   }
 }

@@ -2,7 +2,7 @@ package deltablue;
 
 public class DeltaBlue extends deltablue.BenchmarkBase
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/deltablue.dart", "DeltaBlue");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.DeltaBlue");
     static {
       deltablue.DeltaBlue.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BenchmarkBase.dart2java$typeInfo);
     }

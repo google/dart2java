@@ -34,46 +34,46 @@ public class InterfaceTypeTest {
     // In real code, these would be static final fields on generated Java classes (or maybe on a
     // helper class, or on the library's __TopLevel class). For now, we declare them as
     // "test-global" variables.
-    objectTypeInfo = new InterfaceTypeInfo("dart:core", "Object");
+    objectTypeInfo = new InterfaceTypeInfo("java.lang.Object");
 
-    comparableTypeInfo = new InterfaceTypeInfo(new String[] {"E"}, "dart:core", "Comparable");
+    comparableTypeInfo = new InterfaceTypeInfo(new String[] {"E"}, "dart.core.Comparable");
     comparableTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
 
-    numTypeInfo = new InterfaceTypeInfo("dart:core", "num");
+    numTypeInfo = new InterfaceTypeInfo("java.lang.Number");
     numTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     numTypeInfo.interfaces = new InterfaceTypeExpr[] {new InterfaceTypeExpr(comparableTypeInfo,
         new TypeExpr[] {new InterfaceTypeExpr(numTypeInfo)})};
 
-    intTypeInfo = new InterfaceTypeInfo("dart:core", "int");
+    intTypeInfo = new InterfaceTypeInfo("java.lang.Integer");
     intTypeInfo.superclass = new InterfaceTypeExpr(numTypeInfo);
 
-    doubleTypeInfo = new InterfaceTypeInfo("dart:core", "double");
+    doubleTypeInfo = new InterfaceTypeInfo("java.lang.Double");
     doubleTypeInfo.superclass = new InterfaceTypeExpr(numTypeInfo);
 
-    stringTypeInfo = new InterfaceTypeInfo("dart:core", "String");
+    stringTypeInfo = new InterfaceTypeInfo("java.lang.String");
     stringTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     stringTypeInfo.interfaces = new InterfaceTypeExpr[] {new InterfaceTypeExpr(comparableTypeInfo,
         new TypeExpr[] {new InterfaceTypeExpr(stringTypeInfo)})};
 
-    iterableTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart:core", "Iterable");
+    iterableTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.Iterable");
     iterableTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
 
-    listTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart:core", "List");
+    listTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.List");
     listTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     listTypeInfo.interfaces = new InterfaceTypeExpr[] {
         new InterfaceTypeExpr(iterableTypeInfo, new TypeExpr[] {listTypeInfo.typeVariables[0]})};
 
-    listMixinTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart:core", "ListMixin");
+    listMixinTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.ListMixin");
     listMixinTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     listMixinTypeInfo.interfaces = new InterfaceTypeExpr[] {
         new InterfaceTypeExpr(listTypeInfo, new TypeExpr[] {listMixinTypeInfo.typeVariables[0]})};
 
-    listBaseTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart:core", "ListBase");
+    listBaseTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.ListBase");
     listBaseTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     listBaseTypeInfo.mixin = new InterfaceTypeExpr(listMixinTypeInfo,
         new TypeExpr[] {listBaseTypeInfo.typeVariables[0]});
 
-    growableListTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart:core", "GrowableList");
+    growableListTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.GrowableList");
     growableListTypeInfo.superclass = new InterfaceTypeExpr(listBaseTypeInfo,
         new TypeExpr[] {growableListTypeInfo.typeVariables[0]});
 

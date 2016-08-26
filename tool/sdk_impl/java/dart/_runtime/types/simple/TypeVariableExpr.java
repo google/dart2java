@@ -11,8 +11,20 @@ package dart._runtime.types.simple;
  */
 public class TypeVariableExpr extends TypeExpr {
 
-  TypeVariableExpr(String enclosingLibrary, String enclosingClass, String name) {
-    super(enclosingLibrary + "#" + enclosingClass + "#" + name);
+  /**
+   * Creates a {@code TypeVariableExpr}.
+   *
+   * Every type variable is declared by some other entity (either a generic class or generic
+   * function). {@code declarerName} should be a name that uniquely identifies the entity that
+   * declares this variable, such as the fully-qualified name of the Java implementation of a
+   * generic class. The local name {@code name} must be unique among the type variables declared in
+   * the same class/function (which it should be anyway according to Dart rules).
+   *
+   * @param declarerName name of the declaring entity
+   * @param name local name of the type variable
+   */
+  TypeVariableExpr(String declarerName, String name) {
+    super(declarerName + "#" + name);
   }
 
   @Override
