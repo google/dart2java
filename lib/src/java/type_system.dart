@@ -188,7 +188,7 @@ InitializerBlock makeTypeInfoInitializer(
             new FieldAccess(new ClassRefExpr(javaCls), _typeInfoFieldName),
             'interfaces'),
         new ArrayInitializer(
-            _typeExprType,
+            _interfaceTypeExprType,
             node.implementedTypes
                 .map((t) => makeTypeExpr(t, compilerState))
                 .toList()))));

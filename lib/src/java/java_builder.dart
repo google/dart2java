@@ -1116,6 +1116,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return strings.reduce((v, e) => new java.BinaryExpr(v, e, "+"));
   }
 
+  @override
+  java.Expression visitIsExpression(dart.IsExpression node) {
+    java.Expression operand = node.operand.accept(this);
+    java.Expression typeExpr = ts.makeTypeExpr(node.type, compilerState);
+    java.Expression type = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
+    return ts.makeSubtypeCheck(ts.getTypeOf(operand), type);
+  }
+
   bool isPrimitive(dart.Expression expression) {
     java.JavaType javaType = expression.staticType.accept(this);
     return javaType is java.PrimitiveType;

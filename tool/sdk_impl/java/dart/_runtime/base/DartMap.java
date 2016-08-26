@@ -3,6 +3,7 @@ package dart._runtime.base;
 import java.util.Map;
 import java.util.HashMap;
 
+// TODO(andrewkrieger, springerm): Extend/implement DartObject.
 public interface DartMap<K, V> {
   
   boolean containsValue(Object value);

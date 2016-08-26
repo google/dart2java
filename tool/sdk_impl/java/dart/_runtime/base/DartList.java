@@ -14,6 +14,8 @@ import java.util.NoSuchElementException;
  * This interface is implemented by both generic lists and specialized lists.
  * Specialized lists are more efficient implementations for primitive types.
  */
+
+// TODO(andrewkrieger, springerm): Extend/implement DartObject.
 public interface DartList<T> extends List<T> {
 
   // For interoperability: extends Java List Interface
