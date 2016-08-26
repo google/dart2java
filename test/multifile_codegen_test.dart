@@ -1,5 +1,4 @@
 #!/usr/bin/env dart
-
 // Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
@@ -124,7 +123,7 @@ final multifileTestDir = path.join(testDirectory, 'codegen', 'multifile');
 final multifileExpectDir =
     path.join(testDirectory, 'codegen_expect', 'multifile');
 
-main(List<String> arguments) {
+void main(List<String> arguments) {
   var parser = new ArgParser();
   parser.addFlag('force',
       abbr: 'f', help: 'Forcibly run tests marked as "skipped".');
@@ -138,63 +137,67 @@ main(List<String> arguments) {
           .toList();
 
   for (var t in tests) {
-    String skip = (!args['force'] && t.skipComment != null)
-        ? "Test expected to fail: ${t.skipComment}"
-        : null;
-    test('dart2java-multifile ${t.name}', () {
-      String expectDir = path.join(multifileExpectDir, t.name);
-      String compiledDir = path.join(expectDir, 'compiled');
-      _ensureDirectory(expectDir);
-      _ensureDirectory(compiledDir);
-
-      var baseClassPath = ([
-        path.join(repoDirectory, 'gen', 'compiled_sdk.jar'),
-        compiledDir
-      ]..addAll(t.classpath))
-          .join(':');
-
-      // Invoke dart2java.
-      for (ProgramInvocation d2j in t.dart2javaInvocations) {
-        var args = [
-          '-c',
-          path.join(repoDirectory, 'bin', 'dart2java.dart'),
-          '--output-dir',
-          compiledDir
-        ]..addAll(d2j.args);
-        ProcessResult result = Process.runSync('dart', args,
-            workingDirectory: path.join(multifileTestDir, t.name));
-        var output = _writeResult(expectDir, 'dart2java_${d2j.id}', result);
-        expect(result.exitCode, isZero,
-            reason: 'Reason: dart2java failed.\n'
-                '  stdout: ${output.stdout}\n'
-                '  stderr: ${output.stderr}\n');
-      }
-
-      // Invoke javac.
-      for (String javaPath in _findJavaFiles(compiledDir)) {
-        String outputDir = path.dirname(javaPath);
-        var args = ['-cp', baseClassPath, javaPath];
-        ProcessResult result = Process.runSync('javac', args);
-        var output = _writeResult(outputDir,
-            'javac_${path.basenameWithoutExtension(javaPath)}', result);
-        expect(result.exitCode, isZero,
-            reason: 'Reason: javac failed.\n'
-                '  stdout: ${output.stdout}\n'
-                '  stderr: ${output.stderr}\n');
-      }
-
-      // Invoke java.
-      for (ProgramInvocation java in t.javaInvocations) {
-        var args = ['-cp', baseClassPath]..addAll(java.args);
-        ProcessResult result = Process.runSync('java', args);
-        var output = _writeResult(expectDir, 'java_${java.id}', result);
-        expect(result.exitCode, isZero,
-            reason: 'Reason: java failed.\n'
-                '  stdout: ${output.stdout}\n'
-                '  stderr: ${output.stderr}\n');
-      }
-    }, skip: skip);
+    runTest(t, skip: !args['force'] && t.skipComment != null);
   }
+}
+
+void runTest(MultiFileTestMeta t, {bool skip: false}) {
+  String skipMsg = skip
+      ? "Test expected to fail: ${t.skipComment}"
+      : null;
+  test('dart2java-multifile ${t.name}', () {
+    String expectDir = path.join(multifileExpectDir, t.name);
+    String compiledDir = path.join(expectDir, 'compiled');
+    _ensureDirectory(expectDir);
+    _ensureDirectory(compiledDir);
+
+    var baseClassPath = ([
+      path.join(repoDirectory, 'gen', 'compiled_sdk.jar'),
+      compiledDir
+    ]..addAll(t.classpath))
+        .join(':');
+
+    // Invoke dart2java.
+    for (ProgramInvocation d2j in t.dart2javaInvocations) {
+      var args = [
+        '-c',
+        path.join(repoDirectory, 'bin', 'dart2java.dart'),
+        '--output-dir',
+        compiledDir
+      ]..addAll(d2j.args);
+      ProcessResult result = Process.runSync('dart', args,
+          workingDirectory: path.join(multifileTestDir, t.name));
+      var output = _writeResult(expectDir, 'dart2java_${d2j.id}', result);
+      expect(result.exitCode, isZero,
+          reason: 'Reason: dart2java failed.\n'
+              '  stdout: ${output.stdout}\n'
+              '  stderr: ${output.stderr}\n');
+    }
+
+    // Invoke javac.
+    for (String javaPath in _findJavaFiles(compiledDir)) {
+      String outputDir = path.dirname(javaPath);
+      var args = ['-cp', baseClassPath, javaPath];
+      ProcessResult result = Process.runSync('javac', args);
+      var output = _writeResult(outputDir,
+          'javac_${path.basenameWithoutExtension(javaPath)}', result);
+      expect(result.exitCode, isZero,
+          reason: 'Reason: javac failed.\n'
+              '  stdout: ${output.stdout}\n'
+              '  stderr: ${output.stderr}\n');
+    }
+
+    // Invoke java.
+    for (ProgramInvocation java in t.javaInvocations) {
+      var args = ['-cp', baseClassPath]..addAll(java.args);
+      ProcessResult result = Process.runSync('java', args);
+      var output = _writeResult(expectDir, 'java_${java.id}', result);
+      expect(result.exitCode, isZero,
+          reason: 'Reason: java failed.\n'
+              '  stdout: ${output.stdout}\n'
+              '  stderr: ${output.stderr}\n');
+    }
+  }, skip: skipMsg);
 }
 
 class ProgramInvocation {
@@ -221,6 +224,17 @@ class ProgramInvocation {
     id = programMatch.group(2);
     args = words.skip(1).toList();
   }
+
+  // Used for deserializing from a ReceivePort.
+  ProgramInvocation.fromMap(Map m)
+      : program = m['program'],
+        id = m['id'],
+        args = m['args'] as List<String> {
+    assert(program != null && args != null);
+  }
+
+  // Used for serializing from a SendPort.
+  Map toMap() => {'program': program, 'id': id, 'args': args};
 }
 
 class MultiFileTestMeta {
@@ -270,6 +284,33 @@ class MultiFileTestMeta {
     _verifyInvocations(dart2javaInvocations, metaFile.path);
     _verifyInvocations(javaInvocations, metaFile.path);
   }
+
+  // Used for deserializing from a ReceivePort.
+  MultiFileTestMeta.fromMap(Map m)
+      : name = m['name'],
+        skipComment = m['skipComment'],
+        dart2javaInvocations = m['dart2JavaInvocations']
+            .map((x) => new ProgramInvocation.fromMap(x))
+            .toList() as List<ProgramInvocation>,
+        javaInvocations = m['javaInvocations']
+            .map((x) => new ProgramInvocation.fromMap(x))
+            .toList() as List<ProgramInvocation>,
+        classpath = m['classpath'] as List<String> {
+    assert(name != null &&
+        dart2javaInvocations != null &&
+        javaInvocations != null &&
+        classpath != null);
+  }
+
+  // Used for serializing to a SendPort.
+  Map toMap() => {
+        'name': name,
+        'skipComment': skipComment,
+        'dart2javaInvocations':
+            dart2javaInvocations.map((i) => i.toMap()).toList(),
+        'javaInvocations': javaInvocations.map((i) => i.toMap()).toList(),
+        'classpath': classpath
+      };
 }
 
 /// Check a list of invocations (assumed to be invocations of the same program),

@@ -58,22 +58,30 @@ main(List<String> arguments) {
       continue;
     }
 
-    String relativePath = path.relative(file.path, from: testDir);
-    String name = path.split(path.withoutExtension(relativePath)).join('.');
-    String skip = (!args['force'] && expectedToFail.contains(name))
-        ? "Test expected to fail."
-        : null;
-
-    test('typesystem $name', () {
-      ProcessResult compileResult =
-          Process.runSync('javac', defaultArgs.toList()..add(file.path));
-      expect(compileResult.exitCode, isZero, reason: compileResult.stderr);
-
-      ProcessResult testResult = Process.runSync('java',
-          defaultArgs.toList()..addAll(["org.junit.runner.JUnitCore", name]));
-      expect(testResult.exitCode, isZero, reason: testResult.stdout);
-    }, skip: skip);
+    runTest(file.path,
+        skip: !args['force'] &&
+            expectedToFail.contains(filepathToName(file.path)));
   }
+}
+
+void runTest(String filepath, {bool skip: false}) {
+  String name = filepathToName(filepath);
+  String skipMsg = skip ? "Test expected to fail." : null;
+
+  test('typesystem $name', () {
+    ProcessResult compileResult =
+        Process.runSync('javac', defaultArgs.toList()..add(filepath));
+    expect(compileResult.exitCode, isZero, reason: compileResult.stderr);
+
+    ProcessResult testResult = Process.runSync('java',
+        defaultArgs.toList()..addAll(["org.junit.runner.JUnitCore", name]));
+    expect(testResult.exitCode, isZero, reason: testResult.stdout);
+  }, skip: skipMsg);
+}
+
+String filepathToName(String filepath) {
+  String relativePath = path.relative(filepath, from: testDir);
+  return path.split(path.withoutExtension(relativePath)).join('.');
 }
 
 Set<String> _loadExpectedToFail() {

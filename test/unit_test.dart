@@ -47,7 +47,12 @@ final junitJars = path.join(
 /// The path to the patched SDK
 final patchedSdkDir = path.join(genDir, 'patched_sdk');
 
-main(List<String> arguments) {
+final compilerArgParser = CompilerOptions.addArguments(new ArgParser());
+
+// Our default compiler options. Individual tests can override these.
+final defaultOptions = ['--dart-sdk', patchedSdkDir];
+
+void main(List<String> arguments) {
   if (arguments == null) arguments = [];
 
   var parser = new ArgParser();
@@ -60,66 +65,69 @@ main(List<String> arguments) {
   // Copy all of the test files to gen/unit_tests. We'll compile from there.
   List<String> testDirs = _setUpTests(dirPattern);
 
-  // Our default compiler options. Individual tests can override these.
-  var defaultOptions = ['--dart-sdk', patchedSdkDir];
-  var compilerArgParser = CompilerOptions.addArguments(new ArgParser());
-
-  List<String> expectedToFail = _loadExpectedToFail(dirPattern);
+  Set<String> expectedToFail = _loadExpectedToFail(dirPattern);
 
   // Compile each test file to Java and put the result in gen/unit_output.
   for (String testDir in testDirs) {
-    String relativePath = path.relative(testDir, from: unitTestDir);
-
-    String name = path.withoutExtension(relativePath);
-    String skip = (!args['force'] && expectedToFail.contains(name))
-        ? "Test expected to fail."
-        : null;
-    test('dart2java $name', () {
-      String outDir = path.join(unitOutputDir, relativePath);
-      _ensureDirectory(outDir);
-
-      String scenarioFile = path.join(testDir, "scenario.dart");
-
-      var args = defaultOptions.toList();
-      args.addAll(['--build-root', testDir]);
-      args.addAll(['--output-dir', outDir]);
-
-      // Check if we need to use special compile options.
-      var contents = new File(scenarioFile).readAsStringSync();
-      var match =
-          new RegExp(r'// compile options: (.*)').matchAsPrefix(contents);
-      if (match != null) {
-        args.addAll(match.group(1).split(' '));
-      }
-      var options =
-          new CompilerOptions.fromArguments(compilerArgParser.parse(args));
-
-      // Compile Dart to Java
-      Set<File> files = new ModuleCompiler(options).compile([scenarioFile]);
-
-      // Copy over JUnit test
-      new Directory(testDir)
-          .listSync(recursive: false, followLinks: false)
-          .forEach((entry) {
-        if (entry.path.endsWith(".java")) {
-          var fileName = path.relative(entry.path, from: testDir);
-          var targetFileName = path.join(outDir, fileName);
-          new File(entry.path).copySync(targetFileName);
-          files.add(new File(targetFileName));
-        }
-      });
-
-      for (var file in files) {
-        _javaCompile(file, outDir);
-      }
-      _run(name, outDir);
-    }, skip: skip);
+    runTest(testDir, skip: !args['force'] &&
+        expectedToFail.contains(testDirToName(testDir)));
   }
+}
+
+void runTest(String testDir, {bool skip:false}) {
+  String relativePath = path.relative(testDir, from: unitTestDir);
+
+  String name = testDirToName(testDir);
+  String skipMsg = skip ? "Test expected to fail." : null;
+  test('dart2java $name', () {
+    String outDir = path.join(unitOutputDir, relativePath);
+    _ensureDirectory(outDir);
+
+    String scenarioFile = path.join(testDir, "scenario.dart");
+
+    var args = defaultOptions.toList();
+    args.addAll(['--build-root', testDir]);
+    args.addAll(['--output-dir', outDir]);
+
+    // Check if we need to use special compile options.
+    var contents = new File(scenarioFile).readAsStringSync();
+    var match = new RegExp(r'// compile options: (.*)').matchAsPrefix(contents);
+    if (match != null) {
+      args.addAll(match.group(1).split(' '));
+    }
+    var options =
+        new CompilerOptions.fromArguments(compilerArgParser.parse(args));
+
+    // Compile Dart to Java
+    Set<File> files = new ModuleCompiler(options).compile([scenarioFile]);
+
+    // Copy over JUnit test
+    new Directory(testDir)
+        .listSync(recursive: false, followLinks: false)
+        .forEach((entry) {
+      if (entry.path.endsWith(".java")) {
+        var fileName = path.relative(entry.path, from: testDir);
+        var targetFileName = path.join(outDir, fileName);
+        new File(entry.path).copySync(targetFileName);
+        files.add(new File(targetFileName));
+      }
+    });
+
+    for (var file in files) {
+      _javaCompile(file, outDir);
+    }
+    _run(name, outDir);
+  }, skip: skipMsg);
+}
+
+String testDirToName(String testDir) {
+  String relativePath = path.relative(testDir, from: unitTestDir);
+  return path.withoutExtension(relativePath);
 }
 
 List<String> _setUpTests(RegExp dirPattern) {
   // Prune 'packages' symlinks from unit test directory
-  Process.runSync('find', [ unitDir, '-name', 'packages', '-delete' ]);
+  Process.runSync('find', [unitDir, '-name', 'packages', '-delete']);
   _ensureDirectory(unitTestDir);
 
   var testDirs = <String>[];
@@ -142,12 +150,12 @@ List<String> _setUpTests(RegExp dirPattern) {
   return testDirs;
 }
 
-List<String> _loadExpectedToFail(RegExp dirPattern) {
+Set<String> _loadExpectedToFail(RegExp dirPattern) {
   return new File(expectedToFailConfig)
       .readAsLinesSync()
       .map((line) => line.split("//")[0].trim()) // Remove all comments.
       .where((line) => line.isNotEmpty) // Remove empty lines.
-      .toList();
+      .toSet();
 }
 
 /// Recursively creates [dir] if it doesn't exist.
