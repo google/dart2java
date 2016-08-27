@@ -268,6 +268,13 @@ class CompilerState {
     }
   }
 
+  java.ClassOrInterfaceType getInterface(dart.Class class_) {
+    var package = getJavaPackageName(class_.enclosingLibrary);
+    return new java.ClassOrInterfaceType(
+        package, "${_sanitizeClassName(class_.name)}_interface", 
+        isInterface: true);
+  }
+
   /// Gets the Java class used to contain the top-level methods and fields in a
   /// Dart library.
   java.ClassOrInterfaceType getTopLevelClass(dart.Library library) {

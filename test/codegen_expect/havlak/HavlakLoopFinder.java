@@ -1,6 +1,6 @@
 package havlak;
 
-public class HavlakLoopFinder extends dart._runtime.base.DartObject
+public class HavlakLoopFinder extends dart._runtime.base.DartObject implements havlak.HavlakLoopFinder_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.HavlakLoopFinder");
     static {

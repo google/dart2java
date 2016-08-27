@@ -1,6 +1,6 @@
 package tracer;
 
-public class TracerBenchmark extends tracer.BenchmarkBase
+public class TracerBenchmark extends tracer.BenchmarkBase implements tracer.TracerBenchmark_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.TracerBenchmark");
     static {

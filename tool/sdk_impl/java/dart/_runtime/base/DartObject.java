@@ -7,7 +7,7 @@ import dart._runtime.types.simple.InterfaceTypeExpr;
 import dart._runtime.types.simple.Type;
 import dart._runtime.types.simple.TypeEnvironment;
 
-public class DartObject {
+public class DartObject implements dart.core.Object_interface {
   public final InterfaceType dart2java$type;
 
   private static final InterfaceType objectType =
@@ -32,7 +32,7 @@ public class DartObject {
 
   }
 
-  public Integer getHashCode() {
+  public int getHashCode() {
     return this.hashCode();
   }
 

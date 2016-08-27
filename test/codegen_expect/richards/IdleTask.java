@@ -1,6 +1,6 @@
 package richards;
 
-public class IdleTask extends richards.Task
+public class IdleTask extends richards.Task implements richards.IdleTask_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.IdleTask");
     static {

@@ -1,6 +1,6 @@
 package deltablue;
 
-public class ScaleConstraint extends deltablue.BinaryConstraint
+public class ScaleConstraint extends deltablue.BinaryConstraint implements deltablue.ScaleConstraint_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.ScaleConstraint");
     static {

@@ -1,6 +1,6 @@
 package tracer;
 
-public class Solid extends tracer.Materials
+public class Solid extends tracer.Materials implements tracer.Solid_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Solid");
     static {

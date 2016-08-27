@@ -1,8 +1,8 @@
 package is_operator_test;
 
-public class B extends dart._runtime.base.DartObject
+public class B extends dart._runtime.base.DartObject implements is_operator_test.B_interface, is_operator_test.I_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("file:///usr/local/google/home/andrewkrieger/ddc-java/gen/codegen_tests/is_operator_test.dart", "B");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("is_operator_test.B");
     static {
       is_operator_test.B.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
       is_operator_test.B.dart2java$typeInfo.interfaces = new dart._runtime.types.simple.InterfaceTypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.I.dart2java$typeInfo)};

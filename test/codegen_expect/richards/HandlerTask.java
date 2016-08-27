@@ -1,6 +1,6 @@
 package richards;
 
-public class HandlerTask extends richards.Task
+public class HandlerTask extends richards.Task implements richards.HandlerTask_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.HandlerTask");
     static {

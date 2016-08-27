@@ -1,6 +1,6 @@
 package tracer;
 
-public class Color extends dart._runtime.base.DartObject
+public class Color extends dart._runtime.base.DartObject implements tracer.Color_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Color");
     static {

@@ -49,13 +49,15 @@ abstract class Node {
 /// Each AST should be rooted at a Java class (since we produce exactly one
 /// class per source file). Java also allows for nested and local classes, so
 /// this node may appear deeper within the tree as well.
-class ClassDecl extends Node {
+class ClassDecl extends PackageMember {
   /// The [JavaType] that this class declaration corresponds to.
   ///
   /// This includes the package and name of the class and the type parameters.
   ClassOrInterfaceType type;
 
   ClassOrInterfaceType supertype;
+
+  List<ClassOrInterfaceType> implementedInterfaces;
 
   Access access;
 
@@ -71,9 +73,13 @@ class ClassDecl extends Node {
 
   List<Constructor> constructors;
 
+  List<String> typeParameters;
+
   ClassDecl(this.type,
       {this.access: Access.Public, this.orderedMembers, this.methods, 
-        this.constructors, this.supertype, this.isAbstract: false}) {
+        this.constructors, this.supertype, this.isAbstract: false,
+        this.typeParameters: const <String>[],
+        this.implementedInterfaces: const <ClassOrInterfaceType>[]}) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
     methods ??= <MethodDef>[];
     orderedMembers ??= <OrderedClassMember>[];
@@ -85,6 +91,35 @@ class ClassDecl extends Node {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitClassDecl(this);
 
   String toString() => '${access} class ${type.name}';
+}
+
+/// A member of a package: either a [ClassDecl] or an [InterfaceDecl].
+abstract class PackageMember extends Node { }
+
+/// An interface definition.
+class InterfaceDecl extends PackageMember {
+  /// The Java type of this interface. This is typically identical to the type
+  /// on the corresponding [ClassDecl], but differs for classes with Java
+  /// implementations. E.g., for dart.core::List:
+  /// ClassDecl.type: dart._runtime.base.DartList
+  /// InterfaceDecl.type: dart.core.List
+  ClassOrInterfaceType type;
+
+  List<ClassOrInterfaceType> superinterfaces;
+
+  Access access;
+
+  List<MethodDecl> methods;
+
+  List<String> typeParameters;
+
+  InterfaceDecl(this.type,
+    {this.access: Access.Public, this.methods, 
+      this.superinterfaces: const <ClassOrInterfaceType>[], 
+      this.typeParameters: const <String>[]});
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitInterfaceDecl(this);
 }
 
 /// A Java method.
@@ -118,6 +153,23 @@ class MethodDef extends Node {
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDef(this);
+}
+
+class MethodDecl extends Node {
+  String name;
+
+  List<VariableDecl> parameters;
+
+  JavaType returnType;
+
+  bool isFinal;
+
+  MethodDecl(this.name, this.parameters,
+    {this.returnType: JavaType.void_,
+    this.isFinal: false});
+
+  @override
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDecl(this);
 }
 
 /// A class constructor.

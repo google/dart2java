@@ -1,6 +1,6 @@
 package richards;
 
-public class Scheduler extends dart._runtime.base.DartObject
+public class Scheduler extends dart._runtime.base.DartObject implements richards.Scheduler_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.Scheduler");
     static {

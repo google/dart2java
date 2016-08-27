@@ -4,13 +4,14 @@
 
 import 'ast.dart';
 import 'visitor.dart';
+import 'constants.dart';
 
 /// Emits the full file contents for a Java source file defining a top-level
-/// Java [Class].
+/// Java [Class] or [Interface].
 ///
 /// This includes a package delcaration, imports, and a full Java class
-/// definition.
-String emitClassDecl(ClassDecl cls) {
+/// or interface definition.
+String emitMemberDecl(PackageMember cls) {
   String content = cls.accept(new _JavaAstEmitter());
   return "package ${cls.type.package};\n\n${content}";
 }
@@ -34,14 +35,38 @@ class _JavaAstEmitter extends Visitor<String> {
         cls.constructors.map((m) => indent(m.accept(this))).join("\n");
     var content = indent(
         fieldsAndInitializers + "\n\n" + constructors + "\n\n" + methods);
+    var genericClause = 
+      cls.typeParameters.isNotEmpty
+      ? "<${cls.typeParameters.join(", ")}>"
+      : "";
     var extendsClause =
         (cls.supertype == null || cls.supertype == JavaType.object)
             ? ""
             : " extends ${cls.supertype.fullyQualifiedName}";
+    var implementsClause = cls.implementedInterfaces.isNotEmpty
+      ? (" implements " +
+         cls.implementedInterfaces.map((s) 
+            => s.fullyQualifiedName).join(", "))
+      : "";
     var abstractClause = cls.isAbstract ? "abstract " : "";
-
     return "${cls.access} ${abstractClause}class "
-        "${cls.type.name}${extendsClause}\n{\n${content}\n}\n";
+        "${cls.type.name}$genericClause$extendsClause"
+        "$implementsClause\n{\n$content\n}\n";
+  }
+
+  @override
+  String visitInterfaceDecl(InterfaceDecl decl) {
+    var methods = decl.methods.map((m) => indent(m.accept(this))).join("\n");
+    var extendsClause = decl.superinterfaces.isNotEmpty
+      ? ("extends " +
+         decl.superinterfaces.map((s) => s.fullyQualifiedName).join(", "))
+      : "";
+    var genericClause = 
+      decl.typeParameters.isNotEmpty
+      ? "<${decl.typeParameters.join(", ")}>"
+      : "";
+    return "${decl.access} interface ${decl.type.name}"
+    "$genericClause ${extendsClause}\n{\n${methods}\n}\n";
   }
 
   @override
@@ -106,6 +131,19 @@ class _JavaAstEmitter extends Visitor<String> {
     var methodBody = meth.isAbstract ? ";" : "\n" + meth.body.accept(this);
 
     return frontPart.join(" ") + parameterList + methodBody;
+  }
+
+  @override
+  String visitMethodDecl(MethodDecl meth) {
+    var frontPart = <String>[];
+    if (meth.isFinal) frontPart.add("final");
+    frontPart.add(meth.returnType.accept(this));
+    frontPart.add(meth.name);
+
+    var parameterList =
+        "(" + meth.parameters.map((p) => p.accept(this)).join(", ") + ")";
+
+    return frontPart.join(" ") + parameterList + ";";
   }
 
   @override

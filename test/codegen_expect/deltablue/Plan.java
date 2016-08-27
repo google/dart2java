@@ -1,6 +1,6 @@
 package deltablue;
 
-public class Plan extends dart._runtime.base.DartObject
+public class Plan extends dart._runtime.base.DartObject implements deltablue.Plan_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.Plan");
     static {

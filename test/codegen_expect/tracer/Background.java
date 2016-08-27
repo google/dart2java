@@ -1,6 +1,6 @@
 package tracer;
 
-public class Background extends dart._runtime.base.DartObject
+public class Background extends dart._runtime.base.DartObject implements tracer.Background_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Background");
     static {

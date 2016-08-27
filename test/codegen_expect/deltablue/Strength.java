@@ -1,6 +1,6 @@
 package deltablue;
 
-public class Strength extends dart._runtime.base.DartObject
+public class Strength extends dart._runtime.base.DartObject implements deltablue.Strength_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.Strength");
     static {

@@ -195,7 +195,8 @@ abstract class Map<K, V> {
    *
    * Calling [ifAbsent] must not add or remove keys from the map.
    */
-  V putIfAbsent(K key, V ifAbsent());
+  // TODO(springerm): Implement
+  // V putIfAbsent(K key, V ifAbsent());
 
   /**
    * Adds all key-value pairs of [other] to this map.
@@ -231,7 +232,8 @@ abstract class Map<K, V> {
    *
    * Calling `f` must not add or remove keys from the map.
    */
-  void forEach(void f(K key, V value));
+  // TODO(springerm): Implement
+  // void forEach(void f(K key, V value));
 
   /**
    * The keys of [this].

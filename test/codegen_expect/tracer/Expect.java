@@ -1,6 +1,6 @@
 package tracer;
 
-public class Expect extends dart._runtime.base.DartObject
+public class Expect extends dart._runtime.base.DartObject implements tracer.Expect_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Expect");
     static {

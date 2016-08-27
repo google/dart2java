@@ -1,6 +1,6 @@
 package havlak;
 
-public class Havlak extends havlak.BenchmarkBase
+public class Havlak extends havlak.BenchmarkBase implements havlak.Havlak_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.Havlak");
     static {

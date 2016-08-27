@@ -1,6 +1,6 @@
 package deltablue;
 
-public class StayConstraint extends deltablue.UnaryConstraint
+public class StayConstraint extends deltablue.UnaryConstraint implements deltablue.StayConstraint_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.StayConstraint");
     static {

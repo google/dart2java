@@ -1,6 +1,6 @@
 package tracer;
 
-public class Chessboard extends tracer.Materials
+public class Chessboard extends tracer.Materials implements tracer.Chessboard_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Chessboard");
     static {

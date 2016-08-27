@@ -9,7 +9,9 @@ import 'ast.dart';
 abstract class Visitor<R> {
   // Declarations
   R visitClassDecl(ClassDecl node) => null;
+  R visitInterfaceDecl(InterfaceDecl node) => null;
   R visitMethodDef(MethodDef node) => null;
+  R visitMethodDecl(MethodDecl node) => null;
   R visitConstructor(Constructor node) => null;
   R visitFieldDecl(FieldDecl node) => null;
   R visitInitializerBlock(InitializerBlock node) => null;

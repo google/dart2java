@@ -4,7 +4,7 @@ import 'package:kernel/ast.dart' as dart;
 
 import '../java/ast.dart' as java;
 import '../java/java_builder.dart' show buildWrapperClass, buildClass;
-import '../java/java_emitter.dart' show emitClassDecl;
+import '../java/java_emitter.dart' show emitMemberDecl;
 import 'compiler_state.dart' show CompilerState;
 import 'writer.dart' show FileWriter;
 
@@ -23,14 +23,14 @@ class CodeGenerator {
     if (library.procedures.isNotEmpty || library.fields.isNotEmpty) {
       java.ClassDecl cls = buildWrapperClass(library, compilerState);
       filesWritten.add(writer.writeJavaFile(
-          cls.type.package, cls.type.name, emitClassDecl(cls)));
+          cls.type.package, cls.type.name, emitMemberDecl(cls)));
     }
 
     for (var dartCls in library.classes) {
-      List<java.ClassDecl> classes = buildClass(dartCls, compilerState);
-      for (var cls in classes) {
+      List<java.PackageMember> members = buildClass(dartCls, compilerState);
+      for (var member in members) {
         filesWritten.add(writer.writeJavaFile(
-            cls.type.package, cls.type.name, emitClassDecl(cls)));
+            member.type.package, member.type.name, emitMemberDecl(member)));
       }
     }
 

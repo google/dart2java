@@ -1,6 +1,6 @@
 package deltablue;
 
-public class DeltaBlue extends deltablue.BenchmarkBase
+public class DeltaBlue extends deltablue.BenchmarkBase implements deltablue.DeltaBlue_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.DeltaBlue");
     static {

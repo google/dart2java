@@ -1,6 +1,6 @@
 package tracer;
 
-public abstract class Materials extends dart._runtime.base.DartObject
+public abstract class Materials extends dart._runtime.base.DartObject implements tracer.Materials_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Materials");
     static {

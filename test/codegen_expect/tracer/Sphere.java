@@ -1,6 +1,6 @@
 package tracer;
 
-public class Sphere extends tracer.BaseShape
+public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.Sphere");
     static {

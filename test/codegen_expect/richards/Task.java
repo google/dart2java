@@ -1,6 +1,6 @@
 package richards;
 
-public abstract class Task extends dart._runtime.base.DartObject
+public abstract class Task extends dart._runtime.base.DartObject implements richards.Task_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.Task");
     static {

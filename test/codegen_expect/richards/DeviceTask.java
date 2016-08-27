@@ -1,6 +1,6 @@
 package richards;
 
-public class DeviceTask extends richards.Task
+public class DeviceTask extends richards.Task implements richards.DeviceTask_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.DeviceTask");
     static {

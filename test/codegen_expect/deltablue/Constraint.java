@@ -1,6 +1,6 @@
 package deltablue;
 
-public abstract class Constraint extends dart._runtime.base.DartObject
+public abstract class Constraint extends dart._runtime.base.DartObject implements deltablue.Constraint_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.Constraint");
     static {

@@ -1,6 +1,6 @@
 package richards;
 
-public class Richards extends richards.BenchmarkBase
+public class Richards extends richards.BenchmarkBase implements richards.Richards_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.Richards");
     static {

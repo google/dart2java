@@ -1,6 +1,6 @@
 package tracer;
 
-public class BaseShape extends dart._runtime.base.DartObject
+public class BaseShape extends dart._runtime.base.DartObject implements tracer.BaseShape_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.BaseShape");
     static {

@@ -154,12 +154,14 @@ abstract class List<E> implements Iterable<E> {
    *     numbers.sort((a, b) => a.length.compareTo(b.length));
    *     print(numbers);  // [one, two, four, three] OR [two, one, four, three]
    */
-  void sort([int compare(E a, E b)]);
+  // TODO(springerm): Implement
+  // void sort([int compare(E a, E b)]);
 
   /**
    * Shuffles the elements of this list randomly.
    */
-  void shuffle([Random random]);
+  // TODO(springerm): Implement
+  // void shuffle([Random random]);
 
   /**
    * Returns the first index of [element] in this list.
@@ -303,7 +305,8 @@ abstract class List<E> implements Iterable<E> {
    *
    * Throws an [UnsupportedError] if this is a fixed-length list.
    */
-  void removeWhere(bool test(E element));
+  // TODO(springerm): Implement
+  // void removeWhere(bool test(E element));
 
   /**
    * Removes all objects from this list that fail to satisfy [test].
@@ -316,7 +319,8 @@ abstract class List<E> implements Iterable<E> {
    *
    * Throws an [UnsupportedError] if this is a fixed-length list.
    */
-  void retainWhere(bool test(E element));
+  // TODO(springerm): Implement
+  // void retainWhere(bool test(E element));
 
   /**
    * Returns a new list containing the objects from [start] inclusive to [end]

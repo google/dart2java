@@ -1,6 +1,6 @@
 package havlak;
 
-public class SimpleLoop extends dart._runtime.base.DartObject
+public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.SimpleLoop_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.SimpleLoop");
     static {

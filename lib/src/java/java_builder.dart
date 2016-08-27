@@ -28,16 +28,27 @@ java.ClassDecl buildWrapperClass(
   return result;
 }
 
-/// Builds a Java class AST from a kernel class AST. Kernel does not give names
-/// to temporary variables, so we need to keep track of them manually. Also see
-/// the comment for visitLet.
-List<java.ClassDecl> buildClass(dart.Class node, CompilerState compilerState) {
+/// Builds a Java class AST from a kernel class AST.
+/// 
+/// Also generates a Java interface for every Dart class. There are some
+/// special cases:
+/// * Dart classes with a Java implementation class have an interface only
+/// * No interfaces/classes are generated for primitive types (e.g., int)
+List<java.PackageMember> buildClass(
+  dart.Class node, CompilerState compilerState) {
   // Nothing to do for core abstract classes like `int`.
   if (compilerState.isJavaClass(node)) {
-    return const <java.ClassDecl>[];
+    if (compilerState.getClass(node) is! java.PrimitiveType) {
+      return [new _JavaAstBuilder(compilerState).buildInterface(node)];
+    } else {
+      // Do not generate interfaces for primitive types
+      return [];
+    }
   }
 
-  return [node.accept(new _JavaAstBuilder(compilerState))];
+  return [
+    new _JavaAstBuilder(compilerState).buildClass(node),
+    new _JavaAstBuilder(compilerState).buildInterface(node)];
 }
 
 /// A temporary local variable defined in a method.
@@ -117,6 +128,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return null;
   }
 
+  java.ClassDecl buildClass(dart.Class node) {
+    return node.accept(this);
+  }
+
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
@@ -169,13 +184,25 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       ts.makeTypeInfoInitializer(node, compilerState)
     ]..addAll(orderedMembers);
 
+    var typeParameters = node.typeParameters.map((p) => p.name).toList();
+
+    // TODO(springerm): Think about whether a class should directly implement
+    // other interfaces or if it is sufficient for the associated interface to
+    // extend all other interfaces
+    var implementedInterfaces = [compilerState.getInterface(node)];
+    implementedInterfaces.addAll(
+      node.implementedTypes.map((t) => 
+        compilerState.getInterface(t.classNode)));
+
     return new java.ClassDecl(type,
         access: java.Access.Public,
         orderedMembers: orderedMembers,
         methods: methods,
         constructors: constructorDelegators,
         supertype: supertype,
-        isAbstract: node.isAbstract);
+        isAbstract: node.isAbstract,
+        typeParameters: typeParameters,
+        implementedInterfaces: implementedInterfaces);
   }
 
   /// If any of the [fields] are static and have initializers, create a static
@@ -209,6 +236,53 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           isStatic: true));
     }
     return ret;
+  }
+
+  java.InterfaceDecl buildInterface(dart.NormalClass node) {
+    java.ClassOrInterfaceType type = compilerState.getInterface(node);
+    List<java.MethodDecl> methods = node.procedures
+        .where((m) => m.kind != dart.ProcedureKind.Factory && !m.isStatic)
+        .map(this.buildMethodDecl).toList();
+
+    var superinterfaces = <java.ClassOrInterfaceType>[];
+    if (node.supertype != null) {
+      // dart.core::Object does not have a supertype
+      java.ClassOrInterfaceType supertype = 
+        compilerState.getInterface(node.supertype.classNode);
+      if (supertype == java.JavaType.object) {
+        // Make sure that "extends Object" results in "extends DartObject"
+        // TODO(springerm): Remove hard-coded special case once we
+        // figure out interop
+        supertype = java.JavaType.dartObject;
+      }
+      superinterfaces.add(supertype);
+    }
+
+    var typeParameters = node.typeParameters.map((p) => p.name).toList();
+
+    // Add all other interfaces that this interface extends
+    superinterfaces.addAll(
+      node.implementedTypes.map((t) => 
+        compilerState.getInterface(t.classNode)));
+
+    return new java.InterfaceDecl(type,
+      access: java.Access.Public,
+      methods: methods,
+      superinterfaces: superinterfaces,
+      typeParameters: typeParameters);
+  }
+
+  java.MethodDecl buildMethodDecl(dart.Procedure procedure) {
+    String methodName = javaMethodName(procedure.name.name, procedure.kind);
+    java.JavaType returnType = procedure.function.returnType.accept(this);
+    // TODO(springerm): handle named parameters, etc.
+    List<java.VariableDecl> parameters = procedure.function.positionalParameters
+        .map(buildPositionalParameter)
+        .toList();
+
+    return new java.MethodDecl(methodName, parameters,
+        returnType: returnType,
+        isFinal: false);
   }
 
   @override
@@ -1405,6 +1479,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.JavaType defaultDartType(dart.DartType node) {
     throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
+  }
+
+  @override
+  java.JavaType visitTypeParameterType(dart.TypeParameterType node) {
+    return new java.TypeVariable(node.parameter.name);
   }
 
   @override

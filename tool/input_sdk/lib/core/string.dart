@@ -239,7 +239,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *     string.startsWith(new RegExp(r'^art'), 1);    // false
    *     string.startsWith(new RegExp(r'art'), 1);     // true
    */
-  bool startsWith(Pattern pattern, [int index = 0]);
+  // TODO(springerm): Parameter should be [Pattern]
+  bool startsWith(String pattern, [int index = 0]);
 
   /**
    * Returns the position of the first match of [pattern] in this string,
@@ -255,7 +256,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *
    * [start] must not be negative or greater than [length].
    */
-  int indexOf(Pattern pattern, [int start]);
+  // TODO(springerm): Parameter should be [Pattern]
+  int indexOf(String pattern, [int start]);
 
   /**
    * Returns the position of the last match [pattern] in this string, searching
@@ -271,7 +273,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *
    * [start] must not be negative or greater than [length].
    */
-  int lastIndexOf(Pattern pattern, [int start]);
+  // TODO(springerm): Parameter should be [Pattern]
+  int lastIndexOf(String pattern, [int start]);
 
   /**
    * Returns true if this string is empty.
@@ -412,7 +415,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *
    * [startIndex] must not be negative or greater than [length].
    */
-  bool contains(Pattern other, [int startIndex = 0]);
+  // TODO(springerm): Parameter should be [Pattern]
+  bool contains(String other, [int startIndex = 0]);
 
   /**
    * Returns a new string in which the first occurence of [from] in this string
@@ -421,7 +425,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *     '0.0001'.replaceFirst(new RegExp(r'0'), ''); // '.0001'
    *     '0.0001'.replaceFirst(new RegExp(r'0'), '7', 1); // '0.7001'
    */
-  String replaceFirst(Pattern from, String to, [int startIndex = 0]);
+  // TODO(springerm): Parameter should be [Pattern]
+  String replaceFirst(String from, String to, [int startIndex = 0]);
 
   /**
    * Replace the first occurence of [from] in this string.
@@ -434,8 +439,9 @@ abstract class String { //implements Comparable<String>, Pattern {
    * is converted to a `String` using its `toString` method, which must
    * then return a string.
    */
-  String replaceFirstMapped(Pattern from, String replace(Match match),
-                            [int startIndex = 0]);
+  // TODO(springerm): Implement
+  // String replaceFirstMapped(Pattern from, String replace(Match match),
+  //                          [int startIndex = 0]);
 
   /**
    * Replaces all substrings that match [from] with [replace].
@@ -450,7 +456,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    * depends on the match (for example on a [RegExp]'s capture groups), use
    * the [replaceAllMapped] method instead.
    */
-  String replaceAll(Pattern from, String replace);
+  // TODO(springerm): Parameter should be [Pattern]
+  String replaceAll(String from, String replace);
 
   /**
    * Replace all substrings that match [from] by a string computed from the
@@ -475,7 +482,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *
    *     pigLatin('I have a secret now!'); // 'Iway avehay away ecretsay ownay!'
    */
-  String replaceAllMapped(Pattern from, String replace(Match match));
+  // TODO(springerm): Implement
+  // String replaceAllMapped(Pattern from, String replace(Match match));
 
   /**
    * Replaces the substring from [start] to [end] with [replacement].
@@ -536,7 +544,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    *
    *     string.runes.map((rune) => new String.fromCharCode(rune)).toList();
    */
-  List<String> split(Pattern pattern);
+  // TODO(springerm): Parameter should be [Pattern]
+  List<String> split(String pattern);
 
   /**
    * Splits the string, converts its parts, and combines them into a new
@@ -556,9 +565,10 @@ abstract class String { //implements Comparable<String>, Pattern {
    *         onMatch:    (m) => '${m.group(0)}',
    *         onNonMatch: (n) => '*'); // *shoots*
    */
-  String splitMapJoin(Pattern pattern,
-                      {String onMatch(Match match),
-                       String onNonMatch(String nonMatch)});
+  // TODO(springerm): Implement
+  // String splitMapJoin(Pattern pattern,
+  //                     {String onMatch(Match match),
+  //                      String onNonMatch(String nonMatch)});
 
   /**
    * Returns an unmodifiable list of the UTF-16 code units of this string.
@@ -572,7 +582,8 @@ abstract class String { //implements Comparable<String>, Pattern {
    * as one integer by this iterator. Unmatched surrogate halves are treated
    * like valid 16-bit code-units.
    */
-  Runes get runes;
+  // TODO(springerm): Implement
+  // Runes get runes;
 
   /**
    * Converts all characters in this string to lower case.

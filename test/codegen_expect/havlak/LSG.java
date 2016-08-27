@@ -1,6 +1,6 @@
 package havlak;
 
-public class LSG extends dart._runtime.base.DartObject
+public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.LSG");
     static {
