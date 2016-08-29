@@ -6,11 +6,11 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
     static {
       deltablue.BinaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }
-    public deltablue.Variable v1;
-    public deltablue.Variable v2;
+    public deltablue.Variable_interface v1;
+    public deltablue.Variable_interface v2;
     public int direction;
   
-    public BinaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable v1, deltablue.Variable v2, deltablue.Strength strength)
+    public BinaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(v1, v2, strength);
@@ -20,7 +20,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable v1, deltablue.Variable v2, deltablue.Strength strength)
+    protected void _constructor(deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.direction = deltablue.__TopLevel.NONE;
@@ -66,12 +66,12 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.input().setMark(mark);
     }
-    public deltablue.Variable input()
+    public deltablue.Variable_interface input()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return ((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV1()) : (this.getV2());
     }
-    public deltablue.Variable output()
+    public deltablue.Variable_interface output()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return ((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV2()) : (this.getV1());
@@ -79,8 +79,8 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
     public void recalculate()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      deltablue.Variable ihn = this.input();
-      deltablue.Variable out = this.output();
+      deltablue.Variable_interface ihn = this.input();
+      deltablue.Variable_interface out = this.output();
       out.setWalkStrength(deltablue.Strength.weakest(this.getStrength(), ihn.getWalkStrength()));
       out.setStay(ihn.getStay());
       if (out.getStay())
@@ -96,7 +96,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
     public java.lang.Boolean inputsKnown(int mark)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      deltablue.Variable i = this.input();
+      deltablue.Variable_interface i = this.input();
       return (((i.getMark() == mark) || i.getStay()) || dart._runtime.helpers.ObjectHelper.operatorEqual(i.getDeterminedBy(), null));
     }
     public void removeFromGraph()
@@ -112,11 +112,11 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
       }
       this.setDirection(deltablue.__TopLevel.NONE);
     }
-    public deltablue.Variable getV1()
+    public deltablue.Variable_interface getV1()
     {
       return this.v1;
     }
-    public deltablue.Variable getV2()
+    public deltablue.Variable_interface getV2()
     {
       return this.v2;
     }
@@ -124,12 +124,12 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
     {
       return this.direction;
     }
-    public deltablue.Variable setV1(deltablue.Variable value)
+    public deltablue.Variable_interface setV1(deltablue.Variable_interface value)
     {
       this.v1 = value;
       return value;
     }
-    public deltablue.Variable setV2(deltablue.Variable value)
+    public deltablue.Variable_interface setV2(deltablue.Variable_interface value)
     {
       this.v2 = value;
       return value;

@@ -6,10 +6,10 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
     static {
       deltablue.ScaleConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BinaryConstraint.dart2java$typeInfo);
     }
-    public deltablue.Variable scale;
-    public deltablue.Variable offset;
+    public deltablue.Variable_interface scale;
+    public deltablue.Variable_interface offset;
   
-    public ScaleConstraint(dart._runtime.types.simple.Type type, deltablue.Variable src, deltablue.Variable scale, deltablue.Variable offset, deltablue.Variable dest, deltablue.Strength strength)
+    public ScaleConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(src, scale, offset, dest, strength);
@@ -19,7 +19,7 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable src, deltablue.Variable scale, deltablue.Variable offset, deltablue.Variable dest, deltablue.Strength strength)
+    protected void _constructor(deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.scale = scale;
@@ -67,8 +67,8 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
     public void recalculate()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      deltablue.Variable ihn = this.input();
-      deltablue.Variable out = this.output();
+      deltablue.Variable_interface ihn = this.input();
+      deltablue.Variable_interface out = this.output();
       out.setWalkStrength(deltablue.Strength.weakest(this.getStrength(), ihn.getWalkStrength()));
       out.setStay(((ihn.getStay() && this.getScale().getStay()) && this.getOffset().getStay()));
       if (out.getStay())
@@ -76,11 +76,11 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
         this.execute();
       }
     }
-    public deltablue.Variable getScale()
+    public deltablue.Variable_interface getScale()
     {
       return this.scale;
     }
-    public deltablue.Variable getOffset()
+    public deltablue.Variable_interface getOffset()
     {
       return this.offset;
     }

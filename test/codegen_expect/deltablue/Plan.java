@@ -6,7 +6,7 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     static {
       deltablue.Plan.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> list;
+    public dart._runtime.base.DartList<deltablue.Constraint_interface> list;
   
     public Plan(dart._runtime.types.simple.Type type)
     {
@@ -21,10 +21,10 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     protected void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.list = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
+      this.list = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class);
       super._constructor();
     }
-    public void addConstraint(deltablue.Constraint c)
+    public void addConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getList().add(c);
@@ -42,11 +42,11 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
         this.getList().operatorAt(i).execute();
       }
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> getList()
+    public dart._runtime.base.DartList<deltablue.Constraint_interface> getList()
     {
       return this.list;
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> setList(dart._runtime.base.DartList<deltablue.Constraint> value)
+    public dart._runtime.base.DartList<deltablue.Constraint_interface> setList(dart._runtime.base.DartList<deltablue.Constraint_interface> value)
     {
       this.list = value;
       return value;

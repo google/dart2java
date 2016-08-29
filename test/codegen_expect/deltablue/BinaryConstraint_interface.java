@@ -6,10 +6,16 @@ public interface BinaryConstraint_interface extends deltablue.Constraint_interfa
   void addToGraph();
   java.lang.Boolean isSatisfied();
   void markInputs(int mark);
-  deltablue.Variable input();
-  deltablue.Variable output();
+  deltablue.Variable_interface input();
+  deltablue.Variable_interface output();
   void recalculate();
   void markUnsatisfied();
   java.lang.Boolean inputsKnown(int mark);
   void removeFromGraph();
+  deltablue.Variable_interface getV1();
+  deltablue.Variable_interface getV2();
+  int getDirection();
+  deltablue.Variable_interface setV1(deltablue.Variable_interface value);
+  deltablue.Variable_interface setV2(deltablue.Variable_interface value);
+  int setDirection(int value);
 }

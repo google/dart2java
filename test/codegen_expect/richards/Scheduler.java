@@ -8,10 +8,10 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     }
     public int queueCount;
     public int holdCount;
-    public richards.TaskControlBlock currentTcb;
+    public richards.TaskControlBlock_interface currentTcb;
     public int currentId;
-    public richards.TaskControlBlock list;
-    public dart._runtime.base.DartList<richards.TaskControlBlock> blocks;
+    public richards.TaskControlBlock_interface list;
+    public dart._runtime.base.DartList<richards.TaskControlBlock_interface> blocks;
   
     public Scheduler(dart._runtime.types.simple.Type type)
     {
@@ -29,36 +29,36 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       this.queueCount = 0;
       this.holdCount = 0;
       this.currentId = 0;
-      this.blocks = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic.newInstance(richards.TaskControlBlock.class, richards.Richards.NUMBER_OF_IDS);
+      this.blocks = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic.newInstance(richards.TaskControlBlock_interface.class, richards.Richards.NUMBER_OF_IDS);
       super._constructor();
     }
-    public void addIdleTask(int id, int priority, richards.Packet queue, int count)
+    public void addIdleTask(int id, int priority, richards.Packet_interface queue, int count)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.addRunningTask(id, priority, queue, new richards.IdleTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.IdleTask.dart2java$typeInfo)), this, 1, count));
     }
-    public void addWorkerTask(int id, int priority, richards.Packet queue)
+    public void addWorkerTask(int id, int priority, richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.addTask(id, priority, queue, new richards.WorkerTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.WorkerTask.dart2java$typeInfo)), this, richards.Richards.ID_HANDLER_A, 0));
     }
-    public void addHandlerTask(int id, int priority, richards.Packet queue)
+    public void addHandlerTask(int id, int priority, richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.addTask(id, priority, queue, new richards.HandlerTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.HandlerTask.dart2java$typeInfo)), this));
     }
-    public void addDeviceTask(int id, int priority, richards.Packet queue)
+    public void addDeviceTask(int id, int priority, richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.addTask(id, priority, queue, new richards.DeviceTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.DeviceTask.dart2java$typeInfo)), this));
     }
-    public void addRunningTask(int id, int priority, richards.Packet queue, richards.Task task)
+    public void addRunningTask(int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.addTask(id, priority, queue, task);
       this.getCurrentTcb().setRunning();
     }
-    public void addTask(int id, int priority, richards.Packet queue, richards.Task task)
+    public void addTask(int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setCurrentTcb(new richards.TaskControlBlock(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.TaskControlBlock.dart2java$typeInfo)), this.getList(), id, priority, queue, task));
@@ -82,10 +82,10 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
         }
       }
     }
-    public richards.TaskControlBlock release(int id)
+    public richards.TaskControlBlock_interface release(int id)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.TaskControlBlock tcb = this.getBlocks().operatorAt(id);
+      richards.TaskControlBlock_interface tcb = this.getBlocks().operatorAt(id);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(tcb, null))
       {
         return tcb;
@@ -97,25 +97,25 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       }
       return this.getCurrentTcb();
     }
-    public richards.TaskControlBlock holdCurrent()
+    public richards.TaskControlBlock_interface holdCurrent()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.Scheduler __tempVar_1;
+      richards.Scheduler_interface __tempVar_1;
       dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setHoldCount((__tempVar_1.getHoldCount() + 1)));
       this.getCurrentTcb().markAsHeld();
       return this.getCurrentTcb().getLink();
     }
-    public richards.TaskControlBlock suspendCurrent()
+    public richards.TaskControlBlock_interface suspendCurrent()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getCurrentTcb().markAsSuspended();
       return this.getCurrentTcb();
     }
-    public richards.TaskControlBlock queue(richards.Packet packet)
+    public richards.TaskControlBlock_interface queue(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.Scheduler __tempVar_3;
-      richards.TaskControlBlock t = this.getBlocks().operatorAt(packet.getId());
+      richards.Scheduler_interface __tempVar_3;
+      richards.TaskControlBlock_interface t = this.getBlocks().operatorAt(packet.getId());
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(t, null))
       {
         return t;
@@ -133,7 +133,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     {
       return this.holdCount;
     }
-    public richards.TaskControlBlock getCurrentTcb()
+    public richards.TaskControlBlock_interface getCurrentTcb()
     {
       return this.currentTcb;
     }
@@ -141,11 +141,11 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     {
       return this.currentId;
     }
-    public richards.TaskControlBlock getList()
+    public richards.TaskControlBlock_interface getList()
     {
       return this.list;
     }
-    public dart._runtime.base.DartList<richards.TaskControlBlock> getBlocks()
+    public dart._runtime.base.DartList<richards.TaskControlBlock_interface> getBlocks()
     {
       return this.blocks;
     }
@@ -159,7 +159,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       this.holdCount = value;
       return value;
     }
-    public richards.TaskControlBlock setCurrentTcb(richards.TaskControlBlock value)
+    public richards.TaskControlBlock_interface setCurrentTcb(richards.TaskControlBlock_interface value)
     {
       this.currentTcb = value;
       return value;
@@ -169,12 +169,12 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       this.currentId = value;
       return value;
     }
-    public richards.TaskControlBlock setList(richards.TaskControlBlock value)
+    public richards.TaskControlBlock_interface setList(richards.TaskControlBlock_interface value)
     {
       this.list = value;
       return value;
     }
-    public dart._runtime.base.DartList<richards.TaskControlBlock> setBlocks(dart._runtime.base.DartList<richards.TaskControlBlock> value)
+    public dart._runtime.base.DartList<richards.TaskControlBlock_interface> setBlocks(dart._runtime.base.DartList<richards.TaskControlBlock_interface> value)
     {
       this.blocks = value;
       return value;

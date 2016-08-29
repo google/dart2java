@@ -59,7 +59,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements delt
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo)));
+      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo)));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))
@@ -75,7 +75,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements delt
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo)));
+      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo)));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))

@@ -6,10 +6,10 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
     static {
       richards.HandlerTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
-    public richards.Packet v1;
-    public richards.Packet v2;
+    public richards.Packet_interface v1;
+    public richards.Packet_interface v2;
   
-    public HandlerTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler)
+    public HandlerTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler);
@@ -19,12 +19,12 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler scheduler)
+    protected void _constructor(richards.Scheduler_interface scheduler)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(scheduler);
     }
-    public richards.TaskControlBlock run(richards.Packet packet)
+    public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(packet, null)))
@@ -41,7 +41,7 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV1(), null)))
       {
         int count = this.getV1().getA1();
-        richards.Packet v = null;
+        richards.Packet_interface v = null;
         if ((count < richards.Richards.DATA_SIZE))
         {
           if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(this.getV2(), null)))
@@ -67,20 +67,20 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "HandlerTask";
     }
-    public richards.Packet getV1()
+    public richards.Packet_interface getV1()
     {
       return this.v1;
     }
-    public richards.Packet getV2()
+    public richards.Packet_interface getV2()
     {
       return this.v2;
     }
-    public richards.Packet setV1(richards.Packet value)
+    public richards.Packet_interface setV1(richards.Packet_interface value)
     {
       this.v1 = value;
       return value;
     }
-    public richards.Packet setV2(richards.Packet value)
+    public richards.Packet_interface setV2(richards.Packet_interface value)
     {
       this.v2 = value;
       return value;

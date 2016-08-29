@@ -6,10 +6,10 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
     static {
       deltablue.UnaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }
-    public deltablue.Variable myOutput;
+    public deltablue.Variable_interface myOutput;
     public java.lang.Boolean satisfied;
   
-    public UnaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable myOutput, deltablue.Strength strength)
+    public UnaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(myOutput, strength);
@@ -19,7 +19,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable myOutput, deltablue.Strength strength)
+    protected void _constructor(deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.satisfied = false;
@@ -47,7 +47,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
     }
-    public deltablue.Variable output()
+    public deltablue.Variable_interface output()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return this.getMyOutput();
@@ -81,7 +81,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
       }
       this.setSatisfied(false);
     }
-    public deltablue.Variable getMyOutput()
+    public deltablue.Variable_interface getMyOutput()
     {
       return this.myOutput;
     }

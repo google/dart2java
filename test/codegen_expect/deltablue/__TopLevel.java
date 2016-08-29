@@ -15,17 +15,17 @@ public class __TopLevel
       deltablue.__TopLevel.FORWARD = 2;
       deltablue.__TopLevel.BACKWARD = 0;
     }
-    public static deltablue.Strength REQUIRED;
-    public static deltablue.Strength STRONG_PREFERRED;
-    public static deltablue.Strength PREFERRED;
-    public static deltablue.Strength STRONG_DEFAULT;
-    public static deltablue.Strength NORMAL;
-    public static deltablue.Strength WEAK_DEFAULT;
-    public static deltablue.Strength WEAKEST;
+    public static deltablue.Strength_interface REQUIRED;
+    public static deltablue.Strength_interface STRONG_PREFERRED;
+    public static deltablue.Strength_interface PREFERRED;
+    public static deltablue.Strength_interface STRONG_DEFAULT;
+    public static deltablue.Strength_interface NORMAL;
+    public static deltablue.Strength_interface WEAK_DEFAULT;
+    public static deltablue.Strength_interface WEAKEST;
     public static int NONE;
     public static int FORWARD;
     public static int BACKWARD;
-    public static deltablue.Planner planner;
+    public static deltablue.Planner_interface planner;
   
   
   
@@ -40,12 +40,12 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       deltablue.__TopLevel.planner = new deltablue.Planner(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Planner.dart2java$typeInfo)));
-      deltablue.Variable prev = null;
-      deltablue.Variable first = null;
-      deltablue.Variable last = null;
+      deltablue.Variable_interface prev = null;
+      deltablue.Variable_interface first = null;
+      deltablue.Variable_interface last = null;
       for (int i = 0; (i <= n); i = (i + 1))
       {
-        deltablue.Variable v = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "v", 0);
+        deltablue.Variable_interface v = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "v", 0);
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(prev, null)))
         {
           new deltablue.EqualityConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EqualityConstraint.dart2java$typeInfo)), prev, v, deltablue.__TopLevel.REQUIRED);
@@ -61,8 +61,8 @@ public class __TopLevel
         prev = v;
       }
       new deltablue.StayConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.StayConstraint.dart2java$typeInfo)), last, deltablue.__TopLevel.STRONG_DEFAULT);
-      deltablue.EditConstraint edit = new deltablue.EditConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EditConstraint.dart2java$typeInfo)), first, deltablue.__TopLevel.PREFERRED);
-      deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class, edit));
+      deltablue.EditConstraint_interface edit = new deltablue.EditConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EditConstraint.dart2java$typeInfo)), first, deltablue.__TopLevel.PREFERRED);
+      deltablue.Plan_interface plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class, edit));
       for (int i = 0; (i < 100); i = (i + 1))
       {
         first.setValue(i);
@@ -78,11 +78,11 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       deltablue.__TopLevel.planner = new deltablue.Planner(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Planner.dart2java$typeInfo)));
-      deltablue.Variable scale = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "scale", 10);
-      deltablue.Variable offset = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "offset", 1000);
-      deltablue.Variable src = null;
-      deltablue.Variable dst = null;
-      dart._runtime.base.DartList<deltablue.Variable> dests = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable.class);
+      deltablue.Variable_interface scale = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "scale", 10);
+      deltablue.Variable_interface offset = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "offset", 1000);
+      deltablue.Variable_interface src = null;
+      deltablue.Variable_interface dst = null;
+      dart._runtime.base.DartList<deltablue.Variable_interface> dests = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable_interface.class);
       for (int i = 0; (i < n); i = (i + 1))
       {
         src = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "src", i);
@@ -118,11 +118,11 @@ public class __TopLevel
         }
       }
     }
-    public static void change(deltablue.Variable v, int newValue)
+    public static void change(deltablue.Variable_interface v, int newValue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      deltablue.EditConstraint edit = new deltablue.EditConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EditConstraint.dart2java$typeInfo)), v, deltablue.__TopLevel.PREFERRED);
-      deltablue.Plan plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.EditConstraint.class, edit));
+      deltablue.EditConstraint_interface edit = new deltablue.EditConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EditConstraint.dart2java$typeInfo)), v, deltablue.__TopLevel.PREFERRED);
+      deltablue.Plan_interface plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.EditConstraint_interface.class, edit));
       for (int i = 0; (i < 10); i = (i + 1))
       {
         v.setValue(newValue);

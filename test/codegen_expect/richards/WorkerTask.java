@@ -9,7 +9,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
     public int v1;
     public int v2;
   
-    public WorkerTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler, int v1, int v2)
+    public WorkerTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler, v1, v2);
@@ -19,7 +19,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler scheduler, int v1, int v2)
+    protected void _constructor(richards.Scheduler_interface scheduler, int v1, int v2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.v1 = 0;
@@ -28,10 +28,10 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
       this.v2 = v2;
       super._constructor(scheduler);
     }
-    public richards.TaskControlBlock run(richards.Packet packet)
+    public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.WorkerTask __tempVar_1;
+      richards.WorkerTask_interface __tempVar_1;
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(packet, null))
       {
         return this.getScheduler().suspendCurrent();

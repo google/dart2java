@@ -10,6 +10,6 @@ public class Tests {
   public void testInterfaces() {
     assertEquals(31, (int) __TopLevel.testA());
     assertEquals(1213, (int) __TopLevel.testB());
-    assertEquals(1312, (int) __TopLevel.testC());
+    assertEquals(1131, (int) __TopLevel.testC());
   }
 }

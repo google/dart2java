@@ -6,10 +6,10 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
     static {
       havlak.BasicBlockEdge.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public havlak.BasicBlock from;
-    public havlak.BasicBlock to;
+    public havlak.BasicBlock_interface from;
+    public havlak.BasicBlock_interface to;
   
-    public BasicBlockEdge(dart._runtime.types.simple.Type type, havlak.CFG cfg, int fromName, int toName)
+    public BasicBlockEdge(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, int fromName, int toName)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(cfg, fromName, toName);
@@ -19,7 +19,7 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
       super(arg, type);
     }
   
-    protected void _constructor(havlak.CFG cfg, int fromName, int toName)
+    protected void _constructor(havlak.CFG_interface cfg, int fromName, int toName)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
@@ -29,20 +29,20 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
       this.getTo().addInEdge(this.getFrom());
       cfg.addEdge(this);
     }
-    public havlak.BasicBlock getFrom()
+    public havlak.BasicBlock_interface getFrom()
     {
       return this.from;
     }
-    public havlak.BasicBlock getTo()
+    public havlak.BasicBlock_interface getTo()
     {
       return this.to;
     }
-    public havlak.BasicBlock setFrom(havlak.BasicBlock value)
+    public havlak.BasicBlock_interface setFrom(havlak.BasicBlock_interface value)
     {
       this.from = value;
       return value;
     }
-    public havlak.BasicBlock setTo(havlak.BasicBlock value)
+    public havlak.BasicBlock_interface setTo(havlak.BasicBlock_interface value)
     {
       this.to = value;
       return value;

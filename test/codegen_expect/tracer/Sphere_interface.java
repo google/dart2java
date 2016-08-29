@@ -2,6 +2,7 @@ package tracer;
 
 public interface Sphere_interface extends tracer.BaseShape_interface
 {
-  tracer.IntersectionInfo intersect(tracer.Ray ray);
+  tracer.IntersectionInfo_interface intersect(tracer.Ray_interface ray);
   java.lang.String toString();
+  java.lang.Double getRadius();
 }

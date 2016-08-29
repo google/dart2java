@@ -9,7 +9,7 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
     public int v1;
     public int count;
   
-    public IdleTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler, int v1, int count)
+    public IdleTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int count)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler, v1, count);
@@ -19,7 +19,7 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler scheduler, int v1, int count)
+    protected void _constructor(richards.Scheduler_interface scheduler, int v1, int count)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.v1 = 0;
@@ -28,10 +28,10 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
       this.count = count;
       super._constructor(scheduler);
     }
-    public richards.TaskControlBlock run(richards.Packet packet)
+    public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.IdleTask __tempVar_1;
+      richards.IdleTask_interface __tempVar_1;
       dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = this, __tempVar_1.setCount((__tempVar_1.getCount() - 1)));
       if ((this.getCount() == 0))
       {

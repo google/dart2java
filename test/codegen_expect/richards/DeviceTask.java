@@ -6,9 +6,9 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
     static {
       richards.DeviceTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     }
-    public richards.Packet v1;
+    public richards.Packet_interface v1;
   
-    public DeviceTask(dart._runtime.types.simple.Type type, richards.Scheduler scheduler)
+    public DeviceTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler);
@@ -18,12 +18,12 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler scheduler)
+    protected void _constructor(richards.Scheduler_interface scheduler)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(scheduler);
     }
-    public richards.TaskControlBlock run(richards.Packet packet)
+    public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(packet, null))
@@ -32,7 +32,7 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
         {
           return this.getScheduler().suspendCurrent();
         }
-        richards.Packet v = this.getV1();
+        richards.Packet_interface v = this.getV1();
         this.setV1(null);
         return this.getScheduler().queue(v);
       }
@@ -44,11 +44,11 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "DeviceTask";
     }
-    public richards.Packet getV1()
+    public richards.Packet_interface getV1()
     {
       return this.v1;
     }
-    public richards.Packet setV1(richards.Packet value)
+    public richards.Packet_interface setV1(richards.Packet_interface value)
     {
       this.v1 = value;
       return value;

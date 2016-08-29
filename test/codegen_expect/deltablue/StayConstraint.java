@@ -7,7 +7,7 @@ public class StayConstraint extends deltablue.UnaryConstraint implements deltabl
       deltablue.StayConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.UnaryConstraint.dart2java$typeInfo);
     }
   
-    public StayConstraint(dart._runtime.types.simple.Type type, deltablue.Variable v, deltablue.Strength str)
+    public StayConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface v, deltablue.Strength_interface str)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(v, str);
@@ -17,7 +17,7 @@ public class StayConstraint extends deltablue.UnaryConstraint implements deltabl
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable v, deltablue.Strength str)
+    protected void _constructor(deltablue.Variable_interface v, deltablue.Strength_interface str)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(v, str);

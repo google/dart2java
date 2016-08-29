@@ -7,4 +7,6 @@ public interface ScaleConstraint_interface extends deltablue.BinaryConstraint_in
   void markInputs(int mark);
   void execute();
   void recalculate();
+  deltablue.Variable_interface getScale();
+  deltablue.Variable_interface getOffset();
 }

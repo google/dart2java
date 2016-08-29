@@ -2,12 +2,14 @@ package deltablue;
 
 public interface Planner_interface extends dart.core.Object_interface
 {
-  void incrementalAdd(deltablue.Constraint c);
-  void incrementalRemove(deltablue.Constraint c);
+  void incrementalAdd(deltablue.Constraint_interface c);
+  void incrementalRemove(deltablue.Constraint_interface c);
   int newMark();
-  deltablue.Plan makePlan(dart._runtime.base.DartList<deltablue.Constraint> sources);
-  deltablue.Plan extractPlanFromConstraints(dart._runtime.base.DartList<deltablue.Constraint> constraints);
-  java.lang.Boolean addPropagate(deltablue.Constraint c, int mark);
-  dart._runtime.base.DartList<deltablue.Constraint> removePropagateFrom(deltablue.Variable out);
-  void addConstraintsConsumingTo(deltablue.Variable v, dart._runtime.base.DartList<deltablue.Constraint> coll);
+  deltablue.Plan_interface makePlan(dart._runtime.base.DartList<deltablue.Constraint_interface> sources);
+  deltablue.Plan_interface extractPlanFromConstraints(dart._runtime.base.DartList<deltablue.Constraint_interface> constraints);
+  java.lang.Boolean addPropagate(deltablue.Constraint_interface c, int mark);
+  dart._runtime.base.DartList<deltablue.Constraint_interface> removePropagateFrom(deltablue.Variable_interface out);
+  void addConstraintsConsumingTo(deltablue.Variable_interface v, dart._runtime.base.DartList<deltablue.Constraint_interface> coll);
+  int getCurrentMark();
+  int setCurrentMark(int value);
 }

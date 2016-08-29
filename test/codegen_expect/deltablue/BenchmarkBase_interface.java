@@ -11,4 +11,5 @@ public interface BenchmarkBase_interface extends dart.core.Object_interface
   java.lang.Double measureForExercise(int timeMinimum);
   java.lang.Double measure();
   void report();
+  java.lang.String getName();
 }

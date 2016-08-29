@@ -43,6 +43,6 @@ int testB() {
 int testC() {
   A c1 = new C();
   B c2 = new C();
-  int result = c1.foo() + c1.bar(10, 20) + c2.qux(1000);    // expect 1312
+  int result = c1.foo() + c1.bar(10, 20) + c2.qux(1000);    // expect 1131
   return result;
 }

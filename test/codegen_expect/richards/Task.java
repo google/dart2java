@@ -6,9 +6,9 @@ public abstract class Task extends dart._runtime.base.DartObject implements rich
     static {
       richards.Task.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public richards.Scheduler scheduler;
+    public richards.Scheduler_interface scheduler;
   
-    public Task(dart._runtime.types.simple.Type type, richards.Scheduler scheduler)
+    public Task(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(scheduler);
@@ -18,18 +18,18 @@ public abstract class Task extends dart._runtime.base.DartObject implements rich
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler scheduler)
+    protected void _constructor(richards.Scheduler_interface scheduler)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.scheduler = scheduler;
       super._constructor();
     }
-    public abstract richards.TaskControlBlock run(richards.Packet packet);
-    public richards.Scheduler getScheduler()
+    public abstract richards.TaskControlBlock_interface run(richards.Packet_interface packet);
+    public richards.Scheduler_interface getScheduler()
     {
       return this.scheduler;
     }
-    public richards.Scheduler setScheduler(richards.Scheduler value)
+    public richards.Scheduler_interface setScheduler(richards.Scheduler_interface value)
     {
       this.scheduler = value;
       return value;

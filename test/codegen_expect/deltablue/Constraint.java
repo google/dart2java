@@ -6,9 +6,9 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
     static {
       deltablue.Constraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public deltablue.Strength strength;
+    public deltablue.Strength_interface strength;
   
-    public Constraint(dart._runtime.types.simple.Type type, deltablue.Strength strength)
+    public Constraint(dart._runtime.types.simple.Type type, deltablue.Strength_interface strength)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(strength);
@@ -18,7 +18,7 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Strength strength)
+    protected void _constructor(deltablue.Strength_interface strength)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.strength = strength;
@@ -31,7 +31,7 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
     public abstract void chooseMethod(int mark);
     public abstract void markInputs(int mark);
     public abstract java.lang.Boolean inputsKnown(int mark);
-    public abstract deltablue.Variable output();
+    public abstract deltablue.Variable_interface output();
     public abstract void execute();
     public abstract void recalculate();
     public void addConstraint()
@@ -40,7 +40,7 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
       this.addToGraph();
       deltablue.__TopLevel.planner.incrementalAdd(this);
     }
-    public deltablue.Constraint satisfy(int mark)
+    public deltablue.Constraint_interface satisfy(int mark)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.chooseMethod(mark);
@@ -53,8 +53,8 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
         return null;
       }
       this.markInputs(mark);
-      deltablue.Variable out = this.output();
-      deltablue.Constraint overridden = out.getDeterminedBy();
+      deltablue.Variable_interface out = this.output();
+      deltablue.Constraint_interface overridden = out.getDeterminedBy();
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(overridden, null)))
       {
         overridden.markUnsatisfied();
@@ -81,7 +81,7 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return false;
     }
-    public deltablue.Strength getStrength()
+    public deltablue.Strength_interface getStrength()
     {
       return this.strength;
     }

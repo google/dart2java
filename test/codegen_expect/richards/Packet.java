@@ -6,13 +6,13 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     static {
       richards.Packet.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public richards.Packet link;
+    public richards.Packet_interface link;
     public int id;
     public int kind;
     public int a1;
     public dart._runtime.base.DartList._int a2;
   
-    public Packet(dart._runtime.types.simple.Type type, richards.Packet link, int id, int kind)
+    public Packet(dart._runtime.types.simple.Type type, richards.Packet_interface link, int id, int kind)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(link, id, kind);
@@ -22,7 +22,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       super(arg, type);
     }
   
-    protected void _constructor(richards.Packet link, int id, int kind)
+    protected void _constructor(richards.Packet_interface link, int id, int kind)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.id = 0;
@@ -34,7 +34,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       this.kind = kind;
       super._constructor();
     }
-    public richards.Packet addTo(richards.Packet queue)
+    public richards.Packet_interface addTo(richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setLink(null);
@@ -42,8 +42,8 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       {
         return this;
       }
-      richards.Packet peek = null;
-      richards.Packet next = queue;
+      richards.Packet_interface peek = null;
+      richards.Packet_interface next = queue;
       while ((!dart._runtime.helpers.ObjectHelper.operatorEqual(peek = next.getLink(), null)))
       {
         next = peek;
@@ -56,7 +56,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "Packet";
     }
-    public richards.Packet getLink()
+    public richards.Packet_interface getLink()
     {
       return this.link;
     }
@@ -76,7 +76,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     {
       return this.a2;
     }
-    public richards.Packet setLink(richards.Packet value)
+    public richards.Packet_interface setLink(richards.Packet_interface value)
     {
       this.link = value;
       return value;

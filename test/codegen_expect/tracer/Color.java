@@ -28,7 +28,7 @@ public class Color extends dart._runtime.base.DartObject implements tracer.Color
       this.blue = blue;
       super._constructor();
     }
-    public tracer.Color limit()
+    public tracer.Color_interface limit()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       java.lang.Double r = (dart._runtime.helpers.DoubleHelper.operatorGreater(this.getRed(), 0.0)) ? ((dart._runtime.helpers.DoubleHelper.operatorGreater(this.getRed(), 1.0)) ? (1.0) : (this.getRed())) : (0.0);
@@ -36,34 +36,34 @@ public class Color extends dart._runtime.base.DartObject implements tracer.Color
       java.lang.Double b = (dart._runtime.helpers.DoubleHelper.operatorGreater(this.getBlue(), 0.0)) ? ((dart._runtime.helpers.DoubleHelper.operatorGreater(this.getBlue(), 1.0)) ? (1.0) : (this.getBlue())) : (0.0);
       return new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), r, g, b);
     }
-    public tracer.Color operatorPlus(tracer.Color c2)
+    public tracer.Color_interface operatorPlus(tracer.Color_interface c2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getRed(), c2.getRed()), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getGreen(), c2.getGreen()), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getBlue(), c2.getBlue()));
     }
-    public tracer.Color addScalar(java.lang.Double s)
+    public tracer.Color_interface addScalar(java.lang.Double s)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.Color result = new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getRed(), s), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getGreen(), s), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getBlue(), s));
+      tracer.Color_interface result = new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getRed(), s), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getGreen(), s), dart._runtime.helpers.DoubleHelper.operatorPlus(this.getBlue(), s));
       result.limit();
       return result;
     }
-    public tracer.Color operatorStar(tracer.Color c2)
+    public tracer.Color_interface operatorStar(tracer.Color_interface c2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.Color result = new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorStar(this.getRed(), c2.getRed()), dart._runtime.helpers.DoubleHelper.operatorStar(this.getGreen(), c2.getGreen()), dart._runtime.helpers.DoubleHelper.operatorStar(this.getBlue(), c2.getBlue()));
+      tracer.Color_interface result = new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorStar(this.getRed(), c2.getRed()), dart._runtime.helpers.DoubleHelper.operatorStar(this.getGreen(), c2.getGreen()), dart._runtime.helpers.DoubleHelper.operatorStar(this.getBlue(), c2.getBlue()));
       return result;
     }
-    public tracer.Color multiplyScalar(java.lang.Double f)
+    public tracer.Color_interface multiplyScalar(java.lang.Double f)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.Color result = new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorStar(this.getRed(), f), dart._runtime.helpers.DoubleHelper.operatorStar(this.getGreen(), f), dart._runtime.helpers.DoubleHelper.operatorStar(this.getBlue(), f));
+      tracer.Color_interface result = new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), dart._runtime.helpers.DoubleHelper.operatorStar(this.getRed(), f), dart._runtime.helpers.DoubleHelper.operatorStar(this.getGreen(), f), dart._runtime.helpers.DoubleHelper.operatorStar(this.getBlue(), f));
       return result;
     }
-    public tracer.Color blend(tracer.Color c2, java.lang.Double w)
+    public tracer.Color_interface blend(tracer.Color_interface c2, java.lang.Double w)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.Color result = this.multiplyScalar(dart._runtime.helpers.DoubleHelper.operatorMinus(1.0, w)).operatorPlus(c2.multiplyScalar(w));
+      tracer.Color_interface result = this.multiplyScalar(dart._runtime.helpers.DoubleHelper.operatorMinus(1.0, w)).operatorPlus(c2.multiplyScalar(w));
       return result;
     }
     public int brightness()

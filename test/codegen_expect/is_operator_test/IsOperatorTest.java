@@ -25,9 +25,9 @@ public class IsOperatorTest extends dart._runtime.base.DartObject implements is_
     public static void testMain()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      is_operator_test.A a = new is_operator_test.A(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.A.dart2java$typeInfo)));
-      is_operator_test.B b = new is_operator_test.B(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.B.dart2java$typeInfo)));
-      is_operator_test.C c = new is_operator_test.C(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.C.dart2java$typeInfo)));
+      is_operator_test.A_interface a = new is_operator_test.A(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.A.dart2java$typeInfo)));
+      is_operator_test.B_interface b = new is_operator_test.B(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.B.dart2java$typeInfo)));
+      is_operator_test.C_interface c = new is_operator_test.C(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.C.dart2java$typeInfo)));
       java.lang.Object n = null;
       is_operator_test.Expect.equals(true, dart._runtime.helpers.TypeSystemHelper.getTrueType(a).isSubtypeOf(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.A.dart2java$typeInfo))));
       is_operator_test.Expect.equals(false, (!dart._runtime.helpers.TypeSystemHelper.getTrueType(a).isSubtypeOf(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.A.dart2java$typeInfo)))));

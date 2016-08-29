@@ -25,7 +25,7 @@ public class __TopLevel
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       return havlak.__TopLevel.numBasicBlocks;
     }
-    public static int buildDiamond(havlak.CFG cfg, int start)
+    public static int buildDiamond(havlak.CFG_interface cfg, int start)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       int bb0 = start;
@@ -35,12 +35,12 @@ public class __TopLevel
       new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, (bb0 + 2), (bb0 + 3));
       return (bb0 + 3);
     }
-    public static void buildConnect(havlak.CFG cfg, int start, int end)
+    public static void buildConnect(havlak.CFG_interface cfg, int start, int end)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, start, end);
     }
-    public static int buildStraight(havlak.CFG cfg, int start, int n)
+    public static int buildStraight(havlak.CFG_interface cfg, int start, int n)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       for (int i = 0; (i < n); i = (i + 1))
@@ -49,7 +49,7 @@ public class __TopLevel
       }
       return (start + n);
     }
-    public static int buildBaseLoop(havlak.CFG cfg, int from)
+    public static int buildBaseLoop(havlak.CFG_interface cfg, int from)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       int header = havlak.__TopLevel.buildStraight(cfg, from, 1);

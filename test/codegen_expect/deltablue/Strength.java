@@ -26,27 +26,27 @@ public class Strength extends dart._runtime.base.DartObject implements deltablue
       this.name = name;
       super._constructor();
     }
-    public deltablue.Strength nextWeaker()
+    public deltablue.Strength_interface nextWeaker()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return dart._runtime.base.DartList.Generic._fromArguments(deltablue.Strength.class, deltablue.__TopLevel.STRONG_PREFERRED, deltablue.__TopLevel.PREFERRED, deltablue.__TopLevel.STRONG_DEFAULT, deltablue.__TopLevel.NORMAL, deltablue.__TopLevel.WEAK_DEFAULT, deltablue.__TopLevel.WEAKEST).operatorAt(this.getValue());
+      return dart._runtime.base.DartList.Generic._fromArguments(deltablue.Strength_interface.class, deltablue.__TopLevel.STRONG_PREFERRED, deltablue.__TopLevel.PREFERRED, deltablue.__TopLevel.STRONG_DEFAULT, deltablue.__TopLevel.NORMAL, deltablue.__TopLevel.WEAK_DEFAULT, deltablue.__TopLevel.WEAKEST).operatorAt(this.getValue());
     }
-    public static java.lang.Boolean stronger(deltablue.Strength s1, deltablue.Strength s2)
+    public static java.lang.Boolean stronger(deltablue.Strength_interface s1, deltablue.Strength_interface s2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       return (s1.getValue() < s2.getValue());
     }
-    public static java.lang.Boolean weaker(deltablue.Strength s1, deltablue.Strength s2)
+    public static java.lang.Boolean weaker(deltablue.Strength_interface s1, deltablue.Strength_interface s2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       return (s1.getValue() > s2.getValue());
     }
-    public static deltablue.Strength weakest(deltablue.Strength s1, deltablue.Strength s2)
+    public static deltablue.Strength_interface weakest(deltablue.Strength_interface s1, deltablue.Strength_interface s2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       return (deltablue.Strength.weaker(s1, s2)) ? (s1) : (s2);
     }
-    public static deltablue.Strength strongest(deltablue.Strength s1, deltablue.Strength s2)
+    public static deltablue.Strength_interface strongest(deltablue.Strength_interface s1, deltablue.Strength_interface s2)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       return (deltablue.Strength.stronger(s1, s2)) ? (s1) : (s2);

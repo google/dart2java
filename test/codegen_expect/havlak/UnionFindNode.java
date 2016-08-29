@@ -7,9 +7,9 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       havlak.UnionFindNode.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
     public int dfsNumber;
-    public havlak.UnionFindNode parent;
-    public havlak.BasicBlock bb;
-    public havlak.SimpleLoop loop;
+    public havlak.UnionFindNode_interface parent;
+    public havlak.BasicBlock_interface bb;
+    public havlak.SimpleLoop_interface loop;
   
     public UnionFindNode(dart._runtime.types.simple.Type type)
     {
@@ -27,18 +27,18 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       this.dfsNumber = 0;
       super._constructor();
     }
-    public void initNode(havlak.BasicBlock bb, int dfsNumber)
+    public void initNode(havlak.BasicBlock_interface bb, int dfsNumber)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setParent(this);
       this.setBb(bb);
       this.setDfsNumber(dfsNumber);
     }
-    public havlak.UnionFindNode findSet()
+    public havlak.UnionFindNode_interface findSet()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      dart._runtime.base.DartList<havlak.UnionFindNode> nodeList = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.UnionFindNode.class);
-      havlak.UnionFindNode node = this;
+      dart._runtime.base.DartList<havlak.UnionFindNode_interface> nodeList = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.UnionFindNode_interface.class);
+      havlak.UnionFindNode_interface node = this;
       while ((!dart._runtime.helpers.ObjectHelper.operatorEqual(node, node.getParent())))
       {
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(node.getParent(), node.getParent().getParent())))
@@ -53,12 +53,12 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       }
       return node;
     }
-    public void union(havlak.UnionFindNode unionFindNode)
+    public void union(havlak.UnionFindNode_interface unionFindNode)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setParent(unionFindNode);
     }
-    public havlak.SimpleLoop setLoop_(havlak.SimpleLoop l)
+    public havlak.SimpleLoop_interface setLoop_(havlak.SimpleLoop_interface l)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return this.setLoop(l);
@@ -67,15 +67,15 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
     {
       return this.dfsNumber;
     }
-    public havlak.UnionFindNode getParent()
+    public havlak.UnionFindNode_interface getParent()
     {
       return this.parent;
     }
-    public havlak.BasicBlock getBb()
+    public havlak.BasicBlock_interface getBb()
     {
       return this.bb;
     }
-    public havlak.SimpleLoop getLoop()
+    public havlak.SimpleLoop_interface getLoop()
     {
       return this.loop;
     }
@@ -84,17 +84,17 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       this.dfsNumber = value;
       return value;
     }
-    public havlak.UnionFindNode setParent(havlak.UnionFindNode value)
+    public havlak.UnionFindNode_interface setParent(havlak.UnionFindNode_interface value)
     {
       this.parent = value;
       return value;
     }
-    public havlak.BasicBlock setBb(havlak.BasicBlock value)
+    public havlak.BasicBlock_interface setBb(havlak.BasicBlock_interface value)
     {
       this.bb = value;
       return value;
     }
-    public havlak.SimpleLoop setLoop(havlak.SimpleLoop value)
+    public havlak.SimpleLoop_interface setLoop(havlak.SimpleLoop_interface value)
     {
       this.loop = value;
       return value;

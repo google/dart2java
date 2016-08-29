@@ -7,7 +7,7 @@ public class EqualityConstraint extends deltablue.BinaryConstraint implements de
       deltablue.EqualityConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BinaryConstraint.dart2java$typeInfo);
     }
   
-    public EqualityConstraint(dart._runtime.types.simple.Type type, deltablue.Variable v1, deltablue.Variable v2, deltablue.Strength strength)
+    public EqualityConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(v1, v2, strength);
@@ -17,7 +17,7 @@ public class EqualityConstraint extends deltablue.BinaryConstraint implements de
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable v1, deltablue.Variable v2, deltablue.Strength strength)
+    protected void _constructor(deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(v1, v2, strength);

@@ -32,7 +32,7 @@ public class Expect extends dart._runtime.base.DartObject implements is_operator
         dart.core.__TopLevel.print((((("Expected " + a.toString()) + ", got ") + b.toString()) + ""));
         dart.core.__TopLevel.print(dart._runtime.helpers.StringHelper.operatorStar("*", 80));
         dart.core.__TopLevel.print("(Ignore the NPE; it's just used to cause test failure)");
-        is_operator_test.Expect e = null;
+        is_operator_test.Expect_interface e = null;
         dart.core.__TopLevel.print(e.getX());
       }
     }

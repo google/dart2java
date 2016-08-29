@@ -32,7 +32,7 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
       this.hasTexture = hasTexture;
       super._constructor();
     }
-    public abstract tracer.Color getColor_(java.lang.Number u, java.lang.Number v);
+    public abstract tracer.Color_interface getColor_(java.lang.Number u, java.lang.Number v);
     public java.lang.Object wrapUp(java.lang.Object t)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;

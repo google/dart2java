@@ -6,10 +6,10 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     static {
       deltablue.Variable.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> constraints;
-    public deltablue.Constraint determinedBy;
+    public dart._runtime.base.DartList<deltablue.Constraint_interface> constraints;
+    public deltablue.Constraint_interface determinedBy;
     public int mark;
-    public deltablue.Strength walkStrength;
+    public deltablue.Strength_interface walkStrength;
     public java.lang.Boolean stay;
     public int value;
     public java.lang.String name;
@@ -27,7 +27,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     protected void _constructor(java.lang.String name, int value)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.constraints = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint.class);
+      this.constraints = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class);
       this.mark = 0;
       this.walkStrength = deltablue.__TopLevel.WEAKEST;
       this.stay = true;
@@ -36,12 +36,12 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
       this.value = value;
       super._constructor();
     }
-    public void addConstraint(deltablue.Constraint c)
+    public void addConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getConstraints().add(c);
     }
-    public void removeConstraint(deltablue.Constraint c)
+    public void removeConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.getConstraints().remove(c);
@@ -50,11 +50,11 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
         this.setDeterminedBy(null);
       }
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> getConstraints()
+    public dart._runtime.base.DartList<deltablue.Constraint_interface> getConstraints()
     {
       return this.constraints;
     }
-    public deltablue.Constraint getDeterminedBy()
+    public deltablue.Constraint_interface getDeterminedBy()
     {
       return this.determinedBy;
     }
@@ -62,7 +62,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     {
       return this.mark;
     }
-    public deltablue.Strength getWalkStrength()
+    public deltablue.Strength_interface getWalkStrength()
     {
       return this.walkStrength;
     }
@@ -78,12 +78,12 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     {
       return this.name;
     }
-    public dart._runtime.base.DartList<deltablue.Constraint> setConstraints(dart._runtime.base.DartList<deltablue.Constraint> value)
+    public dart._runtime.base.DartList<deltablue.Constraint_interface> setConstraints(dart._runtime.base.DartList<deltablue.Constraint_interface> value)
     {
       this.constraints = value;
       return value;
     }
-    public deltablue.Constraint setDeterminedBy(deltablue.Constraint value)
+    public deltablue.Constraint_interface setDeterminedBy(deltablue.Constraint_interface value)
     {
       this.determinedBy = value;
       return value;
@@ -93,7 +93,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
       this.mark = value;
       return value;
     }
-    public deltablue.Strength setWalkStrength(deltablue.Strength value)
+    public deltablue.Strength_interface setWalkStrength(deltablue.Strength_interface value)
     {
       this.walkStrength = value;
       return value;
