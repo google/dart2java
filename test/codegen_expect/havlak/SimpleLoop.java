@@ -11,8 +11,8 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     public int counter;
     public havlak.SimpleLoop_interface parent;
     public havlak.BasicBlock_interface header;
-    public java.lang.Boolean isRoot;
-    public java.lang.Boolean isReducible;
+    public boolean isRoot;
+    public boolean isReducible;
     public int nestingLevel;
     public int depthLevel;
   
@@ -113,11 +113,11 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     {
       return this.header;
     }
-    public java.lang.Boolean getIsRoot()
+    public boolean getIsRoot()
     {
       return this.isRoot;
     }
-    public java.lang.Boolean getIsReducible()
+    public boolean getIsReducible()
     {
       return this.isReducible;
     }
@@ -139,12 +139,12 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
       this.header = value;
       return value;
     }
-    public java.lang.Boolean setIsRoot(java.lang.Boolean value)
+    public boolean setIsRoot(boolean value)
     {
       this.isRoot = value;
       return value;
     }
-    public java.lang.Boolean setIsReducible(java.lang.Boolean value)
+    public boolean setIsReducible(boolean value)
     {
       this.isReducible = value;
       return value;

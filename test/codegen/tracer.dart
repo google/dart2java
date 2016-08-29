@@ -211,7 +211,7 @@ void renderScene(event) {
   scene.lights.add(light1);
 
   int imageWidth = 0, imageHeight = 0, pixelSize = 0;
-  bool renderDiffuse, renderShadows, renderHighlights, renderReflections;
+  bool renderDiffuse = false, renderShadows = false, renderHighlights = false, renderReflections = false;
   var canvas;
   if (event == null) {
     imageWidth = 100;

@@ -6,13 +6,13 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
     static {
       tracer.Materials.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public java.lang.Double gloss;
-    public java.lang.Double transparency;
-    public java.lang.Double reflection;
-    public java.lang.Double refraction;
-    public java.lang.Boolean hasTexture;
+    public double gloss;
+    public double transparency;
+    public double reflection;
+    public double refraction;
+    public boolean hasTexture;
   
-    public Materials(dart._runtime.types.simple.Type type, java.lang.Double reflection, java.lang.Double transparency, java.lang.Double gloss, java.lang.Double refraction, java.lang.Boolean hasTexture)
+    public Materials(dart._runtime.types.simple.Type type, double reflection, double transparency, double gloss, double refraction, boolean hasTexture)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(reflection, transparency, gloss, refraction, hasTexture);
@@ -22,7 +22,7 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Double reflection, java.lang.Double transparency, java.lang.Double gloss, java.lang.Double refraction, java.lang.Boolean hasTexture)
+    protected void _constructor(double reflection, double transparency, double gloss, double refraction, boolean hasTexture)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.reflection = reflection;
@@ -37,33 +37,33 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       t = dart._runtime.helpers.DynamicHelper.invoke("operatorModulus", t, 2.0);
-      if ((java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1)))
+      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1)))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", t, 2.0);
       }
-      if ((java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1))
+      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", t, 2.0);
       }
       return t;
     }
-    public java.lang.Double getGloss()
+    public double getGloss()
     {
       return this.gloss;
     }
-    public java.lang.Double getTransparency()
+    public double getTransparency()
     {
       return this.transparency;
     }
-    public java.lang.Double getReflection()
+    public double getReflection()
     {
       return this.reflection;
     }
-    public java.lang.Double getRefraction()
+    public double getRefraction()
     {
       return this.refraction;
     }
-    public java.lang.Boolean getHasTexture()
+    public boolean getHasTexture()
     {
       return this.hasTexture;
     }

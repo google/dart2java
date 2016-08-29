@@ -8,13 +8,13 @@ public interface Variable_interface extends dart.core.Object_interface
   deltablue.Constraint_interface getDeterminedBy();
   int getMark();
   deltablue.Strength_interface getWalkStrength();
-  java.lang.Boolean getStay();
+  boolean getStay();
   int getValue();
   java.lang.String getName();
   dart._runtime.base.DartList<deltablue.Constraint_interface> setConstraints(dart._runtime.base.DartList<deltablue.Constraint_interface> value);
   deltablue.Constraint_interface setDeterminedBy(deltablue.Constraint_interface value);
   int setMark(int value);
   deltablue.Strength_interface setWalkStrength(deltablue.Strength_interface value);
-  java.lang.Boolean setStay(java.lang.Boolean value);
+  boolean setStay(boolean value);
   int setValue(int value);
 }

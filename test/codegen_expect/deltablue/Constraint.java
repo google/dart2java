@@ -24,13 +24,13 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
       this.strength = strength;
       super._constructor();
     }
-    public abstract java.lang.Boolean isSatisfied();
+    public abstract boolean isSatisfied();
     public abstract void markUnsatisfied();
     public abstract void addToGraph();
     public abstract void removeFromGraph();
     public abstract void chooseMethod(int mark);
     public abstract void markInputs(int mark);
-    public abstract java.lang.Boolean inputsKnown(int mark);
+    public abstract boolean inputsKnown(int mark);
     public abstract deltablue.Variable_interface output();
     public abstract void execute();
     public abstract void recalculate();
@@ -76,7 +76,7 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
       }
       this.removeFromGraph();
     }
-    public java.lang.Boolean isInput()
+    public boolean isInput()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return false;

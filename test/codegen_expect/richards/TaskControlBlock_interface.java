@@ -5,7 +5,7 @@ public interface TaskControlBlock_interface extends dart.core.Object_interface
   void setRunning();
   void markAsNotHeld();
   void markAsHeld();
-  java.lang.Boolean isHeldOrSuspended();
+  boolean isHeldOrSuspended();
   void markAsSuspended();
   void markAsRunnable();
   richards.TaskControlBlock_interface run();

@@ -47,7 +47,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
       this.lsg = lsg;
       super._constructor();
     }
-    public java.lang.Boolean isAncestor(int w, int v, dart._runtime.base.DartList._int last)
+    public boolean isAncestor(int w, int v, dart._runtime.base.DartList._int last)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return ((w <= v) && (v <= last.operatorAt_primitive(w)));

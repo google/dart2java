@@ -22,7 +22,7 @@ public class EditConstraint extends deltablue.UnaryConstraint implements deltabl
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(v, str);
     }
-    public java.lang.Boolean isInput()
+    public boolean isInput()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return true;

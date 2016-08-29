@@ -13,14 +13,14 @@ public interface SimpleLoop_interface extends dart.core.Object_interface
   int getCounter();
   havlak.SimpleLoop_interface getParent();
   havlak.BasicBlock_interface getHeader();
-  java.lang.Boolean getIsRoot();
-  java.lang.Boolean getIsReducible();
+  boolean getIsRoot();
+  boolean getIsReducible();
   int getNestingLevel();
   int getDepthLevel();
   havlak.SimpleLoop_interface setParent(havlak.SimpleLoop_interface value);
   havlak.BasicBlock_interface setHeader(havlak.BasicBlock_interface value);
-  java.lang.Boolean setIsRoot(java.lang.Boolean value);
-  java.lang.Boolean setIsReducible(java.lang.Boolean value);
+  boolean setIsRoot(boolean value);
+  boolean setIsReducible(boolean value);
   int setNestingLevel(int value);
   int setDepthLevel(int value);
 }

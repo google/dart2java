@@ -7,9 +7,9 @@ public interface BenchmarkBase_interface extends dart.core.Object_interface
   void exercise();
   void setup();
   void teardown();
-  java.lang.Double measureForWarumup(int timeMinimum);
-  java.lang.Double measureForExercise(int timeMinimum);
-  java.lang.Double measure();
+  double measureForWarumup(int timeMinimum);
+  double measureForExercise(int timeMinimum);
+  double measure();
   void report();
   java.lang.String getName();
 }

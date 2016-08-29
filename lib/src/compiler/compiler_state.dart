@@ -88,18 +88,20 @@ class CompilerState {
           new java.ClassOrInterfaceType(
               java.Constants.dartHelperPackage, "ObjectHelper")),
       boolClass: new ClassImpl(
-          java.JavaType.javaBooleanClass,
+          java.JavaType.boolean,
           new java.ClassOrInterfaceType(
-            java.Constants.dartHelperPackage, "BoolHelper")),
+            java.Constants.dartHelperPackage, "BoolHelper"),
+          javaBoxedClass: java.JavaType.javaBooleanClass),
       intClass: new ClassImpl(
           java.JavaType.int_,
           new java.ClassOrInterfaceType(
               java.Constants.dartHelperPackage, "IntegerHelper"),
           javaBoxedClass: java.JavaType.javaIntegerClass),
       doubleClass: new ClassImpl(
-          java.JavaType.javaDoubleClass,
+          java.JavaType.double_,
           new java.ClassOrInterfaceType(
-              java.Constants.dartHelperPackage, "DoubleHelper")),
+              java.Constants.dartHelperPackage, "DoubleHelper"),
+          javaBoxedClass: java.JavaType.javaDoubleClass),
       stringClass: new ClassImpl(
           new java.ClassOrInterfaceType("java.lang", "String"),
           new java.ClassOrInterfaceType(

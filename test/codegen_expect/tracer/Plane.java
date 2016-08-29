@@ -34,7 +34,7 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
         return info;
       }
       java.lang.Object t = dart._runtime.helpers.DynamicHelper.invoke("operatorDivide", dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", dart._runtime.helpers.DynamicHelper.invoke("dot", this.getPosition(), ray.getPosition()), this.getD())), Vd);
-      if ((java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLessEqual", t, 0))
+      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLessEqual", t, 0))
       {
         return info;
       }
@@ -43,9 +43,9 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
       info.setPosition(dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", ray.getPosition(), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", ray.getDirection(), t)));
       info.setNormal(this.getPosition());
       info.setDistance(t);
-      if ((java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("getHasTexture", this.getMaterial()))
+      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("getHasTexture", this.getMaterial()))
       {
-        tracer.Vector_interface vU = new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (java.lang.Double) dart._runtime.helpers.DynamicHelper.invoke("getY", this.getPosition()), (java.lang.Double) dart._runtime.helpers.DynamicHelper.invoke("getZ", this.getPosition()), (java.lang.Double) dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("getX", this.getPosition())));
+        tracer.Vector_interface vU = new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (double) dart._runtime.helpers.DynamicHelper.invoke("getY", this.getPosition()), (double) dart._runtime.helpers.DynamicHelper.invoke("getZ", this.getPosition()), (double) dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("getX", this.getPosition())));
         tracer.Vector_interface vV = vU.cross((tracer.Vector_interface) this.getPosition());
         java.lang.Object u = dart._runtime.helpers.DynamicHelper.invoke("dot", info.getPosition(), vU);
         java.lang.Object v = dart._runtime.helpers.DynamicHelper.invoke("dot", info.getPosition(), vV);

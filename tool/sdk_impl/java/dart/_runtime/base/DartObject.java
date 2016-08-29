@@ -36,7 +36,7 @@ public class DartObject implements dart.core.Object_interface {
     return this.hashCode();
   }
 
-  public Boolean operatorEqual(Object other) {
+  public boolean operatorEqual(Object other) {
     return this == other;
   }
 

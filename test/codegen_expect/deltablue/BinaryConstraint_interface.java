@@ -4,13 +4,13 @@ public interface BinaryConstraint_interface extends deltablue.Constraint_interfa
 {
   void chooseMethod(int mark);
   void addToGraph();
-  java.lang.Boolean isSatisfied();
+  boolean isSatisfied();
   void markInputs(int mark);
   deltablue.Variable_interface input();
   deltablue.Variable_interface output();
   void recalculate();
   void markUnsatisfied();
-  java.lang.Boolean inputsKnown(int mark);
+  boolean inputsKnown(int mark);
   void removeFromGraph();
   deltablue.Variable_interface getV1();
   deltablue.Variable_interface getV2();

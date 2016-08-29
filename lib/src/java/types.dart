@@ -143,9 +143,9 @@ abstract class JavaType extends Node {
       const PrimitiveType._("double", floatingPointOperators);
 
   static Map<JavaType, String> genericSpecializations = {
-    javaBooleanClass: "_bool",
+    boolean: "_bool",
     int_: "_int",
-    javaDoubleClass: "_double"
+    double_: "_double"
   };
 
   static bool hasGenericSpecialization(Iterable<JavaType> typeArguments) {

@@ -10,7 +10,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     public deltablue.Constraint_interface determinedBy;
     public int mark;
     public deltablue.Strength_interface walkStrength;
-    public java.lang.Boolean stay;
+    public boolean stay;
     public int value;
     public java.lang.String name;
   
@@ -66,7 +66,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     {
       return this.walkStrength;
     }
-    public java.lang.Boolean getStay()
+    public boolean getStay()
     {
       return this.stay;
     }
@@ -98,7 +98,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
       this.walkStrength = value;
       return value;
     }
-    public java.lang.Boolean setStay(java.lang.Boolean value)
+    public boolean setStay(boolean value)
     {
       this.stay = value;
       return value;

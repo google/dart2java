@@ -32,7 +32,7 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
       this.setEquator(dart._runtime.helpers.DynamicHelper.invoke("cross", dart._runtime.helpers.DynamicHelper.invoke("normalize", this.getLookAt()), this.getUp()));
       this.setScreen(dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", this.getPosition(), this.getLookAt()));
     }
-    public tracer.Ray_interface getRay(java.lang.Double vx, java.lang.Double vy)
+    public tracer.Ray_interface getRay(double vx, double vy)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       java.lang.Object pos = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", this.getScreen(), dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getEquator(), vx), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getUp(), vy)));

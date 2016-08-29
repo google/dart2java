@@ -54,7 +54,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements trac
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
     }
-    public java.lang.Double measureForWarumup(int timeMinimum)
+    public double measureForWarumup(int timeMinimum)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
@@ -70,7 +70,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements trac
       }
       return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), tracer.BenchmarkBase.iters);
     }
-    public java.lang.Double measureForExercise(int timeMinimum)
+    public double measureForExercise(int timeMinimum)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
@@ -86,20 +86,20 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements trac
       }
       return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), tracer.BenchmarkBase.iters);
     }
-    public java.lang.Double measure()
+    public double measure()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setup();
       this.measureForWarumup(100);
-      java.lang.Double result = this.measureForExercise((10 * 1000));
+      double result = this.measureForExercise((10 * 1000));
       this.teardown();
       return result;
     }
     public void report()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      java.lang.Double score = this.measure();
-      dart.core.__TopLevel.print((((("" + this.getName().toString()) + "(RunTime): ") + score.toString()) + " us."));
+      double score = this.measure();
+      dart.core.__TopLevel.print((((("" + this.getName().toString()) + "(RunTime): ") + score) + " us."));
     }
     public java.lang.String getName()
     {

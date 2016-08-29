@@ -6,9 +6,9 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     static {
       tracer.Sphere.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.BaseShape.dart2java$typeInfo);
     }
-    public java.lang.Double radius;
+    public double radius;
   
-    public Sphere(dart._runtime.types.simple.Type type, java.lang.Object pos, java.lang.Double radius, java.lang.Object material)
+    public Sphere(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(pos, radius, material);
@@ -18,7 +18,7 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Object pos, java.lang.Double radius, java.lang.Object material)
+    protected void _constructor(java.lang.Object pos, double radius, java.lang.Object material)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.radius = radius;
@@ -31,9 +31,9 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
       info.setShape(this);
       java.lang.Object dst = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", ray.getPosition(), this.getPosition());
       java.lang.Object B = dart._runtime.helpers.DynamicHelper.invoke("dot", dst, ray.getDirection());
-      java.lang.Object C = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("dot", dst, dst), dart._runtime.helpers.DoubleHelper.operatorStar(this.getRadius(), this.getRadius()));
+      java.lang.Object C = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("dot", dst, dst), (this.getRadius() * this.getRadius()));
       java.lang.Object D = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorStar", B, B), C);
-      if ((java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", D, 0))
+      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", D, 0))
       {
         info.setIsHit(true);
         info.setDistance(dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", B), dart.math.__TopLevel.sqrt((java.lang.Number) D)));
@@ -50,9 +50,9 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     public java.lang.String toString()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return (((("Sphere [position=" + this.getPosition().toString()) + ", radius=") + this.getRadius().toString()) + "]");
+      return (((("Sphere [position=" + this.getPosition().toString()) + ", radius=") + this.getRadius()) + "]");
     }
-    public java.lang.Double getRadius()
+    public double getRadius()
     {
       return this.radius;
     }

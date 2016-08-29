@@ -13,20 +13,20 @@ public interface Engine_interface extends dart.core.Object_interface
   int getCanvasHeight();
   int getPixelWidth();
   int getPixelHeight();
-  java.lang.Boolean getRenderDiffuse();
-  java.lang.Boolean getRenderShadows();
-  java.lang.Boolean getRenderHighlights();
-  java.lang.Boolean getRenderReflections();
+  boolean getRenderDiffuse();
+  boolean getRenderShadows();
+  boolean getRenderHighlights();
+  boolean getRenderReflections();
   int getRayDepth();
   java.lang.Object getCanvas();
   int setCanvasWidth(int value);
   int setCanvasHeight(int value);
   int setPixelWidth(int value);
   int setPixelHeight(int value);
-  java.lang.Boolean setRenderDiffuse(java.lang.Boolean value);
-  java.lang.Boolean setRenderShadows(java.lang.Boolean value);
-  java.lang.Boolean setRenderHighlights(java.lang.Boolean value);
-  java.lang.Boolean setRenderReflections(java.lang.Boolean value);
+  boolean setRenderDiffuse(boolean value);
+  boolean setRenderShadows(boolean value);
+  boolean setRenderHighlights(boolean value);
+  boolean setRenderReflections(boolean value);
   int setRayDepth(int value);
   java.lang.Object setCanvas(java.lang.Object value);
 }

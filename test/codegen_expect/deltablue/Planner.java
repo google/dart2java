@@ -93,7 +93,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
       }
       return this.makePlan((dart._runtime.base.DartList) sources);
     }
-    public java.lang.Boolean addPropagate(deltablue.Constraint_interface c, int mark)
+    public boolean addPropagate(deltablue.Constraint_interface c, int mark)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       dart._runtime.base.DartList<deltablue.Constraint_interface> todo = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class, c);

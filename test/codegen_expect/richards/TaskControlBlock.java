@@ -67,7 +67,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setState((this.getState() | richards.TaskControlBlock.STATE_HELD));
     }
-    public java.lang.Boolean isHeldOrSuspended()
+    public boolean isHeldOrSuspended()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return ((!((this.getState() & richards.TaskControlBlock.STATE_HELD) == 0)) || (this.getState() == richards.TaskControlBlock.STATE_SUSPENDED));

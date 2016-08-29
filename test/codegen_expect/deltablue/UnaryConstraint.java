@@ -7,7 +7,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
       deltablue.UnaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }
     public deltablue.Variable_interface myOutput;
-    public java.lang.Boolean satisfied;
+    public boolean satisfied;
   
     public UnaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
     {
@@ -38,7 +38,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setSatisfied(((!(this.getMyOutput().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getMyOutput().getWalkStrength())));
     }
-    public java.lang.Boolean isSatisfied()
+    public boolean isSatisfied()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return this.getSatisfied();
@@ -67,7 +67,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setSatisfied(false);
     }
-    public java.lang.Boolean inputsKnown(int mark)
+    public boolean inputsKnown(int mark)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return true;
@@ -85,11 +85,11 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
     {
       return this.myOutput;
     }
-    public java.lang.Boolean getSatisfied()
+    public boolean getSatisfied()
     {
       return this.satisfied;
     }
-    public java.lang.Boolean setSatisfied(java.lang.Boolean value)
+    public boolean setSatisfied(boolean value)
     {
       this.satisfied = value;
       return value;

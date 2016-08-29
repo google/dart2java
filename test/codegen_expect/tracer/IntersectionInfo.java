@@ -6,7 +6,7 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
     static {
       tracer.IntersectionInfo.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public java.lang.Boolean isHit;
+    public boolean isHit;
     public int hitCount;
     public java.lang.Object shape;
     public java.lang.Object position;
@@ -37,7 +37,7 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (("Intersection [" + this.getPosition().toString()) + "]");
     }
-    public java.lang.Boolean getIsHit()
+    public boolean getIsHit()
     {
       return this.isHit;
     }
@@ -65,7 +65,7 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
     {
       return this.distance;
     }
-    public java.lang.Boolean setIsHit(java.lang.Boolean value)
+    public boolean setIsHit(boolean value)
     {
       this.isHit = value;
       return value;

@@ -56,7 +56,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
       this.getV2().addConstraint(this);
       this.setDirection(deltablue.__TopLevel.NONE);
     }
-    public java.lang.Boolean isSatisfied()
+    public boolean isSatisfied()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (!(this.getDirection() == deltablue.__TopLevel.NONE));
@@ -93,7 +93,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setDirection(deltablue.__TopLevel.NONE);
     }
-    public java.lang.Boolean inputsKnown(int mark)
+    public boolean inputsKnown(int mark)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       deltablue.Variable_interface i = this.input();

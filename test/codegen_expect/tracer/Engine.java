@@ -10,14 +10,14 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     public int canvasHeight;
     public int pixelWidth;
     public int pixelHeight;
-    public java.lang.Boolean renderDiffuse;
-    public java.lang.Boolean renderShadows;
-    public java.lang.Boolean renderHighlights;
-    public java.lang.Boolean renderReflections;
+    public boolean renderDiffuse;
+    public boolean renderShadows;
+    public boolean renderHighlights;
+    public boolean renderReflections;
     public int rayDepth;
     public java.lang.Object canvas;
   
-    public Engine(dart._runtime.types.simple.Type type, int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, java.lang.Boolean renderDiffuse, java.lang.Boolean renderShadows, java.lang.Boolean renderHighlights, java.lang.Boolean renderReflections, int rayDepth)
+    public Engine(dart._runtime.types.simple.Type type, int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
     {
       super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
       this._constructor(canvasWidth, canvasHeight, pixelWidth, pixelHeight, renderDiffuse, renderShadows, renderHighlights, renderReflections, rayDepth);
@@ -27,7 +27,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
       super(arg, type);
     }
   
-    protected void _constructor(int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, java.lang.Boolean renderDiffuse, java.lang.Boolean renderShadows, java.lang.Boolean renderHighlights, java.lang.Boolean renderReflections, int rayDepth)
+    protected void _constructor(int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.canvasWidth = 0;
@@ -76,8 +76,8 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
       {
         for (int x = 0; (x < canvasWidth); x = (x + 1))
         {
-          java.lang.Double yp = dart._runtime.helpers.DoubleHelper.operatorMinus(dart._runtime.helpers.DoubleHelper.operatorStar(dart._runtime.helpers.IntegerHelper.operatorDivide(y, canvasHeight), 2), 1);
-          java.lang.Double xp = dart._runtime.helpers.DoubleHelper.operatorMinus(dart._runtime.helpers.DoubleHelper.operatorStar(dart._runtime.helpers.IntegerHelper.operatorDivide(x, canvasWidth), 2), 1);
+          double yp = dart._runtime.helpers.DoubleHelper.operatorMinus(dart._runtime.helpers.DoubleHelper.operatorStar(dart._runtime.helpers.IntegerHelper.operatorDivide(y, canvasHeight), 2), 1);
+          double xp = dart._runtime.helpers.DoubleHelper.operatorMinus(dart._runtime.helpers.DoubleHelper.operatorStar(dart._runtime.helpers.IntegerHelper.operatorDivide(x, canvasWidth), 2), 1);
           java.lang.Object ray = dart._runtime.helpers.DynamicHelper.invoke("getRay", scene.getCamera(), xp, yp);
           this.setPixel(x, y, this.getPixelColor((tracer.Ray_interface) ray, scene));
         }
@@ -110,7 +110,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(shape, exclude)))
         {
           tracer.IntersectionInfo_interface info = (tracer.IntersectionInfo_interface) dart._runtime.helpers.DynamicHelper.invoke("intersect", shape, ray);
-          if ((((java.lang.Boolean) info.getIsHit() && (java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", info.getDistance(), 0)) && (java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", info.getDistance(), best.getDistance())))
+          if ((((boolean) info.getIsHit() && (boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", info.getDistance(), 0)) && (boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", info.getDistance(), best.getDistance())))
           {
             best = info;
             hits = (hits + 1);
@@ -123,7 +123,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     public tracer.Ray_interface getReflectionRay(tracer.Vector_interface P, tracer.Vector_interface N, tracer.Vector_interface V)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      java.lang.Double c1 = dart._runtime.helpers.DoubleHelper.operatorUnaryMinus(N.dot(V));
+      double c1 = (-N.dot(V));
       tracer.Vector_interface R1 = N.multiplyScalar(dart._runtime.helpers.IntegerHelper.operatorStar(2, c1)).operatorPlus(V);
       return new tracer.Ray(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Ray.dart2java$typeInfo)), P, R1);
     }
@@ -140,18 +140,18 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
         if (this.getRenderDiffuse())
         {
           java.lang.Object L = dart._runtime.helpers.DynamicHelper.invoke("dot", v, info.getNormal());
-          if ((java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", L, 0.0))
+          if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", L, 0.0))
           {
             color = color.operatorPlus((tracer.Color_interface) dart._runtime.helpers.DynamicHelper.invoke("operatorStar", info.getColor(), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", dart._runtime.helpers.DynamicHelper.invoke("getColor", light), L)));
           }
         }
         if ((depth <= this.getRayDepth()))
         {
-          if (((java.lang.Boolean) this.getRenderReflections() && (java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", dart._runtime.helpers.DynamicHelper.invoke("getReflection", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())), 0.0)))
+          if (((boolean) this.getRenderReflections() && (boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", dart._runtime.helpers.DynamicHelper.invoke("getReflection", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())), 0.0)))
           {
             tracer.Ray_interface reflectionRay = this.getReflectionRay((tracer.Vector_interface) info.getPosition(), (tracer.Vector_interface) info.getNormal(), (tracer.Vector_interface) ray.getDirection());
             tracer.IntersectionInfo_interface refl = this.testIntersection(reflectionRay, scene, (tracer.BaseShape_interface) info.getShape());
-            if (((java.lang.Boolean) refl.getIsHit() && (java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", refl.getDistance(), 0.0)))
+            if (((boolean) refl.getIsHit() && (boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", refl.getDistance(), 0.0)))
             {
               refl.setColor(this.rayTrace(refl, reflectionRay, scene, (depth + 1)));
             }
@@ -159,7 +159,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
             {
               refl.setColor(dart._runtime.helpers.DynamicHelper.invoke("getColor", scene.getBackground()));
             }
-            color = color.blend((tracer.Color_interface) refl.getColor(), (java.lang.Double) dart._runtime.helpers.DynamicHelper.invoke("getReflection", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())));
+            color = color.blend((tracer.Color_interface) refl.getColor(), (double) dart._runtime.helpers.DynamicHelper.invoke("getReflection", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())));
           }
         }
         tracer.IntersectionInfo_interface shadowInfo = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.IntersectionInfo.dart2java$typeInfo)));
@@ -170,11 +170,11 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
           if ((shadowInfo.getIsHit() && (!dart._runtime.helpers.ObjectHelper.operatorEqual(shadowInfo.getShape(), info.getShape()))))
           {
             tracer.Color_interface vA = color.multiplyScalar(0.5);
-            java.lang.Double dB = (java.lang.Double) dart._runtime.helpers.DoubleHelper.operatorStar(0.5, dart.math.__TopLevel.pow((java.lang.Number) dart._runtime.helpers.DynamicHelper.invoke("getTransparency", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", shadowInfo.getShape())), 0.5));
+            double dB = (double) dart._runtime.helpers.DoubleHelper.operatorStar(0.5, dart.math.__TopLevel.pow((java.lang.Number) dart._runtime.helpers.DynamicHelper.invoke("getTransparency", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", shadowInfo.getShape())), 0.5));
             color = vA.addScalar(dB);
           }
         }
-        if ((((java.lang.Boolean) this.getRenderHighlights() && (!(java.lang.Boolean) shadowInfo.getIsHit())) && (java.lang.Boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", dart._runtime.helpers.DynamicHelper.invoke("getGloss", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())), 0.0)))
+        if ((((boolean) this.getRenderHighlights() && (!(boolean) shadowInfo.getIsHit())) && (boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", dart._runtime.helpers.DynamicHelper.invoke("getGloss", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())), 0.0)))
         {
           java.lang.Object Lv = dart._runtime.helpers.DynamicHelper.invoke("normalize", dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("getPosition", info.getShape()), dart._runtime.helpers.DynamicHelper.invoke("getPosition", light)));
           java.lang.Object E = dart._runtime.helpers.DynamicHelper.invoke("normalize", dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("getPosition", scene.getCamera()), dart._runtime.helpers.DynamicHelper.invoke("getPosition", info.getShape())));
@@ -206,19 +206,19 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     {
       return this.pixelHeight;
     }
-    public java.lang.Boolean getRenderDiffuse()
+    public boolean getRenderDiffuse()
     {
       return this.renderDiffuse;
     }
-    public java.lang.Boolean getRenderShadows()
+    public boolean getRenderShadows()
     {
       return this.renderShadows;
     }
-    public java.lang.Boolean getRenderHighlights()
+    public boolean getRenderHighlights()
     {
       return this.renderHighlights;
     }
-    public java.lang.Boolean getRenderReflections()
+    public boolean getRenderReflections()
     {
       return this.renderReflections;
     }
@@ -250,22 +250,22 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
       this.pixelHeight = value;
       return value;
     }
-    public java.lang.Boolean setRenderDiffuse(java.lang.Boolean value)
+    public boolean setRenderDiffuse(boolean value)
     {
       this.renderDiffuse = value;
       return value;
     }
-    public java.lang.Boolean setRenderShadows(java.lang.Boolean value)
+    public boolean setRenderShadows(boolean value)
     {
       this.renderShadows = value;
       return value;
     }
-    public java.lang.Boolean setRenderHighlights(java.lang.Boolean value)
+    public boolean setRenderHighlights(boolean value)
     {
       this.renderHighlights = value;
       return value;
     }
-    public java.lang.Boolean setRenderReflections(java.lang.Boolean value)
+    public boolean setRenderReflections(boolean value)
     {
       this.renderReflections = value;
       return value;
