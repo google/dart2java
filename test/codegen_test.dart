@@ -56,7 +56,6 @@ final defaultOptions = [
   codegenOutputDir
 ];
 
-
 void main(List<String> arguments) {
   if (arguments == null) arguments = [];
 
@@ -76,8 +75,9 @@ void main(List<String> arguments) {
 
   // Compile each test file to Java and put the result in gen/codegen_output.
   for (String testFile in testFiles) {
-    runTest(testFile, skip: !args['force'] &&
-        expectedToFail.contains(testFileToName(testFile)));
+    runTest(testFile,
+        skip: !args['force'] &&
+            expectedToFail.contains(testFileToName(testFile)));
   }
 }
 
@@ -112,7 +112,7 @@ void runTest(String testFile, {bool skip: false}) {
       file.copySync(newPath);
     }
 
-    files.forEach((f) => _javaCompile(f, codegenOutputDir));
+    _javaCompile(files, codegenOutputDir);
     _run(name);
   }, skip: skipMsg);
 }
@@ -168,22 +168,16 @@ void _ensureDirectory(String dir) {
   new Directory(dir).createSync(recursive: true);
 }
 
-/// Compiles a .java [File] and returns the .class [File].
-File _javaCompile(File javaFile, String classPathRoot) {
-  var args = ['-cp', compiledSdkJar + ":${classPathRoot}", javaFile.path];
+/// Compiles .java [File]s.
+void _javaCompile(Iterable<File> javaFiles, String classPathRoot) {
+  var args = ['-cp', compiledSdkJar + ":${classPathRoot}"]
+    ..addAll(javaFiles.map((f) => f.path));
   ProcessResult result =
       Process.runSync('javac', args, workingDirectory: codegenOutputDir);
   expect(result.exitCode, isZero,
       reason: 'Reason: javac failed.\n'
           '  stdout: ${result.stdout}\n'
           '  stderr: ${result.stderr}\n');
-
-  String name = path.withoutExtension(javaFile.path);
-  File classFile = new File('$name.class');
-  if (!classFile.existsSync()) {
-    throw "Error: $javaFile failed to compile to $classFile.";
-  }
-  return classFile;
 }
 
 void _run(String testName) {

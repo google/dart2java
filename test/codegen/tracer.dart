@@ -48,7 +48,7 @@ class BenchmarkBase {
     run();
   }
 
-  // Exercices the benchmark. By default invokes [run] 10 times.
+  // Exercises the benchmark. By default invokes [run] 10 times.
   void exercise() {
     for (int i = 0; i < iters; i++) {
       run();
@@ -58,10 +58,10 @@ class BenchmarkBase {
   // Not measured setup code executed prior to the benchmark runs.
   void setup() { }
 
-  // Not measures teardown code executed after the benchark runs.
+  // Not measures teardown code executed after the benchmark runs.
   void teardown() { }
 
-  // Measures the score for this benchmark by executing it repeately until
+  // Measures the score for this benchmark by executing it repeatedly until
   // time minimum has been reached.
   double measureForWarumup(int timeMinimum) {
     int time = 0;
@@ -77,7 +77,7 @@ class BenchmarkBase {
     return (1000.0 * elapsed / iter) / iters;
   }
 
-  // Measures the score for this benchmark by executing it repeately until
+  // Measures the score for this benchmark by executing it repeatedly until
   // time minimum has been reached.
   double measureForExercise(int timeMinimum) {
     int time = 0;
@@ -99,7 +99,7 @@ class BenchmarkBase {
     // Warmup for at least 100ms. Discard result.
     measureForWarumup(100);
     // Run the benchmark for at least 2000ms.
-    double result = measureForExercise(10 * 1000);
+    double result = measureForExercise(2 * 1000);
     teardown();
     return result;
   }
