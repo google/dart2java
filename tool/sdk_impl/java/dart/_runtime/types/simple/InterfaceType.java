@@ -45,6 +45,18 @@ public class InterfaceType extends Type {
   public TypeEnvironment env;
 
   /**
+   * The Java class to use for references to this Type.
+   * <p>
+   * This is generally a Java interface type, but for {@code @JavaClass}es, it may be a class type.
+   * <p>
+   * For primitive types, this returns the unboxed primitive type ({@code int}, {@code double}, or
+   * {@code boolean}).
+   */
+  Class<?> getJavaType() {
+    return info.javaInterface == null ? info.javaClass : info.javaInterface;
+  }
+
+  /**
    * Allocates a new {@code InterfaceType} instance.
    * <p>
    * <b>You must set {@link #supertype}, {@link #mixin}, and {@link #interfaces} as appropriate,

@@ -5,7 +5,7 @@ import dart._runtime.types.simple.InterfaceTypeInfo;
 
 public class NumberHelper {
   public static final InterfaceTypeInfo dart2java$typeInfo
-      = new InterfaceTypeInfo("java.lang.Number");
+      = new InterfaceTypeInfo(Number.class, null);
 
   static {
     NumberHelper.dart2java$typeInfo.superclass

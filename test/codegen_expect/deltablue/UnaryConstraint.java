@@ -2,7 +2,7 @@ package deltablue;
 
 public abstract class UnaryConstraint extends deltablue.Constraint implements deltablue.UnaryConstraint_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.UnaryConstraint");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.UnaryConstraint.class, deltablue.UnaryConstraint_interface.class);
     static {
       deltablue.UnaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }

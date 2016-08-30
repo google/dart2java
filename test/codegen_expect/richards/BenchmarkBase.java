@@ -2,7 +2,7 @@ package richards;
 
 public class BenchmarkBase extends dart._runtime.base.DartObject implements richards.BenchmarkBase_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("richards.BenchmarkBase");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.BenchmarkBase.class, richards.BenchmarkBase_interface.class);
     static {
       richards.BenchmarkBase.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

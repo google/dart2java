@@ -2,7 +2,7 @@ package deltablue;
 
 public class BenchmarkBase extends dart._runtime.base.DartObject implements deltablue.BenchmarkBase_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.BenchmarkBase");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.BenchmarkBase.class, deltablue.BenchmarkBase_interface.class);
     static {
       deltablue.BenchmarkBase.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

@@ -2,7 +2,7 @@ package havlak;
 
 public class UnionFindNode extends dart._runtime.base.DartObject implements havlak.UnionFindNode_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.UnionFindNode");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.UnionFindNode.class, havlak.UnionFindNode_interface.class);
     static {
       havlak.UnionFindNode.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

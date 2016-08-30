@@ -2,7 +2,7 @@ package deltablue;
 
 public class EditConstraint extends deltablue.UnaryConstraint implements deltablue.EditConstraint_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.EditConstraint");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.EditConstraint.class, deltablue.EditConstraint_interface.class);
     static {
       deltablue.EditConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.UnaryConstraint.dart2java$typeInfo);
     }

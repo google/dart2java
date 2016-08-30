@@ -135,8 +135,8 @@ ClassOrInterfaceType typeEnvType =
 FieldDecl makeTypeInfoField(dart.Class node, CompilerState compilerState) {
   assert(!compilerState.hasJavaImpl(node));
   var constructorArgs = <Expression>[
-    new StringLiteral((compilerState.getClass(node) as ClassOrInterfaceType)
-        .binaryName),
+    new FieldAccess(new ClassRefExpr(compilerState.getClass(node)), 'class'),
+    new FieldAccess(new ClassRefExpr(compilerState.getInterface(node)), 'class')
   ];
   if (node.typeParameters.isNotEmpty) {
     constructorArgs.insert(

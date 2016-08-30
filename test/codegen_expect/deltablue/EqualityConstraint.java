@@ -2,7 +2,7 @@ package deltablue;
 
 public class EqualityConstraint extends deltablue.BinaryConstraint implements deltablue.EqualityConstraint_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.EqualityConstraint");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.EqualityConstraint.class, deltablue.EqualityConstraint_interface.class);
     static {
       deltablue.EqualityConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BinaryConstraint.dart2java$typeInfo);
     }

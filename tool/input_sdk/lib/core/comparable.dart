@@ -18,7 +18,8 @@ part of dart.core;
  * * zero if [a] is equal to [b], and
  * * a positive integer if [a] is greater than [b].
  */
-typedef int Comparator<T>(T a, T b);
+// TODO(andrewkrieger,springerm): Handle typedefs.
+// typedef int Comparator<T>(T a, T b);
 
 /**
  * Interface used by types that have an intrinsic ordering.
@@ -69,7 +70,8 @@ typedef int Comparator<T>(T a, T b);
  * The [DateTime] class has no comparison operators, instead it has the more
  * precisely named [DateTime.isBefore] and [DateTime.isAfter].
  */
-abstract class Comparable<T> {
+// TODO(andrewkrieger,springer): User-defined generic classes.
+abstract class Comparable/*<T>*/ {
   /**
    * Compares this object to another [Comparable]
    *
@@ -80,7 +82,7 @@ abstract class Comparable<T> {
    *
    * The [other] argument must be a value that is comparable to this object.
    */
-  int compareTo(T other);
+  int compareTo(other);
 
   /**
    * A [Comparator] that compares one comparable to another.

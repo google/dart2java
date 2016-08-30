@@ -2,7 +2,7 @@ package is_operator_test;
 
 public class Expect extends dart._runtime.base.DartObject implements is_operator_test.Expect_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("is_operator_test.Expect");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(is_operator_test.Expect.class, is_operator_test.Expect_interface.class);
     static {
       is_operator_test.Expect.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

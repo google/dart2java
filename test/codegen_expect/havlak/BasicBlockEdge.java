@@ -2,7 +2,7 @@ package havlak;
 
 public class BasicBlockEdge extends dart._runtime.base.DartObject implements havlak.BasicBlockEdge_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.BasicBlockEdge");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.BasicBlockEdge.class, havlak.BasicBlockEdge_interface.class);
     static {
       havlak.BasicBlockEdge.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

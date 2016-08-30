@@ -2,10 +2,7 @@ library dart.core;
 
 part 'bool.dart';
 
-// TODO(springerm): Comparable does currently not compile due to
-// Unimplemented type: TypeParameterType
-// part 'comparable.dart';
-
+part 'comparable.dart';
 part 'double.dart';
 part 'function.dart';
 part 'int.dart';

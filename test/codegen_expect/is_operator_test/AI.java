@@ -2,7 +2,7 @@ package is_operator_test;
 
 public abstract class AI extends dart._runtime.base.DartObject implements is_operator_test.AI_interface, is_operator_test.I_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("is_operator_test.AI");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(is_operator_test.AI.class, is_operator_test.AI_interface.class);
     static {
       is_operator_test.AI.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
       is_operator_test.AI.dart2java$typeInfo.interfaces = new dart._runtime.types.simple.InterfaceTypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(is_operator_test.I.dart2java$typeInfo)};

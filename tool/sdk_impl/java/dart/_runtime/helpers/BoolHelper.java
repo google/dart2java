@@ -5,7 +5,7 @@ import dart._runtime.types.simple.InterfaceTypeInfo;
 
 public class BoolHelper {
   public static final InterfaceTypeInfo dart2java$typeInfo
-      = new InterfaceTypeInfo("java.lang.Boolean");
+      = new InterfaceTypeInfo(boolean.class, null);
 
   static {
     BoolHelper.dart2java$typeInfo.superclass = new InterfaceTypeExpr(ObjectHelper.dart2java$typeInfo);

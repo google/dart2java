@@ -2,7 +2,7 @@ package tracer;
 
 public class IntersectionInfo extends dart._runtime.base.DartObject implements tracer.IntersectionInfo_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("tracer.IntersectionInfo");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.IntersectionInfo.class, tracer.IntersectionInfo_interface.class);
     static {
       tracer.IntersectionInfo.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

@@ -5,7 +5,7 @@ import dart._runtime.types.simple.InterfaceTypeInfo;
 
 public class DoubleHelper {
   public static final InterfaceTypeInfo dart2java$typeInfo
-      = new InterfaceTypeInfo("java.lang.Double");
+      = new InterfaceTypeInfo(double.class, null);
 
   static {
     DoubleHelper.dart2java$typeInfo.superclass

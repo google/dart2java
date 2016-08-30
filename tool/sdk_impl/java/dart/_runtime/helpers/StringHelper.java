@@ -5,7 +5,7 @@ import dart._runtime.types.simple.InterfaceTypeInfo;
 
 public class StringHelper {
   public static final InterfaceTypeInfo dart2java$typeInfo
-      = new InterfaceTypeInfo("java.lang.String");
+      = new InterfaceTypeInfo(String.class, null);
 
   static {
     StringHelper.dart2java$typeInfo.superclass

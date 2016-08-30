@@ -2,7 +2,7 @@ package deltablue;
 
 public abstract class BinaryConstraint extends deltablue.Constraint implements deltablue.BinaryConstraint_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("deltablue.BinaryConstraint");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.BinaryConstraint.class, deltablue.BinaryConstraint_interface.class);
     static {
       deltablue.BinaryConstraint.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Constraint.dart2java$typeInfo);
     }

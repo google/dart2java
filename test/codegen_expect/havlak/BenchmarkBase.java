@@ -2,7 +2,7 @@ package havlak;
 
 public class BenchmarkBase extends dart._runtime.base.DartObject implements havlak.BenchmarkBase_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo("havlak.BenchmarkBase");
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.BenchmarkBase.class, havlak.BenchmarkBase_interface.class);
     static {
       havlak.BenchmarkBase.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }

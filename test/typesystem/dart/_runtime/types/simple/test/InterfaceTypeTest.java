@@ -34,46 +34,54 @@ public class InterfaceTypeTest {
     // In real code, these would be static final fields on generated Java classes (or maybe on a
     // helper class, or on the library's __TopLevel class). For now, we declare them as
     // "test-global" variables.
-    objectTypeInfo = new InterfaceTypeInfo("java.lang.Object");
+    objectTypeInfo = new InterfaceTypeInfo(java.lang.Object.class, null);
 
-    comparableTypeInfo = new InterfaceTypeInfo(new String[] {"E"}, "dart.core.Comparable");
+    comparableTypeInfo = new InterfaceTypeInfo(new String[] {"E"}, dart.core.Comparable.class,
+        dart.core.Comparable_interface.class);
     comparableTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
 
-    numTypeInfo = new InterfaceTypeInfo("java.lang.Number");
+    numTypeInfo = new InterfaceTypeInfo(java.lang.Number.class, null);
     numTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     numTypeInfo.interfaces = new InterfaceTypeExpr[] {new InterfaceTypeExpr(comparableTypeInfo,
         new TypeExpr[] {new InterfaceTypeExpr(numTypeInfo)})};
 
-    intTypeInfo = new InterfaceTypeInfo("java.lang.Integer");
+    intTypeInfo = new InterfaceTypeInfo(int.class, null);
     intTypeInfo.superclass = new InterfaceTypeExpr(numTypeInfo);
 
-    doubleTypeInfo = new InterfaceTypeInfo("java.lang.Double");
+    doubleTypeInfo = new InterfaceTypeInfo(double.class, null);
     doubleTypeInfo.superclass = new InterfaceTypeExpr(numTypeInfo);
 
-    stringTypeInfo = new InterfaceTypeInfo("java.lang.String");
+    stringTypeInfo = new InterfaceTypeInfo(java.lang.String.class, null);
     stringTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     stringTypeInfo.interfaces = new InterfaceTypeExpr[] {new InterfaceTypeExpr(comparableTypeInfo,
         new TypeExpr[] {new InterfaceTypeExpr(stringTypeInfo)})};
 
-    iterableTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.Iterable");
+    iterableTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, dart.core.Iterable.class,
+        dart.core.Iterable_interface.class);
     iterableTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
 
-    listTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.List");
+    listTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, null, dart.core.List_interface.class);
     listTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     listTypeInfo.interfaces = new InterfaceTypeExpr[] {
         new InterfaceTypeExpr(iterableTypeInfo, new TypeExpr[] {listTypeInfo.typeVariables[0]})};
 
-    listMixinTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.ListMixin");
+    class ListMixin {
+    }
+    listMixinTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, ListMixin.class, null);
     listMixinTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     listMixinTypeInfo.interfaces = new InterfaceTypeExpr[] {
         new InterfaceTypeExpr(listTypeInfo, new TypeExpr[] {listMixinTypeInfo.typeVariables[0]})};
 
-    listBaseTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.ListBase");
+    class ListBase {
+    }
+    listBaseTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, ListBase.class, null);
     listBaseTypeInfo.superclass = new InterfaceTypeExpr(objectTypeInfo);
     listBaseTypeInfo.mixin = new InterfaceTypeExpr(listMixinTypeInfo,
         new TypeExpr[] {listBaseTypeInfo.typeVariables[0]});
 
-    growableListTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, "dart.core.GrowableList");
+    class GrowableList {
+    }
+    growableListTypeInfo = new InterfaceTypeInfo(new String[] {"T"}, GrowableList.class, null);
     growableListTypeInfo.superclass = new InterfaceTypeExpr(listBaseTypeInfo,
         new TypeExpr[] {growableListTypeInfo.typeVariables[0]});
 
@@ -186,6 +194,9 @@ public class InterfaceTypeTest {
         growableListOfStringType.isSubtypeOf(listOfStringType));
     assertTrue("GrowableList<String> <: ListMixin<String>",
         growableListOfStringType.isSubtypeOf(listMixinOfStringType));
+    assertTrue("GrowableList<String> <: ListBase<String>",
+        growableListOfStringType.isSubtypeOf(listBaseOfStringType));
+
     assertTrue("(ListMixin<String>::T in GrowableList<String>) == String",
         growableListOfStringType.env.evaluate(listMixinTypeInfo.typeVariables[0]) == stringType);
     assertTrue("(ListBase<String>::T in GrowableList<String>) == String",

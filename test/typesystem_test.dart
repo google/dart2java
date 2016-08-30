@@ -17,10 +17,12 @@ final String junitJar =
     path.join(repoDirectory, 'third_party', 'junit-4.12', 'junit-4.12.jar');
 final String hamcrestJar = path.join(
     repoDirectory, 'third_party', 'hamcrest-1.3', 'hamcrest-core-1.3.jar');
-final String sdkImplDir = path.join(repoDirectory, 'tool', 'sdk_impl', 'java');
-final String typeSystemDir = path.join(sdkImplDir, 'dart', '_runtime', 'types');
+final String compiledSdkDir = path.join(repoDirectory, 'gen', 'compiled_sdk');
+final String typeSystemDir =
+    path.join(compiledSdkDir, 'dart', '_runtime', 'types');
 
-final String classpath = [junitJar, hamcrestJar, sdkImplDir, testDir].join(':');
+final String classpath =
+    [junitJar, hamcrestJar, compiledSdkDir, testDir].join(':');
 final List<String> defaultArgs = ['-cp', classpath];
 
 /// Config file containing the list of tests expected not to pass.
