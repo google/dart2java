@@ -161,8 +161,8 @@ class BasicBlock {
   String toString() => "BB$name";
   int getNumPred() => inEdges.length;
   int getNumSucc() => outEdges.length;
-  void addInEdge(BasicBlock bb) => inEdges.add(bb);
-  void addOutEdge(BasicBlock bb) => outEdges.add(bb);
+  bool addInEdge(BasicBlock bb) => inEdges.add(bb);
+  bool addOutEdge(BasicBlock bb) => outEdges.add(bb);
 }
 
 //
@@ -212,7 +212,7 @@ class CFG {
     return node;
   }
 
-  void addEdge(BasicBlockEdge edge) => edgeList.add(edge);
+  bool addEdge(BasicBlockEdge edge) => edgeList.add(edge);
   int getNumNodes() => basicBlockMap.length;
   BasicBlock getDst(BasicBlockEdge edge) => edge.to;
   BasicBlock getSrc(BasicBlockEdge edge) => edge.from;
@@ -244,8 +244,8 @@ class SimpleLoop  {
 
   SimpleLoop(this.counter);
 
-  void addNode(BasicBlock bb) => basicBlocks.add(bb);
-  void addChildLoop(SimpleLoop loop) => children.add(loop);
+  bool addNode(BasicBlock bb) => basicBlocks.add(bb);
+  bool addChildLoop(SimpleLoop loop) => children.add(loop);
 
   void setParent_(SimpleLoop p) {
     this.parent = p;
@@ -313,7 +313,7 @@ class LSG {
     return loop;
   }
 
-  void addLoop(SimpleLoop loop) => loops.add(loop);
+  bool addLoop(SimpleLoop loop) => loops.add(loop);
 
   int checksum() {
     int result = loops.length;

@@ -41,6 +41,10 @@ class List<E> {
   @patch
   @JavaMethod("newInstance")
   external factory List([int length = 0]);
+
+  // This patch is for compatibility to java.util.List (add return type bool).
+  @patch
+  bool add(E value);
 }
 
 @patch

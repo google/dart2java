@@ -13,11 +13,11 @@ public class BoolHelper {
 
   // --- Methods defined in Object ---
 
-  public static Boolean operatorEqual(Boolean self, Object other) {
+  public static boolean operatorEqual(Boolean self, Object other) {
     return self.equals(other);
   }
 
-  public static Integer getHashCode(Boolean self) {
+  public static int getHashCode(Boolean self) {
     return self.hashCode();
   }
 
@@ -27,7 +27,7 @@ public class BoolHelper {
 
   // --- Methods defined in bool ---
 
-  public static String toString(Boolean self) {
+  public static String toString(boolean self) {
     return self ? "true" : "false";
   }
 

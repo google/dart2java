@@ -121,12 +121,14 @@ abstract class List<E> implements Iterable<E> {
    * Extends the length of the list by the number of objects in [iterable].
    * Throws an [UnsupportedError] if this list is fixed-length.
    */
-  void addAll(Iterable<E> iterable);
+  // TODO(springerm): Implement
+  // void addAll(Iterable<E> iterable);
 
   /**
    * Returns an [Iterable] of the objects in this list in reverse order.
    */
-  Iterable<E> get reversed;
+  // TODO(springerm): Implement
+  // Iterable<E> get reversed;
 
   /**
    * Sorts this list according to the order specified by the [compare] function.
@@ -200,7 +202,8 @@ abstract class List<E> implements Iterable<E> {
    *
    *     notes.lastIndexOf('fa');  // -1
    */
-  int lastIndexOf(E element, [int start]);
+  // TODO(springerm): Implement
+  // int lastIndexOf(E element, [int start]);
 
   /**
    * Removes all objects from this list;
@@ -231,7 +234,8 @@ abstract class List<E> implements Iterable<E> {
    * An error occurs if the [index] is less than 0 or greater than length.
    * An [UnsupportedError] occurs if the list is fixed-length.
    */
-  void insertAll(int index, Iterable<E> iterable);
+  // TODO(springerm): Implement
+  // void insertAll(int index, Iterable<E> iterable);
 
   /**
    * Overwrites objects of `this` with the objects of [iterable], starting
@@ -251,7 +255,8 @@ abstract class List<E> implements Iterable<E> {
    * If `iterable` is based on this list, its values may change /during/ the
    * `setAll` operation.
    */
-  void setAll(int index, Iterable<E> iterable);
+  // TODO(springerm): Implement
+  // void setAll(int index, Iterable<E> iterable);
 
   /**
    * Removes the first occurence of [value] from this list.
@@ -355,7 +360,8 @@ abstract class List<E> implements Iterable<E> {
    *     colors.length = 3;
    *     range.join(', ');  // 'green, blue'
    */
-  Iterable<E> getRange(int start, int end);
+  // TODO(springerm): Implement
+  // Iterable<E> getRange(int start, int end);
 
   /**
    * Copies the objects of [iterable], skipping [skipCount] objects first,
@@ -381,7 +387,8 @@ abstract class List<E> implements Iterable<E> {
    * If `iterable` depends on this list in some other way, no guarantees are
    * made.
    */
-  void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]);
+  // TODO(springerm): Implement
+  // void setRange(int start, int end, Iterable<E> iterable, [int skipCount = 0]);
 
   /**
    * Removes the objects in the range [start] inclusive to [end] exclusive.
@@ -392,7 +399,8 @@ abstract class List<E> implements Iterable<E> {
    * Throws an [UnsupportedError] if this is a fixed-length list. In that case
    * the list is not modified.
    */
-  void removeRange(int start, int end);
+  // TODO(springerm): Implement
+  // void removeRange(int start, int end);
 
   /**
    * Sets the objects in the range [start] inclusive to [end] exclusive
@@ -400,7 +408,8 @@ abstract class List<E> implements Iterable<E> {
    *
    * An error occurs if [start]..[end] is not a valid range for `this`.
    */
-  void fillRange(int start, int end, [E fillValue]);
+  // TODO(springerm): Implement
+  // void fillRange(int start, int end, [E fillValue]);
 
   /**
    * Removes the objects in the range [start] inclusive to [end] exclusive
@@ -416,7 +425,8 @@ abstract class List<E> implements Iterable<E> {
    * has the same number of elements as the replaced range. In that case use
    * [setRange] instead.
    */
-  void replaceRange(int start, int end, Iterable<E> replacement);
+  // TODO(springerm): Implement
+  // void replaceRange(int start, int end, Iterable<E> replacement);
 
   /**
    * Returns an unmodifiable [Map] view of `this`.

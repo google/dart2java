@@ -1340,9 +1340,30 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.CastExpr visitAsExpression(dart.AsExpression node) {
+  java.Expression visitAsExpression(dart.AsExpression node) {
     // TODO(springerm): Add Dart type checks
-    return new java.CastExpr(node.operand.accept(this), buildInterfaceType(node.type));
+    dart.Class operandClass = null;
+    if (node.operand.staticType is dart.InterfaceType) {
+     operandClass = node.operand.staticType?.classNode;
+    }
+    java.JavaType targetType = buildInterfaceType(node.type);
+
+    // Special case for Number:
+    // num x = 15;
+    // int y = x as int;
+    // The second line cannot be translated to "int y = (int) x;". This would
+    // result in a ClassCastException at runtime
+    if (operandClass == compilerState.numClass 
+      && targetType == java.JavaType.int_) {
+      return new java.MethodInvocation(
+        node.operand.accept(this), "intValue");
+    } else if (operandClass == compilerState.numClass 
+      && targetType == java.JavaType.double_) {
+      return new java.MethodInvocation(
+        node.operand.accept(this), "doubleValue");
+    }
+
+    return new java.CastExpr(node.operand.accept(this), targetType);
   }
 
   /// Translates a node and inserts a cast depending on the expected type.

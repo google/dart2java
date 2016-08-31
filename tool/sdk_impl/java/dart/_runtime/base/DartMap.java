@@ -1,22 +1,15 @@
 package dart._runtime.base;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
-// TODO(andrewkrieger, springerm): Extend/implement DartObject.
-public interface DartMap<K, V> {
-  
-  boolean containsValue(Object value);
-  boolean containsKey(Object key);
-  V operatorAt(Object key);
-  void operatorAtPut(K key, V value);
-  void clear();
-  int getLength();
-  boolean isEmpty();
-  boolean isNotEmpty();
-  
+public interface DartMap<K, V> 
+  extends Map<K, V>, dart.core.Map_interface<K, V> {
+
   // TODO(springerm): Maybe this should be called LinkedHashMap?
-  public class Generic<K, V> implements DartMap<K, V> {
+  public class Generic<K, V> extends DartObject implements DartMap<K, V> {
     Class<K> keyType;
 
     Class<V> valueType;
@@ -33,6 +26,9 @@ public interface DartMap<K, V> {
       this.valueType = valueType;
       this.map = new HashMap<K, V>();
     }
+
+
+    // --- Methods defined in Map ---
 
     public boolean containsValue(Object value) {
       return map.containsValue(value);
@@ -53,6 +49,10 @@ public interface DartMap<K, V> {
     // TODO(springerm): Implement putIfAbsent
     // TODO(springerm): Implement addAll
 
+    public V remove(Object key) {
+      return map.remove(key);
+    }
+
     public void clear() {
       map.clear();
     }
@@ -65,12 +65,59 @@ public interface DartMap<K, V> {
       return map.size();
     }
 
+    public boolean getIsEmpty() {
+      return map.isEmpty();
+    }
+
+    public boolean getIsNotEmpty() {
+      return !map.isEmpty();
+    }
+
+
+    // --- Methods defined in Object ---
+
+    public int getHashCode() {
+      return map.hashCode();
+    }
+
+
+    // --- Additional methods defined in java.util.Map ---
+
+    public Set<Map.Entry<K, V>> entrySet() {
+      return map.entrySet();
+    }
+
+    public V get(Object key) {
+      return map.get(key);
+    }
+    
+    public int hashCode() {
+      return map.hashCode();
+    }
+
     public boolean isEmpty() {
       return map.isEmpty();
     }
 
-    public boolean isNotEmpty() {
-      return !map.isEmpty();
+    public Set<K> keySet() {
+      return map.keySet();
+    }
+
+    public V put(K key, V value) {
+      operatorAtPut(key, value);
+      return value;
+    }
+
+    public void putAll(Map<? extends K, ? extends V> m) {
+      map.putAll(m);
+    }
+
+    public int size() {
+      return map.size();
+    }
+
+    public Collection<V> values() {
+      return map.values();
     }
   }
 

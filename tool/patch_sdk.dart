@@ -258,24 +258,33 @@ class PatchApplier extends GeneralizingAstVisitor {
   void _maybePatch(AstNode node) {
     if (node is FieldDeclaration) return;
 
+    // Even methods that are not external can be patched. But we show a warning
+    // only if an external method does not have a patch.
     var externalKeyword = (node as dynamic).externalKeyword;
-    if (externalKeyword == null) return;
 
     var name = _qualifiedName(node);
     var patchNode = patch.patches[name];
-    if (patchNode == null) {
+    if (externalKeyword != null && patchNode == null) {
       print('warning: patch not found for $name: $node');
       return;
     }
 
-    Annotation patchMeta = patchNode.metadata.lastWhere(_isPatchAnnotation);
-    int start = patchMeta.endToken.next.offset;
-    var code = patch.contents.substring(start, patchNode.end);
+    if (patchNode != null) {
+      Annotation patchMeta = patchNode.metadata.lastWhere(_isPatchAnnotation);
+      int start = patchMeta.endToken.next.offset;
+      var code = patch.contents.substring(start, patchNode.end);
 
-    // For some node like static fields, the node's offset doesn't include
-    // the external keyword. Also starting from the keyword lets us preserve
-    // documentation comments.
-    edits.replace(externalKeyword.offset, node.end, code);
+      // For some node like static fields, the node's offset doesn't include
+      // the external keyword. Also starting from the keyword lets us preserve
+      // documentation comments.
+      if (externalKeyword == null) {
+        edits.replace(
+          (node as dynamic).firstTokenAfterCommentAndMetadata.offset,
+          node.end, code);
+      } else {
+        edits.replace(externalKeyword.offset, node.end, code);
+      }
+    }
   }
 }
 

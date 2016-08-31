@@ -9,5 +9,6 @@ public class Tests {
   @Test
   public void testDynamicDispatch() {
     assertEquals(530, (int) __TopLevel.testDynamicDispatch());
+    assertEquals(181, (int) __TopLevel.testDynamicDispatchPrimitive());
   }
 }

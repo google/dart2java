@@ -22,15 +22,15 @@ public class IntegerHelper {
 
   // --- Methods defined in num ---
   
-  public static Boolean operatorEqual(Integer self, Object other) {
+  public static boolean operatorEqual(Integer self, Object other) {
     return self.equals(other);
   }
 
-  public static Integer getHashCode(Integer self) {
+  public static int getHashCode(int self) {
     return self;
   }
 
-  public static Integer compareTo(Integer self, Integer other) {
+  public static int compareTo(int self, int other) {
     if (self < other) {
       return -1;
     } else if (self > other) {
@@ -40,7 +40,7 @@ public class IntegerHelper {
     }
   }
 
-  public static Integer compareTo(Integer self, Double other) {
+  public static int compareTo(int self, double other) {
     if (self < other) {
       return -1;
     } else if (self > other) {
@@ -50,219 +50,219 @@ public class IntegerHelper {
     }
   }
 
-  public static Integer compareTo(Integer self, Number other) {
+  public static int compareTo(int self, Number other) {
     if (other instanceof Integer) {
-      return compareTo(self, (Integer) other);
+      return compareTo(self, (int) other);
     } else {
       // Must be double
-      return compareTo(self, (Double) other);
+      return compareTo(self, (double) other);
     }
   }
 
 
-  public static Integer operatorPlus(Integer self, Integer other) {
+  public static int operatorPlus(int self, int other) {
     return self + other;
   }
 
-  public static Double operatorPlus(Integer self, Double other) {
+  public static double operatorPlus(int self, double other) {
     return self + other;
   }
 
-  public static Number operatorPlus(Integer self, Number other) {
+  public static Number operatorPlus(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorPlus(self, (Integer) other);
+      return operatorPlus(self, (int) other);
     } else {
       // Must be double
-      return operatorPlus(self, (Double) other);
+      return operatorPlus(self, (double) other);
     }
   }
 
-  public static Integer operatorMinus(Integer self, Integer other) {
+  public static int operatorMinus(int self, int other) {
     return self - other;
   }
 
-  public static Double operatorMinus(Integer self, Double other) {
+  public static double operatorMinus(int self, double other) {
     return self - other;
   }
 
-  public static Number operatorMinus(Integer self, Number other) {
+  public static Number operatorMinus(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorMinus(self, (Integer) other);
+      return operatorMinus(self, (int) other);
     } else {
       // Must be double
-      return operatorMinus(self, (Double) other);
+      return operatorMinus(self, (double) other);
     }
   }
 
-  public static Integer operatorStar(Integer self, Integer other) {
+  public static int operatorStar(int self, int other) {
     return self * other;
   }
 
-  public static Double operatorStar(Integer self, Double other) {
+  public static double operatorStar(int self, double other) {
     return self * other;
   }
 
-  public static Number operatorStar(Integer self, Number other) {
+  public static Number operatorStar(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorStar(self, (Integer) other);
+      return operatorStar(self, (int) other);
     } else {
       // Must be double
-      return operatorStar(self, (Double) other);
+      return operatorStar(self, (double) other);
     }
   }
 
-  public static Integer operatorModulus(Integer self, Integer other) {
+  public static int operatorModulus(int self, int other) {
     return self % other;
   }
 
   // TODO(springerm): operatorModulus for Double
   // TODO(springerm): operatorModulus for Number
 
-  public static Double operatorDivide(Integer self, Integer other) {
+  public static double operatorDivide(int self, int other) {
     return ((double) self) / other;
   } 
 
-  public static Double operatorDivide(Integer self, Double other) {
+  public static double operatorDivide(int self, double other) {
     return ((double) self) / other;
   } 
 
-  public static Double operatorDivide(Integer self, Number other) {
+  public static double operatorDivide(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorDivide(self, (Integer) other);
+      return operatorDivide(self, (int) other);
     } else {
       // Must be double
-      return operatorDivide(self, (Double) other);
+      return operatorDivide(self, (double) other);
     }
   }
 
-  public static Integer operatorTruncatedDivide(Integer self, Integer other) {
-    return (Integer) (self / other);
-  }
-
-  public static Integer operatorTruncatedDivide(Integer self, Double other) {
+  public static int operatorTruncatedDivide(int self, int other) {
     return (int) (self / other);
   }
 
-  public static Integer operatorTruncatedDivide(Integer self, Number other) {
+  public static int operatorTruncatedDivide(int self, double other) {
+    return (int) (self / other);
+  }
+
+  public static int operatorTruncatedDivide(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorTruncatedDivide(self, (Integer) other);
+      return operatorTruncatedDivide(self, (int) other);
     } else {
       // Must be double
-      return operatorTruncatedDivide(self, (Double) other);
+      return operatorTruncatedDivide(self, (double) other);
     }
   }
 
-  public static Integer operatorUnaryMinus(Integer self) {
+  public static int operatorUnaryMinus(int self) {
     return -self;
   }
 
   // TODO(springerm): remainder
 
-  public static Boolean operatorLess(Integer self, Integer other) {
+  public static boolean operatorLess(int self, int other) {
     return self < other;
   }
 
-  public static Boolean operatorLess(Integer self, Double other) {
+  public static boolean operatorLess(int self, double other) {
     return self < other;
   }
 
-  public static Boolean operatorLess(Integer self, Number other) {
+  public static boolean operatorLess(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorLess(self, (Integer) other);
+      return operatorLess(self, (int) other);
     } else {
       // Must be double
-      return operatorLess(self, (Double) other);
+      return operatorLess(self, (double) other);
     }
   }
 
-  public static Boolean operatorLessEqual(Integer self, Integer other) {
+  public static boolean operatorLessEqual(int self, int other) {
     return self <= other;
   }
 
-  public static Boolean operatorLessEqual(Integer self, Double other) {
+  public static boolean operatorLessEqual(int self, double other) {
     return self <= other;
   }
 
-  public static Boolean operatorLessEqual(Integer self, Number other) {
+  public static boolean operatorLessEqual(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorLessEqual(self, (Integer) other);
+      return operatorLessEqual(self, (int) other);
     } else {
       // Must be double
-      return operatorLessEqual(self, (Double) other);
+      return operatorLessEqual(self, (double) other);
     }
   }
 
-  public static Boolean operatorGreater(Integer self, Integer other) {
+  public static boolean operatorGreater(int self, int other) {
     return self > other;
   }
 
-  public static Boolean operatorGreater(Integer self, Double other) {
+  public static boolean operatorGreater(int self, double other) {
     return self > other;
   }
 
-  public static Boolean operatorGreater(Integer self, Number other) {
+  public static boolean operatorGreater(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorGreater(self, (Integer) other);
+      return operatorGreater(self, (int) other);
     } else {
       // Must be double
-      return operatorGreater(self, (Double) other);
+      return operatorGreater(self, (double) other);
     }
   }
 
-  public static Boolean operatorGreaterEqual(Integer self, Integer other) {
+  public static boolean operatorGreaterEqual(int self, int other) {
     return self >= other;
   }
 
-  public static Boolean operatorGreaterEqual(Integer self, Double other) {
+  public static boolean operatorGreaterEqual(int self, double other) {
     return self >= other;
   }
 
-  public static Boolean operatorGreaterEqual(Integer self, Number other) {
+  public static boolean operatorGreaterEqual(int self, Number other) {
     if (other instanceof Integer) {
-      return operatorGreaterEqual(self, (Integer) other);
+      return operatorGreaterEqual(self, (int) other);
     } else {
       // Must be double
-      return operatorGreaterEqual(self, (Double) other);
+      return operatorGreaterEqual(self, (double) other);
     }
   }
   
-  public static Boolean isNaN(Integer self) {
+  public static boolean isNaN(int self) {
     return false;
   }
 
-  public static Boolean isNegative(Integer self) {
+  public static boolean isNegative(int self) {
     return self < 0;
   }
 
-  public static Boolean isInfinite(Integer self) {
+  public static boolean isInfinite(int self) {
     return false;
   }
 
-  public static Boolean isFinite(Integer self) {
+  public static boolean isFinite(int self) {
     return true;
   }
 
-  public static Integer abs(Integer self) {
+  public static int abs(int self) {
     return Integer.signum(self) * self;
   }
 
-  public static Integer getSign(Integer self) {
+  public static int getSign(int self) {
     return Integer.signum(self);
   }
 
-  public static Integer round(Integer self) {
+  public static int round(int self) {
     return self;
   }
 
-  public static Integer floor(Integer self) {
+  public static int floor(int self) {
     return self;
   }
 
-  public static Integer ceil(Integer self) {
+  public static int ceil(int self) {
     return self;
   }
 
-  public static Integer truncate(Integer self) {
+  public static int truncate(int self) {
     return self;
   }
 
@@ -272,11 +272,11 @@ public class IntegerHelper {
   // TODO(springerm): truncateToDouble
   // TODO(springerm): clamp
 
-  public static Integer toInt(Integer self) {
+  public static int toInt(int self) {
     return self;
   }
 
-  public static Double toDouble(Integer self) {
+  public static double toDouble(int self) {
     return (double) self;
   }
 
@@ -291,27 +291,27 @@ public class IntegerHelper {
 
   // -- Methods defined in int --
 
-  public static Integer operatorBitAnd(Integer self, Integer other) {
+  public static int operatorBitAnd(int self, int other) {
     return self & other;
   }
 
-  public static Integer operatorBitOr(Integer self, Integer other) {
+  public static int operatorBitOr(int self, int other) {
     return self | other;
   }
 
-  public static Integer operatorBitXor(Integer self, Integer other) {
+  public static int operatorBitXor(int self, int other) {
     return self ^ other;
   }
 
-  public static Integer operatorUnaryBitNegate(Integer self) {
+  public static int operatorUnaryBitNegate(int self) {
     return ~self;
   }
 
-  public static Integer operatorShiftLeft(Integer self, Integer other) {
+  public static int operatorShiftLeft(int self, int other) {
     return self << other;
   }
 
-  public static Integer operatorShiftRight(Integer self, Integer other) {
+  public static int operatorShiftRight(int self, int other) {
     return self >> other;
   }
 
@@ -319,11 +319,11 @@ public class IntegerHelper {
   // TODO(springerm): modInverse
   // TODO(springerm): gcd
 
-  public static boolean isEven(Integer self) {
+  public static boolean isEven(int self) {
     return self % 2 == 0;
   }
 
-  public static boolean isOdd(Integer self) {
+  public static boolean isOdd(int self) {
     return self % 2 == 1;
   }
 
@@ -340,7 +340,7 @@ public class IntegerHelper {
 
   // --- Other methods ---
 
-  public static Boolean operatorNotEqual(Integer self, Integer other) {
+  public static boolean operatorNotEqual(int self, int other) {
     return self != other;
   }
 

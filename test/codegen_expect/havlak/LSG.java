@@ -39,11 +39,10 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       havlak.SimpleLoop_interface loop = new havlak.SimpleLoop(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.SimpleLoop.dart2java$typeInfo)), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_0 = this, dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = __tempVar_0.getLoopCounter(), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_2 = __tempVar_0.setLoopCounter((__tempVar_1 + 1)), __tempVar_1))));
       return loop;
     }
-    public void addLoop(havlak.SimpleLoop_interface loop)
+    public boolean addLoop(havlak.SimpleLoop_interface loop)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getLoops().add(loop);
-      return;
+      return this.getLoops().add(loop);
     }
     public int checksum()
     {

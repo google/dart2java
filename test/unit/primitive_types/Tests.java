@@ -84,6 +84,8 @@ public class Tests {
 
     assertEquals(-3, (int) __TopLevel.negateInt(3));
     assertEquals(-4, (int) __TopLevel.unaryTilde(3));
+
+    assertEquals(8, (int) __TopLevel.testNumberInteraction());
   }
 
   @Test

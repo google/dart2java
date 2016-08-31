@@ -65,6 +65,7 @@ class CompilerState {
   dart.Class stringClass;
   dart.Class listClass;
   dart.Class mapClass;
+  dart.Class numClass;
 
   dart.Program _program;
   dart.ClassHierarchy _classHierarchy;
@@ -78,7 +79,7 @@ class CompilerState {
     stringClass = getDartClass("dart:core", "String");
     listClass = getDartClass("dart:core", "List");
     mapClass = getDartClass("dart:core", "Map");
-    var numClass = getDartClass("dart:core", "num");
+    numClass = getDartClass("dart:core", "num");
 
     // Initialize the data structures.
     // Keep classImpls in sync with DynamicHelper.java!

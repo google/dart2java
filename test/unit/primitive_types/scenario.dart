@@ -276,3 +276,10 @@ int testUnaryArithmetics() {
   int d = --i;
   return a + b + c + d;
 }
+
+int testNumberInteraction() {
+  int a = 3;
+  num b = 5;
+  int c = (a + b) as int;
+  return c;
+}

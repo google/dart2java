@@ -38,17 +38,15 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
       this.counter = counter;
       super._constructor();
     }
-    public void addNode(havlak.BasicBlock_interface bb)
+    public boolean addNode(havlak.BasicBlock_interface bb)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getBasicBlocks().add(bb);
-      return;
+      return this.getBasicBlocks().add(bb);
     }
-    public void addChildLoop(havlak.SimpleLoop_interface loop)
+    public boolean addChildLoop(havlak.SimpleLoop_interface loop)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getChildren().add(loop);
-      return;
+      return this.getChildren().add(loop);
     }
     public void setParent_(havlak.SimpleLoop_interface p)
     {

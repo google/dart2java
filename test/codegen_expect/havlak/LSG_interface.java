@@ -3,7 +3,7 @@ package havlak;
 public interface LSG_interface extends dart.core.Object_interface
 {
   havlak.SimpleLoop_interface createNewLoop();
-  void addLoop(havlak.SimpleLoop_interface loop);
+  boolean addLoop(havlak.SimpleLoop_interface loop);
   int checksum();
   int getNumLoops();
   int getLoopCounter();

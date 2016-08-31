@@ -2,6 +2,8 @@ package dart._runtime.helpers;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -10,6 +12,14 @@ import java.lang.reflect.Method;
 
 public class DynamicHelper {
   private static final Map<Class<?>, Class<?>> classImpls;
+  private static final Set<Class<?>> classesWithJavaInterfaces;
+  
+  private static final Class<?> boxedInt = Integer.class;
+  private static final Class<?> boxedDouble = Double.class;
+  private static final Class<?> boxedBool = Boolean.class;
+  private static final Class<?> unboxedInt = int.class;
+  private static final Class<?> unboxedDouble = double.class;
+  private static final Class<?> unboxedBool = boolean.class;
 
   // TODO(springerm): Consider generating map initialization automatically
   // from compiler_state.dart.
@@ -22,6 +32,23 @@ public class DynamicHelper {
     classImpls.put(Double.class, dart._runtime.helpers.DoubleHelper.class);
     classImpls.put(String.class, dart._runtime.helpers.StringHelper.class);
     classImpls.put(Number.class, dart._runtime.helpers.NumberHelper.class);
+
+    classesWithJavaInterfaces = new HashSet<Class<?>>();
+    classesWithJavaInterfaces.add(dart._runtime.base.DartList.Generic.class);
+    classesWithJavaInterfaces.add(dart._runtime.base.DartList._int.class);
+    classesWithJavaInterfaces.add(dart._runtime.base.DartMap.Generic.class);
+  }
+
+  public static Class<?> boxedToMaybeUnboxedType(Class<?> boxedType) {
+    if (boxedType == boxedInt) {
+      return unboxedInt;
+    } else if (boxedType == boxedDouble) {
+      return unboxedDouble;
+    } else if (boxedType == boxedBool) {
+      return unboxedBool;
+    } else {
+      return boxedType;
+    }
   }
 
   public static Object invoke(String methodName, Object... recvAndArgs) {
@@ -35,11 +62,19 @@ public class DynamicHelper {
       Class<?> receiverClass = receiver.getClass();
       boolean checkForOverloads = false;
 
+      // TODO(springerm): Handle static methods properly
+      // The index of the first argument. When calling a static method, the
+      // first argument starts at index 0, because no "self" object is passed
+      int startArgs = 1;
+
       if (classImpls.containsKey(receiverClass)) {
         receiverClass = classImpls.get(receiverClass);
 
         // There may be multiple overloadings for operators, we have to
         // pick the correct one
+        checkForOverloads = true;
+        startArgs = 0;
+      } else if (classesWithJavaInterfaces.contains(receiverClass)) {
         checkForOverloads = true;
       }
 
@@ -51,10 +86,18 @@ public class DynamicHelper {
       for (Method m : receiverClass.getMethods()) {
         if (m.getName().equals(methodName)) {
           if (checkForOverloads) {
-            // Check if the parameter types for this method match
             Class<?>[] parameterTypes = m.getParameterTypes();
-            for (int i = 0; i < parameterTypes.length; i++) {
-              if (!parameterTypes[i].isAssignableFrom(
+
+            // Check if the number of parameters match
+            if (parameterTypes.length != recvAndArgs.length - startArgs) {
+              continue methodLoop;
+            }
+
+            // Check if the parameter types for this method match
+            for (int i = startArgs; i < parameterTypes.length; i++) {
+              if (!parameterTypes[i - startArgs].isAssignableFrom(
+                boxedToMaybeUnboxedType(recvAndArgs[i].getClass()))
+                && !parameterTypes[i - startArgs].isAssignableFrom(
                 recvAndArgs[i].getClass())) {
                 // Picked the wrong method, continue searching
                 continue methodLoop;

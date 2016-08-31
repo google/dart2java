@@ -44,17 +44,15 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return this.getOutEdges().getLength();
     }
-    public void addInEdge(havlak.BasicBlock_interface bb)
+    public boolean addInEdge(havlak.BasicBlock_interface bb)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getInEdges().add(bb);
-      return;
+      return this.getInEdges().add(bb);
     }
-    public void addOutEdge(havlak.BasicBlock_interface bb)
+    public boolean addOutEdge(havlak.BasicBlock_interface bb)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getOutEdges().add(bb);
-      return;
+      return this.getOutEdges().add(bb);
     }
     public int getName()
     {

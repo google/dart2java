@@ -15,35 +15,9 @@ import java.util.NoSuchElementException;
  * Specialized lists are more efficient implementations for primitive types.
  */
 
-// TODO(andrewkrieger, springerm): Extend/implement DartObject.
-public interface DartList<T> extends List<T> {
+public interface DartList<T> extends List<T>, dart.core.List_interface<T> {
 
   // For interoperability: extends Java List Interface
-  // TODO(springerm): Replace by compiled interface from dart:core
-  
-  // Dart List Interface
-  T operatorAt(int index);
-  void operatorAtPut(int index, T value);
-  int getLength();
-
-  // Return type must be boolean as per java.util.List
-  boolean add(T value);
-  // Parameter must be Object as per java.util.List
-  int indexOf(Object element);
-  int indexOf(Object element, int start);
-
-  void clear();
-  void insert(int index, T element);
-  boolean remove(Object value);
-  T removeAt(int index);
-  T removeLast();
-  boolean contains(Object element);
-  boolean isEmpty();
-  boolean isNotEmpty();
-  T getFirst();
-  T getLast();
-  T getSingle();
-
 
   /**
   * The generic implementation of DartList. 
@@ -51,7 +25,7 @@ public interface DartList<T> extends List<T> {
   * This implementation is used most of the time. It should only be used for
   * instantiation. Variable should be of type DartList.
   */
-  public static class Generic<T> implements DartList<T> {
+  public static class Generic<T> extends DartObject implements DartList<T> {
     static final int DEFAULT_SIZE = 16;
     static final float GROW_FACTOR = 1.5F;
 
@@ -148,11 +122,7 @@ public interface DartList<T> extends List<T> {
     // TODO(springerm): sort
     // TODO(springerm): shuffle
 
-    public int indexOf(Object element) {
-      return indexOf(element, 0);
-    }
-
-    public int indexOf(Object element, int start) {
+    public int indexOf(T element, int start) {
       for (int i = start; i < size; i++) {
         if (array[i].equals(element)) {
           return i;
@@ -232,7 +202,11 @@ public interface DartList<T> extends List<T> {
 
     // TODO(springerm): removeWhere
     // TODO(springerm): retainWhere
-    // TODO(springerm): sublist
+
+    public DartList<T> sublist(int start, int end) {
+      throw new RuntimeException("Not implemented yet.");
+    }
+
     // TODO(springerm): getRange
     // TODO(springerm): setRange
     // TODO(springerm): removeRange
@@ -314,6 +288,10 @@ public interface DartList<T> extends List<T> {
     // TODO(springerm): toString
 
 
+    // --- Methods defined in Object ---
+    // TODO(springerm): Proper implementations for methods defined in Object
+
+
     // --- Methods defined in java.util.List ---
     public void add(int index, T element) {
       insert(index, element);
@@ -344,6 +322,10 @@ public interface DartList<T> extends List<T> {
 
     public T get(int index) {
       return operatorAt(index);
+    }
+
+    public int indexOf(Object element) {
+      return indexOf((T) element, 0);
     }
 
     public Iterator<T> iterator() {
@@ -433,7 +415,7 @@ public interface DartList<T> extends List<T> {
   * specialized implementation and _primitive methods should then be used
   * instead of interface methods for efficiency reasons.
   */
-  public class _int implements DartList<Integer> {
+  public class _int extends DartObject implements DartList<Integer> {
     static final int DEFAULT_SIZE = 16;
     static final float GROW_FACTOR = 1.5F;
 
@@ -538,18 +520,6 @@ public interface DartList<T> extends List<T> {
     // TODO(springerm): sort
     // TODO(springerm): shuffle
 
-    public int indexOf_primitive(int element) {
-      return indexOf_primitive(element, 0);
-    }
-
-    public int indexOf(Object element) {
-      if (!(element instanceof Integer)) {
-        return -1;
-      }
-
-      return indexOf_primitive((Integer) element);
-    }
-
     public int indexOf_primitive(int element, int start) {
       for (int i = start; i < size; i++) {
         if (array[i] == element) {
@@ -560,12 +530,8 @@ public interface DartList<T> extends List<T> {
       return -1;
     }
 
-    public int indexOf(Object element, int start) {
-      if (!(element instanceof Integer)) {
-        return -1;
-      }
-
-      return indexOf_primitive((Integer) element, start);
+    public int indexOf(Integer element, int start) {
+      return indexOf_primitive(element, start);
     }
 
     // TODO(springerm): lastIndexOf
@@ -660,6 +626,14 @@ public interface DartList<T> extends List<T> {
 
     public Integer removeLast() {
       return removeLast_primitive();
+    }
+
+    public DartList<Integer> sublist(int start, int end) {
+      throw new RuntimeException("Not implemented yet.");
+    }
+
+    public _int sublist_primitive(int start, int end) {
+      throw new RuntimeException("Not implemented yet.");
     }
 
     // TODO(springerm): removeWhere
@@ -776,6 +750,17 @@ public interface DartList<T> extends List<T> {
     // TODO(springerm): toString
 
 
+    // --- Methods defined in Object ---
+    // TODO(springerm): Proper implementations for Object methods
+    public int getHashCode_primitive() {
+      return this.hashCode();
+    }
+
+    public boolean operatorEqual_primitive(Object other) {
+      return this == other;
+    }
+
+
     // --- Methods defined in java.util.List ---
     public void add(int index, Integer element) {
       insert(index, element);
@@ -806,6 +791,14 @@ public interface DartList<T> extends List<T> {
 
     public Integer get(int index) {
       return operatorAt(index);
+    }
+
+    public int indexOf(Object element) {
+      if (!(element instanceof Integer)) {
+        return -1;
+      }
+
+      return indexOf_primitive((Integer) element, 0);
     }
 
     public Iterator<Integer> iterator() {

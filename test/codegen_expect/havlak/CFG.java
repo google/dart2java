@@ -42,11 +42,10 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
       }
       return node;
     }
-    public void addEdge(havlak.BasicBlockEdge_interface edge)
+    public boolean addEdge(havlak.BasicBlockEdge_interface edge)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getEdgeList().add(edge);
-      return;
+      return this.getEdgeList().add(edge);
     }
     public int getNumNodes()
     {
