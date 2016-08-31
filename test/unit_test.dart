@@ -69,12 +69,13 @@ void main(List<String> arguments) {
 
   // Compile each test file to Java and put the result in gen/unit_output.
   for (String testDir in testDirs) {
-    runTest(testDir, skip: !args['force'] &&
-        expectedToFail.contains(testDirToName(testDir)));
+    runTest(testDir,
+        skip:
+            !args['force'] && expectedToFail.contains(testDirToName(testDir)));
   }
 }
 
-void runTest(String testDir, {bool skip:false}) {
+void runTest(String testDir, {bool skip: false}) {
   String relativePath = path.relative(testDir, from: unitTestDir);
 
   String name = testDirToName(testDir);
@@ -113,9 +114,7 @@ void runTest(String testDir, {bool skip:false}) {
       }
     });
 
-    for (var file in files) {
-      _javaCompile(file, outDir);
-    }
+    _javaCompile(files, outDir);
     _run(name, outDir);
   }, skip: skipMsg);
 }
@@ -177,26 +176,16 @@ Iterable<String> _listDirs(String dir, RegExp dirPattern) {
   }).map((dir) => dir.path);
 }
 
-/// Compiles a .java [File] and returns the .class [File].
-File _javaCompile(File javaFile, String classPathRoot) {
-  var args = [
-    '-cp',
-    compiledSdkJar + ':' + junitJars + ":${classPathRoot}",
-    javaFile.path
-  ];
+/// Compiles .java [File]s.
+void _javaCompile(Iterable<File> javaFiles, String classPathRoot) {
+  var args = ['-cp', compiledSdkJar + ':' + junitJars + ":${classPathRoot}"]
+    ..addAll(javaFiles.map((f) => f.path));
   ProcessResult result =
       Process.runSync('javac', args, workingDirectory: unitOutputDir);
   expect(result.exitCode, isZero,
       reason: 'Reason: javac failed.\n'
           '  stdout: ${result.stdout}\n'
           '  stderr: ${result.stderr}\n');
-
-  String name = path.withoutExtension(javaFile.path);
-  File classFile = new File('$name.class');
-  if (!classFile.existsSync()) {
-    throw "Error: $javaFile failed to compile to $classFile.";
-  }
-  return classFile;
 }
 
 void _run(String testName, String classPathRoot) {
