@@ -31,7 +31,9 @@ public abstract class Type {
     if (result == null) {
       if (other instanceof InterfaceType) {
         result = Boolean.valueOf(isSubtypeOfInterfaceType((InterfaceType) other));
-      } else if (other instanceof TopType) {
+      } else if (other instanceof FunctionType) {
+        result = Boolean.valueOf(isSubtypeOfFunctionType((FunctionType) other));
+      } else if (other == TopType.INSTANCE || other == VoidType.INSTANCE) {
         result = Boolean.TRUE;
       } else {
         throw new IllegalArgumentException("Unrecognized Type of class " + other.getClass());
@@ -42,4 +44,6 @@ public abstract class Type {
   }
 
   protected abstract boolean isSubtypeOfInterfaceType(InterfaceType other);
+
+  protected abstract boolean isSubtypeOfFunctionType(FunctionType other);
 }

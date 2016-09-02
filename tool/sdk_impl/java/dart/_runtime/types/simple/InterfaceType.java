@@ -13,21 +13,26 @@ public class InterfaceType extends Type {
   final InterfaceTypeInfo info;
 
   /**
-   * The reified superclass of this class. Must be set after calling the constructor (unless this
-   * class is {@code Object}, in which case {@code supertype} may be left as {@code null}).
+   * The reified superclass of this class.
+   * <p>
+   * Must be set after calling the constructor (unless this class is {@code Object}, in which case
+   * {@code supertype} may be left as {@code null}).
    */
   InterfaceType supertype;
 
   /**
-   * The reified mixin to this class. Maybe set after calling the constructor or may be left as null
-   * if this class does not have a (direct) mixin.
+   * The reified mixin to this class.
+   * <p>
+   * May be set after calling the constructor or may be left as null if this class does not have a
+   * (direct) mixin.
    */
   InterfaceType mixin;
 
   /**
-   * The reified interfaces of this class. May be set after calling the constructor or may be left
-   * as the empty array if this class does not have any (direct) superinterfaces. May not be set to
-   * null.
+   * The reified interfaces of this class.
+   * <p>
+   * May be set after calling the constructor or may be left as the empty array if this class does
+   * not have any (direct) superinterfaces. May not be set to null.
    */
   InterfaceType[] interfaces;
 
@@ -111,4 +116,11 @@ public class InterfaceType extends Type {
       return false;
     }
   }
+
+  @Override
+  protected boolean isSubtypeOfFunctionType(FunctionType other) {
+    // TODO(andrewkrieger): Implement special handling of call method.
+    return false;
+  }
+
 }

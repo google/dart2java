@@ -1,10 +1,11 @@
 package dart._runtime.types.simple;
 
 /**
- * A singleton class representing the top (a.k.a. dynamic) type.
+ * A singleton class representing the (uninhabited) void type; used for the return type of (some)
+ * functions.
  */
-class TopType extends Type {
-  private TopType() {}
+public final class VoidType extends Type {
+  private VoidType() {}
 
   /**
    * A singleton instance of the top type.
@@ -13,12 +14,12 @@ class TopType extends Type {
    * InterfaceTypeExpr} and {@code FunctionTypeExpr}. Code in this package may access the instance
    * directly.
    */
-  static final TopType INSTANCE = new TopType();
+  static final VoidType INSTANCE = new VoidType();
 
   /**
    * A type expression representing the top type.
    */
-  public static final TypeExpr EXPR = new TypeExpr("[top]") {
+  public static final TypeExpr EXPR = new TypeExpr("[void]") {
     @Override
     Type evaluateUncached(TypeEnvironment env) {
       return INSTANCE;
@@ -26,12 +27,12 @@ class TopType extends Type {
   };
 
   @Override
-  protected boolean isSubtypeOfInterfaceType(InterfaceType other) {
+  protected boolean isSubtypeOfFunctionType(FunctionType other) {
     return false;
   }
 
   @Override
-  protected boolean isSubtypeOfFunctionType(FunctionType other) {
+  protected boolean isSubtypeOfInterfaceType(InterfaceType other) {
     return false;
   }
 }

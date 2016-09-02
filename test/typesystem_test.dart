@@ -4,7 +4,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Tests the type system.
-import 'dart:io' show Directory, File, FileSystemEntity, Process, ProcessResult;
+import 'dart:io' show Directory, File, Process, ProcessResult;
 import 'package:args/args.dart' show ArgParser, ArgResults;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart' show test, expect, isZero;
@@ -39,30 +39,27 @@ main(List<String> arguments) {
 
   Set<String> expectedToFail = _loadExpectedToFail();
 
-  // Compile the type system implementation
+  List<String> testFiles = listFiles(testDir, recursive: true, ext: '.java');
+  // Compile the type system implementation and the test files.
   test('typesystem compilation', () {
-    for (FileSystemEntity file
-        in new Directory(typeSystemDir).listSync(recursive: true)) {
-      if (file is! File || path.extension(file.path) != '.java') {
-        continue;
-      }
+    var filesToCompile = testFiles.toList()
+      ..addAll(
+          listFiles(typeSystemDir, recursive: true, ext: '.java').toList());
 
-      ProcessResult result =
-          Process.runSync('javac', defaultArgs.toList()..add(file.path));
-      expect(result.exitCode, isZero, reason: result.stderr);
-    }
+    ProcessResult result =
+        Process.runSync('javac', defaultArgs.toList()..addAll(filesToCompile));
+    expect(result.exitCode, isZero, reason: result.stderr);
   });
 
-  // Compile and run each test file
-  for (FileSystemEntity file
-      in new Directory(testDir).listSync(recursive: true)) {
-    if (file is! File || path.extension(file.path) != '.java') {
+  // Run each test file
+  for (String filepath in testFiles) {
+    if (path.basename(filepath) == 'Util.java') {
       continue;
     }
 
-    runTest(file.path,
+    runTest(filepath,
         skip: !args['force'] &&
-            expectedToFail.contains(filepathToName(file.path)));
+            expectedToFail.contains(filepathToName(filepath)));
   }
 }
 
@@ -79,6 +76,14 @@ void runTest(String filepath, {bool skip: false}) {
         defaultArgs.toList()..addAll(["org.junit.runner.JUnitCore", name]));
     expect(testResult.exitCode, isZero, reason: testResult.stdout);
   }, skip: skipMsg);
+}
+
+Iterable<String> listFiles(String dir, {bool recursive: false, String ext}) {
+  return new Directory(dir)
+      .listSync(recursive: recursive)
+      .where((entry) =>
+          entry is File && (ext == null || path.extension(entry.path) == ext))
+      .map((entry) => entry.path);
 }
 
 String filepathToName(String filepath) {

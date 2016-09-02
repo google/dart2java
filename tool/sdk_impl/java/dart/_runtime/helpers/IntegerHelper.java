@@ -8,7 +8,8 @@ public class IntegerHelper {
       = new InterfaceTypeInfo(int.class, null);
 
   static {
-    IntegerHelper.dart2java$typeInfo.superclass = new InterfaceTypeExpr(NumberHelper.dart2java$typeInfo);
+    IntegerHelper.dart2java$typeInfo.superclass =
+        new InterfaceTypeExpr(NumberHelper.dart2java$typeInfo);
   }
 
   // --- Methods defined in Object ---
@@ -120,11 +121,11 @@ public class IntegerHelper {
 
   public static double operatorDivide(int self, int other) {
     return ((double) self) / other;
-  } 
+  }
 
   public static double operatorDivide(int self, double other) {
-    return ((double) self) / other;
-  } 
+    return self / other;
+  }
 
   public static double operatorDivide(int self, Number other) {
     if (other instanceof Integer) {
@@ -136,7 +137,7 @@ public class IntegerHelper {
   }
 
   public static int operatorTruncatedDivide(int self, int other) {
-    return (int) (self / other);
+    return self / other;
   }
 
   public static int operatorTruncatedDivide(int self, double other) {
@@ -225,8 +226,7 @@ public class IntegerHelper {
       return operatorGreaterEqual(self, (double) other);
     }
   }
-  
-  public static boolean isNaN(int self) {
+  public static boolean isNaN(@SuppressWarnings("unused") int self) {
     return false;
   }
 
@@ -234,11 +234,11 @@ public class IntegerHelper {
     return self < 0;
   }
 
-  public static boolean isInfinite(int self) {
+  public static boolean isInfinite(@SuppressWarnings("unused") int self) {
     return false;
   }
 
-  public static boolean isFinite(int self) {
+  public static boolean isFinite(@SuppressWarnings("unused") int self) {
     return true;
   }
 
@@ -259,8 +259,7 @@ public class IntegerHelper {
   }
 
   public static int ceil(int self) {
-    return self;
-  }
+    return self; }
 
   public static int truncate(int self) {
     return self;
@@ -277,7 +276,7 @@ public class IntegerHelper {
   }
 
   public static double toDouble(int self) {
-    return (double) self;
+    return self;
   }
 
   // TODO(springerm): toStringAsFixed
