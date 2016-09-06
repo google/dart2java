@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Vector_interface extends dart.core.Object_interface
+public interface Vector_interface extends dart._runtime.base.DartObject_interface
 {
   tracer.Vector_interface normalize();
   tracer.Vector_interface negateY();

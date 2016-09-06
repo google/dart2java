@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Color_interface extends dart.core.Object_interface
+public interface Color_interface extends dart._runtime.base.DartObject_interface
 {
   tracer.Color_interface limit();
   tracer.Color_interface operatorPlus(tracer.Color_interface c2);

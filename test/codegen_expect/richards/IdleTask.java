@@ -11,7 +11,7 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
   
     public IdleTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int count)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(scheduler, v1, count);
     }
     public IdleTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

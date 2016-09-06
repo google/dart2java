@@ -75,7 +75,8 @@ abstract class Map<K, V> {
    * The resulting map behaves like the result of [Map.from],
    * except that the map returned by this constructor is not modifiable.
    */
-  external factory Map.unmodifiable(Map other);
+  // TODO(andrewkrieger, springerm): Implement.
+  // external factory Map.unmodifiable(Map other);
 
   /**
    * Creates an identity map with the default implementation, [LinkedHashMap].

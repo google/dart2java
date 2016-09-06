@@ -21,7 +21,7 @@ import dart._runtime.types.simple.InterfaceTypeExpr;
 import dart._runtime.types.simple.Type;
 import dart._runtime.types.simple.TypeEnvironment;
 
-public class DartObject implements dart.core.Object_interface {
+public class DartObject implements DartObject_interface {
   public final InterfaceType dart2java$type;
 
   private static final InterfaceType objectType =
@@ -46,10 +46,12 @@ public class DartObject implements dart.core.Object_interface {
 
   }
 
+  @Override
   public int getHashCode() {
     return this.hashCode();
   }
 
+  @Override
   public boolean operatorEqual(Object other) {
     return this == other;
   }

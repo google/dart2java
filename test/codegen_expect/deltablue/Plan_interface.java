@@ -1,10 +1,10 @@
 package deltablue;
 
-public interface Plan_interface extends dart.core.Object_interface
+public interface Plan_interface extends dart._runtime.base.DartObject_interface
 {
   void addConstraint(deltablue.Constraint_interface c);
   int size();
   void execute();
-  dart._runtime.base.DartList<deltablue.Constraint_interface> getList();
-  dart._runtime.base.DartList<deltablue.Constraint_interface> setList(dart._runtime.base.DartList<deltablue.Constraint_interface> value);
+  dart.core.List_interface<deltablue.Constraint_interface> getList();
+  dart.core.List_interface<deltablue.Constraint_interface> setList(dart.core.List_interface<deltablue.Constraint_interface> value);
 }

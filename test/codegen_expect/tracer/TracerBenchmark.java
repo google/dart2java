@@ -9,7 +9,7 @@ public class TracerBenchmark extends tracer.BenchmarkBase implements tracer.Trac
   
     public TracerBenchmark(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public TracerBenchmark(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

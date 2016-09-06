@@ -12,7 +12,7 @@ public class Color extends dart._runtime.base.DartObject implements tracer.Color
   
     public Color(dart._runtime.types.simple.Type type, double red, double green, double blue)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(red, green, blue);
     }
     public Color(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

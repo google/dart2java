@@ -7,12 +7,12 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       havlak.LSG.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
     public int loopCounter;
-    public dart._runtime.base.DartList<havlak.SimpleLoop_interface> loops;
+    public dart.core.List_interface<havlak.SimpleLoop_interface> loops;
     public havlak.SimpleLoop_interface root;
   
     public LSG(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public LSG(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -24,7 +24,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.loopCounter = 1;
-      this.loops = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.SimpleLoop_interface.class);
+      this.loops = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.SimpleLoop_interface.class));
       this.root = new havlak.SimpleLoop(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.SimpleLoop.dart2java$typeInfo)), 0);
       super._constructor();
       this.getRoot().setNestingLevel_(0);
@@ -49,7 +49,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int result = this.getLoops().getLength();
       java.lang.Object ebefore = null;
-      for (havlak.SimpleLoop_interface e : this.getLoops())
+      for (havlak.SimpleLoop_interface e : (java.lang.Iterable<havlak.SimpleLoop_interface>)this.getLoops())
       {
         result = havlak.__TopLevel.mix(result, e.checksum());
       }
@@ -64,7 +64,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
     {
       return this.loopCounter;
     }
-    public dart._runtime.base.DartList<havlak.SimpleLoop_interface> getLoops()
+    public dart.core.List_interface<havlak.SimpleLoop_interface> getLoops()
     {
       return this.loops;
     }

@@ -15,7 +15,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements delt
   
     public BenchmarkBase(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(name);
     }
     public BenchmarkBase(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

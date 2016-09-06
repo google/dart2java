@@ -61,14 +61,21 @@ abstract class JavaType extends Node {
   static ClassOrInterfaceType string =
       new ClassOrInterfaceType("java.lang", "String");
 
-  static ClassOrInterfaceType javaBooleanClass = 
+  /// The boxed version of `bool`.
+  static ClassOrInterfaceType javaBooleanClass =
       new ClassOrInterfaceType("java.lang", "Boolean");
-    
-  static ClassOrInterfaceType javaIntegerClass = 
+
+  /// The boxed version of `int`.
+  static ClassOrInterfaceType javaIntegerClass =
       new ClassOrInterfaceType("java.lang", "Integer");
-    
-  static ClassOrInterfaceType javaDoubleClass = 
+
+  /// The boxed version of `double`.
+  static ClassOrInterfaceType javaDoubleClass =
       new ClassOrInterfaceType("java.lang", "Double");
+
+  /// The boxed version of `void`.
+  static ClassOrInterfaceType javaVoidClass =
+      new ClassOrInterfaceType("java.lang", "Void");
 
   static ClassOrInterfaceType letHelper = new ClassOrInterfaceType(
       Constants.dartHelperPackage, "LetExpressionHelper");
@@ -80,9 +87,9 @@ abstract class JavaType extends Node {
           "EmptyConstructorMarker",
           isStatic: true);
 
-  static ClassOrInterfaceType dynamicHelper = 
+  static ClassOrInterfaceType dynamicHelper =
       new ClassOrInterfaceType("dart._runtime.helpers", "DynamicHelper");
-      
+
   // Numeric types.
   // Numeric types / Integral types.
 
@@ -112,19 +119,24 @@ abstract class JavaType extends Node {
   ];
 
   /// 8-bit signed two's complement integer.
-  static const PrimitiveType byte = const PrimitiveType._("byte", integerOperators);
+  static const PrimitiveType byte =
+      const PrimitiveType._("byte", integerOperators);
 
   /// 16-bit signed two's complement integer.
-  static const PrimitiveType short = const PrimitiveType._("short", integerOperators);
+  static const PrimitiveType short =
+      const PrimitiveType._("short", integerOperators);
 
   /// 32-bit signed two's complement integer.
-  static const PrimitiveType int_ = const PrimitiveType._("int", integerOperators);
+  static const PrimitiveType int_ =
+      const PrimitiveType._("int", integerOperators);
 
   /// 64-bit signed two's complement integer.
-  static const PrimitiveType long = const PrimitiveType._("long", integerOperators);
+  static const PrimitiveType long =
+      const PrimitiveType._("long", integerOperators);
 
   /// 16-bit unsigned integers representing UTF-16 code units.
-  static const PrimitiveType char = const PrimitiveType._("char", integerOperators);
+  static const PrimitiveType char =
+      const PrimitiveType._("char", integerOperators);
 
   static const floatingPointOperators = const [
     '<',
@@ -273,9 +285,14 @@ class ClassOrInterfaceType extends ReferenceType {
       this.isStatic, this.enclosingType, this.typeArguments)
       : super(name);
 
+  /// Returns a copy of this [ClassOrInterfaceType] with [typeArgs] in place of
+  /// the current type arguments (if any).
+  ///
+  /// Note that there are no arity checks. [typeArgs] may be [:null:] to
+  /// retrieve a reference to the raw Java class or interface.
   ClassOrInterfaceType withTypeArguments(List<JavaType> typeArgs) {
-    return new ClassOrInterfaceType._copy(
-        name, package, isInterface, isStatic, enclosingType, typeArgs);
+    return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
+        enclosingType, typeArgs ?? const []);
   }
 
   /// Returns [true] if this type is generic.
@@ -328,8 +345,8 @@ class ClassOrInterfaceType extends ReferenceType {
             JavaType.getGenericImplementation(typeArguments);
       }
 
-      String typeArgs = typeArguments.map(
-        (a) => unboxedToBoxedType(a).toString()).join(", ");
+      String typeArgs =
+          typeArguments.map((a) => unboxedToBoxedType(a).toString()).join(", ");
       return "$identifier<$typeArgs>";
     } else {
       return identifier;

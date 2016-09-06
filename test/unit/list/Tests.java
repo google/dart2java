@@ -22,7 +22,7 @@ public class Tests {
   @Test
   public void testJavaListInterface() {
     int result = 0;
-    List<Integer> list = __TopLevel.getIntList();
+    List<Integer> list = (List<Integer>) __TopLevel.getIntList();
     
     for (int value : list) {
       result = result + value;

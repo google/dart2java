@@ -11,7 +11,7 @@ public class BaseShape extends dart._runtime.base.DartObject implements tracer.B
   
     public BaseShape(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object material)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(position, material);
     }
     public BaseShape(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Ray_interface extends dart.core.Object_interface
+public interface Ray_interface extends dart._runtime.base.DartObject_interface
 {
   java.lang.String toString();
   java.lang.Object getPosition();

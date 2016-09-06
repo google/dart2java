@@ -11,7 +11,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
   
     public WorkerTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(scheduler, v1, v2);
     }
     public WorkerTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -53,7 +53,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
         {
           this.setV2(1);
         }
-        packet.getA2().operatorAtPut_primitive(i, this.getV2());
+        packet.getA2().operatorAtPut(i, this.getV2());
       }
       return this.getScheduler().queue(packet);
     }

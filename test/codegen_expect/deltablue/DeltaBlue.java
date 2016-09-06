@@ -9,7 +9,7 @@ public class DeltaBlue extends deltablue.BenchmarkBase implements deltablue.Delt
   
     public DeltaBlue(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public DeltaBlue(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

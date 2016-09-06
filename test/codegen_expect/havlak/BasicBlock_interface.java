@@ -1,6 +1,6 @@
 package havlak;
 
-public interface BasicBlock_interface extends dart.core.Object_interface
+public interface BasicBlock_interface extends dart._runtime.base.DartObject_interface
 {
   java.lang.String toString();
   int getNumPred();
@@ -8,8 +8,8 @@ public interface BasicBlock_interface extends dart.core.Object_interface
   boolean addInEdge(havlak.BasicBlock_interface bb);
   boolean addOutEdge(havlak.BasicBlock_interface bb);
   int getName();
-  dart._runtime.base.DartList<havlak.BasicBlock_interface> getInEdges();
-  dart._runtime.base.DartList<havlak.BasicBlock_interface> getOutEdges();
-  dart._runtime.base.DartList<havlak.BasicBlock_interface> setInEdges(dart._runtime.base.DartList<havlak.BasicBlock_interface> value);
-  dart._runtime.base.DartList<havlak.BasicBlock_interface> setOutEdges(dart._runtime.base.DartList<havlak.BasicBlock_interface> value);
+  dart.core.List_interface<havlak.BasicBlock_interface> getInEdges();
+  dart.core.List_interface<havlak.BasicBlock_interface> getOutEdges();
+  dart.core.List_interface<havlak.BasicBlock_interface> setInEdges(dart.core.List_interface<havlak.BasicBlock_interface> value);
+  dart.core.List_interface<havlak.BasicBlock_interface> setOutEdges(dart.core.List_interface<havlak.BasicBlock_interface> value);
 }

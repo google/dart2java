@@ -143,10 +143,10 @@ ClassOrInterfaceType typeEnvType =
 /// initialization order of these fields (as guaranteed by the Java language
 /// specification).
 FieldDecl makeTypeInfoField(dart.Class node, CompilerState compilerState) {
-  assert(!compilerState.hasJavaImpl(node));
+  assert(compilerState.getRawClass(node) != null);
   var constructorArgs = <Expression>[
-    new FieldAccess(new ClassRefExpr(compilerState.getClass(node)), 'class'),
-    new FieldAccess(new ClassRefExpr(compilerState.getInterface(node)), 'class')
+    new TypeExpr(compilerState.getRawClass(node)),
+    new TypeExpr(compilerState.getRawInterface(node))
   ];
   if (node.typeParameters.isNotEmpty) {
     constructorArgs.insert(
@@ -175,27 +175,27 @@ FieldDecl makeTypeInfoField(dart.Class node, CompilerState compilerState) {
 /// subtle bugs!
 InitializerBlock makeTypeInfoInitializer(
     dart.Class node, CompilerState compilerState) {
-  assert(!compilerState.hasJavaImpl(node));
-  ClassOrInterfaceType javaCls = compilerState.getClass(node);
+  ClassOrInterfaceType rawJavaCls = compilerState.getRawClass(node);
+  assert(rawJavaCls != null);
   var statements = <Statement>[];
   if (node.supertype != null) {
     statements.add(new ExpressionStmt(new AssignmentExpr(
         new FieldAccess(
-            new FieldAccess(new ClassRefExpr(javaCls), _typeInfoFieldName),
+            new FieldAccess(new ClassRefExpr(rawJavaCls), _typeInfoFieldName),
             'superclass'),
         makeTypeExpr(node.supertype, compilerState))));
   }
   if (node.mixedInType != null) {
     statements.add(new ExpressionStmt(new AssignmentExpr(
         new FieldAccess(
-            new FieldAccess(new ClassRefExpr(javaCls), _typeInfoFieldName),
+            new FieldAccess(new ClassRefExpr(rawJavaCls), _typeInfoFieldName),
             'mixin'),
         makeTypeExpr(node.mixedInType, compilerState))));
   }
   if (node.implementedTypes != null && node.implementedTypes.isNotEmpty) {
     statements.add(new ExpressionStmt(new AssignmentExpr(
         new FieldAccess(
-            new FieldAccess(new ClassRefExpr(javaCls), _typeInfoFieldName),
+            new FieldAccess(new ClassRefExpr(rawJavaCls), _typeInfoFieldName),
             'interfaces'),
         new ArrayInitializer(
             _interfaceTypeExprType,
@@ -373,7 +373,7 @@ Expression _makeTypeInfoGetter(
   return new FieldAccess(
       new ClassRefExpr(compilerState.hasJavaImpl(forClass)
           ? compilerState.getHelperClass(forClass)
-          : compilerState.getClass(forClass)),
+          : compilerState.getRawClass(forClass)),
       _typeInfoFieldName);
 }
 

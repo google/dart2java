@@ -6,11 +6,11 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     static {
       deltablue.Plan.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public dart._runtime.base.DartList<deltablue.Constraint_interface> list;
+    public dart.core.List_interface<deltablue.Constraint_interface> list;
   
     public Plan(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public Plan(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -21,7 +21,7 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     protected void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.list = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class);
+      this.list = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class));
       super._constructor();
     }
     public void addConstraint(deltablue.Constraint_interface c)
@@ -42,11 +42,11 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
         this.getList().operatorAt(i).execute();
       }
     }
-    public dart._runtime.base.DartList<deltablue.Constraint_interface> getList()
+    public dart.core.List_interface<deltablue.Constraint_interface> getList()
     {
       return this.list;
     }
-    public dart._runtime.base.DartList<deltablue.Constraint_interface> setList(dart._runtime.base.DartList<deltablue.Constraint_interface> value)
+    public dart.core.List_interface<deltablue.Constraint_interface> setList(dart.core.List_interface<deltablue.Constraint_interface> value)
     {
       this.list = value;
       return value;

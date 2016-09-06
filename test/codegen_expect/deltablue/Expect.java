@@ -9,7 +9,7 @@ public class Expect extends dart._runtime.base.DartObject implements deltablue.E
   
     public Expect(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public Expect(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -28,12 +28,12 @@ public class Expect extends dart._runtime.base.DartObject implements deltablue.E
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(expected, actual)))
       {
         dart.core.__TopLevel.print("Values not equal: ");
-        dart.core.__TopLevel.print((java.lang.Object) expected);
+        dart.core.__TopLevel.print(((java.lang.Object) expected));
         dart.core.__TopLevel.print("vs ");
-        dart.core.__TopLevel.print((java.lang.Object) actual);
+        dart.core.__TopLevel.print(((java.lang.Object) actual));
       }
     }
-    public static void listEquals(dart._runtime.base.DartList<java.lang.Object> expected, dart._runtime.base.DartList<java.lang.Object> actual)
+    public static void listEquals(dart.core.List_interface<java.lang.Object> expected, dart.core.List_interface<java.lang.Object> actual)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       if ((!(expected.getLength() == actual.getLength())))

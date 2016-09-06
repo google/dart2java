@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Scene_interface extends dart.core.Object_interface
+public interface Scene_interface extends dart._runtime.base.DartObject_interface
 {
   java.lang.Object getCamera();
   java.lang.Object getShapes();

@@ -10,7 +10,7 @@ public class Expect extends dart._runtime.base.DartObject implements is_operator
   
     public Expect(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public Expect(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -29,7 +29,7 @@ public class Expect extends dart._runtime.base.DartObject implements is_operator
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(a, b)))
       {
-        dart.core.__TopLevel.print((((("Expected " + a.toString()) + ", got ") + b.toString()) + ""));
+        dart.core.__TopLevel.print((((("Expected " + a) + ", got ") + b) + ""));
         dart.core.__TopLevel.print(dart._runtime.helpers.StringHelper.operatorStar("*", 80));
         dart.core.__TopLevel.print("(Ignore the NPE; it's just used to cause test failure)");
         is_operator_test.Expect_interface e = null;

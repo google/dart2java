@@ -11,7 +11,7 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
   
     public BasicBlockEdge(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, int fromName, int toName)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(cfg, fromName, toName);
     }
     public BasicBlockEdge(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

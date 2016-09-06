@@ -12,7 +12,7 @@ public class Light extends dart._runtime.base.DartObject implements tracer.Light
   
     public Light(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object color, java.lang.Object intensity)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(position, color, intensity);
     }
     public Light(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

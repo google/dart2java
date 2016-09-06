@@ -11,7 +11,7 @@ public class Strength extends dart._runtime.base.DartObject implements deltablue
   
     public Strength(dart._runtime.types.simple.Type type, int value, java.lang.String name)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(value, name);
     }
     public Strength(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

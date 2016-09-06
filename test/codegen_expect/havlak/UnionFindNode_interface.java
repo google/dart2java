@@ -1,6 +1,6 @@
 package havlak;
 
-public interface UnionFindNode_interface extends dart.core.Object_interface
+public interface UnionFindNode_interface extends dart._runtime.base.DartObject_interface
 {
   void initNode(havlak.BasicBlock_interface bb, int dfsNumber);
   havlak.UnionFindNode_interface findSet();

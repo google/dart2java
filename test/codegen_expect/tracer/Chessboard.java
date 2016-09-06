@@ -12,7 +12,7 @@ public class Chessboard extends tracer.Materials implements tracer.Chessboard_in
   
     public Chessboard(dart._runtime.types.simple.Type type, tracer.Color_interface colorEven, tracer.Color_interface colorOdd, java.lang.Object reflection, java.lang.Object transparency, java.lang.Object gloss, double density)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(colorEven, colorOdd, reflection, transparency, gloss, density);
     }
     public Chessboard(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -26,13 +26,13 @@ public class Chessboard extends tracer.Materials implements tracer.Chessboard_in
       this.colorEven = colorEven;
       this.colorOdd = colorOdd;
       this.density = density;
-      super._constructor((double) reflection, (double) transparency, (double) gloss, 0.5, true);
+      super._constructor(((double) reflection), ((double) transparency), ((double) gloss), 0.5, true);
     }
     public tracer.Color_interface getColor_(java.lang.Number u, java.lang.Number v)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       java.lang.Object t = dart._runtime.helpers.DynamicHelper.invoke("operatorStar", this.wrapUp(dart._runtime.helpers.NumberHelper.operatorStar(u, this.getDensity())), this.wrapUp(dart._runtime.helpers.NumberHelper.operatorStar(v, this.getDensity())));
-      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, 0.0))
+      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, 0.0)))
       {
         return this.getColorEven();
       }

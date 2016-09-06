@@ -1,6 +1,6 @@
 package richards;
 
-public interface Scheduler_interface extends dart.core.Object_interface
+public interface Scheduler_interface extends dart._runtime.base.DartObject_interface
 {
   void addIdleTask(int id, int priority, richards.Packet_interface queue, int count);
   void addWorkerTask(int id, int priority, richards.Packet_interface queue);
@@ -18,11 +18,11 @@ public interface Scheduler_interface extends dart.core.Object_interface
   richards.TaskControlBlock_interface getCurrentTcb();
   int getCurrentId();
   richards.TaskControlBlock_interface getList();
-  dart._runtime.base.DartList<richards.TaskControlBlock_interface> getBlocks();
+  dart.core.List_interface<richards.TaskControlBlock_interface> getBlocks();
   int setQueueCount(int value);
   int setHoldCount(int value);
   richards.TaskControlBlock_interface setCurrentTcb(richards.TaskControlBlock_interface value);
   int setCurrentId(int value);
   richards.TaskControlBlock_interface setList(richards.TaskControlBlock_interface value);
-  dart._runtime.base.DartList<richards.TaskControlBlock_interface> setBlocks(dart._runtime.base.DartList<richards.TaskControlBlock_interface> value);
+  dart.core.List_interface<richards.TaskControlBlock_interface> setBlocks(dart.core.List_interface<richards.TaskControlBlock_interface> value);
 }

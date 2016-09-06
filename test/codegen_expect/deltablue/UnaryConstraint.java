@@ -11,7 +11,7 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
   
     public UnaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(myOutput, strength);
     }
     public UnaryConstraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

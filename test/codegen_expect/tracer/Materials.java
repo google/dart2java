@@ -14,7 +14,7 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
   
     public Materials(dart._runtime.types.simple.Type type, double reflection, double transparency, double gloss, double refraction, boolean hasTexture)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(reflection, transparency, gloss, refraction, hasTexture);
     }
     public Materials(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -37,11 +37,11 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       t = dart._runtime.helpers.DynamicHelper.invoke("operatorModulus", t, 2.0);
-      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1)))
+      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1))))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", t, 2.0);
       }
-      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1))
+      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1)))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", t, 2.0);
       }

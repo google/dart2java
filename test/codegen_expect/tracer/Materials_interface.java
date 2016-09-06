@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Materials_interface extends dart.core.Object_interface
+public interface Materials_interface extends dart._runtime.base.DartObject_interface
 {
   tracer.Color_interface getColor_(java.lang.Number u, java.lang.Number v);
   java.lang.Object wrapUp(java.lang.Object t);

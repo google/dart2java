@@ -6,8 +6,8 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     static {
       havlak.SimpleLoop.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> basicBlocks;
-    public dart._runtime.base.DartList<havlak.SimpleLoop_interface> children;
+    public dart.core.List_interface<havlak.BasicBlock_interface> basicBlocks;
+    public dart.core.List_interface<havlak.SimpleLoop_interface> children;
     public int counter;
     public havlak.SimpleLoop_interface parent;
     public havlak.BasicBlock_interface header;
@@ -18,7 +18,7 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
   
     public SimpleLoop(dart._runtime.types.simple.Type type, int counter)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(counter);
     }
     public SimpleLoop(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -29,8 +29,8 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     protected void _constructor(int counter)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.basicBlocks = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class);
-      this.children = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.SimpleLoop_interface.class);
+      this.basicBlocks = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
+      this.children = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.SimpleLoop_interface.class));
       this.isRoot = false;
       this.isReducible = true;
       this.nestingLevel = 0;
@@ -81,21 +81,21 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
       {
         result = havlak.__TopLevel.mix(result, this.getHeader().getName());
       }
-      for (havlak.BasicBlock_interface e : this.getBasicBlocks())
+      for (havlak.BasicBlock_interface e : (java.lang.Iterable<havlak.BasicBlock_interface>)this.getBasicBlocks())
       {
         result = havlak.__TopLevel.mix(result, e.getName());
       }
-      for (havlak.SimpleLoop_interface e : this.getChildren())
+      for (havlak.SimpleLoop_interface e : (java.lang.Iterable<havlak.SimpleLoop_interface>)this.getChildren())
       {
         result = havlak.__TopLevel.mix(result, e.checksum());
       }
       return result;
     }
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> getBasicBlocks()
+    public dart.core.List_interface<havlak.BasicBlock_interface> getBasicBlocks()
     {
       return this.basicBlocks;
     }
-    public dart._runtime.base.DartList<havlak.SimpleLoop_interface> getChildren()
+    public dart.core.List_interface<havlak.SimpleLoop_interface> getChildren()
     {
       return this.children;
     }

@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Light_interface extends dart.core.Object_interface
+public interface Light_interface extends dart._runtime.base.DartObject_interface
 {
   java.lang.Object getPosition();
   java.lang.Object getColor();

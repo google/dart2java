@@ -13,7 +13,7 @@ public class Scene extends dart._runtime.base.DartObject implements tracer.Scene
   
     public Scene(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public Scene(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -26,8 +26,8 @@ public class Scene extends dart._runtime.base.DartObject implements tracer.Scene
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
       this.setCamera(new tracer.Camera(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Camera.dart2java$typeInfo)), new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), 0.0, 0.0, (-0.5)), new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), 0.0, 0.0, 1.0), new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), 0.0, 1.0, 0.0)));
-      this.setShapes(dart._runtime.base.DartList.Generic.newInstance(java.lang.Object.class, 0));
-      this.setLights(dart._runtime.base.DartList.Generic.newInstance(java.lang.Object.class, 0));
+      this.setShapes(dart.core.List.factory$(java.lang.Object.class, 0));
+      this.setLights(dart.core.List.factory$(java.lang.Object.class, 0));
       this.setBackground(new tracer.Background(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Background.dart2java$typeInfo)), new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), 0.0, 0.0, 0.5), 0.2));
     }
     public java.lang.Object getCamera()

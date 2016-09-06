@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'package:kernel/ast.dart' as dart;
+import 'package:kernel/type_algebra.dart' as dart_ts;
 
 import 'ast.dart' as java;
 import 'visitor.dart' as java;
@@ -39,26 +40,23 @@ java.ClassDecl buildWrapperClass(
 }
 
 /// Builds a Java class AST from a kernel class AST.
-/// 
+///
 /// Also generates a Java interface for every Dart class. There are some
 /// special cases:
 /// * Dart classes with a Java implementation class have an interface only
 /// * No interfaces/classes are generated for primitive types (e.g., int)
 List<java.PackageMember> buildClass(
-  dart.Class node, CompilerState compilerState) {
-  // Nothing to do for core abstract classes like `int`.
-  if (compilerState.isJavaClass(node)) {
-    if (compilerState.getClass(node) is! java.PrimitiveType) {
-      return [new _JavaAstBuilder(compilerState).buildInterface(node)];
-    } else {
-      // Do not generate interfaces for primitive types
-      return [];
-    }
+    dart.Class node, CompilerState compilerState) {
+  if (compilerState.isSpecialClass(node)) {
+    // TODO(andrewkrieger,springerm): Handle static members in core classes,
+    // such as num.parse.
+    return [];
   }
 
   return [
     new _JavaAstBuilder(compilerState).buildClass(node),
-    new _JavaAstBuilder(compilerState).buildInterface(node)];
+    new _JavaAstBuilder(compilerState).buildInterface(node)
+  ];
 }
 
 /// A temporary local variable defined in a method.
@@ -145,9 +143,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
-    assert(thisDartClass == null);
+    assert(thisDartClass == null && !compilerState.isSpecialClass(node));
     thisDartClass = node;
-    java.ClassOrInterfaceType type = compilerState.getClass(node);
+    java.ClassOrInterfaceType type = compilerState.getRawClass(node);
     List<java.OrderedClassMember> orderedMembers =
         maybeBuildStaticFieldInitializerBlock(type, node.fields)
           ..addAll(node.fields.map(this.visitField));
@@ -180,7 +178,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     methods.addAll(implicitGetters);
     methods.addAll(implicitSetters);
 
-    java.ClassOrInterfaceType supertype = buildClassType(node.supertype);
+    java.ClassOrInterfaceType supertype =
+        compilerState.getClass(node.supertype);
     if (supertype == java.JavaType.object) {
       // Make sure that "extends Object" results in "extends DartObject"
       // TODO(springerm): Remove hard-coded special case once we
@@ -199,9 +198,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // TODO(springerm): Think about whether a class should directly implement
     // other interfaces or if it is sufficient for the associated interface to
     // extend all other interfaces
-    var implementedInterfaces = [compilerState.getInterface(node)];
-    implementedInterfaces.addAll(
-      node.implementedTypes.map(buildInterfaceType));
+    var implementedInterfaces = [compilerState.getInterface(node.thisType)];
+    implementedInterfaces
+        .addAll(node.implementedTypes.map(compilerState.getInterface));
 
     return new java.ClassDecl(type,
         access: java.Access.Public,
@@ -254,8 +253,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         : null;
 
     return new java.FieldDecl(
-        node.name.name, 
-        buildInterfaceType(node.type),
+        node.name.name, compilerState.getLValueType(node.type),
         initializer: initializer,
         access: java.Access.Public,
         isStatic: node.isStatic,
@@ -263,13 +261,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.InterfaceDecl buildInterface(dart.NormalClass node) {
-    java.ClassOrInterfaceType type = compilerState.getInterface(node);
+    assert(!compilerState.isSpecialClass(node));
+    java.ClassOrInterfaceType type = compilerState.getRawInterface(node);
     List<java.MethodDecl> methods = node.procedures
         .where((m) => m.kind != dart.ProcedureKind.Factory && !m.isStatic)
-        .map(this.buildMethodDecl).toList();
-    Iterable<java.MethodDecl> implicitGetters = node.fields
-        .where((f) => !f.isStatic)
-        .map(this.buildGetterDecl);
+        .map(this.buildMethodDecl)
+        .toList();
+    Iterable<java.MethodDecl> implicitGetters =
+        node.fields.where((f) => !f.isStatic).map(this.buildGetterDecl);
     Iterable<java.MethodDecl> implicitSetters = node.fields
         .where((f) => !f.isFinal && !f.isStatic)
         .map(this.buildSetterDecl);
@@ -280,13 +279,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var superinterfaces = <java.ClassOrInterfaceType>[];
     if (node.supertype != null) {
       // dart.core::Object does not have a supertype
-      java.ClassOrInterfaceType supertype = 
-        buildInterfaceType(node.supertype);
+      java.ClassOrInterfaceType supertype =
+          compilerState.getInterface(node.supertype);
       if (supertype == java.JavaType.object) {
-        // Make sure that "extends Object" results in 
-        // "extends DartObject$interface
-        supertype = buildObjectInterfaceType();
-      } 
+        // Make sure that "extends Object" results in
+        // "extends DartObject_interface. Using the raw interface is safe
+        // because `DartObject` is not a generic class.
+        supertype = compilerState.getRawInterface(compilerState.objectClass);
+      }
 
       if (supertype.isInterface) {
         // TODO(springerm): Figure out interoperability
@@ -297,33 +297,32 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var typeParameters = node.typeParameters.map((p) => p.name).toList();
 
     // Add all other interfaces that this interface extends
-    superinterfaces.addAll(node.implementedTypes.map(buildInterfaceType));
+    superinterfaces
+        .addAll(node.implementedTypes.map(compilerState.getInterface));
 
     return new java.InterfaceDecl(type,
-      access: java.Access.Public,
-      methods: methods,
-      superinterfaces: superinterfaces,
-      typeParameters: typeParameters);
+        access: java.Access.Public,
+        methods: methods,
+        superinterfaces: superinterfaces,
+        typeParameters: typeParameters);
   }
 
   java.MethodDecl buildMethodDecl(dart.Procedure procedure) {
     String methodName = javaMethodName(procedure.name.name, procedure.kind);
-    var returnType = buildInterfaceType(procedure.function.returnType);
+    var returnType = compilerState.getLValueType(procedure.function.returnType);
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = procedure.function.positionalParameters
         .map(buildPositionalParameter)
         .toList();
 
     return new java.MethodDecl(methodName, parameters,
-        returnType: returnType,
-        isFinal: false);
+        returnType: returnType, isFinal: false);
   }
 
   @override
   java.FieldDecl visitField(dart.Field node) {
     return new java.FieldDecl(
-        node.name.name, 
-        buildInterfaceType(node.type),
+        node.name.name, compilerState.getLValueType(node.type),
         access: java.Access.Public,
         isStatic: node.isStatic,
         isFinal: node.isFinal);
@@ -332,10 +331,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.MethodDecl buildGetterDecl(dart.Field node) {
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Getter);
-    return new java.MethodDecl(
-        methodName, 
-        [],
-        returnType: buildInterfaceType(node.type));
+    return new java.MethodDecl(methodName, [],
+        returnType: compilerState.getLValueType(node.type));
   }
 
   java.MethodDef buildGetter(dart.Field node) {
@@ -344,22 +341,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var body = wrapInJavaBlock(new java.ReturnStmt(new java.FieldAccess(
         buildDefaultReceiver(node.isStatic), node.name.name)));
 
-    return new java.MethodDef(
-        methodName, 
-        body, 
-        [],
-        returnType: buildInterfaceType(node.type), 
+    return new java.MethodDef(methodName, body, [],
+        returnType: compilerState.getLValueType(node.type),
         isStatic: node.isStatic);
   }
 
   java.MethodDecl buildSetterDecl(dart.Field node) {
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Setter);
-     var param = new java.VariableDecl("value", buildInterfaceType(node.type));
-    return new java.MethodDecl(
-        methodName, 
-        [param],
-        returnType: buildInterfaceType(node.type));
+    var param =
+        new java.VariableDecl("value", compilerState.getLValueType(node.type));
+    return new java.MethodDecl(methodName, [param],
+        returnType: compilerState.getLValueType(node.type));
   }
 
   java.MethodDef buildSetter(dart.Field node) {
@@ -372,13 +365,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var returnStmt = new java.ReturnStmt(new java.IdentifierExpr("value"));
     var body =
         new java.Block([new java.ExpressionStmt(fieldAssignment), returnStmt]);
-    var param = new java.VariableDecl("value", buildInterfaceType(node.type));
+    var param =
+        new java.VariableDecl("value", compilerState.getLValueType(node.type));
 
-    return new java.MethodDef(
-        methodName, 
-        body, 
-        [param],
-        returnType: buildInterfaceType(node.type), 
+    return new java.MethodDef(methodName, body, [param],
+        returnType: compilerState.getLValueType(node.type),
         isStatic: node.isStatic);
   }
 
@@ -403,8 +394,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // TODO(springerm): Handle parameters other than positional
     var result = new List<java.Expression>();
 
-    Iterable<java.JavaType> typeArguments =
-        node.types.map(buildInterfaceType);
+    Iterable<java.JavaType> typeArguments = node.types.map((t) {
+      var javaType = compilerState.getLValueType(t);
+      // Because we're about to use a TypeExpr, javaType can't have type
+      // arguments (something like `List<String>.class` is illegal; the
+      // `<String>` would be erased anyway, so it's meaningless in Java).
+      return javaType is java.ClassOrInterfaceType
+          ? javaType.withTypeArguments(null)
+          : javaType;
+    });
     // Calling convention: Type arguments as first arguments
     // for static invocations, then positional arguments
     // TODO(springerm, andrewkrieger): Use proper types once implemented
@@ -450,6 +448,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         return "get" + capitalizeString(methodName);
       case dart.ProcedureKind.Setter:
         return "set" + capitalizeString(methodName);
+      case dart.ProcedureKind.Factory:
+        return "factory\$" + methodName;
       default:
         // TODO(springerm): handle remaining kinds
         throw new CompileErrorException(
@@ -459,7 +459,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   Iterable<java.Statement> buildTempVarDecls() {
     return tempVars.values.map((v) => new java.VariableDeclStmt(
-        new java.VariableDecl(v.name, buildInterfaceType(v.type))));
+        new java.VariableDecl(v.name, compilerState.getLValueType(v.type))));
   }
 
   java.VariableDecl buildPositionalParameter(dart.VariableDeclaration node) {
@@ -474,12 +474,32 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.MethodDef visitProcedure(dart.Procedure procedure) {
     String methodName = javaMethodName(procedure.name.name, procedure.kind);
-    var returnType = buildInterfaceType(procedure.function.returnType);
+    var returnType = compilerState.getLValueType(procedure.function.returnType);
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = procedure.function.positionalParameters
         .map(buildPositionalParameter)
         .toList();
     var isStatic = procedure.isStatic;
+    var typeParameterNames = const <String>[];
+
+    // Factory constructors need special handling regarding types currently.
+    // Eventually, we should unify this with generic methods.
+    if (procedure.kind == dart.ProcedureKind.Factory) {
+      // The current implementation of factory constructors has them call
+      // through to hand-written Java methods that expect one `java.lang.Class`
+      // per type parameter as the first formal parameter to the method (as a
+      // stand-in for the reified parameter type). Declare these in the stubs.
+      // TODO(andrewkrieger): Treat factories as generic methods instead.
+      if (thisDartClass.typeParameters.isNotEmpty) {
+        parameters.insertAll(
+            0,
+            thisDartClass.typeParameters.map((tp) => new java.VariableDecl(
+                "typeParam\$${tp.name}",
+                new java.ClassOrInterfaceType("java.lang", "Class"))));
+        typeParameterNames =
+            thisDartClass.typeParameters.map((tp) => tp.name).toList();
+      }
+    }
 
     java.Block body;
     if (procedure.isExternal) {
@@ -559,6 +579,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     return new java.MethodDef(methodName, body, parameters,
+        typeParameterNames: typeParameterNames,
         returnType: returnType,
         isStatic: isStatic,
         isFinal: false,
@@ -674,7 +695,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     ]);
 
     java.Constructor delegator = new java.Constructor(
-        getJavaType(thisDartClass),
+        compilerState.getRawClass(thisDartClass),
         delegatorBlock,
         [new java.VariableDecl(typeParamName, ts.typeRepType)]
           ..addAll(parameters));
@@ -845,7 +866,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {   
+  java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
     String methodName =
         javaMethodName(node.name.name, dart.ProcedureKind.Getter);
 
@@ -854,14 +875,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // Generate static call to helper function
       var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
 
-      List<java.Expression> javaArgs = [ 
+      List<java.Expression> javaArgs = [
         new java.StringLiteral(methodName),
-        node.receiver.accept(this)];
+        node.receiver.accept(this)
+      ];
 
       return new java.MethodInvocation(
-        helperRefExpr, 
-        Constants.dynamicHelperInvoke, 
-        javaArgs);
+          helperRefExpr, Constants.dynamicHelperInvoke, javaArgs);
     }
 
     return buildDynamicMethodInvocation(node.receiver, methodName, []);
@@ -907,15 +927,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // Generate static call to helper function
       var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
 
-      List<java.Expression> javaArgs = [ 
+      List<java.Expression> javaArgs = [
         new java.StringLiteral(methodName),
         node.receiver.accept(this),
-        node.value.accept(this)];
+        node.value.accept(this)
+      ];
 
       return new java.MethodInvocation(
-        helperRefExpr, 
-        Constants.dynamicHelperInvoke, 
-        javaArgs);
+          helperRefExpr, Constants.dynamicHelperInvoke, javaArgs);
     }
 
     if (node.receiver.staticType is! dart.InterfaceType) {
@@ -953,11 +972,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         return null;
       }
       dart.InterfaceType type = node.receiver.staticType;
-      ClassImpl classImpl = compilerState.classImpls[type.classNode];
-      if (classImpl?.javaClass is java.PrimitiveType &&
-          (classImpl.javaClass as java.PrimitiveType)
-              .operators
-              .contains(methodName)) {
+      java.JavaType lValueType = compilerState.getLValueType(type);
+      if (lValueType is java.PrimitiveType &&
+          lValueType.operators.contains(methodName)) {
         // There is an operator for the type of the receiver that has the same
         // name as the invocation being compiled.
         int length = node.arguments.positional.length;
@@ -1045,7 +1062,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     // Call the specialized generic method if it is available.
     Iterable<java.JavaType> javaTypeArguments =
-        interfaceType.typeArguments.map(buildClassType);
+        interfaceType.typeArguments.map(compilerState.getTypeArgument);
     if (java.JavaType.hasGenericSpecialization(javaTypeArguments)) {
       javaName = javaName + Constants.primitiveSpecializationSuffix;
     }
@@ -1065,20 +1082,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.MethodInvocation visitStaticInvocation(dart.StaticInvocation node) {
     java.Expression receiver;
     dart.Class receiverClass = null;
-    String methodName = node.target.name.name;
+    String methodName = javaMethodName(node.target.name.name, node.target.kind);
 
     if (node.target.enclosingClass == null) {
       receiver = new java.ClassRefExpr(
           compilerState.getTopLevelClass(node.target.enclosingLibrary));
     } else {
+      // TODO(andrewkrieger,springerm): Don't use getRawClass here if the
+      // enclosing class uses a helper class. Currently, calls like [int.parse]
+      // will fail.
       receiver = new java.ClassRefExpr(
-          compilerState.getClass(node.target.enclosingClass));
+          compilerState.getRawClass(node.target.enclosingClass));
       receiverClass = node.target.enclosingClass;
-    }
-
-    // Change method name if annotated with @JavaMethod
-    if (compilerState.hasJavaImpl(receiverClass)) {
-      methodName = compilerState.getJavaMethodName(receiverClass, methodName);
     }
 
     List<java.Expression> args =
@@ -1098,8 +1113,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     Iterable<java.JavaType> typeArguments =
-        node.arguments.types.map(buildClassType);
-    if (typeArguments.isNotEmpty) {
+        node.arguments.types.map(compilerState.getTypeArgument);
+    if (typeArguments.isNotEmpty &&
+        node.target.kind != dart.ProcedureKind.Factory) {
       // This is a call to a generic class, make sure to choose the correct
       // specialization
       receiver = new java.FieldAccess(
@@ -1116,8 +1132,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     List<java.Expression> args =
         buildArguments(node.arguments, node.target.function);
 
-    java.ClassOrInterfaceType type =
-        buildClassType(node.target.enclosingClass.thisType);
+    java.ClassOrInterfaceType type = compilerState.getClass(
+        dart_ts.substitutePairwise(node.target.enclosingClass.thisType,
+            node.target.enclosingClass.typeParameters, node.arguments.types));
 
     if (type == java.JavaType.object) {
       // Make sure that "new Object" results in "new DartObject"
@@ -1140,7 +1157,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // Belongs to top top level
       return compilerState.getTopLevelClass(member.enclosingLibrary);
     } else {
-      return buildClassType(member.enclosingClass.thisType);
+      // TODO(andrewkrieger,springerm): Don't use getRawClass here if the
+      // enclosing class uses a helper class. Currently, this will fail if
+      // [member] is a static property on a "special" class.
+      return compilerState.getRawClass(member.enclosingClass);
     }
   }
 
@@ -1236,13 +1256,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // 3. All are combined by `+`.
     var strings = <java.Expression>[];
 
-    if (node.expressions.isNotEmpty &&
-        buildClassType(node.expressions[0].staticType) == java.JavaType.string) {
+    if (node.expressions.first.staticType !=
+        compilerState.stringClass.rawType) {
       strings.add(new java.StringLiteral(""));
     }
 
     for (var e in node.expressions) {
-      if (e is dart.BasicLiteral || isPrimitive(e)) {
+      if (e is dart.BasicLiteral ||
+          compilerState.isPrimitiveType(e.staticType)) {
         strings.add(e.accept(this));
       } else {
         strings.add(new java.MethodInvocation(
@@ -1259,11 +1280,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     java.Expression typeExpr = ts.makeTypeExpr(node.type, compilerState);
     java.Expression type = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
     return ts.makeSubtypeCheck(ts.getTypeOf(operand), type);
-  }
-
-  bool isPrimitive(dart.Expression expression) {
-    java.JavaType javaType = buildClassType(expression.staticType);
-    return javaType is java.PrimitiveType;
   }
 
   @override
@@ -1293,26 +1309,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return obj.getField(fieldName).toStringValue();
   }
 
-  /// Converts a Dart class name to a Java class name.
-  java.ClassOrInterfaceType getJavaType(dart.Class dartClass) {
-    return compilerState.getClass(dartClass);
-  }
-
-  /// Build a reference to a Dart class.
-  java.ClassRefExpr buildClassReference(dart.Class dartClass) {
-    return new java.ClassRefExpr(getJavaType(dartClass));
-  }
-
-  java.ClassRefExpr buildThisClassRefExpr() {
-    return buildClassReference(thisDartClass);
-  }
-
   /// Build a reference to "this".
   java.Expression buildDefaultReceiver(bool isStatic) {
+    assert(!compilerState.isSpecialClass(thisDartClass));
     if (isStatic) {
-      return buildThisClassRefExpr();
+      return new java.ClassRefExpr(compilerState.getRawClass(thisDartClass));
     } else {
-      assert(!compilerState.isJavaClass(thisDartClass));
       return new java.IdentifierExpr("this");
     }
   }
@@ -1352,27 +1354,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.Expression visitAsExpression(dart.AsExpression node) {
     // TODO(springerm): Add Dart type checks
-    dart.Class operandClass = null;
-    if (node.operand.staticType is dart.InterfaceType) {
-     operandClass = node.operand.staticType?.classNode;
-    }
-    java.JavaType targetType = buildInterfaceType(node.type);
-
-    // Special case for Number:
-    // num x = 15;
-    // int y = x as int;
-    // The second line cannot be translated to "int y = (int) x;". This would
-    // result in a ClassCastException at runtime
-    if (operandClass == compilerState.numClass 
-      && targetType == java.JavaType.int_) {
-      return new java.MethodInvocation(
-        node.operand.accept(this), "intValue");
-    } else if (operandClass == compilerState.numClass 
-      && targetType == java.JavaType.double_) {
-      return new java.MethodInvocation(
-        node.operand.accept(this), "doubleValue");
-    }
-
+    java.JavaType targetType = compilerState.getLValueType(node.type);
     return new java.CastExpr(node.operand.accept(this), targetType);
   }
 
@@ -1430,17 +1412,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // Handle covariant generics
     if (type is dart.InterfaceType && expectedType is dart.InterfaceType) {
       Iterable<java.JavaType> javaTypeArguments =
-          type.typeArguments.map(buildClassType);
+          type.typeArguments.map(compilerState.getTypeArgument);
       Iterable<java.JavaType> expectedJavaTypeArguments =
-          expectedType.typeArguments.map(buildClassType);
+          expectedType.typeArguments.map(compilerState.getTypeArgument);
 
       if (javaTypeArguments.isNotEmpty &&
           !(java.JavaType.hasGenericSpecialization(javaTypeArguments) &&
               java.JavaType
                   .hasGenericSpecialization(expectedJavaTypeArguments))) {
         // Insert a cast
-        java.ClassOrInterfaceType targetType = buildInterfaceType(expectedType);
-        targetType.typeArguments.clear();
+        java.ClassOrInterfaceType targetType =
+            compilerState.getLValueType(expectedType);
+        targetType = targetType.withTypeArguments(null);
 
         return new java.CastExpr(node.accept(this), targetType);
       }
@@ -1448,7 +1431,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     // Handle automatic upcasts
     if (expectedType is dart.InterfaceType) {
-      java.JavaType targetType = buildInterfaceType(expectedType);
+      java.JavaType targetType = compilerState.getLValueType(expectedType);
+      targetType = targetType is java.ClassOrInterfaceType
+          ? targetType.withTypeArguments(null)
+          : targetType;
 
       // Handle assignment of dynamic
       if (type is dart.DynamicType) {
@@ -1500,7 +1486,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.Expression visitListLiteral(dart.ListLiteral node) {
     var args = <java.Expression>[];
 
-    var typeArguments = <java.JavaType>[buildInterfaceType(node.typeArgument)];
+    var typeArguments = <java.JavaType>[
+      compilerState.getTypeArgument(node.typeArgument)
+    ];
     // Calling convention: Type arguments as first arguments
     // for static invocations, then positional arguments
     // TODO(springerm, andrewkrieger): Use proper types once implemented
@@ -1508,18 +1496,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     args.addAll(node.expressions
         .map((e) => buildCastedExpression(e, node.typeArgument)));
 
-    java.Expression listClass =
-        new java.ClassRefExpr(compilerState.getClass(compilerState.listClass));
+    java.ClassOrInterfaceType dartListClass =
+        new java.ClassOrInterfaceType('dart._runtime.base', 'DartList');
 
     if (typeArguments.isNotEmpty) {
       // This is a call to a generic class, make sure to choose the correct
       // specialization
-      listClass = new java.FieldAccess(
-          listClass, java.JavaType.getGenericImplementation(typeArguments));
+      dartListClass = new java.ClassOrInterfaceType.nested(
+          dartListClass, java.JavaType.getGenericImplementation(typeArguments));
     }
 
-    return new java.MethodInvocation(
-        listClass, Constants.listInitializerMethodName, args);
+    return new java.MethodInvocation(new java.ClassRefExpr(dartListClass),
+        Constants.listInitializerMethodName, args);
   }
 
   @override
@@ -1559,93 +1547,18 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
   }
 
-  /// This is the default visitor method for DartType.
-  @override
-  java.JavaType defaultDartType(dart.DartType node) {
-    throw new CompileErrorException("Unimplemented type: ${node.runtimeType}");
-  }
-
-  @override
-  java.JavaType visitTypeParameterType(dart.TypeParameterType node) {
-    return new java.TypeVariable(node.parameter.name);
-  }
-
-  @override
-  java.ReferenceType visitDynamicType(dart.DynamicType node) {
-    // TODO(stanm): #implementDynamic: Object is not the best representation
-    // of dynamic: implement better.
-    return java.JavaType.object;
-  }
-
-  @override
-  java.VoidType visitVoidType(dart.VoidType node) {
-    return java.JavaType.void_;
-  }
-
-  /// Builds a [JavaType] representing the interface of dart.lang::Object.
-  java.ClassOrInterfaceType buildObjectInterfaceType() {
-    return compilerState.getInterface(compilerState.objectClass);
-  }
-
-  /// Builds a [JavaType] representing the interface of type of `node`.
-  /// 
-  /// This method should be used in most cases when translating a type. Only
-  /// in very few cases, we want to use the actual Java implementation class
-  /// instead of its interface.
-  java.JavaType buildInterfaceType(dart.DartType node) {
-    if (node is dart.InterfaceType) {
-      if (compilerState.isJavaClass(node.classNode)) {
-        // No interface for @JavaClass
-        return buildClassType(node);
-      }
-
-      java.ClassOrInterfaceType type = 
-        compilerState.getInterface(node.classNode);
-      if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
-        // Return generic interface
-        return type.withTypeArguments(node.typeArguments
-            .map(buildInterfaceType).toList());
-      } else {
-        return type;
-      }
-    } else {
-      // TODO(springerm): Handle cases where type is not an InterfaceType
-      return node.accept(this);
-    }
-  }
-
-  /// Builds a [JavaType] representing the implementation class of type of
-  /// `node`.
-  /// 
-  /// Interface types should be used most of the time, but class types are
-  /// required for instantiations (new ...) and static method calls.
-  java.JavaType buildClassType(dart.DartType node) {
-    return node.accept(this);
-  }
-
-  @override
-  java.JavaType visitInterfaceType(dart.InterfaceType node) {
-    java.JavaType type = compilerState.getClass(node.classNode);
-
-    if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
-      if (type is java.ClassOrInterfaceType) {
-        return type.withTypeArguments(node.typeArguments
-            .map(buildInterfaceType).toList());
-      } else {
-        throw new CompileErrorException(
-            "'$type' is a primitive type and cannot be parametrized.");
-      }
-    } else {
-      return type;
-    }
-  }
-
   @override
   java.VariableDecl visitVariableDeclaration(dart.VariableDeclaration node) {
     return new java.VariableDecl(
-        node.name, 
-        buildInterfaceType(node.type),
+        node.name, compilerState.getLValueType(node.type),
         isFinal: node.isFinal,
         initializer: buildCastedExpression(node.initializer, node.type));
   }
+
+  /// We should never call this method; "visiting" a [dart.DartType] is way too
+  /// ambiguous, so we should use the explicit methods in [CompilerState]
+  /// instead.
+  @override
+  defaultDartType(dart.DartType node) => throw new StateError(
+        '$_JavaAstBuilder unexpectedly visited a Dart type ($node).');
 }

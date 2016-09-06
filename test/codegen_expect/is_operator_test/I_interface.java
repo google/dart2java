@@ -1,6 +1,6 @@
 package is_operator_test;
 
-public interface I_interface extends dart.core.Object_interface
+public interface I_interface extends dart._runtime.base.DartObject_interface
 {
 
 }

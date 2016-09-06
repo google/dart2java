@@ -12,7 +12,7 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
   
     public BinaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(v1, v2, strength);
     }
     public BinaryConstraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

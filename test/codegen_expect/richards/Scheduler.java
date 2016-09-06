@@ -11,11 +11,11 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     public richards.TaskControlBlock_interface currentTcb;
     public int currentId;
     public richards.TaskControlBlock_interface list;
-    public dart._runtime.base.DartList<richards.TaskControlBlock_interface> blocks;
+    public dart.core.List_interface<richards.TaskControlBlock_interface> blocks;
   
     public Scheduler(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public Scheduler(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -29,7 +29,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       this.queueCount = 0;
       this.holdCount = 0;
       this.currentId = 0;
-      this.blocks = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic.newInstance(richards.TaskControlBlock_interface.class, richards.Richards.NUMBER_OF_IDS);
+      this.blocks = ((dart.core.List_interface) dart.core.List.factory$(richards.TaskControlBlock_interface.class, richards.Richards.NUMBER_OF_IDS));
       super._constructor();
     }
     public void addIdleTask(int id, int priority, richards.Packet_interface queue, int count)
@@ -145,7 +145,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     {
       return this.list;
     }
-    public dart._runtime.base.DartList<richards.TaskControlBlock_interface> getBlocks()
+    public dart.core.List_interface<richards.TaskControlBlock_interface> getBlocks()
     {
       return this.blocks;
     }
@@ -174,7 +174,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       this.list = value;
       return value;
     }
-    public dart._runtime.base.DartList<richards.TaskControlBlock_interface> setBlocks(dart._runtime.base.DartList<richards.TaskControlBlock_interface> value)
+    public dart.core.List_interface<richards.TaskControlBlock_interface> setBlocks(dart.core.List_interface<richards.TaskControlBlock_interface> value)
     {
       this.blocks = value;
       return value;

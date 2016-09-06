@@ -1,6 +1,6 @@
 package is_operator_test;
 
-public interface Expect_interface extends dart.core.Object_interface
+public interface Expect_interface extends dart._runtime.base.DartObject_interface
 {
   int getX();
   int setX(int value);

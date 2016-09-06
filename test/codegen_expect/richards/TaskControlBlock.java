@@ -30,7 +30,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
   
     public TaskControlBlock(dart._runtime.types.simple.Type type, richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(link, id, priority, queue, task);
     }
     public TaskControlBlock(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

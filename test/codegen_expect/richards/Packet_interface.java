@@ -1,6 +1,6 @@
 package richards;
 
-public interface Packet_interface extends dart.core.Object_interface
+public interface Packet_interface extends dart._runtime.base.DartObject_interface
 {
   richards.Packet_interface addTo(richards.Packet_interface queue);
   java.lang.String toString();
@@ -8,10 +8,10 @@ public interface Packet_interface extends dart.core.Object_interface
   int getId();
   int getKind();
   int getA1();
-  dart._runtime.base.DartList._int getA2();
+  dart.core.List_interface<java.lang.Integer> getA2();
   richards.Packet_interface setLink(richards.Packet_interface value);
   int setId(int value);
   int setKind(int value);
   int setA1(int value);
-  dart._runtime.base.DartList._int setA2(dart._runtime.base.DartList._int value);
+  dart.core.List_interface<java.lang.Integer> setA2(dart.core.List_interface<java.lang.Integer> value);
 }

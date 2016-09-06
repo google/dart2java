@@ -10,7 +10,7 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
   
     public Constraint(dart._runtime.types.simple.Type type, deltablue.Strength_interface strength)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(strength);
     }
     public Constraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

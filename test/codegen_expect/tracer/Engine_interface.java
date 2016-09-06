@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Engine_interface extends dart.core.Object_interface
+public interface Engine_interface extends dart._runtime.base.DartObject_interface
 {
   void setPixel(int x, int y, tracer.Color_interface color);
   void renderScene(tracer.Scene_interface scene, java.lang.Object canvas);

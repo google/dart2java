@@ -14,7 +14,6 @@
 
 import 'ast.dart';
 import 'visitor.dart';
-import 'constants.dart';
 
 /// Emits the full file contents for a Java source file defining a top-level
 /// Java [Class] or [Interface].
@@ -45,19 +44,14 @@ class _JavaAstEmitter extends Visitor<String> {
         cls.constructors.map((m) => indent(m.accept(this))).join("\n");
     var content = indent(
         fieldsAndInitializers + "\n\n" + constructors + "\n\n" + methods);
-    var genericClause = 
-      cls.typeParameters.isNotEmpty
-      ? "<${cls.typeParameters.join(", ")}>"
-      : "";
-    var extendsClause =
-        (cls.supertype == null || cls.supertype == JavaType.object)
-            ? ""
-            : " extends ${cls.supertype.fullyQualifiedName}";
+    var genericClause = cls.typeParameters.isNotEmpty
+        ? "<${cls.typeParameters.join(", ")}>"
+        : "";
+    var extendsClause = (cls.supertype == null ||
+        cls.supertype == JavaType.object) ? "" : " extends ${cls.supertype}";
     var implementsClause = cls.implementedInterfaces.isNotEmpty
-      ? (" implements " +
-         cls.implementedInterfaces.map((s) 
-            => s.fullyQualifiedName).join(", "))
-      : "";
+        ? (" implements " + cls.implementedInterfaces.join(", "))
+        : "";
     var abstractClause = cls.isAbstract ? "abstract " : "";
     return "${cls.access} ${abstractClause}class "
         "${cls.type.name}$genericClause$extendsClause"
@@ -68,15 +62,13 @@ class _JavaAstEmitter extends Visitor<String> {
   String visitInterfaceDecl(InterfaceDecl decl) {
     var methods = decl.methods.map((m) => indent(m.accept(this))).join("\n");
     var extendsClause = decl.superinterfaces.isNotEmpty
-      ? ("extends " +
-         decl.superinterfaces.map((s) => s.fullyQualifiedName).join(", "))
-      : "";
-    var genericClause = 
-      decl.typeParameters.isNotEmpty
-      ? "<${decl.typeParameters.join(", ")}>"
-      : "";
+        ? ("extends " + decl.superinterfaces.join(", "))
+        : "";
+    var genericClause = decl.typeParameters.isNotEmpty
+        ? "<${decl.typeParameters.join(", ")}>"
+        : "";
     return "${decl.access} interface ${decl.type.name}"
-    "$genericClause ${extendsClause}\n{\n${methods}\n}\n";
+        "$genericClause ${extendsClause}\n{\n${methods}\n}\n";
   }
 
   @override
@@ -132,6 +124,9 @@ class _JavaAstEmitter extends Visitor<String> {
     if (meth.isStatic) frontPart.add("static");
     if (meth.isFinal) frontPart.add("final");
     if (meth.isAbstract) frontPart.add("abstract");
+    if (meth.typeParameterNames.isNotEmpty) {
+      frontPart.add("<${meth.typeParameterNames.join(", ")}>");
+    }
     frontPart.add(meth.returnType.accept(this));
     frontPart.add(meth.name);
 
@@ -147,6 +142,9 @@ class _JavaAstEmitter extends Visitor<String> {
   String visitMethodDecl(MethodDecl meth) {
     var frontPart = <String>[];
     if (meth.isFinal) frontPart.add("final");
+    if (meth.typeParameterNames.isNotEmpty) {
+      frontPart.add("<${meth.typeParameterNames.join(", ")}>");
+    }
     frontPart.add(meth.returnType.accept(this));
     frontPart.add(meth.name);
 
@@ -158,7 +156,7 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitConstructor(Constructor constr) {
-    String classType = constr.classType.name;
+    String classType = constr.rawClassType.name;
 
     var parameterList =
         "(" + constr.parameters.map((p) => p.accept(this)).join(", ") + ")";
@@ -184,7 +182,7 @@ class _JavaAstEmitter extends Visitor<String> {
   String visitLabeledStmt(LabeledStmt stmt) {
     return "${stmt.label}: " + stmt.body.accept(this);
   }
-  
+
   @override
   String visitVariableDeclStmt(VariableDeclStmt stmt) {
     return "${stmt.decl.accept(this)};";
@@ -235,7 +233,10 @@ class _JavaAstEmitter extends Visitor<String> {
     var varDecl = stmt.variableDeclaration.accept(this);
     var iterable = stmt.iterable.accept(this);
     var body = stmt.body.accept(this);
-    return "for ($varDecl : $iterable)\n$body";
+    // TODO(andrewkrieger): Remove once we either make dart.core.Iterable
+    // implement java.util.Iterable, or have some other method of interop.
+    return "for ($varDecl : "
+        "(java.lang.Iterable<${stmt.variableDeclaration.type}>)$iterable)\n$body";
   }
 
   @override
@@ -316,7 +317,7 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitCastExpr(CastExpr expr) {
-    return "(${expr.type}) ${expr.expression.accept(this)}";
+    return "((${expr.type}) ${expr.expression.accept(this)})";
   }
 
   @override
@@ -365,7 +366,7 @@ class _JavaAstEmitter extends Visitor<String> {
       return "new ${node.type.accept(this)}[0]";
     } else {
       return "new ${node.type.accept(this)}[] {"
-        "${node.initializers.map((e) => e.accept(this)).join(", ")}}";
+          "${node.initializers.map((e) => e.accept(this)).join(", ")}}";
     }
   }
 

@@ -1,6 +1,6 @@
 package havlak;
 
-public interface BasicBlockEdge_interface extends dart.core.Object_interface
+public interface BasicBlockEdge_interface extends dart._runtime.base.DartObject_interface
 {
   havlak.BasicBlock_interface getFrom();
   havlak.BasicBlock_interface getTo();

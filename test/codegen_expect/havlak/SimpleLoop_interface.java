@@ -1,6 +1,6 @@
 package havlak;
 
-public interface SimpleLoop_interface extends dart.core.Object_interface
+public interface SimpleLoop_interface extends dart._runtime.base.DartObject_interface
 {
   boolean addNode(havlak.BasicBlock_interface bb);
   boolean addChildLoop(havlak.SimpleLoop_interface loop);
@@ -8,8 +8,8 @@ public interface SimpleLoop_interface extends dart.core.Object_interface
   void setHeader_(havlak.BasicBlock_interface bb);
   void setNestingLevel_(int level);
   int checksum();
-  dart._runtime.base.DartList<havlak.BasicBlock_interface> getBasicBlocks();
-  dart._runtime.base.DartList<havlak.SimpleLoop_interface> getChildren();
+  dart.core.List_interface<havlak.BasicBlock_interface> getBasicBlocks();
+  dart.core.List_interface<havlak.SimpleLoop_interface> getChildren();
   int getCounter();
   havlak.SimpleLoop_interface getParent();
   havlak.BasicBlock_interface getHeader();

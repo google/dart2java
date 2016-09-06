@@ -155,7 +155,7 @@ public class StringHelper {
   }
 
   public static class Static {
-    public static String fromCharCode(int charCode) {
+    public static String factory$fromCharCode(int charCode) {
       return new String(new int[] { charCode }, 0, 1);
     }
   }

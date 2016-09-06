@@ -62,7 +62,7 @@ public class __TopLevel
       }
       new deltablue.StayConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.StayConstraint.dart2java$typeInfo)), last, deltablue.__TopLevel.STRONG_DEFAULT);
       deltablue.EditConstraint_interface edit = new deltablue.EditConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EditConstraint.dart2java$typeInfo)), first, deltablue.__TopLevel.PREFERRED);
-      deltablue.Plan_interface plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class, edit));
+      deltablue.Plan_interface plan = deltablue.__TopLevel.planner.extractPlanFromConstraints(((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class, edit)));
       for (int i = 0; (i < 100); i = (i + 1))
       {
         first.setValue(i);
@@ -82,7 +82,7 @@ public class __TopLevel
       deltablue.Variable_interface offset = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "offset", 1000);
       deltablue.Variable_interface src = null;
       deltablue.Variable_interface dst = null;
-      dart._runtime.base.DartList<deltablue.Variable_interface> dests = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable_interface.class);
+      dart.core.List_interface<deltablue.Variable_interface> dests = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Variable_interface.class));
       for (int i = 0; (i < n); i = (i + 1))
       {
         src = new deltablue.Variable(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Variable.dart2java$typeInfo)), "src", i);
@@ -122,7 +122,7 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       deltablue.EditConstraint_interface edit = new deltablue.EditConstraint(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.EditConstraint.dart2java$typeInfo)), v, deltablue.__TopLevel.PREFERRED);
-      deltablue.Plan_interface plan = deltablue.__TopLevel.planner.extractPlanFromConstraints((dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(deltablue.EditConstraint_interface.class, edit));
+      deltablue.Plan_interface plan = deltablue.__TopLevel.planner.extractPlanFromConstraints(((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(deltablue.EditConstraint_interface.class, edit)));
       for (int i = 0; (i < 10); i = (i + 1))
       {
         v.setValue(newValue);

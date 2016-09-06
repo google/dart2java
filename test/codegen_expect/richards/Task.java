@@ -10,7 +10,7 @@ public abstract class Task extends dart._runtime.base.DartObject implements rich
   
     public Task(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(scheduler);
     }
     public Task(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

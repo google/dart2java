@@ -10,11 +10,11 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     public int id;
     public int kind;
     public int a1;
-    public dart._runtime.base.DartList._int a2;
+    public dart.core.List_interface<java.lang.Integer> a2;
   
     public Packet(dart._runtime.types.simple.Type type, richards.Packet_interface link, int id, int kind)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(link, id, kind);
     }
     public Packet(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -28,7 +28,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       this.id = 0;
       this.kind = 0;
       this.a1 = 0;
-      this.a2 = dart._runtime.base.DartList._int.newInstance(int.class, richards.Richards.DATA_SIZE);
+      this.a2 = ((dart.core.List_interface) dart.core.List.factory$(java.lang.Integer.class, richards.Richards.DATA_SIZE));
       this.link = link;
       this.id = id;
       this.kind = kind;
@@ -72,7 +72,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     {
       return this.a1;
     }
-    public dart._runtime.base.DartList._int getA2()
+    public dart.core.List_interface<java.lang.Integer> getA2()
     {
       return this.a2;
     }
@@ -96,7 +96,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       this.a1 = value;
       return value;
     }
-    public dart._runtime.base.DartList._int setA2(dart._runtime.base.DartList._int value)
+    public dart.core.List_interface<java.lang.Integer> setA2(dart.core.List_interface<java.lang.Integer> value)
     {
       this.a2 = value;
       return value;

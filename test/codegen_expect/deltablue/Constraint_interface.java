@@ -1,6 +1,6 @@
 package deltablue;
 
-public interface Constraint_interface extends dart.core.Object_interface
+public interface Constraint_interface extends dart._runtime.base.DartObject_interface
 {
   boolean isSatisfied();
   void markUnsatisfied();

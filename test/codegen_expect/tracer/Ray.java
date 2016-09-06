@@ -11,7 +11,7 @@ public class Ray extends dart._runtime.base.DartObject implements tracer.Ray_int
   
     public Ray(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object direction)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(position, direction);
     }
     public Ray(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)

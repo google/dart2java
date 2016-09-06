@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:_internal' show JavaCall, JavaMethod;
+import 'dart:_internal' show JavaCall;
 
 @patch
 class Object {
@@ -43,13 +43,14 @@ class Stopwatch {
 @patch
 abstract class String {
   @patch
+  @JavaCall("dart._runtime.helpers.StringHelper.Static.factory\$fromCharCode")
   external factory String.fromCharCode(int charCode);
 }
 
 @patch
 class List<E> {
   @patch
-  @JavaMethod("newInstance")
+  @JavaCall("dart._runtime.base.DartList.Generic.newInstance")
   external factory List([int length = 0]);
 
   // This patch is for compatibility to java.util.List (add return type bool).
@@ -60,11 +61,8 @@ class List<E> {
 @patch
 class Map<K, V> {
   @patch
-  @JavaMethod("newInstance")
+  @JavaCall("dart._runtime.base.DartMap.Generic.newInstance")
   external factory Map();
-
-  @patch
-  external factory Map.unmodifiable(Map other);
 }
 
 @patch

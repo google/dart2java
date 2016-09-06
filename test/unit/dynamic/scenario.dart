@@ -27,7 +27,7 @@ int testDynamicDispatchPrimitive() {
 
   dynamic v3 = 10.5;
   dynamic v4 = 20.5;
-  result = result + (v3 + v4) as int;
+  result = (result + (v3 + v4) as double).toInt();
 
   return result;
 }

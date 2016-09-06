@@ -1,6 +1,6 @@
 package havlak;
 
-public interface BenchmarkBase_interface extends dart.core.Object_interface
+public interface BenchmarkBase_interface extends dart._runtime.base.DartObject_interface
 {
   void run();
   void warmup();

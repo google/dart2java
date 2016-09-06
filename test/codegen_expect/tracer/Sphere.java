@@ -10,7 +10,7 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
   
     public Sphere(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(pos, radius, material);
     }
     public Sphere(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -33,10 +33,10 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
       java.lang.Object B = dart._runtime.helpers.DynamicHelper.invoke("dot", dst, ray.getDirection());
       java.lang.Object C = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("dot", dst, dst), (this.getRadius() * this.getRadius()));
       java.lang.Object D = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorStar", B, B), C);
-      if ((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", D, 0))
+      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", D, 0)))
       {
         info.setIsHit(true);
-        info.setDistance(dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", B), dart.math.__TopLevel.sqrt((java.lang.Number) D)));
+        info.setDistance(dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", B), dart.math.__TopLevel.sqrt(((java.lang.Number) D))));
         info.setPosition(dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", ray.getPosition(), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", ray.getDirection(), info.getDistance())));
         info.setNormal(dart._runtime.helpers.DynamicHelper.invoke("normalize", dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", info.getPosition(), this.getPosition())));
         info.setColor(dart._runtime.helpers.DynamicHelper.invoke("getColor_", this.getMaterial(), 0, 0));

@@ -1,6 +1,6 @@
 package tracer;
 
-public interface Camera_interface extends dart.core.Object_interface
+public interface Camera_interface extends dart._runtime.base.DartObject_interface
 {
   tracer.Ray_interface getRay(double vx, double vy);
   java.lang.String toString();

@@ -10,7 +10,7 @@ public class Solid extends tracer.Materials implements tracer.Solid_interface
   
     public Solid(dart._runtime.types.simple.Type type, tracer.Color_interface color, java.lang.Object reflection, java.lang.Object refraction, java.lang.Object transparency, java.lang.Object gloss)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(color, reflection, refraction, transparency, gloss);
     }
     public Solid(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -22,7 +22,7 @@ public class Solid extends tracer.Materials implements tracer.Solid_interface
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.color = color;
-      super._constructor((double) reflection, (double) transparency, (double) gloss, (double) refraction, false);
+      super._constructor(((double) reflection), ((double) transparency), ((double) gloss), ((double) refraction), false);
     }
     public tracer.Color_interface getColor_(java.lang.Number u, java.lang.Number v)
     {

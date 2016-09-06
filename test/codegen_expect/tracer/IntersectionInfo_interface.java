@@ -1,6 +1,6 @@
 package tracer;
 
-public interface IntersectionInfo_interface extends dart.core.Object_interface
+public interface IntersectionInfo_interface extends dart._runtime.base.DartObject_interface
 {
   java.lang.String toString();
   boolean getIsHit();

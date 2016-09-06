@@ -13,7 +13,7 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
   
     public UnionFindNode(dart._runtime.types.simple.Type type)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor();
     }
     public UnionFindNode(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -37,7 +37,7 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
     public havlak.UnionFindNode_interface findSet()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      dart._runtime.base.DartList<havlak.UnionFindNode_interface> nodeList = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.UnionFindNode_interface.class);
+      dart.core.List_interface<havlak.UnionFindNode_interface> nodeList = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.UnionFindNode_interface.class));
       havlak.UnionFindNode_interface node = this;
       while ((!dart._runtime.helpers.ObjectHelper.operatorEqual(node, node.getParent())))
       {

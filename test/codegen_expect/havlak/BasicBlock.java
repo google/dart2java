@@ -7,12 +7,12 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
       havlak.BasicBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     }
     public int name;
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> inEdges;
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> outEdges;
+    public dart.core.List_interface<havlak.BasicBlock_interface> inEdges;
+    public dart.core.List_interface<havlak.BasicBlock_interface> outEdges;
   
     public BasicBlock(dart._runtime.types.simple.Type type, int name)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(name);
     }
     public BasicBlock(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -23,8 +23,8 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
     protected void _constructor(int name)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.inEdges = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class);
-      this.outEdges = (dart._runtime.base.DartList) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class);
+      this.inEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
+      this.outEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
       this.name = name;
       super._constructor();
       havlak.__TopLevel.numBasicBlocks = (havlak.__TopLevel.numBasicBlocks + 1);
@@ -58,20 +58,20 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
     {
       return this.name;
     }
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> getInEdges()
+    public dart.core.List_interface<havlak.BasicBlock_interface> getInEdges()
     {
       return this.inEdges;
     }
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> getOutEdges()
+    public dart.core.List_interface<havlak.BasicBlock_interface> getOutEdges()
     {
       return this.outEdges;
     }
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> setInEdges(dart._runtime.base.DartList<havlak.BasicBlock_interface> value)
+    public dart.core.List_interface<havlak.BasicBlock_interface> setInEdges(dart.core.List_interface<havlak.BasicBlock_interface> value)
     {
       this.inEdges = value;
       return value;
     }
-    public dart._runtime.base.DartList<havlak.BasicBlock_interface> setOutEdges(dart._runtime.base.DartList<havlak.BasicBlock_interface> value)
+    public dart.core.List_interface<havlak.BasicBlock_interface> setOutEdges(dart.core.List_interface<havlak.BasicBlock_interface> value)
     {
       this.outEdges = value;
       return value;

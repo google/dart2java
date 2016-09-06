@@ -1,14 +1,14 @@
 package havlak;
 
-public interface CFG_interface extends dart.core.Object_interface
+public interface CFG_interface extends dart._runtime.base.DartObject_interface
 {
   havlak.BasicBlock_interface createNode(int name);
   boolean addEdge(havlak.BasicBlockEdge_interface edge);
   int getNumNodes();
   havlak.BasicBlock_interface getDst(havlak.BasicBlockEdge_interface edge);
   havlak.BasicBlock_interface getSrc(havlak.BasicBlockEdge_interface edge);
-  dart._runtime.base.DartMap<java.lang.Integer, havlak.BasicBlock_interface> getBasicBlockMap();
-  dart._runtime.base.DartList<havlak.BasicBlockEdge_interface> getEdgeList();
+  dart.core.Map_interface<java.lang.Integer, havlak.BasicBlock_interface> getBasicBlockMap();
+  dart.core.List_interface<havlak.BasicBlockEdge_interface> getEdgeList();
   havlak.BasicBlock_interface getStartNode();
   havlak.BasicBlock_interface setStartNode(havlak.BasicBlock_interface value);
 }

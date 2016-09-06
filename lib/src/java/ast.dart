@@ -54,17 +54,25 @@ abstract class Node {
   const Node();
 }
 
+/// A member of a package: either a [ClassDecl] or an [InterfaceDecl].
+abstract class PackageMember extends Node {
+  /// The [JavaType] that this class declaration corresponds to.
+  ///
+  /// This includes the package and name of the class and the type parameters.
+  /// It is a raw Java class or interface (i.e., `type.typeArguments` is
+  /// [:null:]).
+  ClassOrInterfaceType type;
+
+  PackageMember(this.type);
+}
+
+
 /// A Java class declaration.
 ///
 /// Each AST should be rooted at a Java class (since we produce exactly one
 /// class per source file). Java also allows for nested and local classes, so
 /// this node may appear deeper within the tree as well.
 class ClassDecl extends PackageMember {
-  /// The [JavaType] that this class declaration corresponds to.
-  ///
-  /// This includes the package and name of the class and the type parameters.
-  ClassOrInterfaceType type;
-
   ClassOrInterfaceType supertype;
 
   List<ClassOrInterfaceType> implementedInterfaces;
@@ -85,11 +93,12 @@ class ClassDecl extends PackageMember {
 
   List<String> typeParameters;
 
-  ClassDecl(this.type,
+  ClassDecl(ClassOrInterfaceType type,
       {this.access: Access.Public, this.orderedMembers, this.methods, 
         this.constructors, this.supertype, this.isAbstract: false,
         this.typeParameters: const <String>[],
-        this.implementedInterfaces: const <ClassOrInterfaceType>[]}) {
+        this.implementedInterfaces: const <ClassOrInterfaceType>[]})
+    : super(type) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
     methods ??= <MethodDef>[];
     orderedMembers ??= <OrderedClassMember>[];
@@ -103,18 +112,8 @@ class ClassDecl extends PackageMember {
   String toString() => '${access} class ${type.name}';
 }
 
-/// A member of a package: either a [ClassDecl] or an [InterfaceDecl].
-abstract class PackageMember extends Node { }
-
 /// An interface definition.
 class InterfaceDecl extends PackageMember {
-  /// The Java type of this interface. This is typically identical to the type
-  /// on the corresponding [ClassDecl], but differs for classes with Java
-  /// implementations. E.g., for dart.core::List:
-  /// ClassDecl.type: dart._runtime.base.DartList
-  /// InterfaceDecl.type: dart.core.List
-  ClassOrInterfaceType type;
-
   List<ClassOrInterfaceType> superinterfaces;
 
   Access access;
@@ -123,10 +122,11 @@ class InterfaceDecl extends PackageMember {
 
   List<String> typeParameters;
 
-  InterfaceDecl(this.type,
+  InterfaceDecl(ClassOrInterfaceType type,
     {this.access: Access.Public, this.methods, 
       this.superinterfaces: const <ClassOrInterfaceType>[], 
-      this.typeParameters: const <String>[]});
+      this.typeParameters: const <String>[]})
+    : super(type);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitInterfaceDecl(this);
@@ -139,6 +139,9 @@ class MethodDef extends Node {
 
   /// Represent the list of statements, i.e., the method body.
   Block body;
+
+  /// Names of type parameters, if this is a generic method.
+  List<String> typeParameterNames;
 
   /// Define the parameter names and types.
   List<VariableDecl> parameters;
@@ -155,7 +158,8 @@ class MethodDef extends Node {
   Access access;
 
   MethodDef(this.name, this.body, this.parameters,
-      {this.returnType: JavaType.void_,
+      {this.typeParameterNames: const[],
+      this.returnType: JavaType.void_,
       this.isStatic: false,
       this.isFinal: false,
       this.isAbstract: false,
@@ -168,6 +172,9 @@ class MethodDef extends Node {
 class MethodDecl extends Node {
   String name;
 
+  /// Names of type parameters, if this is a generic method.
+  List<String> typeParameterNames;
+
   List<VariableDecl> parameters;
 
   JavaType returnType;
@@ -175,7 +182,8 @@ class MethodDecl extends Node {
   bool isFinal;
 
   MethodDecl(this.name, this.parameters,
-    {this.returnType: JavaType.void_,
+    {this.typeParameterNames: const[],
+    this.returnType: JavaType.void_,
     this.isFinal: false});
 
   @override
@@ -185,7 +193,7 @@ class MethodDecl extends Node {
 /// A class constructor.
 class Constructor extends Node {
   /// The type of the class.
-  ClassOrInterfaceType classType;
+  ClassOrInterfaceType rawClassType;
 
   /// Represent the list of statements, i.e., the method body.
   Block body;
@@ -193,7 +201,7 @@ class Constructor extends Node {
   /// Define the parameter names and types.
   List<VariableDecl> parameters;
 
-  Constructor(this.classType, this.body, this.parameters);
+  Constructor(this.rawClassType, this.body, this.parameters);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitConstructor(this);

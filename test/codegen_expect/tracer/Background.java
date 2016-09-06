@@ -11,7 +11,7 @@ public class Background extends dart._runtime.base.DartObject implements tracer.
   
     public Background(dart._runtime.types.simple.Type type, tracer.Color_interface color, double ambience)
     {
-      super((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null, type);
+      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       this._constructor(color, ambience);
     }
     public Background(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
