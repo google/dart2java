@@ -395,7 +395,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var result = new List<java.Expression>();
 
     Iterable<java.JavaType> typeArguments = node.types.map((t) {
-      var javaType = compilerState.getLValueType(t);
+      var javaType = compilerState.getTypeArgument(t);
       // Because we're about to use a TypeExpr, javaType can't have type
       // arguments (something like `List<String>.class` is illegal; the
       // `<String>` would be erased anyway, so it's meaningless in Java).

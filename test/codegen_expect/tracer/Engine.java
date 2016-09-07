@@ -170,7 +170,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
           if ((shadowInfo.getIsHit() && (!dart._runtime.helpers.ObjectHelper.operatorEqual(shadowInfo.getShape(), info.getShape()))))
           {
             tracer.Color_interface vA = color.multiplyScalar(0.5);
-            double dB = ((java.lang.Double) dart._runtime.helpers.DoubleHelper.operatorStar(0.5, dart.math.__TopLevel.pow(((java.lang.Number) dart._runtime.helpers.DynamicHelper.invoke("getTransparency", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", shadowInfo.getShape()))), 0.5))).doubleValue();
+            double dB = ((double) dart._runtime.helpers.DoubleHelper.operatorStar(0.5, dart.math.__TopLevel.pow(((java.lang.Number) dart._runtime.helpers.DynamicHelper.invoke("getTransparency", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", shadowInfo.getShape()))), 0.5)));
             color = vA.addScalar(dB);
           }
         }
