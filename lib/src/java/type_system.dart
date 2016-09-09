@@ -317,6 +317,29 @@ Expression makeSubtypeCheck(Expression leftType, Expression rightType) {
   return new MethodInvocation(leftType, 'isSubtypeOf', [rightType]);
 }
 
+/// Create an expression that casts [operand] to the given Dart [type].
+Expression makeTypeCast(
+    Expression operand, dart.DartType type, CompilerState compilerState) {
+  return _makeCast(operand, type, compilerState, "cast");
+}
+
+/// Create an expression that checks that [operand] has the given [type].
+Expression makeTypeCheck(
+    Expression operand, dart.DartType type, CompilerState compilerState) {
+  return _makeCast(operand, type, compilerState, "check");
+}
+
+/// Common code for [makeTypeCast] and [makeTypeCheck].
+Expression _makeCast(Expression operand, dart.DartType type,
+    CompilerState compilerState, String castMethod) {
+  var expr = makeTypeExpr(type, compilerState);
+  var rep = evaluateTypeExpr(getTypeEnv(), expr);
+  var javaType = compilerState.getLValueType(type);
+  // `(javaType) rep.<method>(operand);`
+  return new CastExpr(
+      new MethodInvocation(rep, castMethod, [operand]), javaType);
+}
+
 Expression _makeInterfaceTypeExpr(dart.Class classNode,
     Iterable<dart.DartType> typeParams, CompilerState compilerState) {
   var typeParamExprs =

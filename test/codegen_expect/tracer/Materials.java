@@ -37,11 +37,11 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       t = dart._runtime.helpers.DynamicHelper.invoke("operatorModulus", t, 2.0);
-      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1))))
+      if (((boolean) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo)).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1)))))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", t, 2.0);
       }
-      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1)))
+      if (((boolean) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo)).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1))))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", t, 2.0);
       }

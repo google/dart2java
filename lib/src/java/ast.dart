@@ -212,7 +212,7 @@ class Constructor extends Node {
 }
 
 /// A common subtype for members of a Java class whose declaration order has an
-/// effect on program behavior (fields, initializaer blocks, and static
+/// effect on program behavior (fields, initializer blocks, and static
 /// initializer blocks).
 abstract class OrderedClassMember extends Node {}
 

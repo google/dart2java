@@ -1,5 +1,6 @@
 package dart._runtime.types.simple;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +26,8 @@ public class FunctionType extends Type {
   /**
    * The types of the positional parameters.
    * <p>
-   * Note that any parameters whose (zero-based) index is greater than or equal to {@link
-   * #requiredParamCount} are optional.
+   * Note that any parameters whose (zero-based) index is greater than or equal to
+   * {@link #requiredParamCount} are optional.
    */
   final Type[] positionalParams;
 
@@ -89,5 +90,53 @@ public class FunctionType extends Type {
         return false;
     }
     return true;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    int i;
+    sb.append('(');
+    for (i = 0; i < requiredParamCount; i++) {
+      if (i > 0) {
+        sb.append(", ");
+      }
+      sb.append(positionalParams[i]);
+    }
+    if (positionalParams.length > requiredParamCount) {
+      if (requiredParamCount > 0) {
+        sb.append(", ");
+      }
+      sb.append('[');
+      for (i = requiredParamCount; i < positionalParams.length; i++) {
+        if (i > requiredParamCount) {
+          sb.append(", ");
+        }
+        sb.append(positionalParams[i]);
+      }
+      sb.append(']');
+    }
+    if (!namedParams.isEmpty()) {
+      if (positionalParams.length > 0) {
+        sb.append(", ");
+      }
+      sb.append('{');
+      List<String> names = new ArrayList<>(namedParams.keySet());
+      names.sort(null);
+      boolean first = true;
+      for (String s : names) {
+        if (!first) {
+          sb.append(", ");
+        }
+        sb.append(s);
+        sb.append(": ");
+        sb.append(namedParams.get(s));
+        first = false;
+      }
+      sb.append('}');
+    }
+    sb.append(") -> ");
+    sb.append(returnType);
+    return sb.toString();
   }
 }

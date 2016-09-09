@@ -60,4 +60,51 @@ public abstract class Type {
   protected abstract boolean isSubtypeOfInterfaceType(InterfaceType other);
 
   protected abstract boolean isSubtypeOfFunctionType(FunctionType other);
+
+  /**
+   * Convenience method used to implement strong-mode implicit type checks.
+   *
+   * For example, this is used for:
+   * {@code
+   * Object o = "foo";
+   * String s = o;
+   * }
+   *
+   * @param o object to check type of
+   * @return o if cast succeeds
+   */
+  public final Object check(Object o) {
+    Type other = dart._runtime.helpers.TypeSystemHelper.getTrueType(o);
+    if (other.isSubtypeOf(this)) {
+      return o;
+    } else {
+      // TODO(andrewkrieger,springerm): Proper Dart exceptions.
+      throw new RuntimeException("TypeError: " + other + " is not a subtype of " + this);
+    }
+  }
+
+  /**
+   * Convenience method used to implement explicit casts.
+   *
+   * For example, this is used for:
+   * {@code
+   * Object  o = "foo";
+   * String s = o as String;
+   * }
+   *
+   * @param o object to check type of
+   * @return o if cast succeeds
+   */
+  public final Object cast(Object o) {
+    Type other = dart._runtime.helpers.TypeSystemHelper.getTrueType(o);
+    if (other.isSubtypeOf(this)) {
+      return o;
+    } else {
+      // TODO(andrewkrieger,springerm): Proper Dart exceptions.
+      throw new RuntimeException("CastError: " + other + " is not a subtype of " + this);
+    }
+  }
+
+  @Override
+  public abstract String toString();
 }

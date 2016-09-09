@@ -35,4 +35,9 @@ public final class VoidType extends Type {
   protected boolean isSubtypeOfInterfaceType(InterfaceType other) {
     return false;
   }
+
+  @Override
+  public String toString() {
+    return "void";
+  }
 }

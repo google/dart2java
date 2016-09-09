@@ -48,4 +48,11 @@ class TopType extends Type {
   protected boolean isSubtypeOfFunctionType(FunctionType other) {
     return false;
   }
+
+  @Override
+  public String toString() {
+    return "dynamic";
+  }
+
+
 }

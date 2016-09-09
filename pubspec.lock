@@ -6,7 +6,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.28.0"
+    version: "0.28.1"
   archive:
     description:
       name: archive
@@ -142,7 +142,7 @@ packages:
   kernel:
     description:
       ref: HEAD
-      resolved-ref: "7bba79a4817cf974e2aaa2ed84d4a52dce40a85a"
+      resolved-ref: "38ff70727b502aa3e2faae1e3eeed723828a1c0c"
       url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
     source: git
     version: "0.0.0"
@@ -205,7 +205,7 @@ packages:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.2"
+    version: "0.5.3"
   pub_semver:
     description:
       name: pub_semver
@@ -217,7 +217,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.5+2"
+    version: "0.6.5+3"
   shelf_packages_handler:
     description:
       name: shelf_packages_handler
@@ -313,7 +313,7 @@ packages:
       name: webdriver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   when:
     description:
       name: when

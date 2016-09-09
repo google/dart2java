@@ -26,13 +26,13 @@ public class Chessboard extends tracer.Materials implements tracer.Chessboard_in
       this.colorEven = colorEven;
       this.colorOdd = colorOdd;
       this.density = density;
-      super._constructor(((double) reflection), ((double) transparency), ((double) gloss), 0.5, true);
+      super._constructor(((double) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.DoubleHelper.dart2java$typeInfo)).check(reflection)), ((double) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.DoubleHelper.dart2java$typeInfo)).check(transparency)), ((double) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.DoubleHelper.dart2java$typeInfo)).check(gloss)), 0.5, true);
     }
     public tracer.Color_interface getColor_(java.lang.Number u, java.lang.Number v)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       java.lang.Object t = dart._runtime.helpers.DynamicHelper.invoke("operatorStar", this.wrapUp(dart._runtime.helpers.NumberHelper.operatorStar(u, this.getDensity())), this.wrapUp(dart._runtime.helpers.NumberHelper.operatorStar(v, this.getDensity())));
-      if (((boolean) dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, 0.0)))
+      if (((boolean) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo)).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, 0.0))))
       {
         return this.getColorEven();
       }

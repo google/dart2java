@@ -1353,9 +1353,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.Expression visitAsExpression(dart.AsExpression node) {
-    // TODO(springerm): Add Dart type checks
-    java.JavaType targetType = compilerState.getLValueType(node.type);
-    return new java.CastExpr(node.operand.accept(this), targetType);
+    return ts.makeTypeCast(node.operand.accept(this), node.type, compilerState);
+  }
+
+  @override
+  java.Expression visitTypeCheckExpression(dart.TypeCheckExpression node) {
+    return ts.makeTypeCheck(
+        node.operand.accept(this), node.type, compilerState);
   }
 
   /// Translates a node and inserts a cast depending on the expected type.
