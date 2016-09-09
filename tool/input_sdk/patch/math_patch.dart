@@ -65,3 +65,14 @@ external double min(num a, num b);
 @patch
 @JavaCall("dart._runtime.helpers.MathHelper.max")
 external double max(num a, num b);
+
+@patch
+abstract class Random {
+  @patch
+  @JavaCall("dart._runtime.helpers.MathHelper.newRandom")
+  external factory Random([int seed]);
+
+  @patch
+  @JavaCall("dart._runtime.helpers.MathHelper.newSecureRandom")
+  external factory Random.secure();
+}

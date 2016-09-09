@@ -1,12 +1,12 @@
 #!/usr/bin/env dart
 // Copyright 2016, the Dart project authors.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,8 +72,9 @@ void main(List<String> arguments) {
   var parser = new ArgParser();
   parser.addFlag('force',
       abbr: 'f', help: 'Forcibly run tests marked as "skipped".');
-  parser.addFlag('parallel',
-      help: 'Run tests in parallel (not yet implemented).');
+  parser.addFlag('compile-only',
+      help: 'Compile the codegen tests, but don\'t run them.',
+      defaultsTo: false);
   ArgResults args = parser.parse(arguments);
 
   var filePattern = new RegExp(args.rest.length > 0 ? args.rest[0] : '.');
@@ -86,12 +87,13 @@ void main(List<String> arguments) {
   // Compile each test file to Java and put the result in gen/codegen_output.
   for (String testFile in testFiles) {
     runTest(testFile,
-        skip: !args['force'] &&
-            expectedToFail.contains(testFileToName(testFile)));
+        skip:
+            !args['force'] && expectedToFail.contains(testFileToName(testFile)),
+        compileOnly: args['compile-only']);
   }
 }
 
-void runTest(String testFile, {bool skip: false}) {
+void runTest(String testFile, {bool skip: false, bool compileOnly: false}) {
   String relativePath = path.relative(testFile, from: codegenTestDir);
 
   String name = testFileToName(testFile);
@@ -123,7 +125,9 @@ void runTest(String testFile, {bool skip: false}) {
     }
 
     _javaCompile(files, codegenOutputDir);
-    _run(name);
+    if (!compileOnly) {
+      _run(name);
+    }
   }, skip: skipMsg);
 }
 
