@@ -1,11 +1,11 @@
 // Copyright 2016, the Dart project authors.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,13 +49,11 @@ class ModuleCompiler {
   final CompilerOptions options;
 
   factory ModuleCompiler(CompilerOptions options) {
-    var repository =
-        new Repository(sdk: options.dartSdkPath);
+    var repository = new Repository(sdk: options.dartSdkPath);
     return new ModuleCompiler.withRepository(repository, options);
   }
 
-  ModuleCompiler.withRepository(
-      Repository repository, CompilerOptions options)
+  ModuleCompiler.withRepository(Repository repository, CompilerOptions options)
       : repository = repository,
         loader = new Loader(repository),
         options = options;
@@ -94,8 +92,8 @@ class ModuleCompiler {
           '\nPlease fix all errors before compiling (warnings are okay).');
     }
 
-    var compilerState = new CompilerState(options, repository, 
-      getAllClasses(librariesToCompile));
+    var compilerState = new CompilerState(
+        options, repository, getAllClasses(librariesToCompile));
 
     var codeGenerator =
         new CodeGenerator(new FileWriter(options), compilerState);

@@ -1,11 +1,11 @@
 // Copyright 2016, the Dart project authors.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,6 @@ abstract class PackageMember extends Node {
   PackageMember(this.type);
 }
 
-
 /// A Java class declaration.
 ///
 /// Each AST should be rooted at a Java class (since we produce exactly one
@@ -94,11 +93,15 @@ class ClassDecl extends PackageMember {
   List<String> typeParameters;
 
   ClassDecl(ClassOrInterfaceType type,
-      {this.access: Access.Public, this.orderedMembers, this.methods, 
-        this.constructors, this.supertype, this.isAbstract: false,
-        this.typeParameters: const <String>[],
-        this.implementedInterfaces: const <ClassOrInterfaceType>[]})
-    : super(type) {
+      {this.access: Access.Public,
+      this.orderedMembers,
+      this.methods,
+      this.constructors,
+      this.supertype,
+      this.isAbstract: false,
+      this.typeParameters: const <String>[],
+      this.implementedInterfaces: const <ClassOrInterfaceType>[]})
+      : super(type) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
     methods ??= <MethodDef>[];
     orderedMembers ??= <OrderedClassMember>[];
@@ -123,10 +126,11 @@ class InterfaceDecl extends PackageMember {
   List<String> typeParameters;
 
   InterfaceDecl(ClassOrInterfaceType type,
-    {this.access: Access.Public, this.methods, 
-      this.superinterfaces: const <ClassOrInterfaceType>[], 
+      {this.access: Access.Public,
+      this.methods,
+      this.superinterfaces: const <ClassOrInterfaceType>[],
       this.typeParameters: const <String>[]})
-    : super(type);
+      : super(type);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitInterfaceDecl(this);
@@ -158,7 +162,7 @@ class MethodDef extends Node {
   Access access;
 
   MethodDef(this.name, this.body, this.parameters,
-      {this.typeParameterNames: const[],
+      {this.typeParameterNames: const [],
       this.returnType: JavaType.void_,
       this.isStatic: false,
       this.isFinal: false,
@@ -182,9 +186,9 @@ class MethodDecl extends Node {
   bool isFinal;
 
   MethodDecl(this.name, this.parameters,
-    {this.typeParameterNames: const[],
-    this.returnType: JavaType.void_,
-    this.isFinal: false});
+      {this.typeParameterNames: const [],
+      this.returnType: JavaType.void_,
+      this.isFinal: false});
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodDecl(this);
@@ -461,7 +465,7 @@ class SuperMethodInvocation extends Expression {
   SuperMethodInvocation(this.methodName, [this.arguments = const []]);
 
   @override
-  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitSuperMethodInvocation(this); 
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitSuperMethodInvocation(this);
 }
 
 /// Invokes a constructor in the superclass.
@@ -472,8 +476,8 @@ class SuperConstructorInvocation extends Statement {
   SuperConstructorInvocation(this.arguments);
 
   @override
-  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => 
-  v.visitSuperConstructorInvocation(this);
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) =>
+      v.visitSuperConstructorInvocation(this);
 }
 
 /// An array access expression, i.e. `x[i]`.
@@ -524,7 +528,7 @@ class ConditionalExpr extends Expression {
   ConditionalExpr(this.condition, this.thenExpr, this.elseExpr);
 
   @override
-  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitConditionalExpr(this);  
+  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitConditionalExpr(this);
 }
 
 /// A type cast.
@@ -633,7 +637,7 @@ class ArrayInitializer extends Expression {
   List<Expression> initializers;
 
   ArrayInitializer(this.type, List<Expression> initializers)
-    : initializers = initializers ?? const[];
+      : initializers = initializers ?? const [];
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitArrayInitializer(this);
