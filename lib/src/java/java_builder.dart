@@ -16,9 +16,10 @@ import 'package:kernel/ast.dart' as dart;
 import 'package:kernel/type_algebra.dart' as dart_ts;
 
 import 'ast.dart' as java;
-import 'visitor.dart' as java;
+import 'specialization.dart' as spzn;
 import 'types.dart' as java;
 import 'type_system.dart' as ts;
+import 'visitor.dart' as java;
 import 'constants.dart';
 import '../compiler/compiler_state.dart';
 import '../compiler/runner.dart' show CompileErrorException;
@@ -31,9 +32,11 @@ java.ClassDecl buildWrapperClass(
   java.ClassDecl result =
       new java.ClassDecl(type, supertype: java.JavaType.object);
 
-  var instance = new _JavaAstBuilder(compilerState);
+  var instance =
+      new _JavaAstBuilder(compilerState, thisClassOrInterfaceType: type);
+
   result.orderedMembers = instance.maybeBuildStaticFieldInitializerBlock(
-      type, library.fields)..addAll(library.fields.map(instance.visitField));
+      library.fields)..addAll(library.fields.map(instance.visitField));
   result.methods = library.procedures.map(instance.visitProcedure).toList();
   result.orderedMembers
       .insertAll(0, instance.typeSystemState.makeStaticFields());
@@ -55,10 +58,14 @@ List<java.PackageMember> buildClass(
     return [];
   }
 
-  return [
-    new _JavaAstBuilder(compilerState).buildClass(node),
-    new _JavaAstBuilder(compilerState).buildInterface(node)
-  ];
+  return spzn
+      .buildAllSpecializations(node.typeParameters.length)
+      .map((spec) => [
+            new _JavaAstBuilder(compilerState).buildClass(node, spec),
+            new _JavaAstBuilder(compilerState).buildInterface(node, spec)
+          ])
+      .expand((c) => c)
+      .toList(); // flatten
 }
 
 /// A temporary local variable defined in a method.
@@ -84,7 +91,7 @@ class _JavaConstructor {
 
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
-  _JavaAstBuilder(CompilerState compilerState)
+  _JavaAstBuilder(CompilerState compilerState, {this.thisClassOrInterfaceType})
       : compilerState = compilerState,
         typeSystemState = new ts.ClassState(compilerState);
 
@@ -99,6 +106,27 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// This reference is used to compute the [dart.DartType] of [:this:] inside
   /// of method definitions.
   dart.Class thisDartClass;
+
+  /// A reference to the [java.ClassOrInterfaceType] of the class/interface
+  /// that is being visited.
+  ///
+  /// Also contains a reference to the current specialization.
+  java.ClassOrInterfaceType thisClassOrInterfaceType;
+
+  /// Returns true if this class/interface is fully generic or not generic.
+  ///
+  /// A class/interface specialization is fully generic if all type arguments
+  /// are type parameter types.
+  ///
+  /// For example:
+  /// Map                     true
+  /// Map_interface           true
+  /// Map__int_gen            false
+  /// Map_interface_int_gen   false
+  /// Symbol                  true
+  /// Symbol_interface        true
+  bool get isFullyGenericSpecialization =>
+      thisClassOrInterfaceType.isFullyGeneric;
 
   /// A counter for generating unique identifiers for temporary variables.
   int tempVarCounter = 0;
@@ -143,18 +171,23 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     return null;
   }
 
-  java.ClassDecl buildClass(dart.Class node) {
-    return node.accept(this);
-  }
-
   /// Visits a non-mixin class.
   @override
   java.ClassDecl visitNormalClass(dart.NormalClass node) {
+    throw new Exception("Use buildClass(...) instead of visitor");
+  }
+
+  java.ClassDecl buildClass(dart.Class node, spzn.TypeSpecialization spec) {
+    // TODO(springerm): No support for mixins planned
+    assert(node is dart.NormalClass);
     assert(thisDartClass == null && !compilerState.isSpecialClass(node));
+
     thisDartClass = node;
-    java.ClassOrInterfaceType type = compilerState.getRawClass(node);
+    thisClassOrInterfaceType =
+        compilerState.getRawClass(node).withSpecialization(spec);
+
     List<java.OrderedClassMember> orderedMembers =
-        maybeBuildStaticFieldInitializerBlock(type, node.fields)
+        maybeBuildStaticFieldInitializerBlock(node.fields)
           ..addAll(node.fields.map(this.visitField));
     List<java.MethodDef> implicitGetters =
         node.fields.map(this.buildGetter).toList();
@@ -171,7 +204,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     methods.insertAll(0, constructors.map((c) => c.body));
 
     // Add empty constructor (for implementing Dart constructor semantics).
-    constructorDelegators.add(buildEmptyConstructor(type));
+    constructorDelegators.add(buildEmptyConstructor());
 
     // Merge getters/setters
     if (methods.any((m) => implicitGetters.any((g) => m.name == g.name))) {
@@ -194,9 +227,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       supertype = java.JavaType.dartObject;
     }
 
-    // Add fields and initializers from type system
-    typeSystemState.generateTypeInfo(node);
-    orderedMembers.insertAll(0, typeSystemState.makeStaticFields());
+    // Do not generate type system information for specializations
+    if (isFullyGenericSpecialization) {
+      // Add fields and initializers from type system
+      typeSystemState.generateTypeInfo(node);
+      orderedMembers.insertAll(0, typeSystemState.makeStaticFields());
+    }
 
     var typeParameters = node.typeParameters.map((p) => p.name).toList();
 
@@ -207,7 +243,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     implementedInterfaces
         .addAll(node.implementedTypes.map(compilerState.getInterface));
 
-    return new java.ClassDecl(type,
+    return new java.ClassDecl(thisClassOrInterfaceType,
         access: java.Access.Public,
         orderedMembers: orderedMembers,
         methods: methods,
@@ -233,13 +269,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// system. Consistently using local variables (both for initializers and for
   /// "regular" code) makes interfacing with the type system easier.
   List<java.OrderedClassMember> maybeBuildStaticFieldInitializerBlock(
-      java.ClassOrInterfaceType javaClass, Iterable<dart.Field> fields) {
+      Iterable<dart.Field> fields) {
     var statements = fields
         .where((f) => f.isStatic && f.initializer != null)
         .map/*<java.Statement>*/((f) => new java.ExpressionStmt(
             new java.AssignmentExpr(
                 new java.FieldAccess(
-                    new java.ClassRefExpr(javaClass), f.name.name),
+                    new java.ClassRefExpr(thisClassOrInterfaceType),
+                    f.name.name),
                 buildCastedExpression(f.initializer, f.type))))
         .toList();
     var ret = <java.OrderedClassMember>[];
@@ -265,9 +302,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         isFinal: node.isFinal);
   }
 
-  java.InterfaceDecl buildInterface(dart.NormalClass node) {
+  java.InterfaceDecl buildInterface(
+      dart.NormalClass node, spzn.TypeSpecialization spec) {
     assert(!compilerState.isSpecialClass(node));
-    java.ClassOrInterfaceType type = compilerState.getRawInterface(node);
+    thisClassOrInterfaceType =
+        compilerState.getRawInterface(node).withSpecialization(spec);
+
     List<java.MethodDecl> methods = node.procedures
         .where((m) => m.kind != dart.ProcedureKind.Factory && !m.isStatic)
         .map(this.buildMethodDecl)
@@ -305,7 +345,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     superinterfaces
         .addAll(node.implementedTypes.map(compilerState.getInterface));
 
-    return new java.InterfaceDecl(type,
+    return new java.InterfaceDecl(thisClassOrInterfaceType,
         access: java.Access.Public,
         methods: methods,
         superinterfaces: superinterfaces,
@@ -405,7 +445,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // arguments (something like `List<String>.class` is illegal; the
       // `<String>` would be erased anyway, so it's meaningless in Java).
       return javaType is java.ClassOrInterfaceType
-          ? javaType.withTypeArguments(null)
+          ? javaType.withTypeArguments([])
           : javaType;
     });
     // Calling convention: Type arguments as first arguments
@@ -597,15 +637,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// super constructor. It is necessary to prevent Java from calling the
   /// default super constructor. The first parameter is merely used as a marker
   /// to dispatch to the correct (overloaded) constructor.
-  java.Constructor buildEmptyConstructor(java.ClassOrInterfaceType classType) {
+  java.Constructor buildEmptyConstructor() {
     java.Statement superCall =
         new java.SuperConstructorInvocation(<java.Expression>[
       new java.IdentifierExpr("arg"),
       new java.IdentifierExpr("type")
     ]);
 
-    return new java.Constructor(
-        classType, wrapInJavaBlock(superCall), <java.VariableDecl>[
+    return new java.Constructor(thisClassOrInterfaceType,
+        wrapInJavaBlock(superCall), <java.VariableDecl>[
       new java.VariableDecl("arg", java.JavaType.emptyConstructorMarker),
       new java.VariableDecl("type", ts.typeRepType)
     ]);
@@ -700,7 +740,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     ]);
 
     java.Constructor delegator = new java.Constructor(
-        compilerState.getRawClass(thisDartClass),
+        thisClassOrInterfaceType,
         delegatorBlock,
         [new java.VariableDecl(typeParamName, ts.typeRepType)]
           ..addAll(parameters));
@@ -1322,15 +1362,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.Expression buildDefaultReceiver(bool isStatic) {
     assert(!compilerState.isSpecialClass(thisDartClass));
     if (isStatic) {
+      // Refer to fully generic specialization
       return new java.ClassRefExpr(compilerState.getRawClass(thisDartClass));
     } else {
       return new java.IdentifierExpr("this");
     }
-  }
-
-  /// Returns the [dart.DartType] for the current class.
-  dart.InterfaceType getThisClassDartType() {
-    return thisDartClass.thisType;
   }
 
   @override
@@ -1437,7 +1473,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         // Insert a cast
         java.ClassOrInterfaceType targetType =
             compilerState.getLValueType(expectedType);
-        targetType = targetType.withTypeArguments(null);
+        targetType = targetType.withTypeArguments([]);
 
         return new java.CastExpr(node.accept(this), targetType);
       }
@@ -1447,7 +1483,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     if (expectedType is dart.InterfaceType) {
       java.JavaType targetType = compilerState.getLValueType(expectedType);
       targetType = targetType is java.ClassOrInterfaceType
-          ? targetType.withTypeArguments(null)
+          ? targetType.withTypeArguments([])
           : targetType;
 
       // Handle assignment of dynamic

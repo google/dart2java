@@ -14,9 +14,12 @@
 
 import 'ast.dart';
 import 'constants.dart';
+import 'specialization.dart';
 import 'visitor.dart';
 
 abstract class JavaType extends Node {
+  /// The class/interface name/identifier that should be generated when
+  /// emitting source code or determining the file name.
   final String name;
 
   @override
@@ -45,10 +48,6 @@ abstract class JavaType extends Node {
     '||'
   ];
 
-  /// The boolean type has exactly two values: `true` and `false`.
-  static const PrimitiveType boolean =
-      const PrimitiveType._("boolean", booleanOperators);
-
   /// The default superclass of all Dart classes.
   static ClassOrInterfaceType dartObject = new ClassOrInterfaceType(
       Constants.dartObjectPackage, Constants.dartObjectClassname);
@@ -76,6 +75,11 @@ abstract class JavaType extends Node {
   /// The boxed version of `void`.
   static ClassOrInterfaceType javaVoidClass =
       new ClassOrInterfaceType("java.lang", "Void");
+
+  /// A marker to avoid null pointer exceptions and to generate more useful
+  /// debug information.
+  static ClassOrInterfaceType javaNotImplemented =
+      new ClassOrInterfaceType("error.class.not.", "implemented");
 
   static ClassOrInterfaceType letHelper = new ClassOrInterfaceType(
       Constants.dartHelperPackage, "LetExpressionHelper");
@@ -118,25 +122,29 @@ abstract class JavaType extends Node {
     '|'
   ];
 
+  /// The boolean type has exactly two values: `true` and `false`.
+  static final PrimitiveType boolean =
+      new PrimitiveType._("boolean", javaBooleanClass, booleanOperators);
+
   /// 8-bit signed two's complement integer.
-  static const PrimitiveType byte =
-      const PrimitiveType._("byte", integerOperators);
+  static final PrimitiveType byte =
+      new PrimitiveType._("byte", javaNotImplemented, integerOperators);
 
   /// 16-bit signed two's complement integer.
-  static const PrimitiveType short =
-      const PrimitiveType._("short", integerOperators);
+  static final PrimitiveType short =
+      new PrimitiveType._("short", javaNotImplemented, integerOperators);
 
   /// 32-bit signed two's complement integer.
-  static const PrimitiveType int_ =
-      const PrimitiveType._("int", integerOperators);
+  static final PrimitiveType int_ =
+      new PrimitiveType._("int", javaIntegerClass, integerOperators);
 
   /// 64-bit signed two's complement integer.
-  static const PrimitiveType long =
-      const PrimitiveType._("long", integerOperators);
+  static final PrimitiveType long =
+      new PrimitiveType._("long", javaNotImplemented, integerOperators);
 
   /// 16-bit unsigned integers representing UTF-16 code units.
-  static const PrimitiveType char =
-      const PrimitiveType._("char", integerOperators);
+  static final PrimitiveType char =
+      new PrimitiveType._("char", javaNotImplemented, integerOperators);
 
   static const floatingPointOperators = const [
     '<',
@@ -157,12 +165,12 @@ abstract class JavaType extends Node {
   ];
   // Numeric types / Floating-point types.
   /// 32-bit IEEE 754 floating-point number.
-  static const PrimitiveType float =
-      const PrimitiveType._("float", floatingPointOperators);
+  static final PrimitiveType float =
+      new PrimitiveType._("float", javaNotImplemented, floatingPointOperators);
 
   /// 64-bit IEEE 754 floating-point number.
-  static const PrimitiveType double_ =
-      const PrimitiveType._("double", floatingPointOperators);
+  static final PrimitiveType double_ =
+      new PrimitiveType._("double", javaDoubleClass, floatingPointOperators);
 
   static Map<JavaType, String> genericSpecializations = {
     boolean: "_bool",
@@ -198,7 +206,9 @@ class PrimitiveType extends JavaType {
   /// [Constants.operatorToMethodNames] for examples.
   final List<String> operators;
 
-  const PrimitiveType._(String name, this.operators) : super(name);
+  final ClassOrInterfaceType boxedType;
+
+  PrimitiveType._(String name, this.boxedType, this.operators) : super(name);
 }
 
 // TODO(stanm): consider the null type.
@@ -233,12 +243,19 @@ class ClassOrInterfaceType extends ReferenceType {
   /// A list of type arguments, in case this is a generic type.
   final List<JavaType> typeArguments;
 
+  /// The type specialization of this Java type.
+  ///
+  /// All classes (even non-generic ones) have a specialization to reduce
+  /// special cases. In that case, the specialization is "fully generic" and
+  /// does not append a suffix to the class/interface name.
+  TypeSpecialization specialization = new TypeSpecialization.fullyGeneric(0);
+
   /// A top-level type, i.e. a type that isn't nested in any other class or
   /// interface.
-  ClassOrInterfaceType(this.package, String name,
-      {this.isInterface: false, this.typeArguments: const []})
+  ClassOrInterfaceType(this.package, String name, {this.isInterface: false})
       : isStatic = true,
         enclosingType = null,
+        typeArguments = const [],
         super(name);
 
   /// A nested type (either a static nested type or a non-static inner type).
@@ -249,11 +266,10 @@ class ClassOrInterfaceType extends ReferenceType {
   ///   * An interface cannot contain non-static inner types.
   ///   * A non-static inner type cannot be an interface.
   ClassOrInterfaceType.nested(ClassOrInterfaceType enclosingType, String name,
-      {this.isInterface: false,
-      this.isStatic: true,
-      this.typeArguments: const []})
+      {this.isInterface: false, this.isStatic: true})
       : package = enclosingType.package,
         enclosingType = enclosingType,
+        typeArguments = const [],
         super(name) {
     // Require an enclosing class when using this constructor.
     assert(enclosingType != null);
@@ -274,16 +290,23 @@ class ClassOrInterfaceType extends ReferenceType {
   /// Everything in [string] before the last '.' will be used as the package
   /// name, and the identifier after the last '.' will be the class name.
   factory ClassOrInterfaceType.parseTopLevel(String string,
-      {bool isInterface: false, List<JavaType> typeArguments: const []}) {
+      {bool isInterface: false}) {
     List<String> parts = string.split(".");
     return new ClassOrInterfaceType(
         parts.take(parts.length - 1).join("."), parts.last,
-        isInterface: isInterface, typeArguments: typeArguments);
+        isInterface: isInterface);
   }
 
-  ClassOrInterfaceType._copy(String name, this.package, this.isInterface,
-      this.isStatic, this.enclosingType, this.typeArguments)
-      : super(name);
+  ClassOrInterfaceType._copy(
+      String name,
+      this.package,
+      this.isInterface,
+      this.isStatic,
+      this.enclosingType,
+      this.typeArguments,
+      TypeSpecialization specialization)
+      : this.specialization = specialization,
+        super(name + specialization.classNameSuffix);
 
   /// Returns a copy of this [ClassOrInterfaceType] with [typeArgs] in place of
   /// the current type arguments (if any).
@@ -291,12 +314,32 @@ class ClassOrInterfaceType extends ReferenceType {
   /// Note that there are no arity checks. [typeArgs] may be [:null:] to
   /// retrieve a reference to the raw Java class or interface.
   ClassOrInterfaceType withTypeArguments(List<JavaType> typeArgs) {
+    // TODO(springerm): Generate specialization in here:
+    // * Check if this class/interface should be specialized (threshold/types)
+    // * Create appropriate specialization (if not spec.: fully generic)
+    TypeSpecialization spec =
+        new TypeSpecialization.fullyGeneric(typeArgs.length);
+
     return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
-        enclosingType, typeArgs ?? const []);
+        enclosingType, typeArgs ?? const [], spec);
+  }
+
+  /// Returns a copy of this [ClassOrInterfaceType] with a specialization.
+  ///
+  /// This method may only be used when building a generic class. When
+  /// translating a Dart type for an expression, variable declaration, etc.,
+  /// [withTypeArguments] should be used to obtain a possibly specialized
+  /// class/interface type.
+  ClassOrInterfaceType withSpecialization(TypeSpecialization spec) {
+    return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
+        enclosingType, typeArguments, spec);
   }
 
   /// Returns [true] if this type is generic.
   bool get isGeneric => typeArguments.isNotEmpty;
+
+  /// Returns [true] if this type's specialization is fully generic.
+  bool get isFullyGeneric => specialization.isFullyGeneric;
 
   /// The name of this type, relative to [package].
   ///

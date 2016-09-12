@@ -211,17 +211,17 @@ class CompilerState {
               java.Constants.dartHelperPackage, "ObjectHelper")),
       boolClass: new ClassImpl.forPrimitive(
           java.JavaType.boolean,
-          java.JavaType.javaBooleanClass,
+          java.JavaType.boolean.boxedType,
           new java.ClassOrInterfaceType(
               java.Constants.dartHelperPackage, "BoolHelper")),
       intClass: new ClassImpl.forPrimitive(
           java.JavaType.int_,
-          java.JavaType.javaIntegerClass,
+          java.JavaType.int_.boxedType,
           new java.ClassOrInterfaceType(
               java.Constants.dartHelperPackage, "IntegerHelper")),
       doubleClass: new ClassImpl.forPrimitive(
           java.JavaType.double_,
-          java.JavaType.javaDoubleClass,
+          java.JavaType.double_.boxedType,
           new java.ClassOrInterfaceType(
               java.Constants.dartHelperPackage, "DoubleHelper")),
       stringClass: new ClassImpl.forJavaClass(
