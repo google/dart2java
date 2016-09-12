@@ -3,8 +3,9 @@ package deltablue;
 public class DeltaBlue extends deltablue.BenchmarkBase implements deltablue.DeltaBlue_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.DeltaBlue.class, deltablue.DeltaBlue_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_BenchmarkBase = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BenchmarkBase.dart2java$typeInfo);
     static {
-      deltablue.DeltaBlue.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.BenchmarkBase.dart2java$typeInfo);
+      deltablue.DeltaBlue.dart2java$typeInfo.superclass = dart2java$typeExpr_BenchmarkBase;
     }
   
     public DeltaBlue(dart._runtime.types.simple.Type type)

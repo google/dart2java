@@ -3,8 +3,9 @@ package deltablue;
 public class Strength extends dart._runtime.base.DartObject implements deltablue.Strength_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.Strength.class, deltablue.Strength_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      deltablue.Strength.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      deltablue.Strength.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public int value;
     public java.lang.String name;

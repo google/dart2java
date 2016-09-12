@@ -3,8 +3,9 @@ package richards;
 public class TaskControlBlock extends dart._runtime.base.DartObject implements richards.TaskControlBlock_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.TaskControlBlock.class, richards.TaskControlBlock_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      richards.TaskControlBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      richards.TaskControlBlock.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;

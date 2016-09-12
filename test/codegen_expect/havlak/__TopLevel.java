@@ -2,6 +2,8 @@ package havlak;
 
 public class __TopLevel
 {
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Havlak = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.Havlak.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_BasicBlockEdge = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo);
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       havlak.__TopLevel.numBasicBlocks = 0;
@@ -13,7 +15,7 @@ public class __TopLevel
     public static void main(String[] args)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      new havlak.Havlak(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.Havlak.dart2java$typeInfo))).report();
+      new havlak.Havlak(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Havlak)).report();
     }
     public static int mix(int existing, int value)
     {
@@ -29,16 +31,16 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       int bb0 = start;
-      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, bb0, (bb0 + 1));
-      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, bb0, (bb0 + 2));
-      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, (bb0 + 1), (bb0 + 3));
-      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, (bb0 + 2), (bb0 + 3));
+      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, bb0, (bb0 + 1));
+      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, bb0, (bb0 + 2));
+      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, (bb0 + 1), (bb0 + 3));
+      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, (bb0 + 2), (bb0 + 3));
       return (bb0 + 3);
     }
     public static void buildConnect(havlak.CFG_interface cfg, int start, int end)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlockEdge.dart2java$typeInfo)), cfg, start, end);
+      new havlak.BasicBlockEdge(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, start, end);
     }
     public static int buildStraight(havlak.CFG_interface cfg, int start, int n)
     {

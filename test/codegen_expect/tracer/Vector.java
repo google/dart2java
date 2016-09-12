@@ -3,8 +3,10 @@ package tracer;
 public class Vector extends dart._runtime.base.DartObject implements tracer.Vector_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.Vector.class, tracer.Vector_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Vector = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      tracer.Vector.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      tracer.Vector.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public double x;
     public double y;
@@ -32,12 +34,12 @@ public class Vector extends dart._runtime.base.DartObject implements tracer.Vect
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       double m = this.magnitude();
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (this.getX() / m), (this.getY() / m), (this.getZ() / m));
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), (this.getX() / m), (this.getY() / m), (this.getZ() / m));
     }
     public tracer.Vector_interface negateY()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), this.getX(), (-this.getY()), this.getZ());
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), this.getX(), (-this.getY()), this.getZ());
     }
     public double magnitude()
     {
@@ -47,7 +49,7 @@ public class Vector extends dart._runtime.base.DartObject implements tracer.Vect
     public tracer.Vector_interface cross(tracer.Vector_interface w)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (((-this.getZ()) * w.getY()) + (this.getY() * w.getZ())), ((this.getZ() * w.getX()) - (this.getX() * w.getZ())), (((-this.getY()) * w.getX()) + (this.getX() * w.getY())));
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), (((-this.getZ()) * w.getY()) + (this.getY() * w.getZ())), ((this.getZ() * w.getX()) - (this.getX() * w.getZ())), (((-this.getY()) * w.getX()) + (this.getX() * w.getY())));
     }
     public double dot(tracer.Vector_interface w)
     {
@@ -57,22 +59,22 @@ public class Vector extends dart._runtime.base.DartObject implements tracer.Vect
     public tracer.Vector_interface operatorPlus(tracer.Vector_interface w)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (w.getX() + this.getX()), (w.getY() + this.getY()), (w.getZ() + this.getZ()));
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), (w.getX() + this.getX()), (w.getY() + this.getY()), (w.getZ() + this.getZ()));
     }
     public tracer.Vector_interface operatorMinus(tracer.Vector_interface w)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (this.getX() - w.getX()), (this.getY() - w.getY()), (this.getZ() - w.getZ()));
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), (this.getX() - w.getX()), (this.getY() - w.getY()), (this.getZ() - w.getZ()));
     }
     public tracer.Vector_interface operatorStar(tracer.Vector_interface w)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (this.getX() * w.getX()), (this.getY() * w.getY()), (this.getZ() * w.getZ()));
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), (this.getX() * w.getX()), (this.getY() * w.getY()), (this.getZ() * w.getZ()));
     }
     public tracer.Vector_interface multiplyScalar(double w)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return new tracer.Vector(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo)), (this.getX() * w), (this.getY() * w), (this.getZ() * w));
+      return new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), (this.getX() * w), (this.getY() * w), (this.getZ() * w));
     }
     public java.lang.String toString()
     {

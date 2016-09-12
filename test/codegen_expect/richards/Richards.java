@@ -3,8 +3,11 @@ package richards;
 public class Richards extends richards.BenchmarkBase implements richards.Richards_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.Richards.class, richards.Richards_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Scheduler = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Scheduler.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Packet = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_BenchmarkBase = new dart._runtime.types.simple.InterfaceTypeExpr(richards.BenchmarkBase.dart2java$typeInfo);
     static {
-      richards.Richards.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.BenchmarkBase.dart2java$typeInfo);
+      richards.Richards.dart2java$typeInfo.superclass = dart2java$typeExpr_BenchmarkBase;
     }
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
@@ -54,18 +57,18 @@ public class Richards extends richards.BenchmarkBase implements richards.Richard
     public void run()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.Scheduler_interface scheduler = new richards.Scheduler(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Scheduler.dart2java$typeInfo)));
+      richards.Scheduler_interface scheduler = new richards.Scheduler(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Scheduler));
       scheduler.addIdleTask(richards.Richards.ID_IDLE, 0, null, richards.Richards.COUNT);
-      richards.Packet_interface queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), null, richards.Richards.ID_WORKER, richards.Richards.KIND_WORK);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), queue, richards.Richards.ID_WORKER, richards.Richards.KIND_WORK);
+      richards.Packet_interface queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), null, richards.Richards.ID_WORKER, richards.Richards.KIND_WORK);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), queue, richards.Richards.ID_WORKER, richards.Richards.KIND_WORK);
       scheduler.addWorkerTask(richards.Richards.ID_WORKER, 1000, queue);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), null, richards.Richards.ID_DEVICE_A, richards.Richards.KIND_DEVICE);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), queue, richards.Richards.ID_DEVICE_A, richards.Richards.KIND_DEVICE);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), queue, richards.Richards.ID_DEVICE_A, richards.Richards.KIND_DEVICE);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), null, richards.Richards.ID_DEVICE_A, richards.Richards.KIND_DEVICE);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), queue, richards.Richards.ID_DEVICE_A, richards.Richards.KIND_DEVICE);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), queue, richards.Richards.ID_DEVICE_A, richards.Richards.KIND_DEVICE);
       scheduler.addHandlerTask(richards.Richards.ID_HANDLER_A, 2000, queue);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), null, richards.Richards.ID_DEVICE_B, richards.Richards.KIND_DEVICE);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), queue, richards.Richards.ID_DEVICE_B, richards.Richards.KIND_DEVICE);
-      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.Packet.dart2java$typeInfo)), queue, richards.Richards.ID_DEVICE_B, richards.Richards.KIND_DEVICE);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), null, richards.Richards.ID_DEVICE_B, richards.Richards.KIND_DEVICE);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), queue, richards.Richards.ID_DEVICE_B, richards.Richards.KIND_DEVICE);
+      queue = new richards.Packet(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Packet), queue, richards.Richards.ID_DEVICE_B, richards.Richards.KIND_DEVICE);
       scheduler.addHandlerTask(richards.Richards.ID_HANDLER_B, 3000, queue);
       scheduler.addDeviceTask(richards.Richards.ID_DEVICE_A, 4000, null);
       scheduler.addDeviceTask(richards.Richards.ID_DEVICE_B, 5000, null);

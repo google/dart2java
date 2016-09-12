@@ -3,8 +3,9 @@ package richards;
 public class DeviceTask extends richards.Task implements richards.DeviceTask_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.DeviceTask.class, richards.DeviceTask_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Task = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     static {
-      richards.DeviceTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
+      richards.DeviceTask.dart2java$typeInfo.superclass = dart2java$typeExpr_Task;
     }
     public richards.Packet_interface v1;
   

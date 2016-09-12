@@ -3,8 +3,10 @@ package deltablue;
 public class BenchmarkBase extends dart._runtime.base.DartObject implements deltablue.BenchmarkBase_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.BenchmarkBase.class, deltablue.BenchmarkBase_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Stopwatch = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      deltablue.BenchmarkBase.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      deltablue.BenchmarkBase.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
@@ -59,7 +61,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements delt
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo)));
+      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))
@@ -75,7 +77,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements delt
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo)));
+      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))

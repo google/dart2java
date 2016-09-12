@@ -3,8 +3,9 @@ package deltablue;
 public class Expect extends dart._runtime.base.DartObject implements deltablue.Expect_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.Expect.class, deltablue.Expect_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      deltablue.Expect.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      deltablue.Expect.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
   
     public Expect(dart._runtime.types.simple.Type type)

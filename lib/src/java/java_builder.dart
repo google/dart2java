@@ -35,6 +35,8 @@ java.ClassDecl buildWrapperClass(
   result.orderedMembers = instance.maybeBuildStaticFieldInitializerBlock(
       type, library.fields)..addAll(library.fields.map(instance.visitField));
   result.methods = library.procedures.map(instance.visitProcedure).toList();
+  result.orderedMembers
+      .insertAll(0, instance.typeSystemState.makeStaticFields());
 
   return result;
 }
@@ -82,7 +84,9 @@ class _JavaConstructor {
 
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
-  _JavaAstBuilder(this.compilerState);
+  _JavaAstBuilder(CompilerState compilerState)
+      : compilerState = compilerState,
+        typeSystemState = new ts.ClassState(compilerState);
 
   /// A reference to the [dart.Class] that is being visited.
   ///
@@ -117,6 +121,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   String nextCodeLabel() {
     return "__codeLabel_${labelCounter++}";
   }
+
+  /// State related to the type system.
+  ts.ClassState typeSystemState;
 
   final CompilerState compilerState;
 
@@ -188,10 +195,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     // Add fields and initializers from type system
-    orderedMembers = [
-      ts.makeTypeInfoField(node, compilerState),
-      ts.makeTypeInfoInitializer(node, compilerState)
-    ]..addAll(orderedMembers);
+    typeSystemState.generateTypeInfo(node);
+    orderedMembers.insertAll(0, typeSystemState.makeStaticFields());
 
     var typeParameters = node.typeParameters.map((p) => p.name).toList();
 
@@ -1132,22 +1137,26 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     List<java.Expression> args =
         buildArguments(node.arguments, node.target.function);
 
-    java.ClassOrInterfaceType type = compilerState.getClass(
-        dart_ts.substitutePairwise(node.target.enclosingClass.thisType,
-            node.target.enclosingClass.typeParameters, node.arguments.types));
+    // Substitute the value of the type variables given in `node.arguments` for
+    // the type variables in `node.target.enclosingClass`.
+    dart.DartType dartType = dart_ts.substitutePairwise(
+        node.target.enclosingClass.thisType,
+        node.target.enclosingClass.typeParameters,
+        node.arguments.types);
+    java.ClassOrInterfaceType javaType = compilerState.getClass(dartType);
 
-    if (type == java.JavaType.object) {
+    if (javaType == java.JavaType.object) {
       // Make sure that "new Object" results in "new DartObject"
       // TODO(springerm): Remove hard-coded special case once we
       // figure out interop
-      type = java.JavaType.dartObject;
+      javaType = java.JavaType.dartObject;
     }
 
-    var typeExpr = ts.makeTypeExprForConstructorInvocation(node, compilerState);
+    var typeExpr = ts.makeTypeExpr(dartType, typeSystemState);
     var runtimeType = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
     args.insert(0, runtimeType);
 
-    return new java.NewExpr(new java.ClassRefExpr(type), args);
+    return new java.NewExpr(new java.ClassRefExpr(javaType), args);
   }
 
   /// Returns the enclosing class type of a member or the top level class type
@@ -1277,7 +1286,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.Expression visitIsExpression(dart.IsExpression node) {
     java.Expression operand = node.operand.accept(this);
-    java.Expression typeExpr = ts.makeTypeExpr(node.type, compilerState);
+    java.Expression typeExpr = ts.makeTypeExpr(node.type, typeSystemState);
     java.Expression type = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
     return ts.makeSubtypeCheck(ts.getTypeOf(operand), type);
   }
@@ -1353,13 +1362,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.Expression visitAsExpression(dart.AsExpression node) {
-    return ts.makeTypeCast(node.operand.accept(this), node.type, compilerState);
+    return ts.makeTypeCast(
+        node.operand.accept(this), node.type, typeSystemState);
   }
 
   @override
   java.Expression visitTypeCheckExpression(dart.TypeCheckExpression node) {
     return ts.makeTypeCheck(
-        node.operand.accept(this), node.type, compilerState);
+        node.operand.accept(this), node.type, typeSystemState);
   }
 
   /// Translates a node and inserts a cast depending on the expected type.

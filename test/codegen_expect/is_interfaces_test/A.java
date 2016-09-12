@@ -3,8 +3,9 @@ package is_interfaces_test;
 public class A extends dart._runtime.base.DartObject implements is_interfaces_test.A_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(is_interfaces_test.A.class, is_interfaces_test.A_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      is_interfaces_test.A.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      is_interfaces_test.A.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
   
     public A(dart._runtime.types.simple.Type type)

@@ -3,8 +3,14 @@ package richards;
 public class Scheduler extends dart._runtime.base.DartObject implements richards.Scheduler_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.Scheduler.class, richards.Scheduler_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_IdleTask = new dart._runtime.types.simple.InterfaceTypeExpr(richards.IdleTask.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_WorkerTask = new dart._runtime.types.simple.InterfaceTypeExpr(richards.WorkerTask.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_HandlerTask = new dart._runtime.types.simple.InterfaceTypeExpr(richards.HandlerTask.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_DeviceTask = new dart._runtime.types.simple.InterfaceTypeExpr(richards.DeviceTask.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_TaskControlBlock = new dart._runtime.types.simple.InterfaceTypeExpr(richards.TaskControlBlock.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      richards.Scheduler.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      richards.Scheduler.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public int queueCount;
     public int holdCount;
@@ -35,22 +41,22 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     public void addIdleTask(int id, int priority, richards.Packet_interface queue, int count)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.addRunningTask(id, priority, queue, new richards.IdleTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.IdleTask.dart2java$typeInfo)), this, 1, count));
+      this.addRunningTask(id, priority, queue, new richards.IdleTask(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IdleTask), this, 1, count));
     }
     public void addWorkerTask(int id, int priority, richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.addTask(id, priority, queue, new richards.WorkerTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.WorkerTask.dart2java$typeInfo)), this, richards.Richards.ID_HANDLER_A, 0));
+      this.addTask(id, priority, queue, new richards.WorkerTask(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_WorkerTask), this, richards.Richards.ID_HANDLER_A, 0));
     }
     public void addHandlerTask(int id, int priority, richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.addTask(id, priority, queue, new richards.HandlerTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.HandlerTask.dart2java$typeInfo)), this));
+      this.addTask(id, priority, queue, new richards.HandlerTask(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_HandlerTask), this));
     }
     public void addDeviceTask(int id, int priority, richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.addTask(id, priority, queue, new richards.DeviceTask(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.DeviceTask.dart2java$typeInfo)), this));
+      this.addTask(id, priority, queue, new richards.DeviceTask(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_DeviceTask), this));
     }
     public void addRunningTask(int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
@@ -61,7 +67,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     public void addTask(int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.setCurrentTcb(new richards.TaskControlBlock(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(richards.TaskControlBlock.dart2java$typeInfo)), this.getList(), id, priority, queue, task));
+      this.setCurrentTcb(new richards.TaskControlBlock(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_TaskControlBlock), this.getList(), id, priority, queue, task));
       this.setList(this.getCurrentTcb());
       this.getBlocks().operatorAtPut(id, this.getCurrentTcb());
     }

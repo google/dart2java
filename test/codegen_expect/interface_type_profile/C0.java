@@ -3,9 +3,12 @@ package interface_type_profile;
 public class C0 extends dart._runtime.base.DartObject implements interface_type_profile.C0_interface, interface_type_profile.B0_interface, interface_type_profile.B1_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(interface_type_profile.C0.class, interface_type_profile.C0_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_B0 = new dart._runtime.types.simple.InterfaceTypeExpr(interface_type_profile.B0.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_B1 = new dart._runtime.types.simple.InterfaceTypeExpr(interface_type_profile.B1.dart2java$typeInfo);
     static {
-      interface_type_profile.C0.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
-      interface_type_profile.C0.dart2java$typeInfo.interfaces = new dart._runtime.types.simple.InterfaceTypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(interface_type_profile.B0.dart2java$typeInfo), new dart._runtime.types.simple.InterfaceTypeExpr(interface_type_profile.B1.dart2java$typeInfo)};
+      interface_type_profile.C0.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
+      interface_type_profile.C0.dart2java$typeInfo.interfaces = new dart._runtime.types.simple.InterfaceTypeExpr[] {dart2java$typeExpr_B0, dart2java$typeExpr_B1};
     }
   
     public C0(dart._runtime.types.simple.Type type)

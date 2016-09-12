@@ -3,8 +3,9 @@ package richards;
 public class WorkerTask extends richards.Task implements richards.WorkerTask_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.WorkerTask.class, richards.WorkerTask_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Task = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
     static {
-      richards.WorkerTask.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(richards.Task.dart2java$typeInfo);
+      richards.WorkerTask.dart2java$typeInfo.superclass = dart2java$typeExpr_Task;
     }
     public int v1;
     public int v2;

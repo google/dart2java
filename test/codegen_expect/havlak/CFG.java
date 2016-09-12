@@ -3,8 +3,10 @@ package havlak;
 public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.CFG.class, havlak.CFG_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_BasicBlock = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlock.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      havlak.CFG.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      havlak.CFG.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public dart.core.Map_interface<java.lang.Integer, havlak.BasicBlock_interface> basicBlockMap;
     public dart.core.List_interface<havlak.BasicBlockEdge_interface> edgeList;
@@ -33,7 +35,7 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
       havlak.BasicBlock_interface node = this.getBasicBlockMap().operatorAt(name);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(node, null))
       {
-        node = new havlak.BasicBlock(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlock.dart2java$typeInfo)), name);
+        node = new havlak.BasicBlock(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock), name);
         this.getBasicBlockMap().operatorAtPut(name, node);
       }
       if ((this.getNumNodes() == 1))

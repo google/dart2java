@@ -3,8 +3,12 @@ package tracer;
 public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.Sphere.class, tracer.Sphere_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_IntersectionInfo = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.IntersectionInfo.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_bool = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_num = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.NumberHelper.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_BaseShape = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.BaseShape.dart2java$typeInfo);
     static {
-      tracer.Sphere.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.BaseShape.dart2java$typeInfo);
+      tracer.Sphere.dart2java$typeInfo.superclass = dart2java$typeExpr_BaseShape;
     }
     public double radius;
   
@@ -27,16 +31,16 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     public tracer.IntersectionInfo_interface intersect(tracer.Ray_interface ray)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.IntersectionInfo_interface info = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.IntersectionInfo.dart2java$typeInfo)));
+      tracer.IntersectionInfo_interface info = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
       info.setShape(this);
       java.lang.Object dst = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", ray.getPosition(), this.getPosition());
       java.lang.Object B = dart._runtime.helpers.DynamicHelper.invoke("dot", dst, ray.getDirection());
       java.lang.Object C = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("dot", dst, dst), (this.getRadius() * this.getRadius()));
       java.lang.Object D = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorStar", B, B), C);
-      if (((boolean) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo)).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", D, 0))))
+      if (((boolean) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_bool).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorGreater", D, 0))))
       {
         info.setIsHit(true);
-        info.setDistance(dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", B), dart.math.__TopLevel.sqrt(((java.lang.Number) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.NumberHelper.dart2java$typeInfo)).check(D)))));
+        info.setDistance(dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", B), dart.math.__TopLevel.sqrt(((java.lang.Number) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_num).check(D)))));
         info.setPosition(dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", ray.getPosition(), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", ray.getDirection(), info.getDistance())));
         info.setNormal(dart._runtime.helpers.DynamicHelper.invoke("normalize", dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", info.getPosition(), this.getPosition())));
         info.setColor(dart._runtime.helpers.DynamicHelper.invoke("getColor_", this.getMaterial(), 0, 0));

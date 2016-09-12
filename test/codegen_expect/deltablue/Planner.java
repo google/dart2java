@@ -3,8 +3,10 @@ package deltablue;
 public class Planner extends dart._runtime.base.DartObject implements deltablue.Planner_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.Planner.class, deltablue.Planner_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Plan = new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Plan.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      deltablue.Planner.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      deltablue.Planner.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public int currentMark;
   
@@ -65,7 +67,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int mark = this.newMark();
-      deltablue.Plan_interface plan = new deltablue.Plan(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Plan.dart2java$typeInfo)));
+      deltablue.Plan_interface plan = new deltablue.Plan(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan));
       dart.core.List_interface<deltablue.Constraint_interface> todo = ((dart.core.List_interface) sources);
       while ((todo.getLength() > 0))
       {

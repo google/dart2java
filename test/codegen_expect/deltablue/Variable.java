@@ -3,8 +3,9 @@ package deltablue;
 public class Variable extends dart._runtime.base.DartObject implements deltablue.Variable_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.Variable.class, deltablue.Variable_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      deltablue.Variable.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      deltablue.Variable.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public dart.core.List_interface<deltablue.Constraint_interface> constraints;
     public deltablue.Constraint_interface determinedBy;

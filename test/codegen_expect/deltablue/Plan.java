@@ -3,8 +3,9 @@ package deltablue;
 public class Plan extends dart._runtime.base.DartObject implements deltablue.Plan_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.Plan.class, deltablue.Plan_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      deltablue.Plan.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      deltablue.Plan.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public dart.core.List_interface<deltablue.Constraint_interface> list;
   

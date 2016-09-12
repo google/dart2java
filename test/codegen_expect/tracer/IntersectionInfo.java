@@ -3,8 +3,10 @@ package tracer;
 public class IntersectionInfo extends dart._runtime.base.DartObject implements tracer.IntersectionInfo_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.IntersectionInfo.class, tracer.IntersectionInfo_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Color = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      tracer.IntersectionInfo.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      tracer.IntersectionInfo.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public boolean isHit;
     public int hitCount;
@@ -30,7 +32,7 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
       this.isHit = false;
       this.hitCount = 0;
       super._constructor();
-      this.setColor(new tracer.Color(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo)), 0.0, 0.0, 0.0));
+      this.setColor(new tracer.Color(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.0));
     }
     public java.lang.String toString()
     {

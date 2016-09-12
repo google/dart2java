@@ -3,8 +3,9 @@ package tracer;
 public class Light extends dart._runtime.base.DartObject implements tracer.Light_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.Light.class, tracer.Light_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      tracer.Light.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      tracer.Light.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public java.lang.Object position;
     public java.lang.Object color;

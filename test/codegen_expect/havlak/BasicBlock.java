@@ -3,8 +3,9 @@ package havlak;
 public class BasicBlock extends dart._runtime.base.DartObject implements havlak.BasicBlock_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.BasicBlock.class, havlak.BasicBlock_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      havlak.BasicBlock.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      havlak.BasicBlock.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public int name;
     public dart.core.List_interface<havlak.BasicBlock_interface> inEdges;

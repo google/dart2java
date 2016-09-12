@@ -3,8 +3,10 @@ package tracer;
 public abstract class Materials extends dart._runtime.base.DartObject implements tracer.Materials_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.Materials.class, tracer.Materials_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_bool = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      tracer.Materials.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      tracer.Materials.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public double gloss;
     public double transparency;
@@ -37,11 +39,11 @@ public abstract class Materials extends dart._runtime.base.DartObject implements
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       t = dart._runtime.helpers.DynamicHelper.invoke("operatorModulus", t, 2.0);
-      if (((boolean) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo)).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1)))))
+      if (((boolean) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_bool).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorLess", t, (-1)))))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", t, 2.0);
       }
-      if (((boolean) dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.BoolHelper.dart2java$typeInfo)).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1))))
+      if (((boolean) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_bool).cast(dart._runtime.helpers.DynamicHelper.invoke("operatorGreaterEqual", t, 1))))
       {
         t = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", t, 2.0);
       }

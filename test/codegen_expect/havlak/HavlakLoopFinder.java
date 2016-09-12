@@ -3,8 +3,10 @@ package havlak;
 public class HavlakLoopFinder extends dart._runtime.base.DartObject implements havlak.HavlakLoopFinder_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.HavlakLoopFinder.class, havlak.HavlakLoopFinder_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_UnionFindNode = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      havlak.HavlakLoopFinder.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      havlak.HavlakLoopFinder.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
@@ -91,7 +93,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
         header.operatorAtPut(i, 0);
         types.operatorAtPut(i, havlak.HavlakLoopFinder.BB_NONHEADER);
         last.operatorAtPut(i, 0);
-        nodes.operatorAtPut(i, new havlak.UnionFindNode(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo))));
+        nodes.operatorAtPut(i, new havlak.UnionFindNode(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_UnionFindNode)));
       }
       this.DFS(this.getCfg().getStartNode(), ((dart.core.List_interface) nodes), ((dart.core.List_interface) number), ((dart.core.List_interface) last), 0);
       for (int w = 0; (w < size); w = (w + 1))

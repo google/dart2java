@@ -3,8 +3,9 @@ package interface_type_profile;
 public class A2 extends dart._runtime.base.DartObject implements interface_type_profile.A2_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(interface_type_profile.A2.class, interface_type_profile.A2_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      interface_type_profile.A2.dart2java$typeInfo.superclass = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
+      interface_type_profile.A2.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
   
     public A2(dart._runtime.types.simple.Type type)
