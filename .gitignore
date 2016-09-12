@@ -24,5 +24,8 @@ lib/runtime/dart_sdk.sum
 *.class
 *.jar
 
+# Don't ignore .jar files in third_party
+!/third_party/**/*.jar
+
 # Created by ./tool/dependency_overrides.sh.
 dependency_overrides/
