@@ -44,17 +44,16 @@ class _JavaAstEmitter extends Visitor<String> {
         cls.constructors.map((m) => indent(m.accept(this))).join("\n");
     var content = indent(
         fieldsAndInitializers + "\n\n" + constructors + "\n\n" + methods);
-    var genericClause = cls.typeParameters.isNotEmpty
-        ? "<${cls.typeParameters.join(", ")}>"
-        : "";
     var extendsClause = (cls.supertype == null ||
         cls.supertype == JavaType.object) ? "" : " extends ${cls.supertype}";
     var implementsClause = cls.implementedInterfaces.isNotEmpty
         ? (" implements " + cls.implementedInterfaces.join(", "))
         : "";
+    var className = cls.type.toString(shouldPrintFullyQualifiedName: false);
     var abstractClause = cls.isAbstract ? "abstract " : "";
+
     return "${cls.access} ${abstractClause}class "
-        "${cls.type.name}$genericClause$extendsClause"
+        "$className$extendsClause"
         "$implementsClause\n{\n$content\n}\n";
   }
 
@@ -64,11 +63,10 @@ class _JavaAstEmitter extends Visitor<String> {
     var extendsClause = decl.superinterfaces.isNotEmpty
         ? ("extends " + decl.superinterfaces.join(", "))
         : "";
-    var genericClause = decl.typeParameters.isNotEmpty
-        ? "<${decl.typeParameters.join(", ")}>"
-        : "";
-    return "${decl.access} interface ${decl.type.name}"
-        "$genericClause ${extendsClause}\n{\n${methods}\n}\n";
+    var className = decl.type.toString(shouldPrintFullyQualifiedName: false);
+
+    return "${decl.access} interface $className"
+        " ${extendsClause}\n{\n${methods}\n}\n";
   }
 
   @override

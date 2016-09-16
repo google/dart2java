@@ -101,6 +101,7 @@
 ///
 /// * When compiling a constructor invocation:
 ///
+/// TODO(andrewkrieger): That method no longer exists in here
 ///     * Build a type expression via [makeTypeExprForConstructorInvocation].
 ///     * Evaluate the type expression as described below.
 ///
@@ -120,9 +121,9 @@ import 'dart:collection' show HashMap;
 
 import 'package:kernel/ast.dart' as dart;
 
-import '../compiler/compiler_state.dart';
 import 'ast.dart';
 import 'constants.dart';
+import 'type_factory.dart';
 
 /// The java class used for type representations.
 ///
@@ -154,7 +155,7 @@ ClassOrInterfaceType typeEnvType =
 /// [makeStaticFields] at the beginning of in the list of generated fields in
 /// the generated class!
 class ClassState {
-  final CompilerState _compilerState;
+  final TypeFactory _typeFactory;
   final _typeExprNames = <dart.DartType, String>{};
   final _typeExprNameBuilder = new _TypeNameBuilder();
 
@@ -162,7 +163,7 @@ class ClassState {
   /// given Dart class declaration.
   dart.Class _dartClass;
 
-  ClassState(CompilerState compilerState) : _compilerState = compilerState;
+  ClassState(TypeFactory typeFactory) : _typeFactory = typeFactory;
 
   /// Return the name of the static variable used to cache the type expression
   /// for [type].
@@ -182,7 +183,7 @@ class ClassState {
   Iterable<OrderedClassMember> makeStaticFields() sync* {
     OrderedClassMember typeInfoInit;
     if (_dartClass != null) {
-      yield _makeTypeInfoField(_dartClass, _compilerState);
+      yield _makeTypeInfoField(_dartClass, _typeFactory);
       // Call _makeTypeInfoInitializer before emitting the type expressions,
       // since the initializer will generally use some type expressions.
       typeInfoInit = _makeTypeInfoInitializer(_dartClass, this);
@@ -195,7 +196,7 @@ class ClassState {
           access: Access.Private,
           isStatic: true,
           isFinal: true,
-          initializer: type.accept(new _TypeExprBuilder(_compilerState)));
+          initializer: type.accept(new _TypeExprBuilder(_typeFactory)));
     });
     if (_dartClass != null) {
       yield typeInfoInit;
@@ -224,11 +225,12 @@ class ClassState {
 /// type info field, the type system may not work correctly; we rely on the
 /// initialization order of these fields (as guaranteed by the Java language
 /// specification).
-FieldDecl _makeTypeInfoField(dart.Class node, CompilerState compilerState) {
-  assert(compilerState.getRawClass(node) != null);
+FieldDecl _makeTypeInfoField(dart.Class node, TypeFactory typeFactory) {
+  assert(typeFactory.getRawClass(node) != null);
+
   var constructorArgs = <Expression>[
-    new TypeExpr(compilerState.getRawClass(node)),
-    new TypeExpr(compilerState.getRawInterface(node))
+    new TypeExpr(typeFactory.getRawClass(node)),
+    new TypeExpr(typeFactory.getRawInterface(node))
   ];
   if (node.typeParameters.isNotEmpty) {
     constructorArgs.insert(
@@ -256,7 +258,7 @@ FieldDecl _makeTypeInfoField(dart.Class node, CompilerState compilerState) {
 /// initializers are executed, so failure to order them properly may result in
 /// subtle bugs!
 InitializerBlock _makeTypeInfoInitializer(dart.Class node, ClassState state) {
-  ClassOrInterfaceType rawJavaCls = state._compilerState.getRawClass(node);
+  ClassOrInterfaceType rawJavaCls = state._typeFactory.getRawClass(node);
   assert(rawJavaCls != null);
   var statements = <Statement>[];
   if (node.supertype != null) {
@@ -314,8 +316,7 @@ VariableDeclStmt makeTopLevelEnvVar() {
 ///
 /// The resulting variable is used by the type system to implement [getTypeEnv].
 /// The [member] must be either a [dart.Procedure] or a [dart.Constructor].
-VariableDeclStmt makeMethodEnvVar(
-    dart.Member member, CompilerState compilerState) {
+VariableDeclStmt makeMethodEnvVar(dart.Member member, TypeFactory typeFactory) {
   bool isStatic;
   if (member is dart.Constructor) {
     isStatic = false;
@@ -405,16 +406,16 @@ Expression _makeCast(Expression operand, dart.DartType type, ClassState state,
     String castMethod) {
   var expr = makeTypeExpr(type, state);
   var rep = evaluateTypeExpr(getTypeEnv(), expr);
-  var javaType = state._compilerState.getLValueType(type);
+  var javaType = state._typeFactory.getLValueType(type);
   // `(javaType) rep.<method>(operand);`
   return new CastExpr(
       new MethodInvocation(rep, castMethod, [operand]), javaType);
 }
 
 class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
-  final CompilerState compilerState;
+  final TypeFactory typeFactory;
 
-  _TypeExprBuilder(this.compilerState);
+  _TypeExprBuilder(this.typeFactory);
 
   @override
   Expression defaultDartType(dart.DartType type) {
@@ -426,7 +427,7 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
     var typeParamExprs =
         type.typeArguments.map((t) => t.accept(this) as Expression).toList();
     var constructorArgs = <Expression>[
-      _makeTypeInfoGetter(type.classNode, compilerState)
+      _makeTypeInfoGetter(type.classNode, typeFactory)
     ];
     if (typeParamExprs.isNotEmpty) {
       constructorArgs.add(new ArrayInitializer(_typeExprType, typeParamExprs));
@@ -439,7 +440,7 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
   Expression visitTypeParameterType(dart.TypeParameterType type) {
     var parent = type.parameter.parent;
     if (parent is dart.Class) {
-      var typeInfoGetter = _makeTypeInfoGetter(parent, compilerState);
+      var typeInfoGetter = _makeTypeInfoGetter(parent, typeFactory);
       var typeVarIndex = parent.typeParameters.indexOf(type.parameter);
       if (typeVarIndex < 0) {
         throw new Exception('Type parameter "${type.parameter}" not found in '
@@ -534,12 +535,11 @@ class _TypeNameBuilder extends dart.DartTypeVisitor<String> {
   }
 }
 
-Expression _makeTypeInfoGetter(
-    dart.Class forClass, CompilerState compilerState) {
+Expression _makeTypeInfoGetter(dart.Class forClass, TypeFactory typeFactory) {
   return new FieldAccess(
-      new ClassRefExpr(compilerState.hasJavaImpl(forClass)
-          ? compilerState.getHelperClass(forClass)
-          : compilerState.getRawClass(forClass)),
+      new ClassRefExpr(typeFactory.compilerState.isSpecialClass(forClass)
+          ? typeFactory.compilerState.getHelperClass(forClass)
+          : typeFactory.getRawClass(forClass)),
       _typeInfoFieldName);
 }
 

@@ -47,9 +47,9 @@ class ClassImpl {
   ///
   /// This is the interface that all instances of the Dart type must implement.
   /// This is the Java type that should be used when storing a value of this
-  /// Dart class (see [getLValueType] for details), and it's the type that
-  /// should be added in the Java `implements` clause when another Dart class
-  /// implements this Dart class.
+  /// Dart class (see [TypeFactory.getLValueType] for details), and it's the
+  /// type that should be added in the Java `implements` clause when another
+  /// Dart class implements this Dart class.
   ///
   /// This field may be [:null:] if this Dart class doesn't have a Java
   /// interface implementation (e.g. if the Dart class is a primitive class or a
@@ -266,7 +266,7 @@ class CompilerState {
           new java.ClassOrInterfaceType.parseTopLevel(fullClassName));
     }
 
-    bool checkMethods = hasJavaImpl(cls) || fullClassName != null;
+    bool checkMethods = isSpecialClass(cls) || fullClassName != null;
     if (checkMethods) {
       // Add method mappings
       for (dart.Procedure proc in cls.procedures) {
@@ -382,109 +382,6 @@ class CompilerState {
     }
   }
 
-  /// Get the raw Java class used to implement a Dart class.
-  ///
-  /// For most Dart classes, this is a compiler-generated class. For @JavaClass
-  /// classes, it is the class named in the @JavaClass metadata.
-  ///
-  /// The resulting [java.ClassOrInterfaceType] will not have any type
-  /// arguments. This method should be used to retrieve a static reference to
-  /// the Java class, e.g. in order to access a static field. For typed
-  /// references (for `extend`s clauses or constructor invocations, for
-  /// example), see [getClass].
-  ///
-  /// This method will return [:null:] if there is no Java class implementing
-  /// [class_], which can happen if [class_] is a primitive class (like [int])
-  /// or if it's a `@JavaInterface`. If [isSpecialClass] returns [:false:] for
-  /// [class_], then this method will not return [:null:]
-  java.ClassOrInterfaceType getRawClass(dart.Class class_) {
-    var impl = _classImpls[class_];
-    if (impl != null) {
-      return impl.javaClass;
-    } else {
-      String package = getJavaPackageName(class_.enclosingLibrary);
-      return new java.ClassOrInterfaceType(
-          package, _sanitizeClassName(class_.name));
-    }
-  }
-
-  /// Get the raw Java interface used to implement a Dart class.
-  ///
-  /// For most Dart classes, this is a compiler-generated interface. For
-  /// @JavaInterface classes, it is the interface named in the @JavaClass
-  /// metadata.
-  ///
-  /// The resulting [java.ClassOrInterfaceType] will not have any type
-  /// arguments. This method should be used to retrieve a static reference to
-  /// the Java class, e.g. in order to access a static field. For typed
-  /// references (for `implements` clauses, for example), see [getInterface].
-  ///
-  /// This method will return [:null:] if there is no Java interface
-  /// implementing [class_], which can happen if [class_] is a primitive class
-  /// (like [int]) or if it's a `@JavaClass`. If [isSpecialClass] returns
-  /// [:false:] for [class_], then this method will not return [:null:].
-  java.ClassOrInterfaceType getRawInterface(dart.Class class_) {
-    var impl = _classImpls[class_];
-    if (impl != null) {
-      return impl.javaInterface;
-    } else {
-      String package = getJavaPackageName(class_.enclosingLibrary);
-      return new java.ClassOrInterfaceType(
-          package, "${_sanitizeClassName(class_.name)}_interface",
-          isInterface: true);
-    }
-  }
-
-  /// Get the generic Java class used to implement a [dart.InterfaceType].
-  ///
-  /// This returns the same raw Java class as [getRawClass], except possibly
-  /// with type arguments. The type arguments are recursively converted to Java
-  /// type arguments via [getTypeArgument].
-  java.ClassOrInterfaceType getClass(dart.InterfaceType type) {
-    var result = getRawClass(type.classNode);
-    if (result != null && type.typeArguments.isNotEmpty) {
-      result = result
-          .withTypeArguments(type.typeArguments.map(getTypeArgument).toList());
-    }
-    return result;
-  }
-
-  /// Get the generic Java interface used to implement a [dart.InterfaceType].
-  ///
-  /// This returns the same raw Java interface as [getRawInterface], except
-  /// possibly with type arguments. The type arguments are recursively converted
-  /// to Java type arguments via [getTypeArgument].
-  java.ClassOrInterfaceType getInterface(dart.InterfaceType type) {
-    var result = getRawInterface(type.classNode);
-    if (result != null && type.typeArguments.isNotEmpty) {
-      result = result
-          .withTypeArguments(type.typeArguments.map(getTypeArgument).toList());
-    }
-    return result;
-  }
-
-  /// Convert the given Dart [type] to the Java type used when storing instances
-  /// of [type].
-  ///
-  /// This is the Java type that should be used for variable declarations,
-  /// method return values, and other contexts in which a value of type [type]
-  /// is referenced. For example, for ordinary [dart.InterfaceType]s, this is
-  /// the compiler-generated interface; for `@JavaClass`es, it's the Java class;
-  /// and for primitive types like [int], this is `int` (rather than
-  /// `java.lang.Integer`).
-  java.JavaType getLValueType(dart.DartType type) {
-    return type.accept(new _TypeImplVisitor(this, boxed: false));
-  }
-
-  /// Convert the given Dart [type] to the Java type used in a Java
-  /// type-argument context.
-  ///
-  /// In most cases, this will agree with [getLValueType], except that primitive
-  /// types like [int] will use their boxed versions here.
-  java.ReferenceType getTypeArgument(dart.DartType type) {
-    return type.accept(new _TypeImplVisitor(this, boxed: true));
-  }
-
   /// Gets the Java class used to contain the top-level methods and fields in a
   /// Dart library.
   java.ClassOrInterfaceType getTopLevelClass(dart.Library library) {
@@ -497,11 +394,6 @@ class CompilerState {
   /// `@JavaInterface`, or a primitive class.
   bool isSpecialClass(dart.Class class_) {
     return _classImpls[class_] != null;
-  }
-
-  /// Checks whether a Dart class is a @JavaClass.
-  bool isJavaClass(dart.Class class_) {
-    return _classImpls[class_]?.javaClass != null;
   }
 
   /// Checks whether a method invocation needs to go through a helper function.
@@ -518,8 +410,8 @@ class CompilerState {
         _classImpls[receiverClass].helperClass != null;
   }
 
-  bool hasJavaImpl(dart.Class receiverClass) {
-    return _classImpls.containsKey(receiverClass);
+  ClassImpl getClassImpl(dart.Class receiverClass) {
+    return _classImpls[receiverClass];
   }
 
   String getJavaMethodName(dart.Class receiverClass, String dartMethod) {
@@ -536,97 +428,16 @@ class CompilerState {
   /// function, returns the Java class enclosing the helper function.
   ///
   /// This method should only be called if
-  /// `hasJavaImpl(reveiverClass)` returns true. Always check [hasJavaImpl]
-  /// before calling this method!
+  /// `isSpecialClass(receiverClass)` returns true. Always check
+  /// [isSpecialClass] before calling this method!
   java.ClassOrInterfaceType getHelperClass(dart.Class receiverClass) {
     assert(_classImpls[receiverClass] != null);
     return _classImpls[receiverClass].helperClass;
   }
 }
 
-// TODO(andrewkrieger): Ensure no name collisions. Currently, there shouldn't be
-// any collisions introduced here. for example, even if the user defined two
-// classes `__TopLevel` and `__TopLevel_`, we'd rename them like so:
-//     __TopLevel  -> __TopLevel_
-//     __TopLevel_ -> __TopLevel__
-// so the new names wouldn't collide. But, we haven't yet proven that this
-// covers all possibilities. Before moving dart2java to production, we ought to
-// spend a few minutes making sure we cover all the possible collisions.
-String _sanitizeClassName(String clsName) {
-  if (clsName.startsWith(java.Constants.topLevelClassName) ||
-      clsName.startsWith(java.Constants.reservedWordPattern)) {
-    clsName += "_";
-  }
-  return clsName;
-}
-
 Iterable<String> _splitPackagePrefix(String package) {
   // Omit empty parts, to handle cases like `packagePrefix == "org.example."`
   // or `packagePrefix == ""`.
   return package.split('.').where((String part) => part.isNotEmpty);
-}
-
-/// Visitor used to recursively construct lvalue types or boxed lvalue types.
-///
-/// This visitor is called directly by the methods [CompilerState.getLValueType]
-/// and [CompilerState.getTypeVariable]. The compiler will usually call
-/// [Compilerstate.getLValueType] when creating variables or declaring fields.
-///
-/// This visitor is called indirectly from [CompilerState.getClass] and
-/// [CompilerState.getInterface], since these two methods use
-/// [CompilerState.getTypeVariable] internally. These two methods are called
-/// when generating `extends` or `implements` clauses in the compiler.
-class _TypeImplVisitor extends dart.DartTypeVisitor<java.JavaType> {
-  final CompilerState compilerState;
-  final bool boxed;
-
-  _TypeImplVisitor(this.compilerState, {this.boxed: false});
-
-  /// Return a [_TypeImplVisitor] with the same state as [:this:], except with
-  /// `boxed = true`.
-  ///
-  /// Used when recursing into type arguments to avoid creating new visitors
-  /// when one can be reused.
-  _TypeImplVisitor boxedVisitor() =>
-      boxed ? this : new _TypeImplVisitor(compilerState, boxed: true);
-
-  @override
-  java.JavaType defaultDartType(dart.DartType node) =>
-      throw new CompileErrorException('Cannot represent type $node');
-
-  @override
-  java.JavaType visitDynamicType(dart.DynamicType node) => java.JavaType.object;
-
-  @override
-  java.JavaType visitVoidType(dart.VoidType node) =>
-      boxed ? java.JavaType.javaVoidClass : java.JavaType.void_;
-
-  @override
-  java.JavaType visitInterfaceType(dart.InterfaceType node) {
-    var impl = compilerState._classImpls[node.classNode];
-    var lValueType = boxed ? impl?.javaBoxedLValueType : impl?.javaLValueType;
-    if (lValueType != null) {
-      return lValueType;
-    }
-    var rawType = compilerState.getRawInterface(node.classNode) ??
-        compilerState.getRawClass(node.classNode);
-    if (rawType == null) {
-      throw new StateError('Class ${node.classNode} has no implementation.\n'
-          '_classImpls[] = ${compilerState._classImpls[node.classNode]}');
-    }
-
-    if (node.typeArguments != null && node.typeArguments.isNotEmpty) {
-      return rawType.withTypeArguments(node.typeArguments
-          .map((arg) => arg.accept(this.boxedVisitor()) as java.JavaType)
-          .toList());
-    } else {
-      return rawType;
-    }
-  }
-
-  // TODO(andrewkrieger,springerm): Will it always work to translate a Dart type
-  // parameter type to a Java type parameter type with the same name?
-  @override
-  java.JavaType visitTypeParameterType(dart.TypeParameterType node) =>
-      new java.TypeVariable(node.parameter.name);
 }

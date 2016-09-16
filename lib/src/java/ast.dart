@@ -90,8 +90,6 @@ class ClassDecl extends PackageMember {
 
   List<Constructor> constructors;
 
-  List<String> typeParameters;
-
   ClassDecl(ClassOrInterfaceType type,
       {this.access: Access.Public,
       this.orderedMembers,
@@ -99,7 +97,6 @@ class ClassDecl extends PackageMember {
       this.constructors,
       this.supertype,
       this.isAbstract: false,
-      this.typeParameters: const <String>[],
       this.implementedInterfaces: const <ClassOrInterfaceType>[]})
       : super(type) {
     // Initialize ClassDecl with (non-const!) empty lists for fields and methods
@@ -123,13 +120,10 @@ class InterfaceDecl extends PackageMember {
 
   List<MethodDecl> methods;
 
-  List<String> typeParameters;
-
   InterfaceDecl(ClassOrInterfaceType type,
       {this.access: Access.Public,
       this.methods,
-      this.superinterfaces: const <ClassOrInterfaceType>[],
-      this.typeParameters: const <String>[]})
+      this.superinterfaces: const <ClassOrInterfaceType>[]})
       : super(type);
 
   @override

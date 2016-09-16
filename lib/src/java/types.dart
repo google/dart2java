@@ -27,6 +27,10 @@ abstract class JavaType extends Node {
     return this.name;
   }
 
+  JavaType toBoxedType() {
+    return this;
+  }
+
   const JavaType(this.name);
 
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitJavaType(this);
@@ -208,6 +212,11 @@ class PrimitiveType extends JavaType {
 
   final ClassOrInterfaceType boxedType;
 
+  @override
+  ClassOrInterfaceType toBoxedType() {
+    return boxedType;
+  }
+
   PrimitiveType._(String name, this.boxedType, this.operators) : super(name);
 }
 
@@ -223,6 +232,8 @@ class ClassOrInterfaceType extends ReferenceType {
   /// access the qualified name, see [fullyQualifiedName] or
   /// [packageRelativeName].
   final String package;
+
+  final String unspecializedName;
 
   /// Indicates whether this type is an interface type. If not, then it is
   /// a class type.
@@ -256,6 +267,7 @@ class ClassOrInterfaceType extends ReferenceType {
       : isStatic = true,
         enclosingType = null,
         typeArguments = const [],
+        unspecializedName = name,
         super(name);
 
   /// A nested type (either a static nested type or a non-static inner type).
@@ -270,6 +282,7 @@ class ClassOrInterfaceType extends ReferenceType {
       : package = enclosingType.package,
         enclosingType = enclosingType,
         typeArguments = const [],
+        unspecializedName = name,
         super(name) {
     // Require an enclosing class when using this constructor.
     assert(enclosingType != null);
@@ -299,6 +312,7 @@ class ClassOrInterfaceType extends ReferenceType {
 
   ClassOrInterfaceType._copy(
       String name,
+      String unspecializedName,
       this.package,
       this.isInterface,
       this.isStatic,
@@ -306,22 +320,25 @@ class ClassOrInterfaceType extends ReferenceType {
       this.typeArguments,
       TypeSpecialization specialization)
       : this.specialization = specialization,
-        super(name + specialization.classNameSuffix);
+        this.unspecializedName = unspecializedName,
+        super(unspecializedName + specialization.classNameSuffix);
 
   /// Returns a copy of this [ClassOrInterfaceType] with [typeArgs] in place of
   /// the current type arguments (if any).
   ///
   /// Note that there are no arity checks. [typeArgs] may be [:null:] to
   /// retrieve a reference to the raw Java class or interface.
-  ClassOrInterfaceType withTypeArguments(List<JavaType> typeArgs) {
-    // TODO(springerm): Generate specialization in here:
-    // * Check if this class/interface should be specialized (threshold/types)
-    // * Create appropriate specialization (if not spec.: fully generic)
-    TypeSpecialization spec =
-        new TypeSpecialization.fullyGeneric(typeArgs.length);
-
-    return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
-        enclosingType, typeArgs ?? const [], spec);
+  ClassOrInterfaceType withTypeArguments(Iterable<JavaType> typeArgs) {
+    var spec = new TypeSpecialization.fromTypes(typeArgs);
+    return new ClassOrInterfaceType._copy(
+        name,
+        unspecializedName,
+        package,
+        isInterface,
+        isStatic,
+        enclosingType,
+        typeArgs.toList() ?? const [],
+        spec);
   }
 
   /// Returns a copy of this [ClassOrInterfaceType] with a specialization.
@@ -331,8 +348,8 @@ class ClassOrInterfaceType extends ReferenceType {
   /// [withTypeArguments] should be used to obtain a possibly specialized
   /// class/interface type.
   ClassOrInterfaceType withSpecialization(TypeSpecialization spec) {
-    return new ClassOrInterfaceType._copy(name, package, isInterface, isStatic,
-        enclosingType, typeArguments, spec);
+    return new ClassOrInterfaceType._copy(name, unspecializedName, package,
+        isInterface, isStatic, enclosingType, typeArguments, spec);
   }
 
   /// Returns [true] if this type is generic.
@@ -378,34 +395,25 @@ class ClassOrInterfaceType extends ReferenceType {
   }
 
   @override
-  String toString() {
-    String identifier = fullyQualifiedName;
+  String toString({shouldPrintFullyQualifiedName: true}) {
+    String identifier =
+        shouldPrintFullyQualifiedName ? fullyQualifiedName : name;
 
     if (isGeneric) {
-      if (JavaType.hasGenericSpecialization(typeArguments)) {
-        return identifier +
-            "." +
-            JavaType.getGenericImplementation(typeArguments);
+      // Determine generic type arguments (the ones that are not specialized)
+      var genericTypeArgs = <JavaType>[];
+      for (int index = 0; index < typeArguments.length; index++) {
+        if (!specialization.isSpecialized(index)) {
+          genericTypeArgs.add(typeArguments[index].toBoxedType());
+        }
       }
 
-      String typeArgs =
-          typeArguments.map((a) => unboxedToBoxedType(a).toString()).join(", ");
-      return "$identifier<$typeArgs>";
+      return genericTypeArgs.isNotEmpty
+          ? "$identifier<${genericTypeArgs.join(", ")}>"
+          : identifier;
     } else {
       return identifier;
     }
-  }
-}
-
-JavaType unboxedToBoxedType(JavaType unboxed) {
-  if (unboxed == JavaType.int_) {
-    return JavaType.javaIntegerClass;
-  } else if (unboxed == JavaType.double_) {
-    return JavaType.javaDoubleClass;
-  } else if (unboxed == JavaType.boolean) {
-    return JavaType.javaBooleanClass;
-  } else {
-    return unboxed;
   }
 }
 

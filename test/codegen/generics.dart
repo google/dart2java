@@ -1,18 +1,20 @@
-class Foo<T> {
-  int test1() {
-    return 1;
+class Foo1<T> {
+  T variable;
+
+  T foo(T t) {
+    return t;
   }
 }
 
-class Bar<A, B> {
-  int test2() {
-    return 2;
+class Bar2<A, B> {
+  A bar(A a, B b) {
+    return a;
   }
 }
 
 class Qux3<C, D, E> {
-  int test() {
-    return 3;
+  C qux(C c, D d, E e) {
+    return c;
   }
 }
 
