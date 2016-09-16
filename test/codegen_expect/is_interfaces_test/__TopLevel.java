@@ -11,12 +11,12 @@ public class __TopLevel
     public static int inscrutable(int x)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      return ((x == 0)) ? (0) : ((x | is_interfaces_test.__TopLevel.inscrutable((x & (x - 1)))));
+      return (((x == 0)) ? (0) : ((x | is_interfaces_test.__TopLevel.inscrutable((x & (x - 1))))));
     }
     public static void main(String[] args)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      dart.core.List_interface<is_interfaces_test.A_interface> things = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(is_interfaces_test.A_interface.class, new is_interfaces_test.A(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A)), new is_interfaces_test.B(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_B)), new is_interfaces_test.C(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_C))));
+      dart.core.List_interface<is_interfaces_test.A_interface> things = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(is_interfaces_test.A_interface.class, ((is_interfaces_test.A_interface) is_interfaces_test.A._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A))), ((is_interfaces_test.B_interface) is_interfaces_test.B._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_B))), ((is_interfaces_test.C_interface) is_interfaces_test.C._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_C)))));
       is_interfaces_test.A_interface a = things.operatorAt(is_interfaces_test.__TopLevel.inscrutable(0));
       is_interfaces_test.Expect.isTrue(dart._runtime.helpers.TypeSystemHelper.getTrueType(a).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A)));
       is_interfaces_test.Expect.isFalse(dart._runtime.helpers.TypeSystemHelper.getTrueType(a).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_B)));

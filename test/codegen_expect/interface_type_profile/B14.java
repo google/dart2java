@@ -12,19 +12,21 @@ public class B14 extends dart._runtime.base.DartObject implements interface_type
       interface_type_profile.B14.dart2java$typeInfo.interfaces = new dart._runtime.types.simple.InterfaceTypeExpr[] {dart2java$typeExpr_A3, dart2java$typeExpr_A2, dart2java$typeExpr_A1};
     }
   
-    public B14(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public B14(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
+    public void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
+    }
+    public static interface_type_profile.B14_interface _new(dart._runtime.types.simple.Type type)
+    {
+      interface_type_profile.B14_interface result;
+      result = new interface_type_profile.B14(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

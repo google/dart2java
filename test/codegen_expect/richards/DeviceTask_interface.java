@@ -6,4 +6,5 @@ public interface DeviceTask_interface extends richards.Task_interface
   java.lang.String toString();
   richards.Packet_interface getV1();
   richards.Packet_interface setV1(richards.Packet_interface value);
+  void _constructor(richards.Scheduler_interface scheduler);
 }

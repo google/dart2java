@@ -7,4 +7,6 @@ public interface DartObject_interface {
 
   @Override
   public String toString();
+
+  public void _constructor();
 }

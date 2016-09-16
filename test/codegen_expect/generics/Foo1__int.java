@@ -4,25 +4,20 @@ public class Foo1__int extends dart._runtime.base.DartObject implements generics
 {
     public int variable;
   
-    public Foo1__int(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Foo1__int(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor();
-    }
     public int foo__int(int t)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return t;
+    }
+    public void _constructor__int()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor();
     }
     public int getVariable__int()
     {
@@ -44,5 +39,9 @@ public class Foo1__int extends dart._runtime.base.DartObject implements generics
     public java.lang.Integer foo(java.lang.Integer t)
     {
       return this.foo__int(((int) t));
+    }
+    public void _constructor()
+    {
+      this._constructor__int();
     }
 }

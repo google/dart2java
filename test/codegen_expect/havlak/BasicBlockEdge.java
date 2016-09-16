@@ -10,17 +10,12 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
     public havlak.BasicBlock_interface from;
     public havlak.BasicBlock_interface to;
   
-    public BasicBlockEdge(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, int fromName, int toName)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(cfg, fromName, toName);
-    }
     public BasicBlockEdge(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(havlak.CFG_interface cfg, int fromName, int toName)
+    public void _constructor(havlak.CFG_interface cfg, int fromName, int toName)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
@@ -47,5 +42,12 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
     {
       this.to = value;
       return value;
+    }
+    public static havlak.BasicBlockEdge_interface _new(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, int fromName, int toName)
+    {
+      havlak.BasicBlockEdge_interface result;
+      result = new havlak.BasicBlockEdge(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(cfg, fromName, toName);
+      return result;
     }
 }

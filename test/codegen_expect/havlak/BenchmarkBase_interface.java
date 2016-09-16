@@ -12,4 +12,5 @@ public interface BenchmarkBase_interface extends dart._runtime.base.DartObject_i
   double measure();
   void report();
   java.lang.String getName();
+  void _constructor(java.lang.String name);
 }

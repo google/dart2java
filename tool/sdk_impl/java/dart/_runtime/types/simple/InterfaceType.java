@@ -56,14 +56,6 @@ public class InterfaceType extends Type {
   final Type[] actualTypeParams;
 
   /**
-   * The type environment for instances of this type.
-   * <p>
-   * This {@link TypeEnvironment} can resolve the type variables for this class, as well as those of
-   * its superclass and mixin (if any).
-   */
-  public TypeEnvironment env;
-
-  /**
    * The Java class to use for references to this Type.
    * <p>
    * This is generally a Java interface type, but for {@code @JavaClass}es, it may be a class type.

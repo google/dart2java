@@ -10,24 +10,11 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
     public deltablue.Variable_interface myOutput;
     public boolean satisfied;
   
-    public UnaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(myOutput, strength);
-    }
     public UnaryConstraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.satisfied = false;
-      this.myOutput = myOutput;
-      super._constructor(strength);
-      this.addConstraint();
-    }
     public void addToGraph()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -81,6 +68,14 @@ public abstract class UnaryConstraint extends deltablue.Constraint implements de
         this.getMyOutput().removeConstraint(this);
       }
       this.setSatisfied(false);
+    }
+    public void _constructor(deltablue.Variable_interface myOutput, deltablue.Strength_interface strength)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.satisfied = false;
+      this.myOutput = myOutput;
+      super._constructor(strength);
+      this.addConstraint();
     }
     public deltablue.Variable_interface getMyOutput()
     {

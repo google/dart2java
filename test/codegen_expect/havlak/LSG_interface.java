@@ -10,4 +10,5 @@ public interface LSG_interface extends dart._runtime.base.DartObject_interface
   dart.core.List_interface<havlak.SimpleLoop_interface> getLoops();
   havlak.SimpleLoop_interface getRoot();
   int setLoopCounter(int value);
+  void _constructor();
 }

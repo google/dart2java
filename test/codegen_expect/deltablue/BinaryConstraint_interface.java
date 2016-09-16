@@ -18,4 +18,5 @@ public interface BinaryConstraint_interface extends deltablue.Constraint_interfa
   deltablue.Variable_interface setV1(deltablue.Variable_interface value);
   deltablue.Variable_interface setV2(deltablue.Variable_interface value);
   int setDirection(int value);
+  void _constructor(deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength);
 }

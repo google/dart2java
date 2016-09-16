@@ -62,6 +62,7 @@ class Constants {
   static const String listInitializerMethodName = "_fromArguments";
   static const String topLevelClassName = "__TopLevel";
   static const String constructorMethodPrefix = "_constructor";
+  static const String javaFactoryPrefix = "_new";
   static const String primitiveSpecializationSuffix = "_primitive";
   static const String dynamicHelperInvoke = "invoke";
 

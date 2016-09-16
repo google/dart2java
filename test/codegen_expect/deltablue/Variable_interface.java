@@ -17,4 +17,5 @@ public interface Variable_interface extends dart._runtime.base.DartObject_interf
   deltablue.Strength_interface setWalkStrength(deltablue.Strength_interface value);
   boolean setStay(boolean value);
   int setValue(int value);
+  void _constructor(java.lang.String name, int value);
 }

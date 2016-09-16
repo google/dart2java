@@ -25,4 +25,5 @@ public interface Scheduler_interface extends dart._runtime.base.DartObject_inter
   int setCurrentId(int value);
   richards.TaskControlBlock_interface setList(richards.TaskControlBlock_interface value);
   dart.core.List_interface<richards.TaskControlBlock_interface> setBlocks(dart.core.List_interface<richards.TaskControlBlock_interface> value);
+  void _constructor();
 }

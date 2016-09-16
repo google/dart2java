@@ -8,19 +8,21 @@ public class C extends is_operator_test.A implements is_operator_test.C_interfac
       is_operator_test.C.dart2java$typeInfo.superclass = dart2java$typeExpr_A;
     }
   
-    public C(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public C(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
+    public void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
+    }
+    public static is_operator_test.C_interface _new(dart._runtime.types.simple.Type type)
+    {
+      is_operator_test.C_interface result;
+      result = new is_operator_test.C(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

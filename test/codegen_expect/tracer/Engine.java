@@ -26,37 +26,11 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     public int rayDepth;
     public java.lang.Object canvas;
   
-    public Engine(dart._runtime.types.simple.Type type, int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(canvasWidth, canvasHeight, pixelWidth, pixelHeight, renderDiffuse, renderShadows, renderHighlights, renderReflections, rayDepth);
-    }
     public Engine(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.canvasWidth = 0;
-      this.canvasHeight = 0;
-      this.pixelWidth = 0;
-      this.pixelHeight = 0;
-      this.rayDepth = 0;
-      this.canvasWidth = canvasWidth;
-      this.canvasHeight = canvasHeight;
-      this.pixelWidth = pixelWidth;
-      this.pixelHeight = pixelHeight;
-      this.renderDiffuse = renderDiffuse;
-      this.renderShadows = renderShadows;
-      this.renderHighlights = renderHighlights;
-      this.renderReflections = renderReflections;
-      this.rayDepth = rayDepth;
-      super._constructor();
-      this.setCanvasHeight(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide(this.getCanvasHeight(), this.getPixelHeight()));
-      this.setCanvasWidth(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide(this.getCanvasWidth(), this.getPixelWidth()));
-    }
     public void setPixel(int x, int y, tracer.Color_interface color)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -78,7 +52,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       tracer.__TopLevel.checkNumber = 0;
-      this.setCanvas((dart._runtime.helpers.ObjectHelper.operatorEqual(canvas, null)) ? (null) : (dart._runtime.helpers.DynamicHelper.invoke("getContext", canvas, "2d")));
+      this.setCanvas(((dart._runtime.helpers.ObjectHelper.operatorEqual(canvas, null)) ? (null) : (dart._runtime.helpers.DynamicHelper.invoke("getContext", canvas, "2d"))));
       int canvasHeight = this.getCanvasHeight();
       int canvasWidth = this.getCanvasWidth();
       for (int y = 0; (y < canvasHeight); y = (y + 1))
@@ -111,7 +85,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int hits = 0;
-      tracer.IntersectionInfo_interface best = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
+      tracer.IntersectionInfo_interface best = ((tracer.IntersectionInfo_interface) tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo)));
       best.setDistance(2000.0);
       for (int i = 0; dart._runtime.helpers.IntegerHelper.operatorLess(i, ((java.lang.Number) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_num).check(dart._runtime.helpers.DynamicHelper.invoke("getLength", scene.getShapes())))); i = (i + 1))
       {
@@ -134,7 +108,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       double c1 = (-N.dot(V));
       tracer.Vector_interface R1 = N.multiplyScalar(dart._runtime.helpers.IntegerHelper.operatorStar(2, c1)).operatorPlus(V);
-      return new tracer.Ray(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), P, R1);
+      return ((tracer.Ray_interface) tracer.Ray._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), P, R1));
     }
     public tracer.Color_interface rayTrace(tracer.IntersectionInfo_interface info, tracer.Ray_interface ray, tracer.Scene_interface scene, int depth)
     {
@@ -171,10 +145,10 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
             color = color.blend(((tracer.Color_interface) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color).check(refl.getColor())), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getReflection", dart._runtime.helpers.DynamicHelper.invoke("getMaterial", info.getShape())))));
           }
         }
-        tracer.IntersectionInfo_interface shadowInfo = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
+        tracer.IntersectionInfo_interface shadowInfo = ((tracer.IntersectionInfo_interface) tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo)));
         if (this.getRenderShadows())
         {
-          tracer.Ray_interface shadowRay = new tracer.Ray(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), info.getPosition(), v);
+          tracer.Ray_interface shadowRay = ((tracer.Ray_interface) tracer.Ray._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), info.getPosition(), v));
           shadowInfo = this.testIntersection(shadowRay, scene, ((tracer.BaseShape_interface) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BaseShape).check(info.getShape())));
           if ((shadowInfo.getIsHit() && (!dart._runtime.helpers.ObjectHelper.operatorEqual(shadowInfo.getShape(), info.getShape()))))
           {
@@ -198,6 +172,27 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (((("Engine [canvasWidth: " + this.getCanvasWidth()) + ", canvasHeight: ") + this.getCanvasHeight()) + "]");
+    }
+    public void _constructor(int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.canvasWidth = 0;
+      this.canvasHeight = 0;
+      this.pixelWidth = 0;
+      this.pixelHeight = 0;
+      this.rayDepth = 0;
+      this.canvasWidth = canvasWidth;
+      this.canvasHeight = canvasHeight;
+      this.pixelWidth = pixelWidth;
+      this.pixelHeight = pixelHeight;
+      this.renderDiffuse = renderDiffuse;
+      this.renderShadows = renderShadows;
+      this.renderHighlights = renderHighlights;
+      this.renderReflections = renderReflections;
+      this.rayDepth = rayDepth;
+      super._constructor();
+      this.setCanvasHeight(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide(this.getCanvasHeight(), this.getPixelHeight()));
+      this.setCanvasWidth(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide(this.getCanvasWidth(), this.getPixelWidth()));
     }
     public int getCanvasWidth()
     {
@@ -288,5 +283,12 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     {
       this.canvas = value;
       return value;
+    }
+    public static tracer.Engine_interface _new(dart._runtime.types.simple.Type type, int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
+    {
+      tracer.Engine_interface result;
+      result = new tracer.Engine(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(canvasWidth, canvasHeight, pixelWidth, pixelHeight, renderDiffuse, renderShadows, renderHighlights, renderReflections, rayDepth);
+      return result;
     }
 }

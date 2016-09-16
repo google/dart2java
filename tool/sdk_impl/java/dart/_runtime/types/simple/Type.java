@@ -25,12 +25,22 @@ import java.util.Map;
  */
 public abstract class Type {
   /**
+   * The type environment for instances of this type.
+   * <p>
+   * This {@link TypeEnvironment} can resolve the type variables for this class, as well as those of
+   * its superclass and mixin (if any).
+   */
+  public TypeEnvironment env;
+
+  /**
    * Constructs a {@link Type} instance.
    * <p>
    * This constructor is package-private; all subtypes of {@link Type} must belong to the same
    * package.
    */
-  Type() {}
+  Type() {
+    env = TypeEnvironment.ROOT;
+  }
 
   private final Map<Type, Boolean> isSubtypeOfCache = new HashMap<>();
 

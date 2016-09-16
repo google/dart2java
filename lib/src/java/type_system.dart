@@ -307,9 +307,7 @@ Expression getTypeOf(Expression object) {
 VariableDeclStmt makeTopLevelEnvVar() {
   return new VariableDeclStmt(new VariableDecl(
       _localTypeEnvVarName, _typeEnvironmentType,
-      isFinal: true,
-      initializer:
-          new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT')));
+      isFinal: true, initializer: rootEnvironment));
 }
 
 /// Insert this variable declaration at the top of each method body.
@@ -334,8 +332,7 @@ VariableDeclStmt makeMethodEnvVar(dart.Member member, TypeFactory typeFactory) {
 
   Expression initializer;
   if (isStatic) {
-    initializer =
-        new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT');
+    initializer = rootEnvironment;
   } else {
     initializer = new FieldAccess(
         new FieldAccess(new IdentifierExpr('this'), _typeFieldName), 'env');
@@ -427,7 +424,7 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
     var typeParamExprs =
         type.typeArguments.map((t) => t.accept(this) as Expression).toList();
     var constructorArgs = <Expression>[
-      _makeTypeInfoGetter(type.classNode, typeFactory)
+      makeTypeInfoGetter(type.classNode, typeFactory)
     ];
     if (typeParamExprs.isNotEmpty) {
       constructorArgs.add(new ArrayInitializer(_typeExprType, typeParamExprs));
@@ -440,7 +437,7 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
   Expression visitTypeParameterType(dart.TypeParameterType type) {
     var parent = type.parameter.parent;
     if (parent is dart.Class) {
-      var typeInfoGetter = _makeTypeInfoGetter(parent, typeFactory);
+      var typeInfoGetter = makeTypeInfoGetter(parent, typeFactory);
       var typeVarIndex = parent.typeParameters.indexOf(type.parameter);
       if (typeVarIndex < 0) {
         throw new Exception('Type parameter "${type.parameter}" not found in '
@@ -535,12 +532,38 @@ class _TypeNameBuilder extends dart.DartTypeVisitor<String> {
   }
 }
 
-Expression _makeTypeInfoGetter(dart.Class forClass, TypeFactory typeFactory) {
+Expression makeTypeInfoGetter(dart.Class forClass, TypeFactory typeFactory) {
   return new FieldAccess(
       new ClassRefExpr(typeFactory.compilerState.isSpecialClass(forClass)
           ? typeFactory.compilerState.getHelperClass(forClass)
           : typeFactory.getRawClass(forClass)),
       _typeInfoFieldName);
+}
+
+// TODO(springerm): Refactor!
+Expression makeTypeExprForPrimitive(PrimitiveType type) {
+  Expression typeExpr;
+
+  if (type == JavaType.boolean) {
+    typeExpr = new FieldAccess(
+        new ClassRefExpr(
+            new ClassOrInterfaceType("dart._runtime.helpers", "BoolHelper")),
+        "type");
+  } else if (type == JavaType.double_) {
+    typeExpr = new FieldAccess(
+        new ClassRefExpr(
+            new ClassOrInterfaceType("dart._runtime.helpers", "DoubleHelper")),
+        "type");
+  } else if (type == JavaType.int_) {
+    typeExpr = new FieldAccess(
+        new ClassRefExpr(
+            new ClassOrInterfaceType("dart._runtime.helpers", "IntegerHelper")),
+        "type");
+  } else {
+    throw new Exception("Unknown type: $type");
+  }
+
+  return typeExpr;
 }
 
 // These constants are declared here, rather than in constants, since they are
@@ -560,3 +583,6 @@ final _typeEnvironmentType =
 final _typeExprType = new ClassOrInterfaceType(_typePackage, 'TypeExpr');
 final _typeHelperType =
     new ClassOrInterfaceType(Constants.dartHelperPackage, 'TypeSystemHelper');
+final rootEnvironment =
+    new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT');
+final typeType = new ClassOrInterfaceType(_typePackage, 'Type');

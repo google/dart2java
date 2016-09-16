@@ -5,4 +5,5 @@ public interface Foo1_interface<T> extends dart._runtime.base.DartObject_interfa
   T foo(T t);
   T getVariable();
   T setVariable(T value);
+  void _constructor();
 }

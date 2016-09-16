@@ -10,25 +10,11 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
     public int v1;
     public int count;
   
-    public IdleTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int count)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(scheduler, v1, count);
-    }
     public IdleTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler_interface scheduler, int v1, int count)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.v1 = 0;
-      this.count = 0;
-      this.v1 = v1;
-      this.count = count;
-      super._constructor(scheduler);
-    }
     public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -51,6 +37,15 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "IdleTask";
     }
+    public void _constructor(richards.Scheduler_interface scheduler, int v1, int count)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.v1 = 0;
+      this.count = 0;
+      this.v1 = v1;
+      this.count = count;
+      super._constructor(scheduler);
+    }
     public int getV1()
     {
       return this.v1;
@@ -68,5 +63,12 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
     {
       this.count = value;
       return value;
+    }
+    public static richards.IdleTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int count)
+    {
+      richards.IdleTask_interface result;
+      result = new richards.IdleTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(scheduler, v1, count);
+      return result;
     }
 }

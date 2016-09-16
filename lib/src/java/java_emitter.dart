@@ -310,7 +310,7 @@ class _JavaAstEmitter extends Visitor<String> {
     var condition = expr.condition.accept(this);
     var thenExpr = expr.thenExpr.accept(this);
     var elseExpr = expr.elseExpr.accept(this);
-    return "($condition) ? ($thenExpr) : ($elseExpr)";
+    return "(($condition) ? ($thenExpr) : ($elseExpr))";
   }
 
   @override

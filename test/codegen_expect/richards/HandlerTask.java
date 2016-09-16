@@ -10,21 +10,11 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
     public richards.Packet_interface v1;
     public richards.Packet_interface v2;
   
-    public HandlerTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(scheduler);
-    }
     public HandlerTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler_interface scheduler)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor(scheduler);
-    }
     public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -68,6 +58,11 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "HandlerTask";
     }
+    public void _constructor(richards.Scheduler_interface scheduler)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor(scheduler);
+    }
     public richards.Packet_interface getV1()
     {
       return this.v1;
@@ -85,5 +80,12 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
     {
       this.v2 = value;
       return value;
+    }
+    public static richards.HandlerTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
+    {
+      richards.HandlerTask_interface result;
+      result = new richards.HandlerTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(scheduler);
+      return result;
     }
 }

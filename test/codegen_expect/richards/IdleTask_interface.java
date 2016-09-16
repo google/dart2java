@@ -8,4 +8,5 @@ public interface IdleTask_interface extends richards.Task_interface
   int getCount();
   int setV1(int value);
   int setCount(int value);
+  void _constructor(richards.Scheduler_interface scheduler, int v1, int count);
 }

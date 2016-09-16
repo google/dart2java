@@ -14,4 +14,5 @@ public interface UnaryConstraint_interface extends deltablue.Constraint_interfac
   deltablue.Variable_interface getMyOutput();
   boolean getSatisfied();
   boolean setSatisfied(boolean value);
+  void _constructor(deltablue.Variable_interface myOutput, deltablue.Strength_interface strength);
 }

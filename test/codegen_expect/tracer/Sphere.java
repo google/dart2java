@@ -12,26 +12,15 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     }
     public double radius;
   
-    public Sphere(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(pos, radius, material);
-    }
     public Sphere(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Object pos, double radius, java.lang.Object material)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.radius = radius;
-      super._constructor(pos, material);
-    }
     public tracer.IntersectionInfo_interface intersect(tracer.Ray_interface ray)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.IntersectionInfo_interface info = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
+      tracer.IntersectionInfo_interface info = ((tracer.IntersectionInfo_interface) tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo)));
       info.setShape(this);
       java.lang.Object dst = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", ray.getPosition(), this.getPosition());
       java.lang.Object B = dart._runtime.helpers.DynamicHelper.invoke("dot", dst, ray.getDirection());
@@ -56,8 +45,21 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (((("Sphere [position=" + this.getPosition().toString()) + ", radius=") + this.getRadius()) + "]");
     }
+    public void _constructor(java.lang.Object pos, double radius, java.lang.Object material)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.radius = radius;
+      super._constructor(pos, material);
+    }
     public double getRadius()
     {
       return this.radius;
+    }
+    public static tracer.Sphere_interface _new(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
+    {
+      tracer.Sphere_interface result;
+      result = new tracer.Sphere(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(pos, radius, material);
+      return result;
     }
 }

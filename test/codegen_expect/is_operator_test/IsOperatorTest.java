@@ -13,27 +13,17 @@ public class IsOperatorTest extends dart._runtime.base.DartObject implements is_
       is_operator_test.IsOperatorTest.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
   
-    public IsOperatorTest(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public IsOperatorTest(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor();
-    }
     public static void testMain()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      is_operator_test.A_interface a = new is_operator_test.A(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A));
-      is_operator_test.B_interface b = new is_operator_test.B(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_B));
-      is_operator_test.C_interface c = new is_operator_test.C(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_C));
+      is_operator_test.A_interface a = ((is_operator_test.A_interface) is_operator_test.A._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A)));
+      is_operator_test.B_interface b = ((is_operator_test.B_interface) is_operator_test.B._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_B)));
+      is_operator_test.C_interface c = ((is_operator_test.C_interface) is_operator_test.C._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_C)));
       java.lang.Object n = null;
       is_operator_test.Expect.equals(true, dart._runtime.helpers.TypeSystemHelper.getTrueType(a).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A)));
       is_operator_test.Expect.equals(false, (!dart._runtime.helpers.TypeSystemHelper.getTrueType(a).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_A))));
@@ -81,5 +71,17 @@ public class IsOperatorTest extends dart._runtime.base.DartObject implements is_
       is_operator_test.Expect.equals(true, (!dart._runtime.helpers.TypeSystemHelper.getTrueType(null).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_C))));
       is_operator_test.Expect.equals(true, (!dart._runtime.helpers.TypeSystemHelper.getTrueType(null).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_AI))));
       is_operator_test.Expect.equals(true, (!dart._runtime.helpers.TypeSystemHelper.getTrueType(null).isSubtypeOf(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_I))));
+    }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor();
+    }
+    public static is_operator_test.IsOperatorTest_interface _new(dart._runtime.types.simple.Type type)
+    {
+      is_operator_test.IsOperatorTest_interface result;
+      result = new is_operator_test.IsOperatorTest(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

@@ -9,22 +9,11 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     }
     public dart.core.List_interface<deltablue.Constraint_interface> list;
   
-    public Plan(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Plan(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.list = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class));
-      super._constructor();
-    }
     public void addConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -43,6 +32,12 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
         this.getList().operatorAt(i).execute();
       }
     }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.list = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(deltablue.Constraint_interface.class));
+      super._constructor();
+    }
     public dart.core.List_interface<deltablue.Constraint_interface> getList()
     {
       return this.list;
@@ -51,5 +46,12 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     {
       this.list = value;
       return value;
+    }
+    public static deltablue.Plan_interface _new(dart._runtime.types.simple.Type type)
+    {
+      deltablue.Plan_interface result;
+      result = new deltablue.Plan(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

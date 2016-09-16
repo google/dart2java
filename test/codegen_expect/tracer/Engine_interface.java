@@ -29,4 +29,5 @@ public interface Engine_interface extends dart._runtime.base.DartObject_interfac
   boolean setRenderReflections(boolean value);
   int setRayDepth(int value);
   java.lang.Object setCanvas(java.lang.Object value);
+  void _constructor(int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth);
 }

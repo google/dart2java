@@ -13,4 +13,5 @@ public interface Color_interface extends dart._runtime.base.DartObject_interface
   double getRed();
   double getGreen();
   double getBlue();
+  void _constructor(double red, double green, double blue);
 }

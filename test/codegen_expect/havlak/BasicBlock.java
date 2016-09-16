@@ -11,25 +11,11 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
     public dart.core.List_interface<havlak.BasicBlock_interface> inEdges;
     public dart.core.List_interface<havlak.BasicBlock_interface> outEdges;
   
-    public BasicBlock(dart._runtime.types.simple.Type type, int name)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(name);
-    }
     public BasicBlock(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(int name)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.inEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
-      this.outEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
-      this.name = name;
-      super._constructor();
-      havlak.__TopLevel.numBasicBlocks = (havlak.__TopLevel.numBasicBlocks + 1);
-    }
     public java.lang.String toString()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -55,6 +41,15 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return this.getOutEdges().add(bb);
     }
+    public void _constructor(int name)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.inEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
+      this.outEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
+      this.name = name;
+      super._constructor();
+      havlak.__TopLevel.numBasicBlocks = (havlak.__TopLevel.numBasicBlocks + 1);
+    }
     public int getName()
     {
       return this.name;
@@ -76,5 +71,12 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
     {
       this.outEdges = value;
       return value;
+    }
+    public static havlak.BasicBlock_interface _new(dart._runtime.types.simple.Type type, int name)
+    {
+      havlak.BasicBlock_interface result;
+      result = new havlak.BasicBlock(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(name);
+      return result;
     }
 }

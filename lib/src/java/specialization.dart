@@ -3,6 +3,7 @@ import 'package:kernel/ast.dart' as dart;
 import 'ast.dart' as java;
 import 'constants.dart';
 import 'type_factory.dart';
+import 'type_system.dart' as ts;
 import 'types.dart';
 import '../compiler/runner.dart' show CompileErrorException;
 
@@ -14,28 +15,8 @@ Iterable<TypeSpecialization> buildAllSpecializations(int numTypes) {
     return [new TypeSpecialization.fullyGeneric(numTypes)];
   }
 
-  var result = [<PrimitiveType>[]];
-
-  for (int i = 0; i < numTypes; i++) {
-    var newResult = <List<PrimitiveType>>[];
-
-    for (var spec in result) {
-      for (var type in TypeSpecialization.specializedTypes) {
-        List<JavaType> newSpec = spec.toList(); // create a copy
-        newSpec.add(type);
-        newResult.add(newSpec);
-      }
-
-      // Unspecialized (null) case
-      List<JavaType> newSpec = spec.toList(); // create a copy
-      newSpec.add(null);
-      newResult.add(newSpec);
-    }
-
-    result = newResult;
-  }
-
-  return result.map((l) => new TypeSpecialization.fromTypes(l));
+  var genericSpec = new TypeSpecialization.fullyGeneric(numTypes);
+  return genericSpec.subSpecializations()..add(genericSpec);
 }
 
 /// A type specialization for generic [ClassOrInterfaceType]s for avoiding
@@ -166,11 +147,55 @@ class TypeSpecialization {
     return result;
   }
 
-  /// Returns a list of interfaces that an interface with the current
-  /// specialization should extend.
-  List<ClassOrInterfaceType> implementedInterfaces(ClassOrInterfaceType type) {
+  /// Returns a list of classes/interfaces for all specializations that are
+  /// a supertype of the current specialization.
+  List<ClassOrInterfaceType> allSupertypeSpecializations(
+      ClassOrInterfaceType type) {
     var specs = implementedSpecializations(withOverrides: false);
     return specs.map((s) => type.withSpecialization(s)).toList();
+  }
+
+  /// Returns a list of specializations that are in a "subtype" relationship
+  /// with this specialization.
+  ///
+  /// This effectively means generating all possibilities of replacing "null"
+  /// with one of the values "int", "bool", "double", or "null" (excluding the
+  /// current specialization).
+  ///
+  /// For example:
+  /// <int, null>   =>    <int, int>, <int, bool>, <int, double>
+  /// <null, null>  =>    <null, int>, <null, bool>, <null, double>,
+  ///                     <int, null>, <int, int>, <int, bool>, ...
+  List<TypeSpecialization> subSpecializations() {
+    var result = [types.toList()];
+
+    // Generate all possibilites to specialize unspecialized types
+    for (int i = 0; i < numUnspecializedTypes; i++) {
+      var newResult = <List<PrimitiveType>>[];
+
+      for (var spec in result) {
+        // Unspecialized (null) case
+        newResult.add(spec);
+
+        for (var type in TypeSpecialization.specializedTypes) {
+          List<JavaType> newSpec = spec.toList(); // create a copy
+          newSpec[unspecializedIndices[i]] = type;
+          newResult.add(newSpec);
+        }
+      }
+
+      result = newResult;
+    }
+
+    result.removeAt(0); // Remove this specialization
+    return result.map((l) => new TypeSpecialization.fromTypes(l)).toList();
+  }
+
+  /// Returns a list of classes/interfaces for all specializations that are
+  /// a supertype of the current specialization.
+  List<ClassOrInterfaceType> allSubtypeSpecializations(
+      ClassOrInterfaceType type) {
+    return subSpecializations().map((s) => type.withSpecialization(s)).toList();
   }
 
   /// Determines if a specialization is fully generic, i.e., all types are
@@ -202,6 +227,32 @@ class TypeSpecialization {
   bool isSpecialized(int index) {
     return types[index] != null || delegatorOverrides[index] != null;
   }
+
+  /// Returns a list of indicies of all types that are specialized.
+  List<int> get specializedIndices {
+    var result = <int>[];
+    for (int index = 0; index < types.length; index++) {
+      if (isSpecialized(index)) {
+        result.add(index);
+      }
+    }
+    return result;
+  }
+
+  /// Returns a list of indices of all types that are unspecialized.
+  List<int> get unspecializedIndices {
+    var result = <int>[];
+    for (int index = 0; index < types.length; index++) {
+      if (!isSpecialized(index)) {
+        result.add(index);
+      }
+    }
+    return result;
+  }
+
+  int get numSpecializedTypes => specializedIndices.length;
+
+  int get numUnspecializedTypes => types.length - numSpecializedTypes;
 
   String toString() {
     // Only for debug purposes
@@ -244,6 +295,8 @@ class DelegatorMethodsBuilder {
       result.addAll(class_.procedures
           .where((p) => p.kind != dart.ProcedureKind.Factory)
           .map((p) => buildProcedure(p, nextFactory)));
+      result.addAll(
+          class_.constructors.map((c) => buildConstructor(c, nextFactory)));
     }
 
     return result;
@@ -265,6 +318,8 @@ class DelegatorMethodsBuilder {
       result.addAll(class_.procedures
           .where((p) => p.kind != dart.ProcedureKind.Factory)
           .map((p) => buildProcedureDecl(p, nextFactory)));
+      result.addAll(
+          class_.constructors.map((c) => buildConstructorDecl(c, nextFactory)));
     }
 
     return result;
@@ -361,6 +416,37 @@ class DelegatorMethodsBuilder {
         returnType: returnType);
   }
 
+  java.MethodDef buildConstructor(
+      dart.Constructor node, TypeFactory delegatorTypeFactory) {
+    var delegatorName = Constants.constructorMethodPrefix +
+        node.name.name +
+        delegatorTypeFactory.specialization.methodSuffix;
+    var delegateeName = Constants.constructorMethodPrefix +
+        node.name.name +
+        typeFactory.specialization.methodSuffix;
+
+    // TODO(springerm): Handle named parameters and type parameters
+    var invocationArgs = node.function.positionalParameters
+        .map((p) => new java.CastExpr(
+            new java.IdentifierExpr(p.name), typeFactory.getLValueType(p.type)))
+        .toList();
+
+    JavaType returnType = JavaType.void_;
+
+    var methodInvocation = new java.MethodInvocation(
+        buildDefaultReceiver(), delegateeName, invocationArgs);
+    var body = new java.ExpressionStmt(methodInvocation);
+
+    var methodParams = node.function.positionalParameters
+        .map((p) => new java.VariableDecl(
+            p.name, delegatorTypeFactory.getLValueType(p.type)))
+        .toList();
+
+    return new java.MethodDef(
+        delegatorName, new java.Block([body]), methodParams,
+        returnType: returnType);
+  }
+
   java.MethodDecl buildProcedureDecl(
       dart.Procedure node, TypeFactory delegatorTypeFactory) {
     var delegatorName =
@@ -372,6 +458,22 @@ class DelegatorMethodsBuilder {
         .toList();
     JavaType returnType =
         delegatorTypeFactory.getLValueType(node.function.returnType);
+
+    return new java.MethodDecl(delegatorName, methodParams,
+        returnType: returnType);
+  }
+
+  java.MethodDecl buildConstructorDecl(
+      dart.Constructor node, TypeFactory delegatorTypeFactory) {
+    var delegatorName = Constants.constructorMethodPrefix +
+        node.name.name +
+        delegatorTypeFactory.specialization.methodSuffix;
+    // TODO(springerm): Handle named parameters and type parameters
+    var methodParams = node.function.positionalParameters
+        .map((p) => new java.VariableDecl(
+            p.name, delegatorTypeFactory.getLValueType(p.type)))
+        .toList();
+    JavaType returnType = JavaType.void_;
 
     return new java.MethodDecl(delegatorName, methodParams,
         returnType: returnType);
@@ -410,4 +512,143 @@ class DelegatorMethodsBuilder {
 
   String capitalizeString(String str) =>
       str[0].toUpperCase() + str.substring(1);
+}
+
+/// Builds an expression that will evaluate to [true] if the [typeArg]
+/// expression corresponds to [specialization].
+java.Expression _buildSpecializationCheck(
+    dart.Class class_,
+    TypeFactory typeFactory,
+    java.Expression typeArg,
+    TypeSpecialization specialization) {
+  var checks = <java.Expression>[];
+
+  for (int index in specialization.specializedIndices) {
+    var typeExpr = new java.ArrayAccess(
+        new java.FieldAccess(
+            ts.makeTypeInfoGetter(class_, typeFactory), 'typeVariables'),
+        new java.IntLiteral(index));
+    var genericType =
+        ts.evaluateTypeExpr(new java.FieldAccess(typeArg, 'env'), typeExpr);
+
+    // Cache TypeExpr evaluation
+    var cachedVar = new java.IdentifierExpr(
+        "cached_${index}_${specialization.getType(index)}");
+    var cachedGenericType = new java.ConditionalExpr(
+        new java.BinaryExpr(cachedVar, new java.NullLiteral(), "=="),
+        new java.AssignmentExpr(cachedVar, genericType),
+        cachedVar);
+    var expectedGenericType =
+        ts.makeTypeExprForPrimitive(specialization.getType(index));
+
+    checks
+        .add(new java.BinaryExpr(cachedGenericType, expectedGenericType, "=="));
+  }
+
+  return checks.fold(new java.BoolLiteral(true),
+      (prev, e) => new java.BinaryExpr(prev, e, "&&"));
+}
+
+/// Builds a (generic) static factory for a constructor.
+///
+/// This factory performs the following steps.
+/// 1. Check generic type to choose correct specialization, if applicable.
+///    The first argument that is passed to this method is a Type object
+///    representing the type of the object to be constructed. Note that the
+///    type object is built at the constructor call site, such that Type
+///    objects can be cached (hoisted) at that point.
+/// 2. Create an instance of the chosen specialization using the "empty"
+///    constructor with the "marker" type.
+/// 3. Call the actual constructor, which is an instance method.
+/// 4. Return the object.
+java.MethodDef buildGenericFactory(dart.Class class_, TypeFactory typeFactory,
+    String name, dart.FunctionNode function) {
+  // TODO(springerm): For performance reasons, we might want to have a separete
+  // static method on every specialization and call that one directly.
+
+  ClassOrInterfaceType classType = typeFactory.getRawClass(class_);
+  ClassOrInterfaceType interfaceType = typeFactory.getRawInterface(class_);
+
+  // All specializations except for fully generic
+  var allSpecializations = <ClassOrInterfaceType>[];
+
+  if (class_.typeParameters.length <=
+      TypeSpecialization.specializationThreshold) {
+    allSpecializations =
+        new TypeSpecialization.fullyGeneric(class_.typeParameters.length)
+            .allSubtypeSpecializations(classType);
+  }
+
+  // Sort by number of unspecialized types (least generic first)
+  allSpecializations.sort((a, b) =>
+      a.specialization.numUnspecializedTypes -
+      b.specialization.numUnspecializedTypes);
+
+  var cases = <java.Statement>[];
+  var typeParam = new java.IdentifierExpr("type");
+  var resultVar = new java.IdentifierExpr("result");
+
+  // TODO(springerm): Handle named arguments
+  var methodParams = function.positionalParameters
+      .map((p) =>
+          new java.VariableDecl(p.name, typeFactory.getLValueType(p.type)))
+      .toList();
+  var constructorArgs = function.positionalParameters
+      .map((p) => new java.IdentifierExpr(p.name))
+      .toList();
+  var constructorCall = new java.MethodInvocation(
+      resultVar, Constants.constructorMethodPrefix + name, constructorArgs);
+
+  // Create cache variables for type checks to avoid doing redundant
+  // evaluations
+  for (int index = 0; index < class_.typeParameters.length; index++) {
+    for (var primType in TypeSpecialization.specializedTypes) {
+      cases.add(new java.VariableDeclStmt(new java.VariableDecl(
+          "cached_${index}_${primType}", ts.typeType,
+          initializer: new java.NullLiteral())));
+    }
+  }
+
+  // Generate if statements to select correct specialization
+  for (var specType in allSpecializations) {
+    java.Expression check = _buildSpecializationCheck(
+        class_, typeFactory, typeParam, specType.specialization);
+
+    var targetClass = new java.ClassRefExpr(specType);
+    var newExpr = new java.NewExpr(targetClass, [
+      new java.CastExpr(
+          new java.NullLiteral(), JavaType.emptyConstructorMarker),
+      typeParam
+    ]);
+
+    cases.add(new java.IfStmt(
+        check,
+        new java.Block([
+          new java.ExpressionStmt(new java.AssignmentExpr(resultVar, newExpr)),
+          new java.ExpressionStmt(constructorCall),
+          new java.ReturnStmt(resultVar)
+        ])));
+  }
+
+  // Instantiate specialization
+  var newGenericExpr = new java.NewExpr(new java.ClassRefExpr(classType), [
+    new java.CastExpr(new java.NullLiteral(), JavaType.emptyConstructorMarker),
+    typeParam
+  ]);
+
+  // Last case: fully generic specialization
+  var genericCase = [
+    new java.ExpressionStmt(new java.AssignmentExpr(resultVar, newGenericExpr)),
+    new java.ExpressionStmt(constructorCall),
+    new java.ReturnStmt(resultVar)
+  ];
+  var resultDecl =
+      new java.VariableDeclStmt(new java.VariableDecl("result", interfaceType));
+
+  return new java.MethodDef(
+      Constants.javaFactoryPrefix + name,
+      new java.Block([resultDecl]..addAll(cases)..addAll(genericCase)),
+      [new java.VariableDecl("type", ts.typeRepType)]..addAll(methodParams),
+      returnType: interfaceType,
+      isStatic: true);
 }

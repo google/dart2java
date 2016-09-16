@@ -11,17 +11,12 @@ public class Light extends dart._runtime.base.DartObject implements tracer.Light
     public java.lang.Object color;
     public java.lang.Object intensity;
   
-    public Light(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object color, java.lang.Object intensity)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(position, color, intensity);
-    }
     public Light(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Object position, java.lang.Object color, java.lang.Object intensity)
+    public void _constructor(java.lang.Object position, java.lang.Object color, java.lang.Object intensity)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.position = position;
@@ -40,5 +35,12 @@ public class Light extends dart._runtime.base.DartObject implements tracer.Light
     public java.lang.Object getIntensity()
     {
       return this.intensity;
+    }
+    public static tracer.Light_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object color, java.lang.Object intensity)
+    {
+      tracer.Light_interface result;
+      result = new tracer.Light(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(position, color, intensity);
+      return result;
     }
 }

@@ -11,43 +11,29 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
     public deltablue.Variable_interface v2;
     public int direction;
   
-    public BinaryConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(v1, v2, strength);
-    }
     public BinaryConstraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.direction = deltablue.__TopLevel.NONE;
-      this.v1 = v1;
-      this.v2 = v2;
-      super._constructor(strength);
-      this.addConstraint();
-    }
     public void chooseMethod(int mark)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       if ((this.getV1().getMark() == mark))
       {
-        this.setDirection((((!(this.getV2().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV2().getWalkStrength()))) ? (deltablue.__TopLevel.FORWARD) : (deltablue.__TopLevel.NONE));
+        this.setDirection(((((!(this.getV2().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV2().getWalkStrength()))) ? (deltablue.__TopLevel.FORWARD) : (deltablue.__TopLevel.NONE)));
       }
       if ((this.getV2().getMark() == mark))
       {
-        this.setDirection((((!(this.getV1().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV1().getWalkStrength()))) ? (deltablue.__TopLevel.BACKWARD) : (deltablue.__TopLevel.NONE));
+        this.setDirection(((((!(this.getV1().getMark() == mark)) && deltablue.Strength.stronger(this.getStrength(), this.getV1().getWalkStrength()))) ? (deltablue.__TopLevel.BACKWARD) : (deltablue.__TopLevel.NONE)));
       }
       if (deltablue.Strength.weaker(this.getV1().getWalkStrength(), this.getV2().getWalkStrength()))
       {
-        this.setDirection((deltablue.Strength.stronger(this.getStrength(), this.getV1().getWalkStrength())) ? (deltablue.__TopLevel.BACKWARD) : (deltablue.__TopLevel.NONE));
+        this.setDirection(((deltablue.Strength.stronger(this.getStrength(), this.getV1().getWalkStrength())) ? (deltablue.__TopLevel.BACKWARD) : (deltablue.__TopLevel.NONE)));
       }
       else
       {
-        this.setDirection((deltablue.Strength.stronger(this.getStrength(), this.getV2().getWalkStrength())) ? (deltablue.__TopLevel.FORWARD) : (deltablue.__TopLevel.BACKWARD));
+        this.setDirection(((deltablue.Strength.stronger(this.getStrength(), this.getV2().getWalkStrength())) ? (deltablue.__TopLevel.FORWARD) : (deltablue.__TopLevel.BACKWARD)));
       }
     }
     public void addToGraph()
@@ -70,12 +56,12 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
     public deltablue.Variable_interface input()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return ((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV1()) : (this.getV2());
+      return (((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV1()) : (this.getV2()));
     }
     public deltablue.Variable_interface output()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return ((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV2()) : (this.getV1());
+      return (((this.getDirection() == deltablue.__TopLevel.FORWARD)) ? (this.getV2()) : (this.getV1()));
     }
     public void recalculate()
     {
@@ -112,6 +98,15 @@ public abstract class BinaryConstraint extends deltablue.Constraint implements d
         this.getV2().removeConstraint(this);
       }
       this.setDirection(deltablue.__TopLevel.NONE);
+    }
+    public void _constructor(deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.direction = deltablue.__TopLevel.NONE;
+      this.v1 = v1;
+      this.v2 = v2;
+      super._constructor(strength);
+      this.addConstraint();
     }
     public deltablue.Variable_interface getV1()
     {

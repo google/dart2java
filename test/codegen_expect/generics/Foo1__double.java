@@ -4,25 +4,20 @@ public class Foo1__double extends dart._runtime.base.DartObject implements gener
 {
     public double variable;
   
-    public Foo1__double(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Foo1__double(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor();
-    }
     public double foo__double(double t)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return t;
+    }
+    public void _constructor__double()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor();
     }
     public double getVariable__double()
     {
@@ -44,5 +39,9 @@ public class Foo1__double extends dart._runtime.base.DartObject implements gener
     public java.lang.Double foo(java.lang.Double t)
     {
       return this.foo__double(((double) t));
+    }
+    public void _constructor()
+    {
+      this._constructor__double();
     }
 }

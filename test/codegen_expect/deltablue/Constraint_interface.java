@@ -17,4 +17,5 @@ public interface Constraint_interface extends dart._runtime.base.DartObject_inte
   void destroyConstraint();
   boolean isInput();
   deltablue.Strength_interface getStrength();
+  void _constructor(deltablue.Strength_interface strength);
 }

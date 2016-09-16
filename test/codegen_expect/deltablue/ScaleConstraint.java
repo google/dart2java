@@ -10,23 +10,11 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
     public deltablue.Variable_interface scale;
     public deltablue.Variable_interface offset;
   
-    public ScaleConstraint(dart._runtime.types.simple.Type type, deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(src, scale, offset, dest, strength);
-    }
     public ScaleConstraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.scale = scale;
-      this.offset = offset;
-      super._constructor(src, dest, strength);
-    }
     public void addToGraph()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -77,6 +65,13 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
         this.execute();
       }
     }
+    public void _constructor(deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.scale = scale;
+      this.offset = offset;
+      super._constructor(src, dest, strength);
+    }
     public deltablue.Variable_interface getScale()
     {
       return this.scale;
@@ -84,5 +79,12 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
     public deltablue.Variable_interface getOffset()
     {
       return this.offset;
+    }
+    public static deltablue.ScaleConstraint_interface _new(dart._runtime.types.simple.Type type, deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
+    {
+      deltablue.ScaleConstraint_interface result;
+      result = new deltablue.ScaleConstraint(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(src, scale, offset, dest, strength);
+      return result;
     }
 }

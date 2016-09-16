@@ -9,4 +9,5 @@ public interface Materials_interface extends dart._runtime.base.DartObject_inter
   double getReflection();
   double getRefraction();
   boolean getHasTexture();
+  void _constructor(double reflection, double transparency, double gloss, double refraction, boolean hasTexture);
 }

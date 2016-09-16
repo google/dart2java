@@ -13,28 +13,11 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     public int a1;
     public dart.core.List_interface<java.lang.Integer> a2;
   
-    public Packet(dart._runtime.types.simple.Type type, richards.Packet_interface link, int id, int kind)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(link, id, kind);
-    }
     public Packet(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(richards.Packet_interface link, int id, int kind)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.id = 0;
-      this.kind = 0;
-      this.a1 = 0;
-      this.a2 = ((dart.core.List_interface) dart.core.List.factory$(java.lang.Integer.class, richards.Richards.DATA_SIZE));
-      this.link = link;
-      this.id = id;
-      this.kind = kind;
-      super._constructor();
-    }
     public richards.Packet_interface addTo(richards.Packet_interface queue)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -56,6 +39,18 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "Packet";
+    }
+    public void _constructor(richards.Packet_interface link, int id, int kind)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.id = 0;
+      this.kind = 0;
+      this.a1 = 0;
+      this.a2 = ((dart.core.List_interface) dart.core.List.factory$(java.lang.Integer.class, richards.Richards.DATA_SIZE));
+      this.link = link;
+      this.id = id;
+      this.kind = kind;
+      super._constructor();
     }
     public richards.Packet_interface getLink()
     {
@@ -101,5 +96,12 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
     {
       this.a2 = value;
       return value;
+    }
+    public static richards.Packet_interface _new(dart._runtime.types.simple.Type type, richards.Packet_interface link, int id, int kind)
+    {
+      richards.Packet_interface result;
+      result = new richards.Packet(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(link, id, kind);
+      return result;
     }
 }

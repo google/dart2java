@@ -29,30 +29,11 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
     public static int STATE_SUSPENDED_RUNNABLE;
     public static int STATE_NOT_HELD;
   
-    public TaskControlBlock(dart._runtime.types.simple.Type type, richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(link, id, priority, queue, task);
-    }
     public TaskControlBlock(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.id = 0;
-      this.priority = 0;
-      this.state = 0;
-      this.link = link;
-      this.id = id;
-      this.priority = priority;
-      this.queue = queue;
-      this.task = task;
-      super._constructor();
-      this.setState((dart._runtime.helpers.ObjectHelper.operatorEqual(this.getQueue(), null)) ? (richards.TaskControlBlock.STATE_SUSPENDED) : (richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE));
-    }
     public void setRunning()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -91,7 +72,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
       {
         packet = this.getQueue();
         this.setQueue(packet.getLink());
-        this.setState((dart._runtime.helpers.ObjectHelper.operatorEqual(this.getQueue(), null)) ? (richards.TaskControlBlock.STATE_RUNNING) : (richards.TaskControlBlock.STATE_RUNNABLE));
+        this.setState(((dart._runtime.helpers.ObjectHelper.operatorEqual(this.getQueue(), null)) ? (richards.TaskControlBlock.STATE_RUNNING) : (richards.TaskControlBlock.STATE_RUNNABLE)));
       }
       else
       {
@@ -121,6 +102,20 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (((("tcb { " + this.getTask().toString()) + "@") + this.getState()) + " }");
+    }
+    public void _constructor(richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.id = 0;
+      this.priority = 0;
+      this.state = 0;
+      this.link = link;
+      this.id = id;
+      this.priority = priority;
+      this.queue = queue;
+      this.task = task;
+      super._constructor();
+      this.setState(((dart._runtime.helpers.ObjectHelper.operatorEqual(this.getQueue(), null)) ? (richards.TaskControlBlock.STATE_SUSPENDED) : (richards.TaskControlBlock.STATE_SUSPENDED_RUNNABLE)));
     }
     public richards.TaskControlBlock_interface getLink()
     {
@@ -229,5 +224,12 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
     {
       richards.TaskControlBlock.STATE_NOT_HELD = value;
       return value;
+    }
+    public static richards.TaskControlBlock_interface _new(dart._runtime.types.simple.Type type, richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
+    {
+      richards.TaskControlBlock_interface result;
+      result = new richards.TaskControlBlock(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(link, id, priority, queue, task);
+      return result;
     }
 }

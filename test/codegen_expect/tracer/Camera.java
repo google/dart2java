@@ -14,17 +14,26 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
     public java.lang.Object equator;
     public java.lang.Object screen;
   
-    public Camera(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(position, lookAt, up);
-    }
     public Camera(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
+    public tracer.Ray_interface getRay(double vx, double vy)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      java.lang.Object pos = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", this.getScreen(), dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getEquator(), vx), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getUp(), vy)));
+      pos = dart._runtime.helpers.DynamicHelper.invoke("negateY", pos);
+      java.lang.Object dir = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", pos, this.getPosition());
+      tracer.Ray_interface ray = ((tracer.Ray_interface) tracer.Ray._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), pos, dart._runtime.helpers.DynamicHelper.invoke("normalize", dir)));
+      return ray;
+    }
+    public java.lang.String toString()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      return "Camera []";
+    }
+    public void _constructor(java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.position = position;
@@ -33,20 +42,6 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
       super._constructor();
       this.setEquator(dart._runtime.helpers.DynamicHelper.invoke("cross", dart._runtime.helpers.DynamicHelper.invoke("normalize", this.getLookAt()), this.getUp()));
       this.setScreen(dart._runtime.helpers.DynamicHelper.invoke("operatorPlus", this.getPosition(), this.getLookAt()));
-    }
-    public tracer.Ray_interface getRay(double vx, double vy)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      java.lang.Object pos = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", this.getScreen(), dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getEquator(), vx), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getUp(), vy)));
-      pos = dart._runtime.helpers.DynamicHelper.invoke("negateY", pos);
-      java.lang.Object dir = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", pos, this.getPosition());
-      tracer.Ray_interface ray = new tracer.Ray(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), pos, dart._runtime.helpers.DynamicHelper.invoke("normalize", dir));
-      return ray;
-    }
-    public java.lang.String toString()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return "Camera []";
     }
     public java.lang.Object getPosition()
     {
@@ -77,5 +72,12 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
     {
       this.screen = value;
       return value;
+    }
+    public static tracer.Camera_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
+    {
+      tracer.Camera_interface result;
+      result = new tracer.Camera(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(position, lookAt, up);
+      return result;
     }
 }

@@ -9,22 +9,11 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
     }
     public deltablue.Strength_interface strength;
   
-    public Constraint(dart._runtime.types.simple.Type type, deltablue.Strength_interface strength)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(strength);
-    }
     public Constraint(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(deltablue.Strength_interface strength)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.strength = strength;
-      super._constructor();
-    }
     public abstract boolean isSatisfied();
     public abstract void markUnsatisfied();
     public abstract void addToGraph();
@@ -81,6 +70,12 @@ public abstract class Constraint extends dart._runtime.base.DartObject implement
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return false;
+    }
+    public void _constructor(deltablue.Strength_interface strength)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.strength = strength;
+      super._constructor();
     }
     public deltablue.Strength_interface getStrength()
     {

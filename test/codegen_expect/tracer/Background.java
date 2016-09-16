@@ -10,17 +10,12 @@ public class Background extends dart._runtime.base.DartObject implements tracer.
     public tracer.Color_interface color;
     public double ambience;
   
-    public Background(dart._runtime.types.simple.Type type, tracer.Color_interface color, double ambience)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(color, ambience);
-    }
     public Background(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(tracer.Color_interface color, double ambience)
+    public void _constructor(tracer.Color_interface color, double ambience)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.color = color;
@@ -34,5 +29,12 @@ public class Background extends dart._runtime.base.DartObject implements tracer.
     public double getAmbience()
     {
       return this.ambience;
+    }
+    public static tracer.Background_interface _new(dart._runtime.types.simple.Type type, tracer.Color_interface color, double ambience)
+    {
+      tracer.Background_interface result;
+      result = new tracer.Background(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(color, ambience);
+      return result;
     }
 }

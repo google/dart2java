@@ -32,23 +32,11 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
     public static int UNVISITED;
     public static int MAXNONBACKPREDS;
   
-    public HavlakLoopFinder(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, havlak.LSG_interface lsg)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(cfg, lsg);
-    }
     public HavlakLoopFinder(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(havlak.CFG_interface cfg, havlak.LSG_interface lsg)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.cfg = cfg;
-      this.lsg = lsg;
-      super._constructor();
-    }
     public boolean isAncestor(int w, int v, dart.core.List_interface<java.lang.Integer> last)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -93,7 +81,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
         header.operatorAtPut(i, 0);
         types.operatorAtPut(i, havlak.HavlakLoopFinder.BB_NONHEADER);
         last.operatorAtPut(i, 0);
-        nodes.operatorAtPut(i, new havlak.UnionFindNode(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_UnionFindNode)));
+        nodes.operatorAtPut(i, ((havlak.UnionFindNode_interface) havlak.UnionFindNode._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_UnionFindNode))));
       }
       this.DFS(this.getCfg().getStartNode(), ((dart.core.List_interface) nodes), ((dart.core.List_interface) number), ((dart.core.List_interface) last), 0);
       for (int w = 0; (w < size); w = (w + 1))
@@ -219,6 +207,13 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
       }
       return this.getLsg().getNumLoops();
     }
+    public void _constructor(havlak.CFG_interface cfg, havlak.LSG_interface lsg)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.cfg = cfg;
+      this.lsg = lsg;
+      super._constructor();
+    }
     public havlak.CFG_interface getCfg()
     {
       return this.cfg;
@@ -307,5 +302,12 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
     {
       havlak.HavlakLoopFinder.MAXNONBACKPREDS = value;
       return value;
+    }
+    public static havlak.HavlakLoopFinder_interface _new(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, havlak.LSG_interface lsg)
+    {
+      havlak.HavlakLoopFinder_interface result;
+      result = new havlak.HavlakLoopFinder(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(cfg, lsg);
+      return result;
     }
 }

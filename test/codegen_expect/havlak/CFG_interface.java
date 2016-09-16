@@ -11,4 +11,5 @@ public interface CFG_interface extends dart._runtime.base.DartObject_interface
   dart.core.List_interface<havlak.BasicBlockEdge_interface> getEdgeList();
   havlak.BasicBlock_interface getStartNode();
   havlak.BasicBlock_interface setStartNode(havlak.BasicBlock_interface value);
+  void _constructor();
 }

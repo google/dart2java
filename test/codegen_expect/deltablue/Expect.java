@@ -8,21 +8,11 @@ public class Expect extends dart._runtime.base.DartObject implements deltablue.E
       deltablue.Expect.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
   
-    public Expect(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Expect(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor();
-    }
     public static void equals(java.lang.Object expected, java.lang.Object actual)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
@@ -53,5 +43,17 @@ public class Expect extends dart._runtime.base.DartObject implements deltablue.E
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       dart.core.__TopLevel.print(message);
+    }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor();
+    }
+    public static deltablue.Expect_interface _new(dart._runtime.types.simple.Type type)
+    {
+      deltablue.Expect_interface result;
+      result = new deltablue.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

@@ -7,4 +7,5 @@ public interface HavlakLoopFinder_interface extends dart._runtime.base.DartObjec
   int findLoops();
   havlak.CFG_interface getCfg();
   havlak.LSG_interface getLsg();
+  void _constructor(havlak.CFG_interface cfg, havlak.LSG_interface lsg);
 }

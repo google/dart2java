@@ -16,28 +16,23 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
     public java.lang.Object color;
     public java.lang.Object distance;
   
-    public IntersectionInfo(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public IntersectionInfo(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
+    public java.lang.String toString()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      return (("Intersection [" + this.getPosition().toString()) + "]");
+    }
+    public void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.isHit = false;
       this.hitCount = 0;
       super._constructor();
-      this.setColor(new tracer.Color(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.0));
-    }
-    public java.lang.String toString()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return (("Intersection [" + this.getPosition().toString()) + "]");
+      this.setColor(((tracer.Color_interface) tracer.Color._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.0)));
     }
     public boolean getIsHit()
     {
@@ -101,5 +96,12 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
     {
       this.distance = value;
       return value;
+    }
+    public static tracer.IntersectionInfo_interface _new(dart._runtime.types.simple.Type type)
+    {
+      tracer.IntersectionInfo_interface result;
+      result = new tracer.IntersectionInfo(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

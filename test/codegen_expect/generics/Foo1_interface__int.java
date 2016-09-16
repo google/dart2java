@@ -5,7 +5,9 @@ public interface Foo1_interface__int extends dart._runtime.base.DartObject_inter
   int foo__int(int t);
   int getVariable__int();
   int setVariable__int(int value);
+  void _constructor__int();
   java.lang.Integer getVariable();
   java.lang.Integer setVariable(java.lang.Integer value);
   java.lang.Integer foo(java.lang.Integer t);
+  void _constructor();
 }

@@ -15,22 +15,11 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements havl
     public java.lang.String name;
     public static int iters;
   
-    public BenchmarkBase(dart._runtime.types.simple.Type type, java.lang.String name)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(name);
-    }
     public BenchmarkBase(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.String name)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.name = name;
-      super._constructor();
-    }
     public void run()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -61,7 +50,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements havl
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
+      dart.core.Stopwatch_interface watch = ((dart.core.Stopwatch_interface) dart.core.Stopwatch._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch)));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))
@@ -77,7 +66,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements havl
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch_interface watch = new dart.core.Stopwatch(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
+      dart.core.Stopwatch_interface watch = ((dart.core.Stopwatch_interface) dart.core.Stopwatch._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch)));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))
@@ -103,6 +92,12 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements havl
       double score = this.measure();
       dart.core.__TopLevel.print((((("" + this.getName().toString()) + "(RunTime): ") + score) + " us."));
     }
+    public void _constructor(java.lang.String name)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.name = name;
+      super._constructor();
+    }
     public java.lang.String getName()
     {
       return this.name;
@@ -115,5 +110,12 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements havl
     {
       havlak.BenchmarkBase.iters = value;
       return value;
+    }
+    public static havlak.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
+    {
+      havlak.BenchmarkBase_interface result;
+      result = new havlak.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(name);
+      return result;
     }
 }

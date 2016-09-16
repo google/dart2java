@@ -9,21 +9,11 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
     }
     public richards.Packet_interface v1;
   
-    public DeviceTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(scheduler);
-    }
     public DeviceTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler_interface scheduler)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor(scheduler);
-    }
     public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -45,6 +35,11 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "DeviceTask";
     }
+    public void _constructor(richards.Scheduler_interface scheduler)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor(scheduler);
+    }
     public richards.Packet_interface getV1()
     {
       return this.v1;
@@ -53,5 +48,12 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
     {
       this.v1 = value;
       return value;
+    }
+    public static richards.DeviceTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
+    {
+      richards.DeviceTask_interface result;
+      result = new richards.DeviceTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(scheduler);
+      return result;
     }
 }

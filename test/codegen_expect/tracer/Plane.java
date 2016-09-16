@@ -13,26 +13,15 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
     }
     public java.lang.Object d;
   
-    public Plane(dart._runtime.types.simple.Type type, java.lang.Object pos, java.lang.Object d, java.lang.Object material)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(pos, d, material);
-    }
     public Plane(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Object pos, java.lang.Object d, java.lang.Object material)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.d = d;
-      super._constructor(pos, material);
-    }
     public tracer.IntersectionInfo_interface intersect(tracer.Ray_interface ray)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.IntersectionInfo_interface info = new tracer.IntersectionInfo(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
+      tracer.IntersectionInfo_interface info = ((tracer.IntersectionInfo_interface) tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo)));
       java.lang.Object Vd = dart._runtime.helpers.DynamicHelper.invoke("dot", this.getPosition(), ray.getDirection());
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(Vd, 0))
       {
@@ -50,7 +39,7 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
       info.setDistance(t);
       if (((boolean) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_bool).cast(dart._runtime.helpers.DynamicHelper.invoke("getHasTexture", this.getMaterial()))))
       {
-        tracer.Vector_interface vU = new tracer.Vector(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getY", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getZ", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("getX", this.getPosition())))));
+        tracer.Vector_interface vU = ((tracer.Vector_interface) tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getY", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getZ", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("getX", this.getPosition()))))));
         tracer.Vector_interface vV = vU.cross(((tracer.Vector_interface) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector).check(this.getPosition())));
         java.lang.Object u = dart._runtime.helpers.DynamicHelper.invoke("dot", info.getPosition(), vU);
         java.lang.Object v = dart._runtime.helpers.DynamicHelper.invoke("dot", info.getPosition(), vV);
@@ -67,8 +56,21 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return (((("Plane [" + this.getPosition().toString()) + ", d=") + this.getD().toString()) + "]");
     }
+    public void _constructor(java.lang.Object pos, java.lang.Object d, java.lang.Object material)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.d = d;
+      super._constructor(pos, material);
+    }
     public java.lang.Object getD()
     {
       return this.d;
+    }
+    public static tracer.Plane_interface _new(dart._runtime.types.simple.Type type, java.lang.Object pos, java.lang.Object d, java.lang.Object material)
+    {
+      tracer.Plane_interface result;
+      result = new tracer.Plane(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(pos, d, material);
+      return result;
     }
 }

@@ -16,6 +16,8 @@ package dart._runtime.helpers;
 
 import dart._runtime.types.simple.InterfaceTypeExpr;
 import dart._runtime.types.simple.InterfaceTypeInfo;
+import dart._runtime.types.simple.Type;
+import dart._runtime.types.simple.TypeEnvironment;
 
 public class BoolHelper {
   public static final InterfaceTypeInfo dart2java$typeInfo
@@ -25,6 +27,9 @@ public class BoolHelper {
     BoolHelper.dart2java$typeInfo.superclass = new InterfaceTypeExpr(ObjectHelper.dart2java$typeInfo);
   }
 
+  public static final Type type = TypeEnvironment.ROOT.evaluate(
+      new InterfaceTypeExpr(dart2java$typeInfo));
+  
   // --- Methods defined in Object ---
 
   public static boolean operatorEqual(Boolean self, Object other) {

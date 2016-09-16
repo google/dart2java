@@ -10,22 +10,11 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     }
     public int currentMark;
   
-    public Planner(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Planner(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.currentMark = 0;
-      super._constructor();
-    }
     public void incrementalAdd(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -67,7 +56,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int mark = this.newMark();
-      deltablue.Plan_interface plan = new deltablue.Plan(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan));
+      deltablue.Plan_interface plan = ((deltablue.Plan_interface) deltablue.Plan._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan)));
       dart.core.List_interface<deltablue.Constraint_interface> todo = ((dart.core.List_interface) sources);
       while ((todo.getLength() > 0))
       {
@@ -157,6 +146,12 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
         }
       }
     }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.currentMark = 0;
+      super._constructor();
+    }
     public int getCurrentMark()
     {
       return this.currentMark;
@@ -165,5 +160,12 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       this.currentMark = value;
       return value;
+    }
+    public static deltablue.Planner_interface _new(dart._runtime.types.simple.Type type)
+    {
+      deltablue.Planner_interface result;
+      result = new deltablue.Planner(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

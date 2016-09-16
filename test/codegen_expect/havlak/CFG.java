@@ -12,30 +12,18 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
     public dart.core.List_interface<havlak.BasicBlockEdge_interface> edgeList;
     public havlak.BasicBlock_interface startNode;
   
-    public CFG(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public CFG(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.basicBlockMap = ((dart.core.Map_interface) dart.core.Map.factory$(java.lang.Integer.class, havlak.BasicBlock_interface.class));
-      this.edgeList = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlockEdge_interface.class));
-      super._constructor();
-    }
     public havlak.BasicBlock_interface createNode(int name)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       havlak.BasicBlock_interface node = this.getBasicBlockMap().operatorAt(name);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(node, null))
       {
-        node = new havlak.BasicBlock(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock), name);
+        node = ((havlak.BasicBlock_interface) havlak.BasicBlock._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock), name));
         this.getBasicBlockMap().operatorAtPut(name, node);
       }
       if ((this.getNumNodes() == 1))
@@ -64,6 +52,13 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return edge.getFrom();
     }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.basicBlockMap = ((dart.core.Map_interface) dart.core.Map.factory$(java.lang.Integer.class, havlak.BasicBlock_interface.class));
+      this.edgeList = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlockEdge_interface.class));
+      super._constructor();
+    }
     public dart.core.Map_interface<java.lang.Integer, havlak.BasicBlock_interface> getBasicBlockMap()
     {
       return this.basicBlockMap;
@@ -80,5 +75,12 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
     {
       this.startNode = value;
       return value;
+    }
+    public static havlak.CFG_interface _new(dart._runtime.types.simple.Type type)
+    {
+      havlak.CFG_interface result;
+      result = new havlak.CFG(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

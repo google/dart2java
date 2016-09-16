@@ -8,24 +8,35 @@ public class Qux3<C, D, E> extends dart._runtime.base.DartObject implements gene
       generics.Qux3.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
   
-    public Qux3(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Qux3(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor();
-    }
     public C qux(C c, D d, E e)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return c;
+    }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor();
+    }
+    public static generics.Qux3_interface _new(dart._runtime.types.simple.Type type)
+    {
+      generics.Qux3_interface result;
+      dart._runtime.types.simple.Type cached_0_int = null;
+      dart._runtime.types.simple.Type cached_0_boolean = null;
+      dart._runtime.types.simple.Type cached_0_double = null;
+      dart._runtime.types.simple.Type cached_1_int = null;
+      dart._runtime.types.simple.Type cached_1_boolean = null;
+      dart._runtime.types.simple.Type cached_1_double = null;
+      dart._runtime.types.simple.Type cached_2_int = null;
+      dart._runtime.types.simple.Type cached_2_boolean = null;
+      dart._runtime.types.simple.Type cached_2_double = null;
+      result = new generics.Qux3(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

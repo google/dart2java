@@ -10,27 +10,22 @@ public class Ray extends dart._runtime.base.DartObject implements tracer.Ray_int
     public java.lang.Object position;
     public java.lang.Object direction;
   
-    public Ray(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object direction)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(position, direction);
-    }
     public Ray(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(java.lang.Object position, java.lang.Object direction)
+    public java.lang.String toString()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      return (((("Ray [" + this.getPosition().toString()) + ", ") + this.getDirection().toString()) + "]");
+    }
+    public void _constructor(java.lang.Object position, java.lang.Object direction)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.position = position;
       this.direction = direction;
       super._constructor();
-    }
-    public java.lang.String toString()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return (((("Ray [" + this.getPosition().toString()) + ", ") + this.getDirection().toString()) + "]");
     }
     public java.lang.Object getPosition()
     {
@@ -39,5 +34,12 @@ public class Ray extends dart._runtime.base.DartObject implements tracer.Ray_int
     public java.lang.Object getDirection()
     {
       return this.direction;
+    }
+    public static tracer.Ray_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object direction)
+    {
+      tracer.Ray_interface result;
+      result = new tracer.Ray(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(position, direction);
+      return result;
     }
 }

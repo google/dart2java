@@ -8,25 +8,27 @@ public class DeltaBlue extends deltablue.BenchmarkBase implements deltablue.Delt
       deltablue.DeltaBlue.dart2java$typeInfo.superclass = dart2java$typeExpr_BenchmarkBase;
     }
   
-    public DeltaBlue(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public DeltaBlue(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor("DeltaBlue");
-    }
     public void run()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       deltablue.__TopLevel.chainTest(100);
       deltablue.__TopLevel.projectionTest(100);
+    }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor("DeltaBlue");
+    }
+    public static deltablue.DeltaBlue_interface _new(dart._runtime.types.simple.Type type)
+    {
+      deltablue.DeltaBlue_interface result;
+      result = new deltablue.DeltaBlue(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

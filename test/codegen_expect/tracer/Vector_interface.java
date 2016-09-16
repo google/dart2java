@@ -15,4 +15,5 @@ public interface Vector_interface extends dart._runtime.base.DartObject_interfac
   double getX();
   double getY();
   double getZ();
+  void _constructor(double x, double y, double z);
 }

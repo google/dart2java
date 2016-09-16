@@ -23,4 +23,5 @@ public interface SimpleLoop_interface extends dart._runtime.base.DartObject_inte
   boolean setIsReducible(boolean value);
   int setNestingLevel(int value);
   int setDepthLevel(int value);
+  void _constructor(int counter);
 }

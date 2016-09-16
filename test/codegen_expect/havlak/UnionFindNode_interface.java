@@ -14,4 +14,5 @@ public interface UnionFindNode_interface extends dart._runtime.base.DartObject_i
   havlak.UnionFindNode_interface setParent(havlak.UnionFindNode_interface value);
   havlak.BasicBlock_interface setBb(havlak.BasicBlock_interface value);
   havlak.SimpleLoop_interface setLoop(havlak.SimpleLoop_interface value);
+  void _constructor();
 }

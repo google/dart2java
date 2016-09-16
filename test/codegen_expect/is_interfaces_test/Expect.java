@@ -9,22 +9,11 @@ public class Expect extends dart._runtime.base.DartObject implements is_interfac
     }
     public int x;
   
-    public Expect(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public Expect(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.x = 0;
-      super._constructor();
-    }
     public static void isTrue(boolean b)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
@@ -49,6 +38,12 @@ public class Expect extends dart._runtime.base.DartObject implements is_interfac
         dart.core.__TopLevel.print(e.getX());
       }
     }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.x = 0;
+      super._constructor();
+    }
     public int getX()
     {
       return this.x;
@@ -57,5 +52,12 @@ public class Expect extends dart._runtime.base.DartObject implements is_interfac
     {
       this.x = value;
       return value;
+    }
+    public static is_interfaces_test.Expect_interface _new(dart._runtime.types.simple.Type type)
+    {
+      is_interfaces_test.Expect_interface result;
+      result = new is_interfaces_test.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

@@ -23,4 +23,5 @@ public interface TaskControlBlock_interface extends dart._runtime.base.DartObjec
   richards.Packet_interface setQueue(richards.Packet_interface value);
   richards.Task_interface setTask(richards.Task_interface value);
   int setState(int value);
+  void _constructor(richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task);
 }

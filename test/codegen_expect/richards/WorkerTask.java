@@ -10,25 +10,11 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
     public int v1;
     public int v2;
   
-    public WorkerTask(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor(scheduler, v1, v2);
-    }
     public WorkerTask(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor(richards.Scheduler_interface scheduler, int v1, int v2)
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.v1 = 0;
-      this.v2 = 0;
-      this.v1 = v1;
-      this.v2 = v2;
-      super._constructor(scheduler);
-    }
     public richards.TaskControlBlock_interface run(richards.Packet_interface packet)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -63,6 +49,15 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return "WorkerTask";
     }
+    public void _constructor(richards.Scheduler_interface scheduler, int v1, int v2)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.v1 = 0;
+      this.v2 = 0;
+      this.v1 = v1;
+      this.v2 = v2;
+      super._constructor(scheduler);
+    }
     public int getV1()
     {
       return this.v1;
@@ -80,5 +75,12 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
     {
       this.v2 = value;
       return value;
+    }
+    public static richards.WorkerTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
+    {
+      richards.WorkerTask_interface result;
+      result = new richards.WorkerTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor(scheduler, v1, v2);
+      return result;
     }
 }

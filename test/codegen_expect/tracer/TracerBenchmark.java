@@ -8,21 +8,11 @@ public class TracerBenchmark extends tracer.BenchmarkBase implements tracer.Trac
       tracer.TracerBenchmark.dart2java$typeInfo.superclass = dart2java$typeExpr_BenchmarkBase;
     }
   
-    public TracerBenchmark(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public TracerBenchmark(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      super._constructor("Tracer");
-    }
     public void warmup()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -32,5 +22,17 @@ public class TracerBenchmark extends tracer.BenchmarkBase implements tracer.Trac
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       tracer.__TopLevel.renderScene(null);
+    }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      super._constructor("Tracer");
+    }
+    public static tracer.TracerBenchmark_interface _new(dart._runtime.types.simple.Type type)
+    {
+      tracer.TracerBenchmark_interface result;
+      result = new tracer.TracerBenchmark(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

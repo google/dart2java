@@ -12,22 +12,11 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
     public havlak.BasicBlock_interface bb;
     public havlak.SimpleLoop_interface loop;
   
-    public UnionFindNode(dart._runtime.types.simple.Type type)
-    {
-      super(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-      this._constructor();
-    }
     public UnionFindNode(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
-    protected void _constructor()
-    {
-      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.dfsNumber = 0;
-      super._constructor();
-    }
     public void initNode(havlak.BasicBlock_interface bb, int dfsNumber)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -64,6 +53,12 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return this.setLoop(l);
     }
+    public void _constructor()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.dfsNumber = 0;
+      super._constructor();
+    }
     public int getDfsNumber()
     {
       return this.dfsNumber;
@@ -99,5 +94,12 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
     {
       this.loop = value;
       return value;
+    }
+    public static havlak.UnionFindNode_interface _new(dart._runtime.types.simple.Type type)
+    {
+      havlak.UnionFindNode_interface result;
+      result = new havlak.UnionFindNode(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      result._constructor();
+      return result;
     }
 }

@@ -78,18 +78,6 @@ class TemporaryVariable {
   TemporaryVariable(this.name, this.type);
 }
 
-/// A container for a delegator (actual Java constructor) and an instance
-/// method whose body contains the Dart constructor.
-///
-/// See also comment of `buildConstructor`
-class _JavaConstructor {
-  final java.Constructor delegator;
-
-  final java.MethodDef body;
-
-  _JavaConstructor(this.delegator, this.body);
-}
-
 /// Builds a Java class from Dart IR.
 class _JavaAstBuilder extends dart.Visitor<java.Node> {
   _JavaAstBuilder(this.compilerState, {this.thisClassOrInterfaceType}) {
@@ -208,16 +196,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         .where((p) => p.kind != dart.ProcedureKind.Factory)
         .map(this.visitProcedure)
         .toList();
-
-    List<_JavaConstructor> constructors = node.constructors
+    List<java.MethodDef> constructors = node.constructors
         .map((c) => this.buildConstructor(c, node.fields))
         .toList();
-    List<java.Constructor> constructorDelegators =
-        constructors.map((c) => c.delegator).toList();
-    methods.insertAll(0, constructors.map((c) => c.body));
-
-    // Add empty constructor (for implementing Dart constructor semantics).
-    constructorDelegators.add(buildEmptyConstructor());
 
     // Merge getters/setters
     if (methods.any((m) => implicitGetters.any((g) => m.name == g.name))) {
@@ -228,6 +209,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // This can happen because we simply prepend getters with "set".
       throw new CompileErrorException("Name clash between setter and method");
     }
+
+    methods.addAll(constructors);
     methods.addAll(implicitGetters);
     methods.addAll(implicitSetters);
     methods.addAll(
@@ -251,6 +234,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       methods.addAll(node.procedures
           .where((p) => p.kind == dart.ProcedureKind.Factory)
           .map(this.visitProcedure));
+
+      if (!node.isAbstract) {
+        // Build constructor factories
+        methods.addAll(node.constructors.map((c) => spzn.buildGenericFactory(
+            node, typeFactory, c.name.name, c.function)));
+      }
     }
 
     // TODO(springerm): Think about whether a class should directly implement
@@ -264,7 +253,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         access: java.Access.Public,
         orderedMembers: orderedMembers,
         methods: methods,
-        constructors: constructorDelegators,
+        constructors: [buildEmptyConstructor()],
         supertype: supertype,
         isAbstract: node.isAbstract,
         implementedInterfaces: implementedInterfaces);
@@ -337,6 +326,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
     methods.addAll(implicitGetters);
     methods.addAll(implicitSetters);
+
+    Iterable<java.MethodDecl> constructors =
+        node.constructors.map(this.buildConstructorDecl);
+    methods.addAll(constructors);
+
     methods.addAll(
         new spzn.DelegatorMethodsBuilder(typeFactory).buildForInterface(node));
 
@@ -359,8 +353,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     // Add specialized interfaces that this interface should extend
-    superinterfaces
-        .addAll(specialization.implementedInterfaces(thisClassOrInterfaceType));
+    superinterfaces.addAll(
+        specialization.allSupertypeSpecializations(thisClassOrInterfaceType));
 
     // Add all other declared interfaces that this interface extends
     superinterfaces.addAll(node.implementedTypes.map(typeFactory.getInterface));
@@ -455,9 +449,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// type cast must be inserted before passing an argument.
   List<java.Expression> buildArguments(
       dart.Arguments node, dart.FunctionNode target) {
-    // TODO(springerm): Handle parameters other than positional
+    // TODO(springerm): Handle named arguments
     var result = new List<java.Expression>();
 
+    // --------------------
+    // TODO(springerm): Remove this
     Iterable<java.JavaType> typeArguments = node.types.map((t) {
       var javaType = typeFactory.getTypeArgument(t);
       // Because we're about to use a TypeExpr, javaType can't have type
@@ -471,6 +467,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // for static invocations, then positional arguments
     // TODO(springerm, andrewkrieger): Use proper types once implemented
     result.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
+    // --------------------
 
     // Provided positional parameters
     for (int i = 0; i < node.positional.length; i++) {
@@ -676,9 +673,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Translates a Kernel AST constructor to a Java constructor and method.
   ///
-  /// Creates a Java constructor consisting of a delegator (actual Java
-  /// constructor that delegates to an instance method) and a body method
-  /// (Java instance method). The constructor performs the following steps:
+  /// Creates a Java constructor which is an instance method. This method
+  /// is called by a static factory constructor method.
+  /// The constructor performs the following steps:
   ///
   /// 1. Direct field initializations (at VariableDecl site)
   /// 2. Field initializer list
@@ -697,11 +694,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// constructor, which is invoked at the beginning of the delegator. That
   /// constructor does nothing except for passing the runtime type to the empty
   /// constructor of its superclass.
-  ///
-  /// Note, that we could have used a static method as an entry point for
-  /// instance creation (instead of the Java constructor), avoiding the empty
-  /// constructor, but that would mess up interoperability.
-  _JavaConstructor buildConstructor(
+  java.MethodDef buildConstructor(
       dart.Constructor node, List<dart.Field> fields) {
     Iterable<dart.Initializer> fieldInitializers =
         node.initializers.where((i) => i.runtimeType == dart.FieldInitializer);
@@ -748,31 +741,26 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       typeParamName += "\$";
     }
 
-    var constructorCall = new java.MethodInvocation(
-        buildDefaultReceiver(false),
-        Constants.constructorMethodPrefix,
-        parameters.map((p) => new java.IdentifierExpr(p.name)).toList());
+    var methodName = Constants.constructorMethodPrefix +
+        node.name.name +
+        specialization.methodSuffix;
 
-    var delegatorBlock = new java.Block(<java.Statement>[
-      new java.SuperConstructorInvocation([
-        new java.CastExpr(
-            new java.NullLiteral(), java.JavaType.emptyConstructorMarker),
-        new java.IdentifierExpr(typeParamName)
-      ]),
-      new java.ExpressionStmt(constructorCall)
-    ]);
+    java.MethodDef constructorBody =
+        new java.MethodDef(methodName, body, parameters);
 
-    java.Constructor delegator = new java.Constructor(
-        thisClassOrInterfaceType,
-        delegatorBlock,
-        [new java.VariableDecl(typeParamName, ts.typeRepType)]
-          ..addAll(parameters));
+    return constructorBody;
+  }
 
-    java.MethodDef constructorBody = new java.MethodDef(
-        Constants.constructorMethodPrefix, body, parameters,
-        access: java.Access.Protected);
+  java.MethodDecl buildConstructorDecl(dart.Constructor node) {
+    // TODO(springerm): handle named parameters, etc.
+    List<java.VariableDecl> parameters = node.function.positionalParameters
+        .map(buildPositionalParameter)
+        .toList();
+    var methodName = Constants.constructorMethodPrefix +
+        node.name.name +
+        specialization.methodSuffix;
 
-    return new _JavaConstructor(delegator, constructorBody);
+    return new java.MethodDecl(methodName, parameters);
   }
 
   /// Wraps a Java statement in a block, if [stmt] is not already a block.
@@ -1194,7 +1182,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   @override
-  java.NewExpr visitConstructorInvocation(dart.ConstructorInvocation node) {
+  java.Expression visitConstructorInvocation(dart.ConstructorInvocation node) {
     // TODO(springerm): Check for usesHelperFunction
     // TODO(springerm): Handle other parameter types
     List<java.Expression> args =
@@ -1206,7 +1194,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         node.target.enclosingClass.thisType,
         node.target.enclosingClass.typeParameters,
         node.arguments.types);
-    java.ClassOrInterfaceType javaType = typeFactory.getClass(dartType);
+    java.ClassOrInterfaceType javaType =
+        typeFactory.getRawClass(node.target.enclosingClass);
 
     if (javaType == java.JavaType.object) {
       // Make sure that "new Object" results in "new DartObject"
@@ -1219,7 +1208,17 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var runtimeType = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
     args.insert(0, runtimeType);
 
-    return new java.NewExpr(new java.ClassRefExpr(javaType), args);
+    bool insertCast = node.parent is! dart.ExpressionStatement;
+    if (insertCast) {
+      return new java.CastExpr(
+          new java.MethodInvocation(new java.ClassRefExpr(javaType),
+              Constants.javaFactoryPrefix + node.name.name, args),
+          typeFactory.getLValueType(node.staticType));
+    } else {
+      // No cast if "new" expression is child of an ExprStmt
+      return new java.MethodInvocation(new java.ClassRefExpr(javaType),
+          Constants.javaFactoryPrefix + node.name.name, args);
+    }
   }
 
   /// Returns the enclosing class type of a member or the top level class type
