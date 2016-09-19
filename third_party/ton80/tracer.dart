@@ -1,5 +1,11 @@
+// The ray tracer code in this file is written by Adam Burmister. It
+// is available in its original form from:
+//
+//   http://labs.flog.co.nz/raytracer/
+//
+// Ported from the v8 benchmark suite by Google 2012.
+
 // https://github.com/dart-lang/ton80/blob/master/lib/src/common/dart/BenchmarkBase.dart
-// Copyright 2011 Google Inc. All Rights Reserved.
 
 import 'dart:math';
 
@@ -110,13 +116,6 @@ class BenchmarkBase {
   }
 
 }
-
-// The ray tracer code in this file is written by Adam Burmister. It
-// is available in its original form from:
-//
-//   http://labs.flog.co.nz/raytracer/
-//
-// Ported from the v8 benchmark suite by Google 2012.
 
 // Dummy HTML definition.
 

@@ -29,6 +29,9 @@ import 'package:dart2java/src/compiler/compiler.dart'
 /// The `test/codegen` directory.
 final codegenDir = path.join(testDirectory, 'codegen');
 
+/// Another directory in third_party containing test cases
+final ton80ThirdPartyDir = path.join(testDirectory, '../third_party/ton80');
+
 /// The `test/codegen_expect` directory.
 final codegenExpectDir = path.join(testDirectory, 'codegen_expect');
 
@@ -143,6 +146,17 @@ List<String> _setUpTests(RegExp filePattern) {
 
   for (var file in _listFiles(codegenDir, filePattern)) {
     var relativePath = path.relative(file, from: codegenDir);
+    var outputPath = path.join(codegenTestDir, relativePath);
+
+    new File(file).copySync(outputPath);
+    if (file.endsWith(".dart")) {
+      testFiles.add(outputPath);
+    }
+  }
+
+  // Test cases in thrid_party
+  for (var file in _listFiles(ton80ThirdPartyDir, filePattern)) {
+    var relativePath = path.relative(file, from: ton80ThirdPartyDir);
     var outputPath = path.join(codegenTestDir, relativePath);
 
     new File(file).copySync(outputPath);
