@@ -270,7 +270,14 @@ class _JavaAstEmitter extends Visitor<String> {
     var receiver = invocation.receiver.accept(this);
     var arguments =
         invocation.arguments.map((arg) => arg.accept(this)).join(", ");
-    return "${receiver}.${invocation.methodName}(${arguments})";
+
+    var genericArgs = "";
+    if (invocation.genericArguments.isNotEmpty) {
+      genericArgs = "<" + invocation.genericArguments.map(
+        (arg) => arg.accept(this)).join(", ") + ">";
+    }
+
+    return "${receiver}.${genericArgs}${invocation.methodName}(${arguments})";
   }
 
   @override

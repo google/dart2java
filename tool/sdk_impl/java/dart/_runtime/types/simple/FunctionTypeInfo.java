@@ -24,6 +24,39 @@ import java.util.TreeMap;
  * function type.
  */
 public final class FunctionTypeInfo {
+  // For debug purposes
+  public final String name;
+
+  public final TypeVariableExpr[] typeVariables;
+
+  /**
+   * Creates a {@code FunctionTypeInfo} for a function signature with no named parameters.
+   *
+   * @param returnType return type of function (TODO(springerm))
+   * @param requiredParamCount number of required parameters
+   * @param positionalParams types of positional parameters (must have at least {@code
+   * requiredParamCount} elements).
+   */
+  public FunctionTypeInfo(String name, String[] typeVariableNames) {
+    this.name = name;
+    this.typeVariables = new TypeVariableExpr[typeVariableNames.length];
+    for (int i = 0; i < typeVariables.length; i++) {
+      this.typeVariables[i] = new TypeVariableExpr(this.name, typeVariableNames[i]);
+    }
+
+    // Set final variables (removed some parts of this class)
+    this.returnType = null;
+    this.requiredParamCount = 0;
+    this.positionalParams = null;
+    this.namedParams = null;
+  }
+
+
+  // Parts of Andrew's original implementation (not in use as of now)
+
+  private static final String[] EMPTY_STRING_ARRAY = new String[0];
+  private static final TypeVariableExpr[] EMPTY_TVE_ARRAY = new TypeVariableExpr[0];
+
   /**
    * The return type of the function.
    */
@@ -49,40 +82,6 @@ public final class FunctionTypeInfo {
    * String}s, i.e. alphabetically. This is part of the contract of {@code FunctionTypeInfo}.
    */
   public final SortedMap<String, TypeExpr> namedParams;
-
-  private static final String[] EMPTY_STRING_ARRAY = new String[0];
-  private static final TypeVariableExpr[] EMPTY_TVE_ARRAY = new TypeVariableExpr[0];
-
-  /**
-   * Creates a {@code FunctionTypeInfo} for a function signature with no named parameters.
-   *
-   * @param returnType return type of function
-   * @param requiredParamCount number of required parameters
-   * @param positionalParams types of positional parameters (must have at least {@code
-   * requiredParamCount} elements).
-   */
-  public FunctionTypeInfo(TypeExpr returnType, int requiredParamCount,
-      TypeExpr[] positionalParams) {
-    this(returnType, requiredParamCount, positionalParams, EMPTY_STRING_ARRAY, EMPTY_TVE_ARRAY);
-  }
-
-  /**
-   * Creates a {@code FunctionTypeInfo} for a function signature.
-   *
-   * @param returnType return type of function
-   * @param requiredParamCount number of required parameters
-   * @param positionalParams types of positional parameters (must have at least {@code
-   * requiredParamCount} elements).
-   * @param namedParamNames names of optional named parameters.
-   * @param namedParamTypes types of optional named parameters.
-   */
-  public FunctionTypeInfo(TypeExpr returnType, int requiredParamCount, TypeExpr[] positionalParams,
-      String[] namedParamNames, TypeExpr[] namedParamTypes) {
-    this.returnType = returnType;
-    this.requiredParamCount = requiredParamCount;
-    this.positionalParams = positionalParams;
-    this.namedParams = makeSortedMap(namedParamNames, namedParamTypes);
-  }
 
   private static SortedMap<String, TypeExpr> makeSortedMap(String[] names, TypeExpr[] types) {
     assert (names.length == types.length);

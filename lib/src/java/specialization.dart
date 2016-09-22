@@ -87,6 +87,14 @@ class TypeSpecialization {
     this.delegatorOverrides = new List.filled(allTypes.length, null);
   }
 
+  TypeSpecialization.fromBoxedTypes(Iterable<JavaType> allTypes) {
+    this.types = allTypes
+        .map((t) => specializedTypes.contains(t.toUnboxedType()) 
+          ? t.toUnboxedType() : null)
+        .toList();
+    this.delegatorOverrides = new List.filled(allTypes.length, null);
+  }
+
   /// Generates a type specialization for a delegator methods, where the class/
   /// interface/method name is generated according to [types], but types
   /// from both [types] and [delegatorOverrides] are used to look up types.

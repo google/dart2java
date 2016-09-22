@@ -14,7 +14,12 @@ public class Foo1__boolean extends dart._runtime.base.DartObject implements gene
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return t;
     }
-    public void _constructor__boolean()
+    public void writeVariable__boolean(boolean value)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.setVariable__boolean(value);
+    }
+    public void _constructornewMe__boolean()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
@@ -40,8 +45,12 @@ public class Foo1__boolean extends dart._runtime.base.DartObject implements gene
     {
       return this.foo__boolean(((boolean) t));
     }
-    public void _constructor()
+    public void writeVariable(java.lang.Boolean value)
     {
-      this._constructor__boolean();
+      this.writeVariable__boolean(((boolean) value));
+    }
+    public void _constructornewMe()
+    {
+      this._constructornewMe__boolean();
     }
 }

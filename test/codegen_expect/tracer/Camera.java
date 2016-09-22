@@ -25,7 +25,7 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
       java.lang.Object pos = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", this.getScreen(), dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getEquator(), vx), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getUp(), vy)));
       pos = dart._runtime.helpers.DynamicHelper.invoke("negateY", pos);
       java.lang.Object dir = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", pos, this.getPosition());
-      tracer.Ray_interface ray = ((tracer.Ray_interface) tracer.Ray._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), pos, dart._runtime.helpers.DynamicHelper.invoke("normalize", dir)));
+      tracer.Ray_interface ray = tracer.Ray._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), pos, dart._runtime.helpers.DynamicHelper.invoke("normalize", dir));
       return ray;
     }
     public java.lang.String toString()

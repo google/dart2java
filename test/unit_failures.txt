@@ -1,1 +1,2 @@
 java_class // Broken until List and Map handle type parameters correctly.
+map        // Broken until Map is implemented in Dart.

@@ -4,6 +4,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.LSG.class, havlak.LSG_interface.class);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_SimpleLoop = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.SimpleLoop.dart2java$typeInfo);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltSimpleLoop$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(havlak.SimpleLoop.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       havlak.LSG.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -23,7 +24,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       havlak.LSG_interface __tempVar_0;
       int __tempVar_1;
       int __tempVar_2;
-      havlak.SimpleLoop_interface loop = ((havlak.SimpleLoop_interface) havlak.SimpleLoop._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_0 = this, dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = __tempVar_0.getLoopCounter(), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_2 = __tempVar_0.setLoopCounter((__tempVar_1 + 1)), __tempVar_1)))));
+      havlak.SimpleLoop_interface loop = havlak.SimpleLoop._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_0 = this, dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = __tempVar_0.getLoopCounter(), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_2 = __tempVar_0.setLoopCounter((__tempVar_1 + 1)), __tempVar_1))));
       return loop;
     }
     public boolean addLoop(havlak.SimpleLoop_interface loop)
@@ -51,8 +52,8 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.loopCounter = 1;
-      this.loops = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.SimpleLoop_interface.class));
-      this.root = ((havlak.SimpleLoop_interface) havlak.SimpleLoop._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), 0));
+      this.loops = ((dart.core.List_interface) ((dart.core.List_interface<havlak.SimpleLoop_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltSimpleLoop$gt), havlak.SimpleLoop_interface.class)));
+      this.root = havlak.SimpleLoop._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), 0);
       super._constructor();
       this.getRoot().setNestingLevel_(0);
       this.getLoops().add(this.getRoot());

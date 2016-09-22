@@ -14,7 +14,12 @@ public class Foo1__int extends dart._runtime.base.DartObject implements generics
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return t;
     }
-    public void _constructor__int()
+    public void writeVariable__int(int value)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.setVariable__int(value);
+    }
+    public void _constructornewMe__int()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
@@ -40,8 +45,12 @@ public class Foo1__int extends dart._runtime.base.DartObject implements generics
     {
       return this.foo__int(((int) t));
     }
-    public void _constructor()
+    public void writeVariable(java.lang.Integer value)
     {
-      this._constructor__int();
+      this.writeVariable__int(((int) value));
+    }
+    public void _constructornewMe()
+    {
+      this._constructornewMe__int();
     }
 }

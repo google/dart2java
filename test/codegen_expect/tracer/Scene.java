@@ -5,6 +5,7 @@ public class Scene extends dart._runtime.base.DartObject implements tracer.Scene
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(tracer.Scene.class, tracer.Scene_interface.class);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Vector = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Vector.dart2java$typeInfo);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Camera = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Camera.dart2java$typeInfo);
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_dynamic = dart._runtime.types.simple.TopType.EXPR;
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Color = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Color.dart2java$typeInfo);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Background = new dart._runtime.types.simple.InterfaceTypeExpr(tracer.Background.dart2java$typeInfo);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
@@ -25,10 +26,10 @@ public class Scene extends dart._runtime.base.DartObject implements tracer.Scene
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
-      this.setCamera(((tracer.Camera_interface) tracer.Camera._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Camera), ((tracer.Vector_interface) tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), 0.0, 0.0, (-0.5))), ((tracer.Vector_interface) tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), 0.0, 0.0, 1.0)), ((tracer.Vector_interface) tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), 0.0, 1.0, 0.0)))));
-      this.setShapes(dart.core.List.factory$(java.lang.Object.class, 0));
-      this.setLights(dart.core.List.factory$(java.lang.Object.class, 0));
-      this.setBackground(((tracer.Background_interface) tracer.Background._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Background), ((tracer.Color_interface) tracer.Color._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.5)), 0.2)));
+      this.setCamera(tracer.Camera._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Camera), tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), 0.0, 0.0, (-0.5)), tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), 0.0, 0.0, 1.0), tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), 0.0, 1.0, 0.0)));
+      this.setShapes(((dart.core.List_interface<java.lang.Object>) dart.core.List.<java.lang.Object>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_dynamic)}), 0)));
+      this.setLights(((dart.core.List_interface<java.lang.Object>) dart.core.List.<java.lang.Object>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_dynamic)}), 0)));
+      this.setBackground(tracer.Background._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Background), tracer.Color._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.5), 0.2));
     }
     public java.lang.Object getCamera()
     {

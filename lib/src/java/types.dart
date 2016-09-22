@@ -31,6 +31,14 @@ abstract class JavaType extends Node {
     return this;
   }
 
+  PrimitiveType toUnboxedType() {
+    return null;
+  }
+
+  TypeSpecialization get specialization => 
+      new TypeSpecialization.fullyGeneric(0);
+
+
   const JavaType(this.name);
 
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitJavaType(this);
@@ -175,25 +183,6 @@ abstract class JavaType extends Node {
   /// 64-bit IEEE 754 floating-point number.
   static final PrimitiveType double_ =
       new PrimitiveType._("double", javaDoubleClass, floatingPointOperators);
-
-  static Map<JavaType, String> genericSpecializations = {
-    boolean: "_bool",
-    int_: "_int",
-    double_: "_double"
-  };
-
-  static bool hasGenericSpecialization(Iterable<JavaType> typeArguments) {
-    return typeArguments.length == 1 &&
-        genericSpecializations.containsKey(typeArguments.single);
-  }
-
-  static String getGenericImplementation(Iterable<JavaType> typeArguments) {
-    if (hasGenericSpecialization(typeArguments)) {
-      return genericSpecializations[typeArguments.single];
-    } else {
-      return "Generic";
-    }
-  }
 }
 
 /// A convenience class to allow handling of methods that don't return a value.
@@ -217,7 +206,16 @@ class PrimitiveType extends JavaType {
     return boxedType;
   }
 
-  PrimitiveType._(String name, this.boxedType, this.operators) : super(name);
+  @override
+  PrimitiveType toUnboxedType() {
+    return this;
+  }
+
+  PrimitiveType._(String name, this.boxedType, this.operators) : super(name) {
+    if (boxedType != null && boxedType != JavaType.javaNotImplemented) {
+      boxedType.unboxedType = this;
+    }
+  }
 }
 
 // TODO(stanm): consider the null type.
@@ -254,17 +252,23 @@ class ClassOrInterfaceType extends ReferenceType {
   /// A list of type arguments, in case this is a generic type.
   final List<JavaType> typeArguments;
 
+  final bool omitJavaGenerics;
+
+  // Cannot be set in constructor
+  PrimitiveType unboxedType;
+
   /// The type specialization of this Java type.
   ///
   /// All classes (even non-generic ones) have a specialization to reduce
   /// special cases. In that case, the specialization is "fully generic" and
   /// does not append a suffix to the class/interface name.
-  TypeSpecialization specialization = new TypeSpecialization.fullyGeneric(0);
+  TypeSpecialization _specialization = new TypeSpecialization.fullyGeneric(0);
 
   /// A top-level type, i.e. a type that isn't nested in any other class or
   /// interface.
   ClassOrInterfaceType(this.package, String name, {this.isInterface: false})
       : isStatic = true,
+        omitJavaGenerics = false,
         enclosingType = null,
         typeArguments = const [],
         unspecializedName = name,
@@ -280,6 +284,7 @@ class ClassOrInterfaceType extends ReferenceType {
   ClassOrInterfaceType.nested(ClassOrInterfaceType enclosingType, String name,
       {this.isInterface: false, this.isStatic: true})
       : package = enclosingType.package,
+        omitJavaGenerics = false,
         enclosingType = enclosingType,
         typeArguments = const [],
         unspecializedName = name,
@@ -318,8 +323,9 @@ class ClassOrInterfaceType extends ReferenceType {
       this.isStatic,
       this.enclosingType,
       this.typeArguments,
+      this.omitJavaGenerics,
       TypeSpecialization specialization)
-      : this.specialization = specialization,
+      : this._specialization = specialization,
         this.unspecializedName = unspecializedName,
         super(unspecializedName + specialization.classNameSuffix);
 
@@ -329,7 +335,7 @@ class ClassOrInterfaceType extends ReferenceType {
   /// Note that there are no arity checks. [typeArgs] may be [:null:] to
   /// retrieve a reference to the raw Java class or interface.
   ClassOrInterfaceType withTypeArguments(Iterable<JavaType> typeArgs) {
-    var spec = new TypeSpecialization.fromTypes(typeArgs);
+    var spec = new TypeSpecialization.fromBoxedTypes(typeArgs);
     return new ClassOrInterfaceType._copy(
         name,
         unspecializedName,
@@ -338,6 +344,7 @@ class ClassOrInterfaceType extends ReferenceType {
         isStatic,
         enclosingType,
         typeArgs.toList() ?? const [],
+        omitJavaGenerics,
         spec);
   }
 
@@ -349,8 +356,23 @@ class ClassOrInterfaceType extends ReferenceType {
   /// class/interface type.
   ClassOrInterfaceType withSpecialization(TypeSpecialization spec) {
     return new ClassOrInterfaceType._copy(name, unspecializedName, package,
-        isInterface, isStatic, enclosingType, typeArguments, spec);
+        isInterface, isStatic, enclosingType, typeArguments, omitJavaGenerics,
+        spec);
   }
+
+  ClassOrInterfaceType withoutJavaGenerics() {
+    return new ClassOrInterfaceType._copy(name, unspecializedName, package,
+        isInterface, isStatic, enclosingType, typeArguments, true, 
+        specialization);
+  }
+
+  @override
+  PrimitiveType toUnboxedType() {
+    return unboxedType;
+  }
+
+  @override
+  TypeSpecialization get specialization => _specialization;
 
   /// Returns [true] if this type is generic.
   bool get isGeneric => typeArguments.isNotEmpty;
@@ -408,7 +430,7 @@ class ClassOrInterfaceType extends ReferenceType {
         }
       }
 
-      return genericTypeArgs.isNotEmpty
+      return genericTypeArgs.isNotEmpty && !omitJavaGenerics
           ? "$identifier<${genericTypeArgs.join(", ")}>"
           : identifier;
     } else {

@@ -444,7 +444,10 @@ class MethodInvocation extends Expression {
 
   List<Expression> arguments;
 
-  MethodInvocation(this.receiver, this.methodName, [this.arguments = const []]);
+  List<ClassRefExpr> genericArguments;
+
+  MethodInvocation(this.receiver, this.methodName, 
+    [this.arguments = const [], this.genericArguments = const []]);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodInvocation(this);

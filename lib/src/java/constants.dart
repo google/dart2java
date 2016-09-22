@@ -59,7 +59,7 @@ class Constants {
   static const String javaStaticThisIdentifier = "self";
   static const String toStringMethodName = "toString";
   static const String sequencePointMethodName = "comma";
-  static const String listInitializerMethodName = "_fromArguments";
+  static const String listInitializerMethodName = "factory\$fromArguments";
   static const String topLevelClassName = "__TopLevel";
   static const String constructorMethodPrefix = "_constructor";
   static const String javaFactoryPrefix = "_new";

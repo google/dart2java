@@ -23,135 +23,61 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import dart._runtime.helpers.ConstructorHelper;
-import dart._runtime.types.simple.InterfaceType;
-import dart._runtime.types.simple.InterfaceTypeExpr;
-import dart._runtime.types.simple.TopType;
 import dart._runtime.types.simple.Type;
-import dart._runtime.types.simple.TypeEnvironment;
-import dart._runtime.types.simple.TypeExpr;
 
 /**
-* The generic implementation of DartList. 
+* A specialized implementation of DartList for ints. 
+*
+* This implementation avoids boxing integers and is more efficient. It
+* implements DartList, but references should be statically typed to the
+* specialized implementation and __int methods should then be used
+* instead of interface methods for efficiency reasons.
 */
-public class DartList<T> extends dart.core.List<T> implements List<T> {
+public class DartList__int extends dart.core.List__int implements List<Integer> {
   static final int DEFAULT_SIZE = 16;
   static final float GROW_FACTOR = 1.5F;
 
   int size;
 
-  T[] array;
+  int[] array;
 
-  Class<T> genericType;
-
-  Class<T[]> genericArrayType;
-
-  public DartList(ConstructorHelper.EmptyConstructorMarker arg, Type type)
+  public DartList__int(ConstructorHelper.EmptyConstructorMarker arg, Type type)
   {
     super(arg, type);
   }
 
-  DartList(Type type, Class<T> genericType, int parameterSize) {
+  DartList__int(Type type, int parameterSize) {
     super((ConstructorHelper.EmptyConstructorMarker) null, type);
 
-    this.genericType = genericType;
-    this.genericArrayType = (Class<T[]>) Array.newInstance(genericType, 0)
-      .getClass();
-    
     if (parameterSize == 0) {
-      // No size argument given ("null")
-      this.array = (T[]) Array.newInstance(genericType, DEFAULT_SIZE);
+      // No parameter given ("null")
+      this.array = new int[DEFAULT_SIZE];
       this.size = 0;
     } else {
-      this.array = (T[]) Array.newInstance(genericType, parameterSize);
+      this.array = new int[parameterSize];
       this.size = parameterSize;
-    }
-  }
-
-  public static <E> dart.core.List_interface<E> newInstance$(
-      TypeEnvironment dart2java$localTypeEnv, int length)
-  {
-    Type type = dart2java$localTypeEnv.evaluate(
-      new InterfaceTypeExpr(
-        dart.core.List.dart2java$typeInfo, 
-        new TypeExpr[] {dart.core.List.factory$$typeInfo.typeVariables[0]}));
-    Type innerType = type.env.evaluate(
-      dart.core.List.dart2java$typeInfo.typeVariables[0]);
-
-    // Create instance of correct specialization
-    // TODO(springerm): Specializations for bool, double missing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type)
-    {
-      return (dart.core.List_interface) (new DartList__int(type, length));
-    } else {
-      InterfaceType reifiedType = (InterfaceType) type;
-      Type firstTypeArg = reifiedType.actualTypeParams[0];
-
-      Class javaClassObj;
-      if (firstTypeArg instanceof InterfaceType) {
-        javaClassObj = ((InterfaceType) reifiedType.actualTypeParams[0])
-          .getJavaType();
-      } else if (firstTypeArg instanceof TopType) {
-        // Type of list is "dynamic"
-        javaClassObj = Object.class;
-      } else {
-        throw new RuntimeException("Unknown generic type: " 
-          + firstTypeArg.toString());
-      }
-      
-      return new DartList<E>(type, javaClassObj, length);
-    }
-  }
-
-  public static <T> dart.core.List_interface<T> factory$fromArguments(
-      Type type, Class<T> javaClassObj, T... elements) {
-    Type innerType = type.env.evaluate(
-        dart.core.List.dart2java$typeInfo.typeVariables[0]);
-
-    // Create instance of correct specialization
-    // TODO(springerm): Specializations for bool, double missing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type)
-    {
-      DartList__int instance = new DartList__int(type, elements.length);
-
-      for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut__int(i, (Integer) elements[i]);
-      }
-      return (dart.core.List_interface) instance;
-    } else {
-      InterfaceType reifiedType = (InterfaceType) type;
-      InterfaceType firstGenericType = (InterfaceType) reifiedType.actualTypeParams[0];
-      DartList<T> instance = new DartList<T>(
-        type, (Class) firstGenericType.getJavaType(), elements.length);
-
-      for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut(i, elements[i]);
-      }
-      return instance;
     }
   }
   
   private void increaseSize() {
-    array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR) + 1, 
-      genericArrayType);
+    array = Arrays.copyOf(array, (int) (array.length * GROW_FACTOR) + 1);
   }
 
   private boolean isArrayFull() {
     return size == array.length;
   }
 
+  public void _constructor__int() {
+
+  }
 
   // --- Methods defined in List ---
 
-  public T operatorAt(int index) {
-    if (size <= index || index < 0) {
-      // TODO(springerm): Dart exceptions
-      throw new RuntimeException("RangeError: out of bounds");
-    }
-
+  public int operatorAt__int(int index) {
     return array[index];
   }
 
-  public void operatorAtPut(int index, T value) {
+  public void operatorAtPut__int(int index, int value) {
     if (size <= index || index < 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("RangeError: out of bounds");
@@ -160,17 +86,17 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     array[index] = value;
   }
 
-  public int getLength() {
+  public int getLength__int() {
     return size;
   }
 
-  public void setLength(int newLength) {
+  public void setLength__int(int newLength) {
     // TODO(springerm): Check semantics (null values)
     size = newLength;
-    array = Arrays.copyOf(array, size, genericArrayType);
+    array = Arrays.copyOf(array, size);
   }
 
-  public boolean add(T value) {
+  public boolean add__int(int value) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -186,9 +112,9 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
   // TODO(springerm): sort
   // TODO(springerm): shuffle
 
-  public int indexOf(T element, int start) {
+  public int indexOf__int(int element, int start) {
     for (int i = start; i < size; i++) {
-      if (array[i].equals(element)) {
+      if (array[i] == element) {
         return i;
       }
     }
@@ -198,12 +124,13 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
 
   // TODO(springerm): lastIndexOf
 
-  public void clear() {
+  public void clear__int() {
     size = 0;
-    array = (T[]) Array.newInstance(genericType, DEFAULT_SIZE);
+    array = new int[DEFAULT_SIZE];
   }
 
-  public void insert(int index, T element) {
+
+  public void insert__int(int index, int element) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -218,13 +145,19 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
   // TODO(springerm): insertAll
   // TODO(springerm): setAll
 
-  public boolean remove(Object value) {
+  // Must be boxed integer here
+  public boolean remove__int(Object value) {
     int index;
     boolean found = false;
 
+    if (!(value instanceof Integer)) {
+      return false;
+    }
+    int intValue = (Integer) value;
+
     // find
     for (index = 0; index < size; index++) {
-      if (array[index] == value) {
+      if (array[index] == intValue) {
         found = true;
         break;
       }
@@ -237,40 +170,40 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
       }
 
       size--;
-      array[size] = null;
+      array[size] = 0;
     }
 
     return found;
   }
 
-  public T removeAt(int index) {
-    T element = operatorAt(index);
+  public int removeAt__int(int index) {
+    int element = operatorAt__int(index);
 
     for (int i = index; i < size - 1; i++) {
       array[i] = array[i + 1];
     }
 
     size--;
-    array[size] = null;
+    array[size] = 0;
 
     return element;
   }
 
-  public T removeLast() {
-    T element = array[size - 1];
-    array[size - 1] = null;
+  public int removeLast__int() {
+    int element = array[size - 1];
+    array[size - 1] = 0;
 
     size--;
     return element;
   }
 
-  // TODO(springerm): removeWhere
-  // TODO(springerm): retainWhere
-
-  public DartList<T> sublist(int start, int end) {
+  public dart.core.List_interface__int sublist__int(int start, int end) {
     throw new RuntimeException("Not implemented yet.");
   }
 
+  // TODO(springerm): removeWhere
+  // TODO(springerm): retainWhere
+  // TODO(springerm): sublist
   // TODO(springerm): getRange
   // TODO(springerm): setRange
   // TODO(springerm): removeRange
@@ -280,15 +213,24 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
 
 
   // --- Methods defined in Iterable ---
+  public boolean contains(Object element) {
+    return contains__int(element);
+  }
 
   // TODO(springerm): getIterator
   // TODO(springerm): map
   // TODO(springerm): where
   // TODO(springerm): expand
 
-  public boolean contains(Object element) {
+  // Always boxed integer here
+  public boolean contains__int(Object element) {
+    if (!(element instanceof Integer)) {
+      return false;
+    }
+    int intValue = (Integer) element;
+    
     for (int i = 0; i < size; i++) {
-      if (array[i] == element) {
+      if (array[i] == intValue) {
         return true;
       }
     }
@@ -305,11 +247,15 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
   // TODO(springerm): toList
   // TODO(springerm): toSet
 
-  public boolean isEmpty() {
+  public boolean isEmpty__int() {
     return size == 0;
   }
 
-  public boolean isNotEmpty() {
+  public boolean isEmpty() {
+    return isEmpty();
+  }
+
+  public boolean isNotEmpty__int() {
     return size != 0;
   }
 
@@ -318,7 +264,7 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
   // TODO(springerm): skip
   // TODO(springerm): skipWhile
 
-  public T getFirst() {
+  public int getFirst__int() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -327,7 +273,7 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     return array[0];
   }
 
-  public T getLast() {
+  public int getLast__int() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -336,7 +282,7 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     return array[size - 1];
   }
 
-  public T getSingle() {
+  public int getSingle__int() {
     if (size != 1) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: Expected exactly one element");
@@ -353,30 +299,37 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
 
 
   // --- Methods defined in Object ---
-  // TODO(springerm): Proper implementations for methods defined in Object
+  // TODO(springerm): Proper implementations for Object methods
+  public int getHashCode__int() {
+    return this.hashCode();
+  }
+
+  public boolean operatorEqual__int(Object other) {
+    return this == other;
+  }
 
 
   // --- Methods defined in java.util.List ---
-  public void add(int index, T element) {
+  public void add(int index, Integer element) {
     insert(index, element);
   }
 
-  public boolean addAll(Collection<? extends T> c) {
-    for (T element : c) {
+  public boolean addAll(Collection<? extends Integer> c) {
+    for (Integer element : c) {
       add(element);
     }
 
     return true;
   }
 
-  public boolean addAll(int index, Collection<? extends T> c) {
+  public boolean addAll(int index, Collection<? extends Integer> c) {
     // TODO(springerm): Implement
     return false;
   }
 
   public boolean containsAll(Collection<?> c) {
     for (Object element : c) {
-      if (!contains(c)) {
+      if (!contains__int(c)) {
         return false;
       }
     }
@@ -384,15 +337,19 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     return true;
   }
 
-  public T get(int index) {
+  public Integer get(int index) {
     return operatorAt(index);
   }
 
   public int indexOf(Object element) {
-    return indexOf((T) element, 0);
+    if (!(element instanceof Integer)) {
+      return -1;
+    }
+
+    return indexOf__int((Integer) element, 0);
   }
 
-  public Iterator<T> iterator() {
+  public Iterator<Integer> iterator() {
     return new Iterator() {
       int nextIndex = 0;
 
@@ -400,7 +357,7 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
         return nextIndex < size;
       }
 
-      public T next() {
+      public Integer next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
@@ -410,8 +367,12 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
   }
 
   public int lastIndexOf(Object o) {
+    if (!(o instanceof Integer)) {
+      return -1;
+    }
+
     for (int i = size - 1; i > -1; i--) {
-      if (array[i] == o) {
+      if (array[i] == (Integer) o) {
         return i;
       }
     }
@@ -419,17 +380,17 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     return -1;
   }
 
-  public ListIterator<T> listIterator() {
+  public ListIterator<Integer> listIterator() {
     // TODO(springerm): Implement
     return null;
   }
 
-  public ListIterator<T> listIterator(int index) {
+  public ListIterator<Integer> listIterator(int index) {
     // TODO(springerm): Implement
     return null;
   }
 
-  public T remove(int index) {
+  public Integer remove(int index) {
     return removeAt(index);
   }
 
@@ -446,8 +407,8 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     return false;
   }
 
-  public T set(int index, T element) {
-    T oldValue = operatorAt(index);
+  public Integer set(int index, Integer element) {
+    Integer oldValue = operatorAt(index);
     operatorAtPut(index, element);
     return oldValue;
   }
@@ -456,17 +417,20 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
     return getLength();
   }
 
-  public List<T> subList(int fromIndex, int toIndex) {
+  public List<Integer> subList(int fromIndex, int toIndex) {
     // TODO(springerm): Implement
     return null;
   }
   
   public Object[] toArray() {
-    return Arrays.copyOf(array, size, 
-      (Class<Object[]>) Array.newInstance(Object.class, 0).getClass());
+    Object[] result = new Object[size];
+    for (int i = 0; i < size; i++) {
+      result[i] = array[i];
+    }
+    return result;
   }
 
   public <E> E[] toArray(E[] a) {
-    return Arrays.copyOf(array, size, (Class<E[]>) a.getClass());
+    return Arrays.copyOf(toArray(), size, (Class<E[]>) a.getClass());
   }
 }

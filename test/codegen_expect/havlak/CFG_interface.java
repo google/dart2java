@@ -7,7 +7,7 @@ public interface CFG_interface extends dart._runtime.base.DartObject_interface
   int getNumNodes();
   havlak.BasicBlock_interface getDst(havlak.BasicBlockEdge_interface edge);
   havlak.BasicBlock_interface getSrc(havlak.BasicBlockEdge_interface edge);
-  dart.core.Map_interface<java.lang.Integer, havlak.BasicBlock_interface> getBasicBlockMap();
+  dart.core.Map_interface__int_generic<havlak.BasicBlock_interface> getBasicBlockMap();
   dart.core.List_interface<havlak.BasicBlockEdge_interface> getEdgeList();
   havlak.BasicBlock_interface getStartNode();
   havlak.BasicBlock_interface setStartNode(havlak.BasicBlock_interface value);

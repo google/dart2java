@@ -8,11 +8,11 @@ public interface Packet_interface extends dart._runtime.base.DartObject_interfac
   int getId();
   int getKind();
   int getA1();
-  dart.core.List_interface<java.lang.Integer> getA2();
+  dart.core.List_interface__int getA2();
   richards.Packet_interface setLink(richards.Packet_interface value);
   int setId(int value);
   int setKind(int value);
   int setA1(int value);
-  dart.core.List_interface<java.lang.Integer> setA2(dart.core.List_interface<java.lang.Integer> value);
+  dart.core.List_interface__int setA2(dart.core.List_interface__int value);
   void _constructor(richards.Packet_interface link, int id, int kind);
 }

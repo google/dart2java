@@ -15,7 +15,7 @@ public class __TopLevel
     public static void main(String[] args)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      ((havlak.Havlak_interface) havlak.Havlak._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Havlak))).report();
+      havlak.Havlak._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Havlak)).report();
     }
     public static int mix(int existing, int value)
     {

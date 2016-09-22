@@ -3,6 +3,7 @@ package generics;
 public class Bar2<A, B> extends dart._runtime.base.DartObject implements generics.Bar2_interface<A, B>
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(new java.lang.String[] {"A", "B"}, generics.Bar2.class, generics.Bar2_interface.class);
+    public static dart._runtime.types.simple.FunctionTypeInfo factory$newBar$typeInfo = new dart._runtime.types.simple.FunctionTypeInfo("generics.Bar2::factory$newBar", new java.lang.String[] {"A", "B"});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       generics.Bar2.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -42,6 +43,13 @@ public class Bar2<A, B> extends dart._runtime.base.DartObject implements generic
     {
       this.varB = value;
       return value;
+    }
+    public static <A, B> generics.Bar2_interface<A, B> factory$newBar(dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv, A a, B b)
+    {
+      generics.Bar2_interface<A, B> result = ((generics.Bar2_interface) generics.Bar2._new(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(generics.Bar2.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {generics.Bar2.factory$newBar$typeInfo.typeVariables[0], generics.Bar2.factory$newBar$typeInfo.typeVariables[1]}))));
+      result.setVarA(a);
+      result.setVarB(b);
+      return ((generics.Bar2_interface) result);
     }
     public static generics.Bar2_interface _new(dart._runtime.types.simple.Type type)
     {

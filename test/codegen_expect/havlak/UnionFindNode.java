@@ -3,6 +3,7 @@ package havlak;
 public class UnionFindNode extends dart._runtime.base.DartObject implements havlak.UnionFindNode_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.UnionFindNode.class, havlak.UnionFindNode_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltUnionFindNode$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       havlak.UnionFindNode.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -27,7 +28,7 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
     public havlak.UnionFindNode_interface findSet()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      dart.core.List_interface<havlak.UnionFindNode_interface> nodeList = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.UnionFindNode_interface.class));
+      dart.core.List_interface<havlak.UnionFindNode_interface> nodeList = ((dart.core.List_interface) ((dart.core.List_interface<havlak.UnionFindNode_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltUnionFindNode$gt), havlak.UnionFindNode_interface.class)));
       havlak.UnionFindNode_interface node = this;
       while ((!dart._runtime.helpers.ObjectHelper.operatorEqual(node, node.getParent())))
       {

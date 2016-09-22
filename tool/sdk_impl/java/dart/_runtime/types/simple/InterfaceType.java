@@ -53,7 +53,7 @@ public class InterfaceType extends Type {
   /**
    * The actual type parameters of this reified type.
    */
-  final Type[] actualTypeParams;
+  public final Type[] actualTypeParams;
 
   /**
    * The Java class to use for references to this Type.
@@ -63,7 +63,7 @@ public class InterfaceType extends Type {
    * For primitive types, this returns the unboxed primitive type ({@code int}, {@code double}, or
    * {@code boolean}).
    */
-  Class<?> getJavaType() {
+  public Class<?> getJavaType() {
     return info.javaInterface == null ? info.javaClass : info.javaInterface;
   }
 

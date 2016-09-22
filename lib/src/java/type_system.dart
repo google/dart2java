@@ -121,9 +121,11 @@ import 'dart:collection' show HashMap;
 
 import 'package:kernel/ast.dart' as dart;
 
+import '../compiler/compiler_state.dart';
 import 'ast.dart';
 import 'constants.dart';
 import 'type_factory.dart';
+import 'types.dart';
 
 /// The java class used for type representations.
 ///
@@ -144,7 +146,7 @@ ClassOrInterfaceType typeExprType =
 /// When storing a type environment in a variable, the compiler should use this
 /// type for the variable.
 ClassOrInterfaceType typeEnvType =
-    new ClassOrInterfaceType(_typePackage, 'TypeEnv');
+    new ClassOrInterfaceType(_typePackage, 'TypeEnvironment');
 
 /// Type-system related state that's local to a generated Java class.
 ///
@@ -158,6 +160,7 @@ class ClassState {
   final TypeFactory _typeFactory;
   final _typeExprNames = <dart.DartType, String>{};
   final _typeExprNameBuilder = new _TypeNameBuilder();
+  final _funcTypeInfoDecls = <FieldDecl>[];
 
   /// If set, then this class should have type info fields generated for the
   /// given Dart class declaration.
@@ -173,8 +176,17 @@ class ClassState {
   /// instance into [makeTypeExpr] (and any other methods that eventually call
   /// [makeTypeExpr]).
   String _getTypeExprName(dart.DartType type) {
+    String typeVarName;
+    try {
+      typeVarName = type.accept(_typeExprNameBuilder);
+    } on GenericMethodParameterDetected catch(e) {
+      // This type uses a generic parameter from a method. Such types are not
+      // hoisted but will be built upon method invocation.
+      return null;
+    }
+
     return _typeExprNames.putIfAbsent(
-        type, () => 'dart2java\$typeExpr_' + type.accept(_typeExprNameBuilder));
+      type, () => 'dart2java\$typeExpr_' + typeVarName);
   }
 
   /// The compiler should call this after generating code for the class under
@@ -188,6 +200,7 @@ class ClassState {
       // since the initializer will generally use some type expressions.
       typeInfoInit = _makeTypeInfoInitializer(_dartClass, this);
     }
+    yield* _funcTypeInfoDecls;
     yield* _typeExprNames.keys.map((type) {
       String name = _typeExprNames[type];
       ClassOrInterfaceType javaType =
@@ -214,6 +227,38 @@ class ClassState {
   void generateTypeInfo(dart.Class node) {
     assert(_dartClass == null);
     _dartClass = node;
+  }
+
+  /// Tell the type system to emit type info for the given procedure.
+  ///
+  /// The type info is needed for generic functions (the type info declares the
+  /// type variables that are needed to instantiate the generic function). It
+  /// might also be used in the future for tear-offs (which aren't yet
+  /// implemented).
+  void generateProcedureTypeInfo(dart.Procedure proc) {
+    var defClass = _getClassDefiningProc(proc, _typeFactory);
+    var defName = _getJavaNameOfProc(proc, _typeFactory.compilerState);
+    var varName = _getNameOfFuncTypeInfo(
+      proc.function, _typeFactory.compilerState);
+
+    var constructorArgs = <Expression>[
+      // Fully qualified function name.
+      new StringLiteral('${defClass.binaryName}::${defName}')
+    ];
+    if (proc.function.typeParameters.isNotEmpty) {
+      constructorArgs.add(new ArrayInitializer(
+          JavaType.string,
+          proc.function.typeParameters
+              .map((p) => new StringLiteral(p.name))
+              .toList()));
+    }
+
+    _funcTypeInfoDecls.add(new FieldDecl(varName, _funcTypeInfoType,
+        access: Access.Public,
+        isStatic: true,
+        isFinal: true,
+        initializer:
+            new NewExpr(new ClassRefExpr(_funcTypeInfoType), constructorArgs)));
   }
 }
 
@@ -306,7 +351,7 @@ Expression getTypeOf(Expression object) {
 /// The resulting variable is used by the type system to implement [getTypeEnv].
 VariableDeclStmt makeTopLevelEnvVar() {
   return new VariableDeclStmt(new VariableDecl(
-      _localTypeEnvVarName, _typeEnvironmentType,
+      _localTypeEnvVarName, typeEnvironmentType,
       isFinal: true, initializer: rootEnvironment));
 }
 
@@ -314,6 +359,10 @@ VariableDeclStmt makeTopLevelEnvVar() {
 ///
 /// The resulting variable is used by the type system to implement [getTypeEnv].
 /// The [member] must be either a [dart.Procedure] or a [dart.Constructor].
+/// 
+/// If this method returns [:null:], do not insert a statement; the type
+/// environment variable is handled differently (probably it is passed as a
+/// regular function formal parameter).
 VariableDeclStmt makeMethodEnvVar(dart.Member member, TypeFactory typeFactory) {
   bool isStatic;
   if (member is dart.Constructor) {
@@ -321,9 +370,10 @@ VariableDeclStmt makeMethodEnvVar(dart.Member member, TypeFactory typeFactory) {
   } else if (member is dart.Procedure) {
     isStatic = member.isStatic;
     if (member.function.typeParameters.isNotEmpty) {
-      // TODO(andrewkrieger): Extend the type environment with additional
-      // parameters. This will be needed for generic constructors as well.
-      throw new UnimplementedError('Generic methods not implemented.');
+      // If we're compiling a generic method, then we receive the type
+      // environment as a (Java) formal parameter, instead of as a local
+      // variable.
+      return null;
     }
   } else {
     throw new StateError('Invalid member $member of type ${member.runtimeType} '
@@ -339,8 +389,70 @@ VariableDeclStmt makeMethodEnvVar(dart.Member member, TypeFactory typeFactory) {
   }
 
   return new VariableDeclStmt(new VariableDecl(
-      _localTypeEnvVarName, _typeEnvironmentType,
+      _localTypeEnvVarName, typeEnvironmentType,
       isFinal: true, initializer: initializer));
+}
+
+/// Create a Java expression that builds the first parameter for a call to a
+/// Java method that implements a generic Dart method.
+///
+/// Most of the time, client code in the compiler should use
+/// [makeGenericFuncParam] instead. This function provides access to lower-level
+/// functionality.
+///
+/// This method is intended for synthetic Java methods, which don't have a
+/// [dart.FunctionNode]. The parameters [javaTypeVariableArray] and
+/// [javaTypeArgumentArray] should (at run-time) resolve to Java arrays holding
+/// (respectively) the formal type variables of the method being calls (in the
+/// current implementation, these are instances of the type
+/// `dart._runtime.types.simple.TypeVariableExpr`, a subtype of [typeExprTypr])
+/// and the actual type arguments for this instantiation (instances of
+/// [typeRepType] or one of its subclasses, typically accessed via a call to
+/// [evaluateTypeExpr]).
+Expression makeGenericJavaMethodParam(
+    Expression javaTypeVariableArray, Expression javaTypeArgumentArray) {
+  return new MethodInvocation(getTypeEnv(), 'extend',
+      <Expression>[javaTypeVariableArray, javaTypeArgumentArray]);
+}
+
+/// Create a Java expression that builds the first parameter to a generic
+/// function call.
+///
+/// This must only be called for generic functions (where
+/// [dart.FunctionNode.typeParameters.isNotEmpty] is [:true:]). The expression
+/// returned by this method will (at run-time) provide values for the generic
+/// parameters at this instantiation of the generic function.
+Expression makeGenericFuncParam(dart.FunctionNode func,
+    List<dart.DartType> typeArguments, ClassState state) {
+  assert(typeArguments.isNotEmpty &&
+      typeArguments.length == func.typeParameters.length);
+  ClassOrInterfaceType funcDefCls =
+      _getClassDefiningFunc(func, state._typeFactory);
+
+  var typeVariables = new FieldAccess(
+      new FieldAccess(new ClassRefExpr(funcDefCls),
+          _getNameOfFuncTypeInfo(func, state._typeFactory.compilerState)),
+      'typeVariables');
+  var typeArgs = new ArrayInitializer(
+      typeRepType,
+      typeArguments
+          .map((t) => evaluateTypeExpr(getTypeEnv(), makeTypeExpr(t, state)))
+          .toList());
+  return makeGenericJavaMethodParam(typeVariables, typeArgs);
+}
+
+/// Returns an optional formal parameter declaration that should be added to
+/// support generic functions.
+///
+/// If this method returns [:null:], no extra formal parameter should be
+/// inserted. If the return value is non-null, insert it as the first formal
+/// parameter in the implementation of [func].
+VariableDecl makeGenericFuncParamDecl(dart.FunctionNode func) {
+  if (func.typeParameters.isEmpty) {
+    return null;
+  } else {
+    return new VariableDecl(_localTypeEnvVarName, typeEnvType);
+  }
 }
 
 /// Retrieve the current type environment.
@@ -363,7 +475,13 @@ Expression getTypeEnv() {
 /// about it creating new objects. The static variable in question will
 /// be added to [state] if necessary.
 Expression makeTypeExpr(dart.DartType type, ClassState state) {
-  return new IdentifierExpr(state._getTypeExprName(type));
+  String hoistedTypeVar = state._getTypeExprName(type);
+  if (hoistedTypeVar != null) {
+    return new IdentifierExpr(hoistedTypeVar);
+  }
+
+  // This type cannot be hoisted, build it at runtime instead
+  return type.accept(new _TypeExprBuilder(state._typeFactory));
 }
 
 /// Evaluate a type expression in the context of a type environment.
@@ -409,6 +527,55 @@ Expression _makeCast(Expression operand, dart.DartType type, ClassState state,
       new MethodInvocation(rep, castMethod, [operand]), javaType);
 }
 
+/// Returns the name of the Java method that implements the given
+/// [dart.Procedure].
+String _getJavaNameOfProc(dart.Procedure proc, CompilerState compilerState) {
+  return compilerState.translatedMethodName(proc.name.name, proc.kind);
+}
+
+/// Returns the name of the Java method that implements the given
+/// [dart.FunctionNode].
+String _getNameOfFuncTypeInfo(
+    dart.FunctionNode func, CompilerState compilerState) {
+  var parent = func.parent;
+  if (parent is dart.Procedure) {
+    return _getJavaNameOfProc(parent, compilerState) + '\$typeInfo';
+  } else {
+    throw new StateError('Do not know how to find the definition of a function '
+        'whose parent AST node is "$parent".');
+  }
+}
+
+/// Returns the Java class containing the method definition for a
+/// [dart.FunctionNode].
+ClassOrInterfaceType _getClassDefiningFunc(
+    dart.FunctionNode node, TypeFactory typeFactory) {
+  var parent = node.parent;
+  if (parent is dart.Procedure) {
+    return _getClassDefiningProc(parent, typeFactory);
+  } else {
+    throw new StateError('Do not know how to find the definition of a function '
+        'whose parent AST node is "$parent".');
+  }
+}
+
+/// Returns the Java class containing the method definition for a
+/// [dart.Procedure].
+ClassOrInterfaceType _getClassDefiningProc(
+    dart.Procedure proc, TypeFactory typeFactory) {
+  String javaName = _getJavaNameOfProc(proc, typeFactory.compilerState);
+  if (proc.enclosingClass != null) {
+    if (typeFactory.compilerState.usesHelperFunction(
+        proc.enclosingClass, javaName)) {
+      return typeFactory.compilerState.getHelperClass(proc.enclosingClass);
+    } else {
+      return typeFactory.getRawClass(proc.enclosingClass);
+    }
+  } else {
+    return typeFactory.compilerState.getTopLevelClass(proc.enclosingLibrary);
+  }
+}
+
 class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
   final TypeFactory typeFactory;
 
@@ -418,6 +585,14 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
   Expression defaultDartType(dart.DartType type) {
     throw new Exception('Unrecognized Dart type: $type');
   }
+
+   @override
+  Expression visitDynamicType(dart.DynamicType type) =>
+      new FieldAccess(new ClassRefExpr(_dynamicTypeRepType), 'EXPR');
+
+  @override
+  Expression visitVoidType(dart.VoidType type) =>
+      new FieldAccess(new ClassRefExpr(_voidTypeRepType), 'EXPR');
 
   @override
   Expression visitInterfaceType(dart.InterfaceType type) {
@@ -446,8 +621,21 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
       return new ArrayAccess(new FieldAccess(typeInfoGetter, 'typeVariables'),
           new IntLiteral(typeVarIndex));
     } else if (parent is dart.FunctionNode) {
-      // TODO(andrewkrieger): Implement function types
-      throw new Exception('Function types not implemented yet');
+      ClassOrInterfaceType definingClass =
+          _getClassDefiningFunc(parent, typeFactory);
+      String typeInfoFieldName = _getNameOfFuncTypeInfo(
+        parent, typeFactory.compilerState);
+      var typeVarIndex = parent.typeParameters.indexOf(type.parameter);
+      if (typeVarIndex < 0) {
+        throw new Exception('Type parameter "${type.parameter}" not found in '
+            'its parent function.');
+      }
+      return new ArrayAccess(
+          new FieldAccess(
+              new FieldAccess(
+                  new ClassRefExpr(definingClass), typeInfoFieldName),
+              'typeVariables'),
+          new IntLiteral(typeVarIndex));
     } else {
       throw new Exception('Type parameter "${type.parameter}" has unrecognized '
           'parent "$parent" of runtime-type ${parent.runtimeType}');
@@ -523,10 +711,7 @@ class _TypeNameBuilder extends dart.DartTypeVisitor<String> {
     if (parent is dart.Class) {
       candidate = '${parent.name}\$${type.parameter.name}';
     } else {
-      // We could build a "fancier" name if parent is a FunctionNode, but it's
-      // hardly worth it. The hashCode may not be unique, but _check should
-      // prevent any conflicts.
-      candidate = '_${parent.hashCode}\$${type.parameter.name}';
+      throw new GenericMethodParameterDetected();
     }
     return _check(candidate, type);
   }
@@ -566,6 +751,11 @@ Expression makeTypeExprForPrimitive(PrimitiveType type) {
   return typeExpr;
 }
 
+class GenericMethodParameterDetected implements Exception {
+  CompileErrorException();
+}
+
+
 // These constants are declared here, rather than in constants, since they are
 // type-system specific.
 const _localTypeEnvVarName = 'dart2java\$localTypeEnv';
@@ -574,15 +764,19 @@ const _typeInfoFieldName = 'dart2java\$typeInfo';
 const _typePackage = 'dart._runtime.types.simple';
 
 // Frequently-needed Java types
+final _dynamicTypeRepType = new ClassOrInterfaceType(_typePackage, 'TopType');
+final _funcTypeInfoType =
+    new ClassOrInterfaceType(_typePackage, 'FunctionTypeInfo');
 final _interfaceTypeExprType =
     new ClassOrInterfaceType(_typePackage, 'InterfaceTypeExpr');
 final _interfaceTypeInfoType =
     new ClassOrInterfaceType(_typePackage, 'InterfaceTypeInfo');
-final _typeEnvironmentType =
+final typeEnvironmentType =
     new ClassOrInterfaceType(_typePackage, 'TypeEnvironment');
 final _typeExprType = new ClassOrInterfaceType(_typePackage, 'TypeExpr');
 final _typeHelperType =
     new ClassOrInterfaceType(Constants.dartHelperPackage, 'TypeSystemHelper');
 final rootEnvironment =
-    new FieldAccess(new ClassRefExpr(_typeEnvironmentType), 'ROOT');
+    new FieldAccess(new ClassRefExpr(typeEnvironmentType), 'ROOT');
 final typeType = new ClassOrInterfaceType(_typePackage, 'Type');
+final _voidTypeRepType = new ClassOrInterfaceType(_typePackage, 'VoidType');

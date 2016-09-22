@@ -17,7 +17,7 @@ package dart._runtime.types.simple;
 /**
  * A singleton class representing the top (a.k.a. dynamic) type.
  */
-class TopType extends Type {
+public class TopType extends Type {
   private TopType() {}
 
   /**

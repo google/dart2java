@@ -52,7 +52,7 @@ public final class TypeEnvironment {
    * @param actualTypeParams values for the variables (in the same order)
    * @return a type environment with the given bindings
    */
-  TypeEnvironment extend(TypeVariableExpr[] typeVariables, Type[] actualTypeParams) {
+  public TypeEnvironment extend(TypeVariableExpr[] typeVariables, Type[] actualTypeParams) {
     if (typeVariables.length != actualTypeParams.length) {
       throw new IllegalArgumentException("Mismatched number of variables and values");
     }

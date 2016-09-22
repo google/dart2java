@@ -40,7 +40,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
         {
           this.setV2(1);
         }
-        packet.getA2().operatorAtPut(i, this.getV2());
+        packet.getA2().operatorAtPut__int(i, this.getV2());
       }
       return this.getScheduler().queue(packet);
     }

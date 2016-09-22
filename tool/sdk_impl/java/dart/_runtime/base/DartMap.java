@@ -19,8 +19,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 
+import dart._runtime.types.simple.TypeEnvironment;
+
 public interface DartMap<K, V> 
   extends Map<K, V>, dart.core.Map_interface<K, V> {
+
+  public static dart.core.Map_interface factory$(TypeEnvironment env) {
+    return null;
+  }
 
   // TODO(springerm): Maybe this should be called LinkedHashMap?
   public class Generic<K, V> extends DartObject implements DartMap<K, V> {

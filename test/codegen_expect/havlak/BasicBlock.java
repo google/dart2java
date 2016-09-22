@@ -3,6 +3,7 @@ package havlak;
 public class BasicBlock extends dart._runtime.base.DartObject implements havlak.BasicBlock_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.BasicBlock.class, havlak.BasicBlock_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltBasicBlock$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(havlak.BasicBlock.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       havlak.BasicBlock.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -44,8 +45,8 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
     public void _constructor(int name)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.inEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
-      this.outEdges = ((dart.core.List_interface) dart._runtime.base.DartList.Generic._fromArguments(havlak.BasicBlock_interface.class));
+      this.inEdges = ((dart.core.List_interface) ((dart.core.List_interface<havlak.BasicBlock_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt), havlak.BasicBlock_interface.class)));
+      this.outEdges = ((dart.core.List_interface) ((dart.core.List_interface<havlak.BasicBlock_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt), havlak.BasicBlock_interface.class)));
       this.name = name;
       super._constructor();
       havlak.__TopLevel.numBasicBlocks = (havlak.__TopLevel.numBasicBlocks + 1);

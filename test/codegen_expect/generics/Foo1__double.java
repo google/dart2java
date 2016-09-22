@@ -14,7 +14,12 @@ public class Foo1__double extends dart._runtime.base.DartObject implements gener
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       return t;
     }
-    public void _constructor__double()
+    public void writeVariable__double(double value)
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.setVariable__double(value);
+    }
+    public void _constructornewMe__double()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
@@ -40,8 +45,12 @@ public class Foo1__double extends dart._runtime.base.DartObject implements gener
     {
       return this.foo__double(((double) t));
     }
-    public void _constructor()
+    public void writeVariable(java.lang.Double value)
     {
-      this._constructor__double();
+      this.writeVariable__double(((double) value));
+    }
+    public void _constructornewMe()
+    {
+      this._constructornewMe__double();
     }
 }

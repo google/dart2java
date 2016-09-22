@@ -69,6 +69,18 @@ List<java.PackageMember> buildClass(
       .toList();
 }
 
+/// A class containing arguments to be passed during a Java method call.
+class _JavaArguments {
+  /// Actual positional arguments in Java code
+  List<java.Expression> arguments;
+
+  /// Java generic arguments (when calling generic methods)
+  List<java.ClassRefExpr> javaGenerics;
+  
+  _JavaArguments(this.arguments, [List<java.ClassRefExpr> generics])
+    : this.javaGenerics = generics ?? [];
+}
+
 /// A temporary local variable defined in a method.
 class TemporaryVariable {
   String name;
@@ -225,11 +237,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     if (isFullyGenericSpecialization) {
-      // Do not generate type system information for specializations
-      // Add fields and initializers from type system
-      typeSystemState.generateTypeInfo(node);
-      orderedMembers.insertAll(0, typeSystemState.makeStaticFields());
-
       // Build factories
       methods.addAll(node.procedures
           .where((p) => p.kind == dart.ProcedureKind.Factory)
@@ -240,6 +247,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         methods.addAll(node.constructors.map((c) => spzn.buildGenericFactory(
             node, typeFactory, c.name.name, c.function)));
       }
+
+      // Do not generate type system information for specializations
+      // Add fields and initializers from type system
+      typeSystemState.generateTypeInfo(node);
+      orderedMembers.insertAll(0, typeSystemState.makeStaticFields());
     }
 
     // TODO(springerm): Think about whether a class should directly implement
@@ -366,7 +378,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.MethodDecl buildMethodDecl(dart.Procedure procedure) {
-    String methodName = javaMethodName(procedure.name.name, procedure.kind);
+    String methodName = compilerState.translatedMethodName(
+      procedure.name.name, procedure.kind, specialization);
     var returnType = typeFactory.getLValueType(procedure.function.returnType);
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = procedure.function.positionalParameters
@@ -387,15 +400,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.MethodDecl buildGetterDecl(dart.Field node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Getter);
+    String methodName = compilerState.translatedMethodName(
+      node.name.name, dart.ProcedureKind.Getter, specialization);
     return new java.MethodDecl(methodName, [],
         returnType: typeFactory.getLValueType(node.type));
   }
 
   java.MethodDef buildGetter(dart.Field node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Getter);
+    String methodName = compilerState.translatedMethodName(
+      node.name.name, dart.ProcedureKind.Getter, specialization);
     var body = wrapInJavaBlock(new java.ReturnStmt(new java.FieldAccess(
         buildDefaultReceiver(node.isStatic), node.name.name)));
 
@@ -405,8 +418,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.MethodDecl buildSetterDecl(dart.Field node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+    String methodName = compilerState.translatedMethodName(
+      node.name.name, dart.ProcedureKind.Setter, specialization);
     var param =
         new java.VariableDecl("value", typeFactory.getLValueType(node.type));
     return new java.MethodDecl(methodName, [param],
@@ -414,8 +427,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   java.MethodDef buildSetter(dart.Field node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+    String methodName = compilerState.translatedMethodName(
+      node.name.name, dart.ProcedureKind.Setter, specialization);
     var fieldAssignment = new java.AssignmentExpr(
         new java.FieldAccess(
             buildDefaultReceiver(node.isStatic), node.name.name),
@@ -447,32 +460,46 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   ///
   /// This method takes a function node as a parameter determine if a
   /// type cast must be inserted before passing an argument.
-  List<java.Expression> buildArguments(
-      dart.Arguments node, dart.FunctionNode target) {
+  _JavaArguments buildArguments(
+      dart.Arguments node, dart.FunctionNode target, 
+      {bool buildTypeArgs: false, dart.Expression receiver}) {
     // TODO(springerm): Handle named arguments
     var result = new List<java.Expression>();
+    var javaGenerics;
 
-    // --------------------
-    // TODO(springerm): Remove this
-    Iterable<java.JavaType> typeArguments = node.types.map((t) {
-      var javaType = typeFactory.getTypeArgument(t);
-      // Because we're about to use a TypeExpr, javaType can't have type
-      // arguments (something like `List<String>.class` is illegal; the
-      // `<String>` would be erased anyway, so it's meaningless in Java).
-      return javaType is java.ClassOrInterfaceType
-          ? javaType.withTypeArguments([])
-          : javaType;
-    });
-    // Calling convention: Type arguments as first arguments
-    // for static invocations, then positional arguments
-    // TODO(springerm, andrewkrieger): Use proper types once implemented
-    result.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
-    // --------------------
+    // Type arguments should not be built for constructor invocations.
+    if (buildTypeArgs && node.types.isNotEmpty) {
+      // This is a generic method call. The first argument is a type
+      // environment.
+      java.Expression genericFuncParam = ts.makeGenericFuncParam(
+        target,
+        node.types,
+        typeSystemState);
+
+
+      javaGenerics = node.types.map(typeFactory.getTypeArgument).toList();
+      result.add(genericFuncParam);
+    }
 
     // Provided positional parameters
     for (int i = 0; i < node.positional.length; i++) {
+      dart.DartType expectedType;
+
+      if (receiver != null) {
+        // Substitute the value of the type variables given in the expected
+        // parameter type for the actual types in `receiver`.
+        expectedType = dart_ts.substitutePairwise(
+            target.positionalParameters[i].type,
+            receiver.staticType.classNode.typeParameters,
+            receiver.staticType.typeArguments);
+      } else {
+        // Not necessary for constructors, super calls, or static invocations.
+        // Their types should not contain any type variables.
+        expectedType = target.positionalParameters[i].type;
+      }
+
       result.add(buildCastedExpression(
-          node.positional[i], target.positionalParameters[i].type));
+          node.positional[i], expectedType));
     }
 
     // Fill up with default values of optional positional parameters
@@ -482,45 +509,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       result.add(target.positionalParameters[i].initializer.accept(this));
     }
 
-    return result;
+    return new _JavaArguments(result, javaGenerics);
   }
 
   @override
   java.Statement visitSuperInitializer(dart.SuperInitializer node) {
     return new java.ExpressionStmt(new java.SuperMethodInvocation(
         Constants.constructorMethodPrefix,
-        buildArguments(node.arguments, node.target.function)));
-  }
-
-  String capitalizeString(String str) =>
-      str[0].toUpperCase() + str.substring(1);
-
-  String javaMethodName(String methodName, dart.ProcedureKind kind) {
-    switch (kind) {
-      case dart.ProcedureKind.Method:
-        return methodName + specialization.methodSuffix;
-      case dart.ProcedureKind.Operator:
-        // TODO(springerm): Think about specialization here
-        var translatedMethodName = Constants.operatorToMethodName[methodName];
-        if (translatedMethodName == null) {
-          throw new CompileErrorException("${methodName} is not an operator.");
-        }
-        return translatedMethodName + specialization.methodSuffix;
-      case dart.ProcedureKind.Getter:
-        return "get" +
-            capitalizeString(methodName) +
-            specialization.methodSuffix;
-      case dart.ProcedureKind.Setter:
-        return "set" +
-            capitalizeString(methodName) +
-            specialization.methodSuffix;
-      case dart.ProcedureKind.Factory:
-        return "factory\$" + methodName;
-      default:
-        // TODO(springerm): handle remaining kinds
-        throw new CompileErrorException(
-            "Method kind ${kind} not implemented yet.");
-    }
+        buildArguments(node.arguments, node.target.function).arguments));
   }
 
   Iterable<java.Statement> buildTempVarDecls() {
@@ -539,32 +535,27 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodDef visitProcedure(dart.Procedure procedure) {
-    String methodName = javaMethodName(procedure.name.name, procedure.kind);
+    String methodName = compilerState.translatedMethodName(
+      procedure.name.name, procedure.kind, specialization);
     var returnType = typeFactory.getLValueType(procedure.function.returnType);
+
+    if (procedure.function.typeParameters.isNotEmpty) {
+      typeSystemState.generateProcedureTypeInfo(procedure);
+    }
+
     // TODO(springerm): handle named parameters, etc.
     List<java.VariableDecl> parameters = procedure.function.positionalParameters
         .map(buildPositionalParameter)
         .toList();
     var isStatic = procedure.isStatic;
-    var typeParameterNames = const <String>[];
 
-    // Factory constructors need special handling regarding types currently.
-    // Eventually, we should unify this with generic methods.
-    if (procedure.kind == dart.ProcedureKind.Factory) {
-      // The current implementation of factory constructors has them call
-      // through to hand-written Java methods that expect one `java.lang.Class`
-      // per type parameter as the first formal parameter to the method (as a
-      // stand-in for the reified parameter type). Declare these in the stubs.
-      // TODO(andrewkrieger): Treat factories as generic methods instead.
-      if (thisDartClass.typeParameters.isNotEmpty) {
-        parameters.insertAll(
-            0,
-            thisDartClass.typeParameters.map((tp) => new java.VariableDecl(
-                "typeParam\$${tp.name}",
-                new java.ClassOrInterfaceType("java.lang", "Class"))));
-        typeParameterNames =
-            thisDartClass.typeParameters.map((tp) => tp.name).toList();
-      }
+    var typeParameterNames = 
+        procedure.function.typeParameters.map((t) => t.name).toList();
+
+    // Handling of generic methods (including factory methods)
+    var typeSystemVar = ts.makeGenericFuncParamDecl(procedure.function);
+    if (typeSystemVar != null) {
+      parameters.insert(0, typeSystemVar);
     }
 
     java.Block body;
@@ -610,8 +601,15 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
         // Insert declarations of temporary variables
         body.statements.insertAll(0, buildTempVarDecls());
+
         // Insert variable required by type system
-        body.statements.insert(0, ts.makeMethodEnvVar(procedure, typeFactory));
+        java.Statement typeEnvVarDeclStmt = 
+          ts.makeMethodEnvVar(procedure, typeFactory);
+        if (typeEnvVarDeclStmt != null) {
+          // Only for non-generic methods
+          body.statements.insert(0, typeEnvVarDeclStmt);
+        }
+
         tempVars = null;
       }
     }
@@ -888,7 +886,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   /// Builds a method invocation where the call target is not statically known.
   java.MethodInvocation buildDynamicMethodInvocation(dart.Expression receiver,
-      String methodName, List<java.Expression> arguments) {
+      String methodName, _JavaArguments javaArgs) {
+    var args = javaArgs.arguments;
+    var genericArgs = javaArgs.javaGenerics;
+
     // Translate receiver
     java.Expression recv = receiver.accept(this);
     dart.DartType recvType = receiver.staticType;
@@ -915,16 +916,17 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       java.ClassRefExpr helperRefExpr = new java.ClassRefExpr(helperClass);
       // Dynamic method invocation
       return new java.MethodInvocation(
-          helperRefExpr, methodName, [recv]..addAll(arguments));
+          helperRefExpr, methodName, [recv]..addAll(args), genericArgs);
     }
 
-    return new java.MethodInvocation(recv, methodName, arguments);
+    return new java.MethodInvocation(recv, methodName, args, genericArgs);
   }
 
   @override
   java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Getter);
+    String methodName = compilerState.translatedMethodName(
+      node.name.name, dart.ProcedureKind.Getter, 
+      typeFactory.getSpecialization(node.receiver.staticType));
 
     if (node.receiver.staticType is dart.DynamicType) {
       // Generate dynamic method invocation
@@ -940,7 +942,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           helperRefExpr, Constants.dynamicHelperInvoke, javaArgs);
     }
 
-    return buildDynamicMethodInvocation(node.receiver, methodName, []);
+    return buildDynamicMethodInvocation(
+        node.receiver, methodName, new _JavaArguments([]));
   }
 
   /// Finds a [dart.Procedure] in a class and its superclasses.
@@ -975,8 +978,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitPropertySet(dart.PropertySet node) {
-    String methodName =
-        javaMethodName(node.name.name, dart.ProcedureKind.Setter);
+    String methodName = compilerState.translatedMethodName(
+      node.name.name, dart.ProcedureKind.Setter,
+      typeFactory.getSpecialization(node.receiver.staticType));
 
     if (node.receiver.staticType is dart.DynamicType) {
       // Generate dynamic method invocation
@@ -1007,17 +1011,28 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         findProcedureInClassHierarchy(node.name.name, classNode);
     dart.Field field = findFieldInClassHierarchy(node.name.name, classNode);
 
+    dart.Class owner;
+
     if (procedure != null && procedure.kind == dart.ProcedureKind.Setter) {
       expectedType = procedure.function.positionalParameters.first.type;
+      owner = classNode;
     } else if (field != null) {
       expectedType = field.type;
+      owner = field.parent;
     } else {
       throw new CompileErrorException(
           "Field or setter not found in receiver class.");
     }
 
+    // Substitute the value of the type variables given in `expectedType` for
+    // actual types in `node.receiver.staticType`.
+    expectedType = dart_ts.substitutePairwise(
+        expectedType,
+        owner.typeParameters,
+        node.receiver.staticType.typeArguments);
+
     return buildDynamicMethodInvocation(node.receiver, methodName,
-        [buildCastedExpression(node.value, expectedType)]);
+        new _JavaArguments([buildCastedExpression(node.value, expectedType)]));
   }
 
   // Returns [:null:] on failure.
@@ -1067,8 +1082,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     if (expression != null) return expression;
 
     String methodName = node.name.name;
+
     // Expand operator symbol to Java-compatible method name
     String javaName = Constants.operatorToMethodName[methodName] ?? methodName;
+
+    // Call specialized method
+    javaName = compilerState.translatedMethodName(
+        javaName, dart.ProcedureKind.Method,
+        typeFactory.getSpecialization(node.receiver.staticType));
 
     if (Constants.objectMethods.contains(javaName)) {
       // This method is defined on Object and must dispatch to ObjectHelper
@@ -1116,29 +1137,24 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           "Method ${methodName} not found in receiver class ${classNode}.");
     }
 
-    // Call the specialized generic method if it is available.
-    Iterable<java.JavaType> javaTypeArguments =
-        interfaceType.typeArguments.map(typeFactory.getTypeArgument);
-    if (java.JavaType.hasGenericSpecialization(javaTypeArguments)) {
-      javaName = javaName + Constants.primitiveSpecializationSuffix;
-    }
-
     return buildDynamicMethodInvocation(node.receiver, javaName,
-        buildArguments(node.arguments, targetFunction));
+        buildArguments(node.arguments, targetFunction, 
+          receiver: node.receiver));
   }
 
   @override
   java.SuperMethodInvocation visitSuperMethodInvocation(
       dart.SuperMethodInvocation node) {
-    return new java.SuperMethodInvocation(
-        node.name.name, buildArguments(node.arguments, node.target.function));
+    return new java.SuperMethodInvocation(node.name.name, 
+      buildArguments(node.arguments, node.target.function).arguments);
   }
 
   @override
-  java.MethodInvocation visitStaticInvocation(dart.StaticInvocation node) {
+  java.Expression visitStaticInvocation(dart.StaticInvocation node) {
     java.Expression receiver;
     dart.Class receiverClass = null;
-    String methodName = javaMethodName(node.target.name.name, node.target.kind);
+    String methodName = compilerState.translatedMethodName(
+      node.target.name.name, node.target.kind);
 
     if (node.target.enclosingClass == null) {
       receiver = new java.ClassRefExpr(
@@ -1152,8 +1168,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       receiverClass = node.target.enclosingClass;
     }
 
-    List<java.Expression> args =
-        buildArguments(node.arguments, node.target.function);
+    var args = buildArguments(
+      node.arguments, node.target.function, buildTypeArgs: true);
+    var posArgs = args.arguments;
+    var genericArgs = args.javaGenerics;
 
     // Intercept method call if necessary
     if (compilerState.usesHelperFunction(receiverClass, methodName)) {
@@ -1165,20 +1183,25 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       // Static method invocation
       java.FieldAccess staticNested = new java.FieldAccess(
           helperRefExpr, Constants.helperNestedClassForStatic);
-      return new java.MethodInvocation(staticNested, methodName, args);
+      return new java.MethodInvocation(
+          staticNested, methodName, posArgs, genericArgs);
     }
 
-    Iterable<java.JavaType> typeArguments =
-        node.arguments.types.map(typeFactory.getTypeArgument);
-    if (typeArguments.isNotEmpty &&
-        node.target.kind != dart.ProcedureKind.Factory) {
-      // This is a call to a generic class, make sure to choose the correct
-      // specialization
-      receiver = new java.FieldAccess(
-          receiver, java.JavaType.getGenericImplementation(typeArguments));
-    }
+    // Factory methods always return the fully generic type and have to
+    // be casted manually. For example:
+    // List.factory$("int")     --> returns object of type List_interface
+    //                              should be casted to List_interface__int
+    bool isReturnValueGeneric = node.staticType is dart.InterfaceType
+      && node.staticType.typeArguments.isNotEmpty;
 
-    return new java.MethodInvocation(receiver, methodName, args);
+    if (isSafeToInsertCast(node) && isReturnValueGeneric) {
+      return new java.CastExpr(
+        new java.MethodInvocation(receiver, methodName, posArgs, genericArgs),
+        typeFactory.getLValueType(node.staticType));
+    } else {
+      return new java.MethodInvocation(
+        receiver, methodName, posArgs, genericArgs);
+    }
   }
 
   @override
@@ -1186,7 +1209,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // TODO(springerm): Check for usesHelperFunction
     // TODO(springerm): Handle other parameter types
     List<java.Expression> args =
-        buildArguments(node.arguments, node.target.function);
+        buildArguments(node.arguments, node.target.function).arguments;
 
     // Substitute the value of the type variables given in `node.arguments` for
     // the type variables in `node.target.enclosingClass`.
@@ -1208,17 +1231,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var runtimeType = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
     args.insert(0, runtimeType);
 
-    bool insertCast = node.parent is! dart.ExpressionStatement;
-    if (insertCast) {
-      return new java.CastExpr(
-          new java.MethodInvocation(new java.ClassRefExpr(javaType),
-              Constants.javaFactoryPrefix + node.name.name, args),
-          typeFactory.getLValueType(node.staticType));
-    } else {
-      // No cast if "new" expression is child of an ExprStmt
-      return new java.MethodInvocation(new java.ClassRefExpr(javaType),
-          Constants.javaFactoryPrefix + node.name.name, args);
-    }
+    return new java.MethodInvocation(new java.ClassRefExpr(javaType),
+        Constants.javaFactoryPrefix + node.name.name, args);
   }
 
   /// Returns the enclosing class type of a member or the top level class type
@@ -1488,14 +1502,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       Iterable<java.JavaType> expectedJavaTypeArguments =
           expectedType.typeArguments.map(typeFactory.getTypeArgument);
 
-      if (javaTypeArguments.isNotEmpty &&
-          !(java.JavaType.hasGenericSpecialization(javaTypeArguments) &&
-              java.JavaType
-                  .hasGenericSpecialization(expectedJavaTypeArguments))) {
+      if (javaTypeArguments.isNotEmpty || expectedJavaTypeArguments.isNotEmpty) {
         // Insert a cast
         java.ClassOrInterfaceType targetType =
-            typeFactory.getLValueType(expectedType);
-        targetType = targetType.withTypeArguments([]);
+            typeFactory.getLValueType(expectedType)
+                .withoutJavaGenerics();
 
         return new java.CastExpr(node.accept(this), targetType);
       }
@@ -1554,6 +1565,12 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         <java.Expression>[assignment, node.body.accept(this)]);
   }
 
+  /// Determines if it is safe to cast this expression.
+  bool isSafeToInsertCast(dart.TreeNode node) {
+    return node.parent is! dart.ExpressionStatement
+      && node.staticType is! dart.VoidType;
+  }
+
   @override
   java.Expression visitListLiteral(dart.ListLiteral node) {
     var args = <java.Expression>[];
@@ -1561,25 +1578,29 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var typeArguments = <java.JavaType>[
       typeFactory.getTypeArgument(node.typeArgument)
     ];
-    // Calling convention: Type arguments as first arguments
+    // Calling convention: Type argument as first argument
     // for static invocations, then positional arguments
-    // TODO(springerm, andrewkrieger): Use proper types once implemented
+    // Class<T> object inserted only to get type inference right
     args.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
     args.addAll(node.expressions
         .map((e) => buildCastedExpression(e, node.typeArgument)));
 
+    var typeExpr = ts.makeTypeExpr(node.staticType, typeSystemState);
+    var runtimeType = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
+    args.insert(0, runtimeType);
+
     java.ClassOrInterfaceType dartListClass =
         new java.ClassOrInterfaceType('dart._runtime.base', 'DartList');
 
-    if (typeArguments.isNotEmpty) {
-      // This is a call to a generic class, make sure to choose the correct
-      // specialization
-      dartListClass = new java.ClassOrInterfaceType.nested(
-          dartListClass, java.JavaType.getGenericImplementation(typeArguments));
-    }
-
-    return new java.MethodInvocation(new java.ClassRefExpr(dartListClass),
-        Constants.listInitializerMethodName, args);
+    if (!isSafeToInsertCast(node)) {
+      return new java.MethodInvocation(new java.ClassRefExpr(dartListClass),
+          Constants.listInitializerMethodName, args);
+      } else {
+        return new java.CastExpr(
+          new java.MethodInvocation(new java.ClassRefExpr(dartListClass),
+            Constants.listInitializerMethodName, args),
+          typeFactory.getLValueType(node.staticType));
+      }
   }
 
   @override

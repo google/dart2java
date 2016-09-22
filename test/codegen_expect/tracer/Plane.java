@@ -21,7 +21,7 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
     public tracer.IntersectionInfo_interface intersect(tracer.Ray_interface ray)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.IntersectionInfo_interface info = ((tracer.IntersectionInfo_interface) tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo)));
+      tracer.IntersectionInfo_interface info = tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
       java.lang.Object Vd = dart._runtime.helpers.DynamicHelper.invoke("dot", this.getPosition(), ray.getDirection());
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(Vd, 0))
       {
@@ -39,7 +39,7 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
       info.setDistance(t);
       if (((boolean) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_bool).cast(dart._runtime.helpers.DynamicHelper.invoke("getHasTexture", this.getMaterial()))))
       {
-        tracer.Vector_interface vU = ((tracer.Vector_interface) tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getY", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getZ", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("getX", this.getPosition()))))));
+        tracer.Vector_interface vU = tracer.Vector._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getY", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("getZ", this.getPosition()))), ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(dart._runtime.helpers.DynamicHelper.invoke("operatorUnaryMinus", dart._runtime.helpers.DynamicHelper.invoke("getX", this.getPosition())))));
         tracer.Vector_interface vV = vU.cross(((tracer.Vector_interface) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Vector).check(this.getPosition())));
         java.lang.Object u = dart._runtime.helpers.DynamicHelper.invoke("dot", info.getPosition(), vU);
         java.lang.Object v = dart._runtime.helpers.DynamicHelper.invoke("dot", info.getPosition(), vV);

@@ -47,9 +47,11 @@ public class DynamicHelper {
     classImpls.put(Number.class, dart._runtime.helpers.NumberHelper.class);
 
     classesWithJavaInterfaces = new HashSet<Class<?>>();
-    classesWithJavaInterfaces.add(dart._runtime.base.DartList.Generic.class);
-    classesWithJavaInterfaces.add(dart._runtime.base.DartList._int.class);
-    classesWithJavaInterfaces.add(dart._runtime.base.DartMap.Generic.class);
+    classesWithJavaInterfaces.add(dart._runtime.base.DartList.class);
+    classesWithJavaInterfaces.add(dart._runtime.base.DartList__int.class);
+    classesWithJavaInterfaces.add(dart.core.List.class);
+    classesWithJavaInterfaces.add(dart.core.List__int.class);
+    // classesWithJavaInterfaces.add(dart._runtime.base.DartMap.Generic.class);
   }
 
   public static Class<?> boxedToMaybeUnboxedType(Class<?> boxedType) {

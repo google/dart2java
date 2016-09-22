@@ -3,6 +3,7 @@ package deltablue;
 public class Strength extends dart._runtime.base.DartObject implements deltablue.Strength_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(deltablue.Strength.class, deltablue.Strength_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltStrength$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(deltablue.Strength.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       deltablue.Strength.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -18,7 +19,7 @@ public class Strength extends dart._runtime.base.DartObject implements deltablue
     public deltablue.Strength_interface nextWeaker()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return dart._runtime.base.DartList.Generic._fromArguments(deltablue.Strength_interface.class, deltablue.__TopLevel.STRONG_PREFERRED, deltablue.__TopLevel.PREFERRED, deltablue.__TopLevel.STRONG_DEFAULT, deltablue.__TopLevel.NORMAL, deltablue.__TopLevel.WEAK_DEFAULT, deltablue.__TopLevel.WEAKEST).operatorAt(this.getValue());
+      return ((dart.core.List_interface<deltablue.Strength_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltStrength$gt), deltablue.Strength_interface.class, deltablue.__TopLevel.STRONG_PREFERRED, deltablue.__TopLevel.PREFERRED, deltablue.__TopLevel.STRONG_DEFAULT, deltablue.__TopLevel.NORMAL, deltablue.__TopLevel.WEAK_DEFAULT, deltablue.__TopLevel.WEAKEST)).operatorAt(this.getValue());
     }
     public static boolean stronger(deltablue.Strength_interface s1, deltablue.Strength_interface s2)
     {

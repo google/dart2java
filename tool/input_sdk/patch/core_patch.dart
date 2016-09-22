@@ -50,7 +50,7 @@ abstract class String {
 @patch
 class List<E> {
   @patch
-  @JavaCall("dart._runtime.base.DartList.Generic.newInstance")
+  @JavaCall("dart._runtime.base.DartList.<E>newInstance\$")
   external factory List([int length = 0]);
 
   // This patch is for compatibility to java.util.List (add return type bool).
@@ -61,7 +61,7 @@ class List<E> {
 @patch
 class Map<K, V> {
   @patch
-  @JavaCall("dart._runtime.base.DartMap.Generic.newInstance")
+  @JavaCall("dart._runtime.base.DartMap.factory\$")
   external factory Map();
 }
 

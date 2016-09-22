@@ -32,7 +32,7 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
       this.isHit = false;
       this.hitCount = 0;
       super._constructor();
-      this.setColor(((tracer.Color_interface) tracer.Color._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.0)));
+      this.setColor(tracer.Color._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Color), 0.0, 0.0, 0.0));
     }
     public boolean getIsHit()
     {

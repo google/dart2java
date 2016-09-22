@@ -21,6 +21,7 @@ import 'package:path/path.dart' as path;
 
 import '../java/types.dart' as java;
 import '../java/constants.dart' as java;
+import '../java/specialization.dart' as spzn;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 
@@ -433,6 +434,44 @@ class CompilerState {
   java.ClassOrInterfaceType getHelperClass(dart.Class receiverClass) {
     assert(_classImpls[receiverClass] != null);
     return _classImpls[receiverClass].helperClass;
+  }
+
+  String capitalizeString(String str) =>
+      str[0].toUpperCase() + str.substring(1);
+
+  String translatedMethodName(
+      String methodName, dart.ProcedureKind kind, 
+      [spzn.TypeSpecialization spec]) {
+    String result;
+    switch (kind) {
+      case dart.ProcedureKind.Method:
+        result = methodName;
+        break;
+      case dart.ProcedureKind.Operator:
+        result = java.Constants.operatorToMethodName[methodName];
+        if (result == null) {
+          throw new CompileErrorException("${methodName} is not an operator.");
+        }
+        break;
+      case dart.ProcedureKind.Getter:
+        result = "get" + capitalizeString(methodName);
+        break;
+      case dart.ProcedureKind.Setter:
+        result = "set" + capitalizeString(methodName);
+        break;
+      case dart.ProcedureKind.Factory:
+        // Factory names should not be changed
+        return "factory\$" + methodName;
+        break;
+      default:
+        // TODO(springerm): handle remaining kinds
+        throw new CompileErrorException(
+            "Method kind ${kind} not implemented yet.");
+    }
+
+    return spec != null
+      ? result + spec.methodSuffix
+      : result;
   }
 }
 

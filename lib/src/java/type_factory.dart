@@ -135,6 +135,10 @@ class TypeFactory {
     return type.accept(new _TypeImplVisitor(this, boxed: false));
   }
 
+  TypeSpecialization getSpecialization(dart.DartType type) {
+    return getLValueType(type).specialization;
+  }
+
   /// Convert the given Dart [type] to the Java type used in a Java
   /// type-argument context.
   ///
@@ -187,6 +191,10 @@ class _TypeImplVisitor extends dart.DartTypeVisitor<JavaType> {
       boxed ? JavaType.javaVoidClass : JavaType.void_;
 
   @override
+  JavaType visitBottomType(dart.BottomType node) =>
+      JavaType.object;
+
+  @override
   JavaType visitInterfaceType(dart.InterfaceType node) {
     var impl = typeFactory.compilerState.getClassImpl(node.classNode);
     var lValueType = boxed ? impl?.javaBoxedLValueType : impl?.javaLValueType;
@@ -217,10 +225,8 @@ class _TypeImplVisitor extends dart.DartTypeVisitor<JavaType> {
     int index = typeFactory.dartClass.typeParameters.indexOf(node.parameter);
 
     if (index == -1) {
-      // TODO(springerm): Handle generic methods
-      print("WARNING: Trying to resolve ${node} but cannot handle "
-          "generic methods/factories. Assuming Object.");
-      return JavaType.object;
+      // This is a generic method type parameter
+      return new TypeVariable(node.parameter.name);
     }
 
     // Return specialized type unless generic
