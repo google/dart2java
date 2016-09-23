@@ -179,14 +179,14 @@ class ClassState {
     String typeVarName;
     try {
       typeVarName = type.accept(_typeExprNameBuilder);
-    } on GenericMethodParameterDetected catch(e) {
+    } on GenericMethodParameterDetected {
       // This type uses a generic parameter from a method. Such types are not
       // hoisted but will be built upon method invocation.
       return null;
     }
 
     return _typeExprNames.putIfAbsent(
-      type, () => 'dart2java\$typeExpr_' + typeVarName);
+        type, () => 'dart2java\$typeExpr_' + typeVarName);
   }
 
   /// The compiler should call this after generating code for the class under
@@ -216,6 +216,22 @@ class ClassState {
     }
   }
 
+  /// The compiler should call this after generating code for the class under
+  /// compilation, and insert the results at the beginning of the list of class
+  /// fields. This variant of the method is for specializations.
+  Iterable<OrderedClassMember> makeStaticFieldsForSpecialization() sync* {
+    yield* _typeExprNames.keys.map((type) {
+      String name = _typeExprNames[type];
+      ClassOrInterfaceType javaType =
+          type is dart.InterfaceType ? _interfaceTypeExprType : typeExprType;
+      return new FieldDecl(name, javaType,
+          access: Access.Private,
+          isStatic: true,
+          isFinal: true,
+          initializer: type.accept(new _TypeExprBuilder(_typeFactory)));
+    });
+  }
+
   /// Tell the type system that the Java class corresponding to this
   /// [ClassState] is a translated Dart class.
   ///
@@ -238,8 +254,8 @@ class ClassState {
   void generateProcedureTypeInfo(dart.Procedure proc) {
     var defClass = _getClassDefiningProc(proc, _typeFactory);
     var defName = _getJavaNameOfProc(proc, _typeFactory.compilerState);
-    var varName = _getNameOfFuncTypeInfo(
-      proc.function, _typeFactory.compilerState);
+    var varName =
+        _getNameOfFuncTypeInfo(proc.function, _typeFactory.compilerState);
 
     var constructorArgs = <Expression>[
       // Fully qualified function name.
@@ -359,7 +375,7 @@ VariableDeclStmt makeTopLevelEnvVar() {
 ///
 /// The resulting variable is used by the type system to implement [getTypeEnv].
 /// The [member] must be either a [dart.Procedure] or a [dart.Constructor].
-/// 
+///
 /// If this method returns [:null:], do not insert a statement; the type
 /// environment variable is handled differently (probably it is passed as a
 /// regular function formal parameter).
@@ -565,8 +581,8 @@ ClassOrInterfaceType _getClassDefiningProc(
     dart.Procedure proc, TypeFactory typeFactory) {
   String javaName = _getJavaNameOfProc(proc, typeFactory.compilerState);
   if (proc.enclosingClass != null) {
-    if (typeFactory.compilerState.usesHelperFunction(
-        proc.enclosingClass, javaName)) {
+    if (typeFactory.compilerState
+        .usesHelperFunction(proc.enclosingClass, javaName)) {
       return typeFactory.compilerState.getHelperClass(proc.enclosingClass);
     } else {
       return typeFactory.getRawClass(proc.enclosingClass);
@@ -586,7 +602,7 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
     throw new Exception('Unrecognized Dart type: $type');
   }
 
-   @override
+  @override
   Expression visitDynamicType(dart.DynamicType type) =>
       new FieldAccess(new ClassRefExpr(_dynamicTypeRepType), 'EXPR');
 
@@ -623,8 +639,8 @@ class _TypeExprBuilder extends dart.DartTypeVisitor<Expression> {
     } else if (parent is dart.FunctionNode) {
       ClassOrInterfaceType definingClass =
           _getClassDefiningFunc(parent, typeFactory);
-      String typeInfoFieldName = _getNameOfFuncTypeInfo(
-        parent, typeFactory.compilerState);
+      String typeInfoFieldName =
+          _getNameOfFuncTypeInfo(parent, typeFactory.compilerState);
       var typeVarIndex = parent.typeParameters.indexOf(type.parameter);
       if (typeVarIndex < 0) {
         throw new Exception('Type parameter "${type.parameter}" not found in '
@@ -752,9 +768,8 @@ Expression makeTypeExprForPrimitive(PrimitiveType type) {
 }
 
 class GenericMethodParameterDetected implements Exception {
-  CompileErrorException();
+  GenericMethodParameterDetected();
 }
-
 
 // These constants are declared here, rather than in constants, since they are
 // type-system specific.

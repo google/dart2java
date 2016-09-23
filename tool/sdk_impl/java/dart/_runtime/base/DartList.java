@@ -33,7 +33,9 @@ import dart._runtime.types.simple.TypeExpr;
 /**
 * The generic implementation of DartList. 
 */
-public class DartList<T> extends dart.core.List<T> implements List<T> {
+public class DartList<T> 
+    extends dart.core.Iterable<T> 
+    implements dart.core.List_interface<T>, List<T> {
   static final int DEFAULT_SIZE = 16;
   static final float GROW_FACTOR = 1.5F;
 
@@ -281,7 +283,30 @@ public class DartList<T> extends dart.core.List<T> implements List<T> {
 
   // --- Methods defined in Iterable ---
 
-  // TODO(springerm): getIterator
+  public dart.core.Iterator_interface<T> getIterator() {
+    Type iteratorType = dart2java$type.env.evaluate(new InterfaceTypeExpr(
+      dart.core.Iterator.dart2java$typeInfo, 
+      new TypeExpr[] { dart.core.List.dart2java$typeInfo.typeVariables[0] }));
+
+    return new dart.core.Iterator<T>(
+        (ConstructorHelper.EmptyConstructorMarker) null, iteratorType) {
+      int nextIndex = -1;
+
+      public boolean moveNext() {
+        if (nextIndex < size - 1) {
+          nextIndex++;
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      public T getCurrent() {
+        return (T) array[nextIndex];
+      }
+    };
+  }
+
   // TODO(springerm): map
   // TODO(springerm): where
   // TODO(springerm): expand

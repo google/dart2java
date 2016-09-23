@@ -4,17 +4,24 @@ public class Foo1<T> extends dart._runtime.base.DartObject implements generics.F
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(new java.lang.String[] {"T"}, generics.Foo1.class, generics.Foo1_interface.class);
     public static dart._runtime.types.simple.FunctionTypeInfo factory$$typeInfo = new dart._runtime.types.simple.FunctionTypeInfo("generics.Foo1::factory$", new java.lang.String[] {"T"});
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_Foo1$T = generics.Foo1.dart2java$typeInfo.typeVariables[0];
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       generics.Foo1.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     public T variable;
+    public generics.Foo1_interface<T> anotherFoo1;
   
     public Foo1(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
       super(arg, type);
     }
   
+    public void createInnerFoo()
+    {
+      final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      this.setAnotherFoo1(((generics.Foo1_interface) ((generics.Foo1_interface<T>) generics.Foo1.<T>factory$(dart2java$localTypeEnv.extend(generics.Foo1.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Foo1$T)})))));
+    }
     public T foo(T t)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
@@ -34,9 +41,18 @@ public class Foo1<T> extends dart._runtime.base.DartObject implements generics.F
     {
       return this.variable;
     }
+    public generics.Foo1_interface<T> getAnotherFoo1()
+    {
+      return this.anotherFoo1;
+    }
     public T setVariable(T value)
     {
       this.variable = value;
+      return value;
+    }
+    public generics.Foo1_interface<T> setAnotherFoo1(generics.Foo1_interface<T> value)
+    {
+      this.anotherFoo1 = value;
       return value;
     }
     public static <T> generics.Foo1_interface<T> factory$(dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv)

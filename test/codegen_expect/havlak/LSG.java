@@ -37,8 +37,9 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int result = this.getLoops().getLength();
       java.lang.Object ebefore = null;
-      for (havlak.SimpleLoop_interface e : (java.lang.Iterable<havlak.SimpleLoop_interface>)this.getLoops())
+      for (dart.core.Iterator_interface<havlak.SimpleLoop_interface> __tempVar_3 = ((dart.core.Iterator_interface<havlak.SimpleLoop_interface>) this.getLoops().getIterator()); __tempVar_3.moveNext(); )
       {
+        havlak.SimpleLoop_interface e = __tempVar_3.getCurrent();
         result = havlak.__TopLevel.mix(result, e.checksum());
       }
       return havlak.__TopLevel.mix(result, this.getRoot().checksum());

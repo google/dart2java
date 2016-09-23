@@ -15,9 +15,18 @@
 import org.junit.Test;
 import scenario.__TopLevel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 public class Tests {
   @Test
   public void testAssignment() {
-    assert(__TopLevel.testAssignment());
+    assertTrue(__TopLevel.testAssignment());
+  }
+
+  @Test(expected=RuntimeException.class)
+  public void testFailedAssignment() {
+    __TopLevel.testAssignmentFail();
   }
 }

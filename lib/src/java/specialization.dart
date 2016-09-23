@@ -48,6 +48,30 @@ class TypeSpecialization {
     JavaType.double_
   ];
 
+  /// A mapping of primitive types to not unboxable boxed types.
+  ///
+  /// These boxed types are required for delegator methods. Whenever a type
+  /// is translated, our implementation automatically select a specialized type
+  /// if possible. Using a not unboxable type prohibits that.
+  ///
+  /// For example:
+  /// In Dart class LinkedHashMap<K, V>:
+  /// List<V> get values;
+  ///
+  /// Should be translated in the <int, int> specialization as follows:
+  /// public List_interface__int getValues() { ... }
+  /// public List<Integer> getValues__generic_generic() { ... }
+  /// (more delegator methods)
+  ///
+  /// The crucial part is that the return value and all parameters of delegator
+  /// methods do not contain stuff like List_interface__int (unless the delegator
+  /// is specialized for int).
+  static final Map<PrimitiveType, ClassOrInterfaceType> delegatorBoxedTypes = {
+    JavaType.int_: JavaType.int_.toBoxedType().notUnboxable(),
+    JavaType.boolean: JavaType.boolean.toBoxedType().notUnboxable(),
+    JavaType.double_: JavaType.double_.toBoxedType().notUnboxable(),
+  };
+
   /// Maximum number of generic type parameters for which specializations
   /// are generated.
   static final specializationThreshold = 2;
@@ -89,8 +113,9 @@ class TypeSpecialization {
 
   TypeSpecialization.fromBoxedTypes(Iterable<JavaType> allTypes) {
     this.types = allTypes
-        .map((t) => specializedTypes.contains(t.toUnboxedType()) 
-          ? t.toUnboxedType() : null)
+        .map((t) => specializedTypes.contains(t.toUnboxedType())
+            ? t.toUnboxedType()
+            : null)
         .toList();
     this.delegatorOverrides = new List.filled(allTypes.length, null);
   }
@@ -158,7 +183,7 @@ class TypeSpecialization {
         } else {
           if (withOverrides) {
             overrides[specializedIndices[index]] =
-                types[specializedIndices[index]].toBoxedType();
+                delegatorBoxedTypes[types[specializedIndices[index]]];
           }
         }
       }

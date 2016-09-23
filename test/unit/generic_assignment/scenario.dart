@@ -45,8 +45,12 @@ bool testAssignment() {
   ai = oo;
 
   oo = ii;
-  // TODO(springerm): This should fail at runtime
-  ai = oo;
 
+  return true;
+}
+
+bool testAssignmentFail() {
+  Bar<Object, Object> oo = new Bar<int, int>();
+  Bar<A, int> ai = oo;
   return true;
 }

@@ -14,6 +14,11 @@
 
 class Foo1<T> {
   T variable;
+  Foo1<T> anotherFoo1;
+
+  void createInnerFoo() {
+    anotherFoo1 = new Foo1<T>();
+  }
 
   T foo(T t) {
     return t;
@@ -33,12 +38,6 @@ class Foo1<T> {
 class Bar2<A, B> {
   A varA;
   B varB;
-
-/*
-  Bar2<A, B> createAB() {
-    return new Bar2<A, B>();
-  }
-*/
 
   A bar(A a, B b) {
     return varA;

@@ -67,12 +67,14 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
       {
         result = havlak.__TopLevel.mix(result, this.getHeader().getName());
       }
-      for (havlak.BasicBlock_interface e : (java.lang.Iterable<havlak.BasicBlock_interface>)this.getBasicBlocks())
+      for (dart.core.Iterator_interface<havlak.BasicBlock_interface> __tempVar_0 = ((dart.core.Iterator_interface<havlak.BasicBlock_interface>) this.getBasicBlocks().getIterator()); __tempVar_0.moveNext(); )
       {
+        havlak.BasicBlock_interface e = __tempVar_0.getCurrent();
         result = havlak.__TopLevel.mix(result, e.getName());
       }
-      for (havlak.SimpleLoop_interface e : (java.lang.Iterable<havlak.SimpleLoop_interface>)this.getChildren())
+      for (dart.core.Iterator_interface<havlak.SimpleLoop_interface> __tempVar_1 = ((dart.core.Iterator_interface<havlak.SimpleLoop_interface>) this.getChildren().getIterator()); __tempVar_1.moveNext(); )
       {
+        havlak.SimpleLoop_interface e = __tempVar_1.getCurrent();
         result = havlak.__TopLevel.mix(result, e.checksum());
       }
       return result;

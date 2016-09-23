@@ -446,8 +446,8 @@ class MethodInvocation extends Expression {
 
   List<ClassRefExpr> genericArguments;
 
-  MethodInvocation(this.receiver, this.methodName, 
-    [this.arguments = const [], this.genericArguments = const []]);
+  MethodInvocation(this.receiver, this.methodName,
+      [this.arguments = const [], this.genericArguments = const []]);
 
   @override
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitMethodInvocation(this);
@@ -566,7 +566,7 @@ class AssignmentExpr extends Expression {
 /// A class reference. This node can be used as receiver expression when
 /// calling static methods.
 class ClassRefExpr extends Expression {
-  ClassOrInterfaceType type;
+  ReferenceType type;
 
   ClassRefExpr(this.type);
 

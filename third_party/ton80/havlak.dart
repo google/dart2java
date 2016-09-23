@@ -199,10 +199,14 @@ class CFG {
   BasicBlock startNode;
 
   BasicBlock createNode(int name) {
-    BasicBlock node = basicBlockMap[name];
-    if (node == null) {
+    // (springerm): Had to change this due to non-nullability
+    BasicBlock node; // = basicBlockMap[name];
+    if (!basicBlockMap.containsKey(name)) {
+    // if (node == null) {
       node = new BasicBlock(name);
       basicBlockMap[name] = node;
+    } else {
+      node = basicBlockMap[name];
     }
 
     if (getNumNodes() == 1) {

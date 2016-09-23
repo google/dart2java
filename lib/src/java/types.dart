@@ -35,9 +35,8 @@ abstract class JavaType extends Node {
     return null;
   }
 
-  TypeSpecialization get specialization => 
+  TypeSpecialization get specialization =>
       new TypeSpecialization.fullyGeneric(0);
-
 
   const JavaType(this.name);
 
@@ -355,14 +354,43 @@ class ClassOrInterfaceType extends ReferenceType {
   /// [withTypeArguments] should be used to obtain a possibly specialized
   /// class/interface type.
   ClassOrInterfaceType withSpecialization(TypeSpecialization spec) {
-    return new ClassOrInterfaceType._copy(name, unspecializedName, package,
-        isInterface, isStatic, enclosingType, typeArguments, omitJavaGenerics,
+    return new ClassOrInterfaceType._copy(
+        name,
+        unspecializedName,
+        package,
+        isInterface,
+        isStatic,
+        enclosingType,
+        typeArguments,
+        omitJavaGenerics,
         spec);
   }
 
+  /// Returns a copy of this type where calling [toUnboxedType] returns [null].
+  ClassOrInterfaceType notUnboxable() {
+    return new ClassOrInterfaceType._copy(
+        name,
+        unspecializedName,
+        package,
+        isInterface,
+        isStatic,
+        enclosingType,
+        typeArguments,
+        omitJavaGenerics,
+        specialization);
+  }
+
+  /// Returns a copy of this type which will be emitted without Java generics.
   ClassOrInterfaceType withoutJavaGenerics() {
-    return new ClassOrInterfaceType._copy(name, unspecializedName, package,
-        isInterface, isStatic, enclosingType, typeArguments, true, 
+    return new ClassOrInterfaceType._copy(
+        name,
+        unspecializedName,
+        package,
+        isInterface,
+        isStatic,
+        enclosingType,
+        typeArguments,
+        true,
         specialization);
   }
 

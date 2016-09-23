@@ -23,7 +23,12 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import dart._runtime.helpers.ConstructorHelper;
+import dart._runtime.types.simple.InterfaceType;
+import dart._runtime.types.simple.InterfaceTypeExpr;
+import dart._runtime.types.simple.TopType;
 import dart._runtime.types.simple.Type;
+import dart._runtime.types.simple.TypeEnvironment;
+import dart._runtime.types.simple.TypeExpr;
 
 /**
 * A specialized implementation of DartList for ints. 
@@ -33,7 +38,9 @@ import dart._runtime.types.simple.Type;
 * specialized implementation and __int methods should then be used
 * instead of interface methods for efficiency reasons.
 */
-public class DartList__int extends dart.core.List__int implements List<Integer> {
+public class DartList__int 
+    extends dart.core.Iterable__int 
+    implements dart.core.List_interface__int, List<Integer> {
   static final int DEFAULT_SIZE = 16;
   static final float GROW_FACTOR = 1.5F;
 
@@ -217,7 +224,30 @@ public class DartList__int extends dart.core.List__int implements List<Integer> 
     return contains__int(element);
   }
 
-  // TODO(springerm): getIterator
+  public dart.core.Iterator_interface__int getIterator__int() {
+    Type iteratorType = dart2java$type.env.evaluate(new InterfaceTypeExpr(
+      dart.core.Iterator.dart2java$typeInfo, 
+      new TypeExpr[] { dart.core.List.dart2java$typeInfo.typeVariables[0] }));
+
+    return new dart.core.Iterator__int(
+        (ConstructorHelper.EmptyConstructorMarker) null, iteratorType) {
+      int nextIndex = -1;
+
+      public boolean moveNext__int() {
+        if (nextIndex < size - 1) {
+          nextIndex++;
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+      public int getCurrent__int() {
+        return array[nextIndex];
+      }
+    };
+  }
+
   // TODO(springerm): map
   // TODO(springerm): where
   // TODO(springerm): expand
@@ -432,5 +462,67 @@ public class DartList__int extends dart.core.List__int implements List<Integer> 
 
   public <E> E[] toArray(E[] a) {
     return Arrays.copyOf(toArray(), size, (Class<E[]>) a.getClass());
+  }
+
+
+  // --- Delegator Methods ---
+  public java.lang.Integer operatorAt(int index)
+  {
+    return this.operatorAt__int(index);
+  }
+
+  public void operatorAtPut(int index, java.lang.Integer value)
+  {
+    this.operatorAtPut__int(index, value);
+  }
+
+  public int getLength()
+  {
+    return this.getLength__int();
+  }
+
+  public void setLength(int newLength)
+  {
+    this.setLength__int(newLength);
+  }
+
+  public boolean add(java.lang.Integer value)
+  {
+    return this.add__int(value);
+  }
+
+  public int indexOf(java.lang.Integer element, int start)
+  {
+    return this.indexOf__int(element, start);
+  }
+
+  public void clear()
+  {
+    this.clear__int();
+  }
+
+  public void insert(int index, java.lang.Integer element)
+  {
+    this.insert__int(index, element);
+  }
+
+  public boolean remove(java.lang.Object value)
+  {
+    return this.remove__int(value);
+  }
+
+  public java.lang.Integer removeAt(int index)
+  {
+    return this.removeAt__int(index);
+  }
+
+  public java.lang.Integer removeLast()
+  {
+    return this.removeLast__int();
+  }
+
+  public dart.core.List_interface__int sublist(int start, int end)
+  {
+    return this.sublist__int(start, end);
   }
 }

@@ -183,6 +183,7 @@ class CompilerState {
   dart.Class doubleClass;
   dart.Class stringClass;
   dart.Class listClass;
+  dart.Class iteratorClass;
   dart.Class mapClass;
   dart.Class numClass;
 
@@ -197,6 +198,7 @@ class CompilerState {
     doubleClass = getDartClass("dart:core", "double");
     stringClass = getDartClass("dart:core", "String");
     listClass = getDartClass("dart:core", "List");
+    iteratorClass = getDartClass("dart:core", "Iterator");
     mapClass = getDartClass("dart:core", "Map");
     numClass = getDartClass("dart:core", "num");
 
@@ -439,8 +441,7 @@ class CompilerState {
   String capitalizeString(String str) =>
       str[0].toUpperCase() + str.substring(1);
 
-  String translatedMethodName(
-      String methodName, dart.ProcedureKind kind, 
+  String translatedMethodName(String methodName, dart.ProcedureKind kind,
       [spzn.TypeSpecialization spec]) {
     String result;
     switch (kind) {
@@ -469,9 +470,7 @@ class CompilerState {
             "Method kind ${kind} not implemented yet.");
     }
 
-    return spec != null
-      ? result + spec.methodSuffix
-      : result;
+    return spec != null ? result + spec.methodSuffix : result;
   }
 }
 

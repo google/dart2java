@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:_internal' show JavaCall;
+import 'dart:_internal' show JavaCall, LinkedHashMap;
 
 @patch
 class Object {
@@ -61,8 +61,9 @@ class List<E> {
 @patch
 class Map<K, V> {
   @patch
-  @JavaCall("dart._runtime.base.DartMap.factory\$")
-  external factory Map();
+  factory Map() {
+    return new LinkedHashMap<K, V>();
+  }
 }
 
 @patch

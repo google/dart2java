@@ -191,8 +191,7 @@ class _TypeImplVisitor extends dart.DartTypeVisitor<JavaType> {
       boxed ? JavaType.javaVoidClass : JavaType.void_;
 
   @override
-  JavaType visitBottomType(dart.BottomType node) =>
-      JavaType.object;
+  JavaType visitBottomType(dart.BottomType node) => JavaType.object;
 
   @override
   JavaType visitInterfaceType(dart.InterfaceType node) {
@@ -230,9 +229,11 @@ class _TypeImplVisitor extends dart.DartTypeVisitor<JavaType> {
     }
 
     // Return specialized type unless generic
-    return specialization.isSpecialized(index)
+    var specializedType = specialization.isSpecialized(index)
         ? specialization.getType(index)
         : new TypeVariable(node.parameter.name);
+
+    return boxed ? specializedType.toBoxedType() : specializedType;
   }
 }
 

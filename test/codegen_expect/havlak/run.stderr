@@ -1,5 +1,0 @@
-Exception in thread "main" java.lang.NullPointerException
-	at havlak.CFG.createNode(CFG.java:25)
-	at havlak.Havlak._constructor(Havlak.java:51)
-	at havlak.Havlak._new(Havlak.java:83)
-	at havlak.__TopLevel.main(__TopLevel.java:18)
