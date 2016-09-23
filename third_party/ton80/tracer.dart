@@ -1,7 +1,7 @@
 // The ray tracer code in this file is written by Adam Burmister. It
 // is available in its original form from:
 //
-//   http://labs.flog.co.nz/raytracer/
+//   https://github.com/adamburmister/jsray
 //
 // Ported from the v8 benchmark suite by Google 2012.
 
