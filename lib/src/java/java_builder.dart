@@ -69,6 +69,31 @@ List<java.PackageMember> buildClass(
       .toList();
 }
 
+/// The result of a static lookup.
+///
+/// This class is used when looking up a member for a (dynamic) method
+/// invocation or PropertyGet/PropertySet using the receiver's static type.
+/// The class contains a reference to the member and the generically fully
+/// instantiated class.
+///
+/// For example:
+/// class Bar<A, B> {
+///   void foo(A a, B b) { ... }
+/// }
+/// class Foo<C> extends Bar<int, C> { }
+///
+/// The lookup for `foo` on an object of static type Foo<double> returns
+/// _LookupResult(Procedure for foo, InterfaceType for Bar<int, double>)
+///
+/// Also see [findMemberInClassHierarchy].
+class _LookupResult<M> {
+  M member;
+
+  dart.InterfaceType receiverType;
+
+  _LookupResult(this.member, this.receiverType);
+}
+
 /// A class containing arguments to be passed during a Java method call.
 class _JavaArguments {
   /// Actual positional arguments in Java code
@@ -463,7 +488,7 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   /// This method takes a function node as a parameter determine if a
   /// type cast must be inserted before passing an argument.
   _JavaArguments buildArguments(dart.Arguments node, dart.FunctionNode target,
-      {bool buildTypeArgs: false, dart.Expression receiver}) {
+      {bool buildTypeArgs: false, dart.InterfaceType receiverType}) {
     // TODO(springerm): Handle named arguments
     var result = new List<java.Expression>();
     List<java.ClassRefExpr> javaGenerics;
@@ -485,18 +510,13 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     for (int i = 0; i < node.positional.length; i++) {
       dart.DartType expectedType;
 
-      if (receiver != null) {
+      if (receiverType != null) {
         // Substitute the value of the type variables given in the expected
-        // parameter type for the actual types in `receiver`.
-        if (receiver.staticType is dart.InterfaceType) {
-          var interfaceType = receiver.staticType as dart.InterfaceType;
-          expectedType = dart_ts.substitutePairwise(
-              target.positionalParameters[i].type,
-              interfaceType.classNode.typeParameters,
-              interfaceType.typeArguments);
-        } else {
-          expectedType = target.positionalParameters[i].type;
-        }
+        // parameter type for the actual types in `receiverType`.
+        expectedType = dart_ts.substitutePairwise(
+            target.positionalParameters[i].type,
+            receiverType.classNode.typeParameters,
+            receiverType.typeArguments);
       } else {
         // Not necessary for constructors, super calls, or static invocations.
         // Their types should not contain any type variables.
@@ -518,8 +538,19 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.Statement visitSuperInitializer(dart.SuperInitializer node) {
+    // Call specialized super constructor if superclass is specialized,
+    // otherwise call "normal" super constructor
+    bool isSuperclassSpecialized =
+        thisDartClass.supertype.classNode.typeParameters.length > 0 &&
+            thisDartClass.supertype.classNode.typeParameters.length <
+                spzn.TypeSpecialization.specializationThreshold;
+
+    String superMethodName = isSuperclassSpecialized
+        ? Constants.constructorMethodPrefix + specialization.methodSuffix
+        : Constants.constructorMethodPrefix;
+
     return new java.ExpressionStmt(new java.SuperMethodInvocation(
-        Constants.constructorMethodPrefix,
+        superMethodName,
         buildArguments(node.arguments, node.target.function).arguments));
   }
 
@@ -980,46 +1011,82 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   }
 
   /// Finds a [dart.Procedure] in a class and its superclasses.
-  // TODO(springerm): Check mixins
-  dart.Procedure findProcedureInClassHierarchy(String name, dart.Class class_,
+  _LookupResult<dart.Procedure> findProcedureInClassHierarchy(
+      String name, dart.InterfaceType receiverType,
       [dart.ProcedureKind kind]) {
-    dart.Class nextClass = class_;
+    return findMemberInClassHierarchy(
+        receiverType,
+        (c) => c.procedures.where(
+            (p) => p.name.name == name && (kind == null || p.kind == kind)));
+  }
+
+  /// Finds a [dart.Field] in a class and its superclasses.
+  _LookupResult<dart.Field> findFieldInClassHierarchy(
+      String name, dart.InterfaceType receiverType) {
+    return findMemberInClassHierarchy(
+        receiverType, (c) => c.fields.where((f) => f.name.name == name));
+  }
+
+  /// Finds a member in a class and its superclasses.
+  ///
+  /// For more documentation, see comment of [_LookupResult].
+  // TODO(springerm): Check mixins
+  _LookupResult<M> findMemberInClassHierarchy/*<M>*/(
+      dart.InterfaceType receiverType, Iterable<M> query(dart.Class class_)) {
+    dart.Class nextClass = receiverType.classNode;
+    dart.InterfaceType nextReceiverType = receiverType;
 
     do {
       // Check class
-      Iterable<dart.Procedure> matches = nextClass.procedures.where(
-          (p) => p.name.name == name && (kind == null || p.kind == kind));
+      Iterable<M> matches = query(nextClass);
       if (matches.isNotEmpty) {
-        return matches.single;
+        return new _LookupResult<M>(matches.single, nextReceiverType);
       }
 
+      // TODO(springerm): The following code does type inference: When looking
+      // for a method with a certain name we also want to know the class's
+      // type, i.e., the type of the class where the method is defined. All
+      // type arguments should be expressed in terms of the type arguments in
+      // [receiverType]. This step might be obsolute when using a newer version
+      // of Kernel.
+
       // Check implemented interfaces
-      Iterable<dart.Procedure> interfaceMatches = nextClass.implementedTypes
-          .map((t) => findProcedureInClassHierarchy(name, t.classNode, kind));
-      if (interfaceMatches.any((m) => m != null)) {
-        return interfaceMatches.firstWhere((m) => m != null);
+      for (var implementedInterface in nextClass.implementedTypes) {
+        List<dart.DartType> superTypeArguments = implementedInterface
+            .typeArguments
+            .map((t) => nextClass.typeParameters
+                    .contains(t) // of form "class Foo<T> extends Bar<T>"
+                ? nextReceiverType.typeArguments[
+                    nextClass.typeParameters.indexOf(t as dart.TypeParameter)]
+                : t)
+            .toList();
+        var interfaceClass = implementedInterface.classNode;
+        var interfaceType = dart_ts.substitutePairwise(interfaceClass.thisType,
+            interfaceClass.typeParameters, superTypeArguments);
+
+        var recursiveResult =
+            findMemberInClassHierarchy/*<M>*/(interfaceType, query);
+        if (recursiveResult != null) {
+          return recursiveResult;
+        }
       }
 
       // Check next class
-      nextClass = nextClass.superclass;
-    } while (nextClass != null);
-
-    return null;
-  }
-
-  /// Find a [dart.Field] in a class and its superclasses.
-  // TODO(springerm): Check mixins
-  dart.Field findFieldInClassHierarchy(String name, dart.Class class_) {
-    dart.Class nextClass = class_;
-    do {
-      Iterable<dart.Field> matches =
-          nextClass.fields.where((p) => p.name.name == name);
-      if (matches.isNotEmpty) {
-        return matches.single;
+      if (nextClass.supertype == null) {
+        return null;
       }
+
+      List<dart.DartType> superTypeArguments = nextClass.supertype.typeArguments
+          .map((t) => nextClass.typeParameters
+                  .contains(t) // of form "class Foo<T> extends Bar<T>"
+              ? nextReceiverType.typeArguments[
+                  nextClass.typeParameters.indexOf(t as dart.TypeParameter)]
+              : t)
+          .toList();
       nextClass = nextClass.superclass;
-    } while (nextClass != null);
-    return null;
+      nextReceiverType = dart_ts.substitutePairwise(
+          nextClass.thisType, nextClass.typeParameters, superTypeArguments);
+    } while (true);
   }
 
   @override
@@ -1051,33 +1118,30 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     }
 
     dart.DartType expectedType;
-    dart.Class classNode =
-        (node.receiver.staticType as dart.InterfaceType).classNode;
 
-    dart.Procedure procedure = findProcedureInClassHierarchy(
-        node.name.name, classNode, dart.ProcedureKind.Setter);
-    dart.Field field = findFieldInClassHierarchy(node.name.name, classNode);
+    var interfaceType = node.receiver.staticType as dart.InterfaceType;
+    var lookupProcedure = findProcedureInClassHierarchy(
+        node.name.name, interfaceType, dart.ProcedureKind.Setter);
+    var lookupField = findFieldInClassHierarchy(node.name.name, interfaceType);
 
-    dart.Class owner;
+    dart.InterfaceType ownerType;
 
-    if (procedure != null && procedure.kind == dart.ProcedureKind.Setter) {
-      expectedType = procedure.function.positionalParameters.first.type;
-      owner = classNode;
-    } else if (field != null) {
-      expectedType = field.type;
-      owner = field.parent;
+    if (lookupProcedure != null) {
+      expectedType =
+          lookupProcedure.member.function.positionalParameters.first.type;
+      ownerType = lookupProcedure.receiverType;
+    } else if (lookupField != null) {
+      expectedType = lookupField.member.type;
+      ownerType = lookupField.receiverType;
     } else {
       throw new CompileErrorException(
           "Field or setter not found in receiver class.");
     }
 
-    if (node.receiver.staticType is dart.InterfaceType) {
-      // Substitute the value of the type variables given in `expectedType` for
-      // actual types in `node.receiver.staticType`.
-      var interfaceType = node.receiver.staticType as dart.InterfaceType;
-      expectedType = dart_ts.substitutePairwise(
-          expectedType, owner.typeParameters, interfaceType.typeArguments);
-    }
+    // Substitute the value of the type variables given in `expectedType` for
+    // actual types in `ownerType`.
+    expectedType = dart_ts.substitutePairwise(expectedType,
+        ownerType.classNode.typeParameters, ownerType.typeArguments);
 
     return buildDynamicMethodInvocation(node.receiver, methodName,
         new _JavaArguments([buildCastedExpression(node.value, expectedType)]));
@@ -1173,30 +1237,41 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
           "(found ${node.staticType.runtimeType})");
     }
 
-    var interfaceType = node.receiver.staticType as dart.InterfaceType;
-    dart.Class classNode = interfaceType.classNode;
-    dart.Procedure procedure =
-        findProcedureInClassHierarchy(methodName, classNode);
+    var lookupProcedure = findProcedureInClassHierarchy(
+        methodName, node.receiver.staticType as dart.InterfaceType);
+
+    dart.InterfaceType ownerType;
 
     dart.FunctionNode targetFunction;
-    if (procedure != null) {
-      targetFunction = procedure.function;
+    if (lookupProcedure != null) {
+      targetFunction = lookupProcedure.member.function;
+      ownerType = lookupProcedure.receiverType;
     } else {
       throw new CompileErrorException(
-          "Method ${methodName} not found in receiver class ${classNode}.");
+          "Method ${methodName} not found in receiver class ${node.receiver.staticType}.");
     }
 
     return buildDynamicMethodInvocation(
         node.receiver,
         javaName,
         buildArguments(node.arguments, targetFunction,
-            receiver: node.receiver));
+            receiverType: ownerType));
   }
 
   @override
   java.SuperMethodInvocation visitSuperMethodInvocation(
       dart.SuperMethodInvocation node) {
-    return new java.SuperMethodInvocation(node.name.name,
+    // Call specialized version if superclass is specialized
+    bool isSuperclassSpecialized =
+        thisDartClass.supertype.classNode.typeParameters.length > 0 &&
+            thisDartClass.supertype.classNode.typeParameters.length <
+                spzn.TypeSpecialization.specializationThreshold;
+
+    String superMethodName = isSuperclassSpecialized
+        ? node.name.name + specialization.methodSuffix
+        : node.name.name;
+
+    return new java.SuperMethodInvocation(superMethodName,
         buildArguments(node.arguments, node.target.function).arguments);
   }
 
