@@ -27,7 +27,6 @@ public class Tests {
 
   @Test
   public void testExtends() {
-    // TODO(springerm): Fix this
-    // assertEquals(60, __TopLevel.testExtends());
+    assertEquals(60, __TopLevel.testExtends());
   }
 }

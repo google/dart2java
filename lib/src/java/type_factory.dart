@@ -221,7 +221,11 @@ class _TypeImplVisitor extends dart.DartTypeVisitor<JavaType> {
   @override
   JavaType visitTypeParameterType(dart.TypeParameterType node) {
     // Find index of type parameter in Dart class AST node
-    int index = typeFactory.dartClass.typeParameters.indexOf(node.parameter);
+    int index = -1;
+    if (typeFactory.dartClass != null) {
+      // Not a top-level class
+      index = typeFactory.dartClass.typeParameters.indexOf(node.parameter);
+    }
 
     if (index == -1) {
       // This is a generic method type parameter

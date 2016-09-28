@@ -987,13 +987,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitPropertyGet(dart.PropertyGet node) {
-    String methodName = compilerState.translatedMethodName(
-        node.name.name,
-        dart.ProcedureKind.Getter,
-        typeFactory.getSpecialization(node.receiver.staticType));
-
     if (node.receiver.staticType is dart.DynamicType) {
       // Generate dynamic method invocation
+      String methodName = compilerState.translatedMethodName(
+          node.name.name, dart.ProcedureKind.Getter);
+
       // Generate static call to helper function
       var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
 
@@ -1005,6 +1003,25 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       return new java.MethodInvocation(
           helperRefExpr, Constants.dynamicHelperInvoke, javaArgs);
     }
+
+    var interfaceType = node.receiver.staticType as dart.InterfaceType;
+    var lookupProcedure = findProcedureInClassHierarchy(
+        node.name.name, interfaceType, dart.ProcedureKind.Getter);
+    var lookupField = findFieldInClassHierarchy(node.name.name, interfaceType);
+
+    dart.InterfaceType ownerType;
+
+    if (lookupProcedure != null) {
+      ownerType = lookupProcedure.receiverType;
+    } else if (lookupField != null) {
+      ownerType = lookupField.receiverType;
+    } else {
+      throw new CompileErrorException(
+          "Field or getter not found in receiver class.");
+    }
+
+    String methodName = compilerState.translatedMethodName(node.name.name,
+        dart.ProcedureKind.Getter, typeFactory.getSpecialization(ownerType));
 
     return buildDynamicMethodInvocation(
         node.receiver, methodName, new _JavaArguments([]));
@@ -1091,13 +1108,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
 
   @override
   java.MethodInvocation visitPropertySet(dart.PropertySet node) {
-    String methodName = compilerState.translatedMethodName(
-        node.name.name,
-        dart.ProcedureKind.Setter,
-        typeFactory.getSpecialization(node.receiver.staticType));
-
     if (node.receiver.staticType is dart.DynamicType) {
       // Generate dynamic method invocation
+      String methodName = compilerState.translatedMethodName(
+          node.name.name, dart.ProcedureKind.Setter);
+
       // Generate static call to helper function
       var helperRefExpr = new java.ClassRefExpr(java.JavaType.dynamicHelper);
 
@@ -1142,6 +1157,9 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // actual types in `ownerType`.
     expectedType = dart_ts.substitutePairwise(expectedType,
         ownerType.classNode.typeParameters, ownerType.typeArguments);
+
+    String methodName = compilerState.translatedMethodName(node.name.name,
+        dart.ProcedureKind.Setter, typeFactory.getSpecialization(ownerType));
 
     return buildDynamicMethodInvocation(node.receiver, methodName,
         new _JavaArguments([buildCastedExpression(node.value, expectedType)]));
@@ -1198,12 +1216,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     // Expand operator symbol to Java-compatible method name
     String javaName = Constants.operatorToMethodName[methodName] ?? methodName;
 
-    // Call specialized method
-    javaName = compilerState.translatedMethodName(
-        javaName,
-        dart.ProcedureKind.Method,
-        typeFactory.getSpecialization(node.receiver.staticType));
-
     if (Constants.objectMethods.contains(javaName)) {
       // This method is defined on Object and must dispatch to ObjectHelper
       // directly to handle "null" values correctly
@@ -1250,6 +1262,10 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
       throw new CompileErrorException(
           "Method ${methodName} not found in receiver class ${node.receiver.staticType}.");
     }
+
+    // Call specialized method
+    javaName = compilerState.translatedMethodName(javaName,
+        dart.ProcedureKind.Method, typeFactory.getSpecialization(ownerType));
 
     return buildDynamicMethodInvocation(
         node.receiver,

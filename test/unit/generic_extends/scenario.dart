@@ -56,9 +56,8 @@ class Qux<E> extends Bar<E, int> {
 int testExtends() {
   Bar<int, Object> bar = new Qux<int>();
   bar.var1 = 10;
-  // TODO(springerm): Fix this
-  // (bar as Qux<int>).var2 = 20;
-  // (bar as Qux<int>).var3 = 30;
+  (bar as Qux<int>).var2 = 20;
+  (bar as Qux<int>).var3 = 30;
 
   return bar.var1 + (bar.var2 as int) + (bar as Qux<int>).var3;
 }
