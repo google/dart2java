@@ -1,5 +1,9 @@
 Dart Kernel
 ===========
+
+This is an older, modified version of Kernel to be used with dart2java
+only. Check https://github.com/dart-lang/kernel for the most recent version.
+
 **Dart Kernel** is a small high-level language derived from Dart.
 It is designed for use as an intermediate format for whole-program analysis
 and transformations, and as a frontend for codegen and execution backends.
