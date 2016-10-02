@@ -264,7 +264,7 @@ class ClassOrInterfaceType extends ReferenceType {
   /// A list of type arguments, in case this is a generic type.
   final List<JavaType> typeArguments;
 
-  final bool omitJavaGenerics;
+  bool omitJavaGenerics;
 
   // Cannot be set in constructor
   PrimitiveType unboxedType;

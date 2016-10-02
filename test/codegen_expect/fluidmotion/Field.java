@@ -7,9 +7,9 @@ public class Field extends dart._runtime.base.DartObject implements fluidmotion.
     static {
       fluidmotion.Field.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
-    public dart.core.List_interface__double dens;
-    public dart.core.List_interface__double u;
-    public dart.core.List_interface__double v;
+    public dart.core.List_interface<java.lang.Double> dens;
+    public dart.core.List_interface<java.lang.Double> u;
+    public dart.core.List_interface<java.lang.Double> v;
     public int rowSize;
   
     public Field(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
@@ -20,47 +20,47 @@ public class Field extends dart._runtime.base.DartObject implements fluidmotion.
     public void setDensity(int x, int y, double d)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getDens().operatorAtPut_List__double(((x + 1) + ((y + 1) * this.getRowSize())), d);
+      this.getDens().operatorAtPut_List(((x + 1) + ((y + 1) * this.getRowSize())), d);
     }
     public double getDensity(int x, int y)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getDens().operatorAt_List__double(((x + 1) + ((y + 1) * this.getRowSize())));
+      return this.getDens().operatorAt_List(((x + 1) + ((y + 1) * this.getRowSize())));
     }
     public void setVelocity(int x, int y, double xv, double yv)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getU().operatorAtPut_List__double(((x + 1) + ((y + 1) * this.getRowSize())), xv);
-      this.getV().operatorAtPut_List__double(((x + 1) + ((y + 1) * this.getRowSize())), yv);
+      this.getU().operatorAtPut_List(((x + 1) + ((y + 1) * this.getRowSize())), xv);
+      this.getV().operatorAtPut_List(((x + 1) + ((y + 1) * this.getRowSize())), yv);
     }
     public double getXVelocity(int x, int y)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getU().operatorAt_List__double(((x + 1) + ((y + 1) * this.getRowSize())));
+      return this.getU().operatorAt_List(((x + 1) + ((y + 1) * this.getRowSize())));
     }
     public double getYVelocity(int x, int y)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getV().operatorAt_List__double(((x + 1) + ((y + 1) * this.getRowSize())));
+      return this.getV().operatorAt_List(((x + 1) + ((y + 1) * this.getRowSize())));
     }
-    public void _constructor(dart.core.List_interface__double dens, dart.core.List_interface__double u, dart.core.List_interface__double v, int rowSize)
+    public void _constructor(dart.core.List_interface<java.lang.Double> dens, dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v, int rowSize)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.dens = ((dart.core.List_interface__double) dens);
-      this.u = ((dart.core.List_interface__double) u);
-      this.v = ((dart.core.List_interface__double) v);
+      this.dens = ((dart.core.List_interface) dens);
+      this.u = ((dart.core.List_interface) u);
+      this.v = ((dart.core.List_interface) v);
       this.rowSize = rowSize;
       super._constructor();
     }
-    public dart.core.List_interface__double getDens()
+    public dart.core.List_interface<java.lang.Double> getDens()
     {
       return this.dens;
     }
-    public dart.core.List_interface__double getU()
+    public dart.core.List_interface<java.lang.Double> getU()
     {
       return this.u;
     }
-    public dart.core.List_interface__double getV()
+    public dart.core.List_interface<java.lang.Double> getV()
     {
       return this.v;
     }
@@ -68,7 +68,7 @@ public class Field extends dart._runtime.base.DartObject implements fluidmotion.
     {
       return this.rowSize;
     }
-    public static fluidmotion.Field_interface _new_Field$(dart._runtime.types.simple.Type type, dart.core.List_interface__double dens, dart.core.List_interface__double u, dart.core.List_interface__double v, int rowSize)
+    public static fluidmotion.Field_interface _new_Field$(dart._runtime.types.simple.Type type, dart.core.List_interface<java.lang.Double> dens, dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v, int rowSize)
     {
       fluidmotion.Field result;
       result = new fluidmotion.Field(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

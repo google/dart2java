@@ -7,9 +7,9 @@ public interface Field_interface extends dart._runtime.base.DartObject_interface
   void setVelocity(int x, int y, double xv, double yv);
   double getXVelocity(int x, int y);
   double getYVelocity(int x, int y);
-  dart.core.List_interface__double getDens();
-  dart.core.List_interface__double getU();
-  dart.core.List_interface__double getV();
+  dart.core.List_interface<java.lang.Double> getDens();
+  dart.core.List_interface<java.lang.Double> getU();
+  dart.core.List_interface<java.lang.Double> getV();
   int getRowSize();
 
 }

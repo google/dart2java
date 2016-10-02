@@ -82,7 +82,7 @@ class BenchmarkBase {
     // Warmup for at least 1000ms. Discard result.
     measureForWarumup(1000);
     // Run the benchmark for at least 50000ms.
-    double result = measureForExercise(5000);
+    double result = measureForExercise(10000);
     teardown();
     return result;
   }
@@ -108,7 +108,7 @@ class Matrix extends BenchmarkBase {
   const Matrix() : super("Matrix");
 
   void run() {
-    int size = 50;
+    int size = 35;
 
     List<List<int>> left = new List<List<int>>(size);
     for (int i = 0; i < left.length; i++) {

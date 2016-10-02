@@ -13,7 +13,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
     public int Length;
     public dart.math.Random_interface rng;
     public int Iterations;
-    public dart.core.List_interface<dart.core.List_interface__int> map_data;
+    public dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> map_data;
   
     public World(dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker arg, dart._runtime.types.simple.Type type)
     {
@@ -23,15 +23,15 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
     public void Reset()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      dart.core.List_interface__int row = ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)));
+      dart.core.List_interface<java.lang.Integer> row = ((dart.core.List_interface) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)));
       for (int y = 0; (y < this.getLength()); y = (y + 1))
       {
-        row = ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)));
+        row = ((dart.core.List_interface) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)));
         for (int x = 0; (x < this.getWidth()); x = (x + 1))
         {
-          row.add_List__int(0);
+          row.add_List(0);
         }
-        this.getMap_data().add_List(((dart.core.List_interface__int) row));
+        this.getMap_data().add_List(((dart.core.List_interface) row));
       }
     }
     public void Base()
@@ -41,28 +41,29 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       {
         for (int x = 0; (x < this.getWidth()); x = (x + 1))
         {
-          this.getMap_data().operatorAt_List(x).operatorAtPut_List__int(y, (this.getRng().nextInt(55) + 200));
+          this.getMap_data().operatorAt_List(x).operatorAtPut_List(y, (this.getRng().nextInt(55) + 200));
         }
       }
     }
-    public void SetCorners(int x, int y, int w, int h, dart.core.List_interface__int v)
+    public void SetCorners(int x, int y, int w, int h, dart.core.List_interface<java.lang.Integer> v)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt).check(v);
       if ((w < 1))
       {
         return;
       }
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(v, null)))
       {
-        this.getMap_data().operatorAt_List(x).operatorAtPut_List__int(y, v.operatorAt_List__int(0));
-        this.getMap_data().operatorAt_List((x + w)).operatorAtPut_List__int(y, v.operatorAt_List__int(1));
-        this.getMap_data().operatorAt_List(x).operatorAtPut_List__int((y + h), v.operatorAt_List__int(2));
-        this.getMap_data().operatorAt_List((x + w)).operatorAtPut_List__int((y + h), v.operatorAt_List__int(3));
+        this.getMap_data().operatorAt_List(x).operatorAtPut_List(y, v.operatorAt_List(0));
+        this.getMap_data().operatorAt_List((x + w)).operatorAtPut_List(y, v.operatorAt_List(1));
+        this.getMap_data().operatorAt_List(x).operatorAtPut_List((y + h), v.operatorAt_List(2));
+        this.getMap_data().operatorAt_List((x + w)).operatorAtPut_List((y + h), v.operatorAt_List(3));
       }
       int hw = dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(w, 2));
       int hh = dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(h, 2));
-      int total = (((((this.getMap_data().operatorAt_List(x).operatorAt_List__int(y) + this.getMap_data().operatorAt_List((x + w)).operatorAt_List__int(y)) + this.getMap_data().operatorAt_List(x).operatorAt_List__int((y + h))) + this.getMap_data().operatorAt_List((x + w)).operatorAt_List__int((y + h))) + this.getRng().nextInt((4 + h))) + 4);
-      this.getMap_data().operatorAt_List((x + hw)).operatorAtPut_List__int((y + hh), dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(total, 4.0)));
+      int total = (((((this.getMap_data().operatorAt_List(x).operatorAt_List(y) + this.getMap_data().operatorAt_List((x + w)).operatorAt_List(y)) + this.getMap_data().operatorAt_List(x).operatorAt_List((y + h))) + this.getMap_data().operatorAt_List((x + w)).operatorAt_List((y + h))) + this.getRng().nextInt((4 + h))) + 4);
+      this.getMap_data().operatorAt_List((x + hw)).operatorAtPut_List((y + hh), dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(total, 4.0)));
       this.SetCorners(x, y, hw, hh, null);
       this.SetCorners((x + hw), y, hw, hh, null);
       this.SetCorners(x, (y + hh), hw, hh, null);
@@ -73,7 +74,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int w = (this.getWidth() - 1);
       int h = (this.getLength() - 1);
-      this.SetCorners(0, 0, w, h, ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), 155, 155, 155, 155)));
+      this.SetCorners(0, 0, w, h, ((dart.core.List_interface) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), 155, 155, 155, 155)));
       this.SetCorners((this.getRng().nextInt(5) + 14), 0, 15, 15, null);
     }
     public void Smooth()
@@ -84,14 +85,14 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       {
         for (int xl = 1; (xl < (this.getWidth() - 1)); xl = (xl + 1))
         {
-          average = dart._runtime.helpers.DoubleHelper.floor((1.1 * dart._runtime.helpers.IntegerHelper.operatorDivide((((this.getMap_data().operatorAt_List(xl).operatorAt_List__int(yl) + this.getMap_data().operatorAt_List((xl + 1)).operatorAt_List__int(yl)) + this.getMap_data().operatorAt_List(xl).operatorAt_List__int((yl + 1))) + this.getMap_data().operatorAt_List((xl + 1)).operatorAt_List__int((yl + 1))), 4)));
-          this.getMap_data().operatorAt_List(xl).operatorAtPut_List__int(yl, average);
-          this.getMap_data().operatorAt_List((xl + 1)).operatorAtPut_List__int(yl, average);
-          this.getMap_data().operatorAt_List((xl + 1)).operatorAtPut_List__int((yl + 1), average);
-          this.getMap_data().operatorAt_List(xl).operatorAtPut_List__int((yl + 1), average);
-          this.getMap_data().operatorAt_List((xl - 1)).operatorAtPut_List__int(yl, average);
-          this.getMap_data().operatorAt_List((xl - 1)).operatorAtPut_List__int((yl - 1), average);
-          this.getMap_data().operatorAt_List(xl).operatorAtPut_List__int((yl - 1), average);
+          average = dart._runtime.helpers.DoubleHelper.floor((1.1 * dart._runtime.helpers.IntegerHelper.operatorDivide((((this.getMap_data().operatorAt_List(xl).operatorAt_List(yl) + this.getMap_data().operatorAt_List((xl + 1)).operatorAt_List(yl)) + this.getMap_data().operatorAt_List(xl).operatorAt_List((yl + 1))) + this.getMap_data().operatorAt_List((xl + 1)).operatorAt_List((yl + 1))), 4)));
+          this.getMap_data().operatorAt_List(xl).operatorAtPut_List(yl, average);
+          this.getMap_data().operatorAt_List((xl + 1)).operatorAtPut_List(yl, average);
+          this.getMap_data().operatorAt_List((xl + 1)).operatorAtPut_List((yl + 1), average);
+          this.getMap_data().operatorAt_List(xl).operatorAtPut_List((yl + 1), average);
+          this.getMap_data().operatorAt_List((xl - 1)).operatorAtPut_List(yl, average);
+          this.getMap_data().operatorAt_List((xl - 1)).operatorAtPut_List((yl - 1), average);
+          this.getMap_data().operatorAt_List(xl).operatorAtPut_List((yl - 1), average);
         }
       }
     }
@@ -102,7 +103,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       this.Length = 64;
       this.rng = dart.math.Random.factory$(17);
       this.Iterations = 6;
-      this.map_data = ((dart.core.List_interface) dart._runtime.base.DartList.<dart.core.List_interface__int>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltList$ltint$0$gt$gt)));
+      this.map_data = ((dart.core.List_interface) dart._runtime.base.DartList.<dart.core.List_interface<java.lang.Integer>>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltList$ltint$0$gt$gt)));
       super._constructor();
       this.Reset();
     }
@@ -122,7 +123,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
     {
       return this.Iterations;
     }
-    public dart.core.List_interface<dart.core.List_interface__int> getMap_data()
+    public dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> getMap_data()
     {
       return this.map_data;
     }
@@ -146,7 +147,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       this.Iterations = value;
       return value;
     }
-    public dart.core.List_interface<dart.core.List_interface__int> setMap_data(dart.core.List_interface<dart.core.List_interface__int> value)
+    public dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> setMap_data(dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> value)
     {
       this.map_data = value;
       return value;

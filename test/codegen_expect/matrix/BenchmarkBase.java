@@ -82,7 +82,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements matr
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setup();
       this.measureForWarumup(1000);
-      double result = this.measureForExercise(5000);
+      double result = this.measureForExercise(10000);
       this.teardown();
       return result;
     }

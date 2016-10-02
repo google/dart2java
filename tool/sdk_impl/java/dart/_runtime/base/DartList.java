@@ -59,10 +59,18 @@ public class DartList<T>
   DartList(Type type, Class<T> genericType, int parameterSize) {
     super((ConstructorHelper.EmptyConstructorMarker) null, type);
 
+    if (genericType == int.class) {
+      genericType = (Class) Integer.class;
+    } else if (genericType == double.class) {
+      genericType = (Class) Double.class;
+    } else if (genericType == boolean.class) {
+      genericType = (Class) Boolean.class;
+    }
+
     this.genericType = genericType;
     this.genericArrayType = (Class<T[]>) Array.newInstance(genericType, 0)
       .getClass();
-    
+
     if (parameterSize == 0) {
       // No size argument given ("null")
       this.array = (T[]) Array.newInstance(genericType, DEFAULT_SIZE);
@@ -83,30 +91,22 @@ public class DartList<T>
     Type innerType = type.env.evaluate(
       dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
-    // Create instance of correct specialization
-    // TODO(springerm): Specialization for bool missing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type) {
-      return (dart.core.List_interface) (new DartList__int(type, length));
-    } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
-      return (dart.core.List_interface) (new DartList__double(type, length));
-    } else {
-      InterfaceType reifiedType = (InterfaceType) type;
-      Type firstTypeArg = reifiedType.actualTypeParams[0];
+    InterfaceType reifiedType = (InterfaceType) type;
+    Type firstTypeArg = reifiedType.actualTypeParams[0];
 
-      Class javaClassObj;
-      if (firstTypeArg instanceof InterfaceType) {
-        javaClassObj = ((InterfaceType) reifiedType.actualTypeParams[0])
-          .getJavaType();
-      } else if (firstTypeArg instanceof TopType) {
-        // Type of list is "dynamic"
-        javaClassObj = Object.class;
-      } else {
-        throw new RuntimeException("Unknown generic type: " 
-          + firstTypeArg.toString());
-      }
-      
-      return new DartList<E>(type, javaClassObj, length);
+    Class javaClassObj;
+    if (firstTypeArg instanceof InterfaceType) {
+      javaClassObj = ((InterfaceType) reifiedType.actualTypeParams[0])
+        .getJavaType();
+    } else if (firstTypeArg instanceof TopType) {
+      // Type of list is "dynamic"
+      javaClassObj = Object.class;
+    } else {
+      throw new RuntimeException("Unknown generic type: " 
+        + firstTypeArg.toString());
     }
+    
+    return new DartList<E>(type, javaClassObj, length);
   }
 
   public static <E> dart.core.List_interface<E> factory$filled(
@@ -119,47 +119,27 @@ public class DartList<T>
     Type innerType = type.env.evaluate(
       dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
-    // Create instance of correct specialization
-    // TODO(springerm): Specialization for bool missing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type) {
-      DartList__int result = new DartList__int(type, length);
-      int fillValue = (Integer) value;
-      for (int i = 0; i < length; i++) {
-        result.operatorAtPut_List__int(i, fillValue);
-      }
+    InterfaceType reifiedType = (InterfaceType) type;
+    Type firstTypeArg = reifiedType.actualTypeParams[0];
 
-      return (dart.core.List_interface) result;
-    } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
-      DartList__double result = new DartList__double(type, length);
-      double fillValue = (Double) value;
-      for (int i = 0; i < length; i++) {
-        result.operatorAtPut_List__double(i, fillValue);
-      }
-
-      return (dart.core.List_interface) result;
+    Class javaClassObj;
+    if (firstTypeArg instanceof InterfaceType) {
+      javaClassObj = ((InterfaceType) reifiedType.actualTypeParams[0])
+        .getJavaType();
+    } else if (firstTypeArg instanceof TopType) {
+      // Type of list is "dynamic"
+      javaClassObj = Object.class;
     } else {
-      InterfaceType reifiedType = (InterfaceType) type;
-      Type firstTypeArg = reifiedType.actualTypeParams[0];
-
-      Class javaClassObj;
-      if (firstTypeArg instanceof InterfaceType) {
-        javaClassObj = ((InterfaceType) reifiedType.actualTypeParams[0])
-          .getJavaType();
-      } else if (firstTypeArg instanceof TopType) {
-        // Type of list is "dynamic"
-        javaClassObj = Object.class;
-      } else {
-        throw new RuntimeException("Unknown generic type: " 
-          + firstTypeArg.toString());
-      }
-      
-      DartList<E> result = new DartList<E>(type, javaClassObj, length);
-      for (int i = 0; i < length; i++) {
-        result.operatorAtPut(i, value);
-      }
-
-      return result;
+      throw new RuntimeException("Unknown generic type: " 
+        + firstTypeArg.toString());
     }
+    
+    DartList<E> result = new DartList<E>(type, javaClassObj, length);
+    for (int i = 0; i < length; i++) {
+      result.operatorAtPut(i, value);
+    }
+
+    return result;
   }
 
   public static <T> dart.core.List_interface<T> specialfactory$fromArguments(
@@ -170,35 +150,15 @@ public class DartList<T>
     Type innerType = type.env.evaluate(
         dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
-    // Create instance of correct specialization
-    // TODO(springerm): Specialization for bool
-    // TODO(springerm): Dispatch to specialized version at call site to avoid
-    // boxing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type) {
-      DartList__int instance = new DartList__int(type, elements.length);
+    InterfaceType reifiedType = (InterfaceType) type;
+    InterfaceType firstGenericType = (InterfaceType) reifiedType.actualTypeParams[0];
+    DartList<T> instance = new DartList<T>(
+      type, (Class) firstGenericType.getJavaType(), elements.length);
 
-      for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut_List__int(i, (Integer) elements[i]);
-      }
-      return (dart.core.List_interface) instance;
-    } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
-      DartList__double instance = new DartList__double(type, elements.length);
-
-      for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut_List__double(i, (Double) elements[i]);
-      }
-      return (dart.core.List_interface) instance;
-    } else {
-      InterfaceType reifiedType = (InterfaceType) type;
-      InterfaceType firstGenericType = (InterfaceType) reifiedType.actualTypeParams[0];
-      DartList<T> instance = new DartList<T>(
-        type, (Class) firstGenericType.getJavaType(), elements.length);
-
-      for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut_List(i, elements[i]);
-      }
-      return instance;
+    for (int i = 0; i < elements.length; i++) {
+      instance.operatorAtPut_List(i, elements[i]);
     }
+    return instance;
   }
   
   private void increaseSize() {
@@ -327,7 +287,7 @@ public class DartList<T>
 
     // find
     for (index = 0; index < size; index++) {
-      if (array[index] == value) {
+      if (array[index].equals(value)) {
         found = true;
         break;
       }
@@ -438,7 +398,7 @@ public class DartList<T>
 
   public boolean contains_Iterable(Object element) {
     for (int i = 0; i < size; i++) {
-      if (array[i] == element) {
+      if (array[i].equals(element)) {
         return true;
       }
     }

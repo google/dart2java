@@ -10,7 +10,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements trac
     }
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      tracer.BenchmarkBase.iters = 1000;
+      tracer.BenchmarkBase.iters = 5000;
     }
     public java.lang.String name;
     public static int iters;
@@ -81,8 +81,8 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements trac
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setup();
-      this.measureForWarumup(100);
-      double result = this.measureForExercise((2 * 1000));
+      this.measureForWarumup(1000);
+      double result = this.measureForExercise(10000);
       this.teardown();
       return result;
     }

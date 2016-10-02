@@ -39,7 +39,7 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
           {
             v = this.getV2();
             this.setV2(this.getV2().getLink());
-            v.setA1(this.getV1().getA2().operatorAt_List__int(count));
+            v.setA1(this.getV1().getA2().operatorAt_List(count));
             this.getV1().setA1((count + 1));
             return this.getScheduler().queue(v);
           }

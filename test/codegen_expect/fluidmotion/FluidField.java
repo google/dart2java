@@ -15,12 +15,12 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
     public int iterations;
     public double dt;
     public int size;
-    public dart.core.List_interface__double dens;
-    public dart.core.List_interface__double dens_prev;
-    public dart.core.List_interface__double u;
-    public dart.core.List_interface__double u_prev;
-    public dart.core.List_interface__double v;
-    public dart.core.List_interface__double v_prev;
+    public dart.core.List_interface<java.lang.Double> dens;
+    public dart.core.List_interface<java.lang.Double> dens_prev;
+    public dart.core.List_interface<java.lang.Double> u;
+    public dart.core.List_interface<java.lang.Double> u_prev;
+    public dart.core.List_interface<java.lang.Double> v;
+    public dart.core.List_interface<java.lang.Double> v_prev;
     public int width;
     public int height;
     public int rowSize;
@@ -42,11 +42,11 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
       double sumDens = 0.0;
       double sumU = 0.0;
       double sumV = 0.0;
-      for (int i = 0; (i < this.getDens().getLength_List__double()); i = (i + 1))
+      for (int i = 0; (i < this.getDens().getLength_List()); i = (i + 1))
       {
-        sumDens = (sumDens + this.getDens().operatorAt_List__double(i));
-        sumU = (sumU + this.getU().operatorAt_List__double(i));
-        sumV = (sumV + this.getV().operatorAt_List__double(i));
+        sumDens = (sumDens + this.getDens().operatorAt_List(i));
+        sumU = (sumU + this.getU().operatorAt_List(i));
+        sumV = (sumV + this.getV().operatorAt_List(i));
       }
       if ((((!fluidmotion.FluidField.approxEquals(sumDens, ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(expectedDens)))) || (!fluidmotion.FluidField.approxEquals(sumU, ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(expectedU))))) || (!fluidmotion.FluidField.approxEquals(sumV, ((double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0).check(expectedV))))))
       {
@@ -56,36 +56,39 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
     public void reset()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.setDens(((dart.core.List_interface__double) ((dart.core.List_interface__double) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
-      this.setDens_prev(((dart.core.List_interface__double) ((dart.core.List_interface__double) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
-      this.setU(((dart.core.List_interface__double) ((dart.core.List_interface__double) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
-      this.setU_prev(((dart.core.List_interface__double) ((dart.core.List_interface__double) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
-      this.setV(((dart.core.List_interface__double) ((dart.core.List_interface__double) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
-      this.setV_prev(((dart.core.List_interface__double) ((dart.core.List_interface__double) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
+      this.setDens(((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
+      this.setDens_prev(((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
+      this.setU(((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
+      this.setU_prev(((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
+      this.setV(((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
+      this.setV_prev(((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart.core.List.<java.lang.Double>factory$filled(dart2java$localTypeEnv.extend(dart.core.List.factory$filled$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_double$0)}), this.getSize(), 0.0))));
     }
-    public void addFields(dart.core.List_interface__double x, dart.core.List_interface__double s, double dt)
+    public void addFields(dart.core.List_interface<java.lang.Double> x, dart.core.List_interface<java.lang.Double> s, double dt)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(s);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
       for (int i = 0; (i < this.getSize()); i = (i + 1))
       {
-        x.operatorAtPut_List__double(i, (x.operatorAt_List__double(i) + (dt * s.operatorAt_List__double(i))));
+        x.operatorAtPut_List(i, (x.operatorAt_List(i) + (dt * s.operatorAt_List(i))));
       }
     }
-    public void set_bnd(int b, dart.core.List_interface__double x)
+    public void set_bnd(int b, dart.core.List_interface<java.lang.Double> x)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
       if ((b == 1))
       {
         int i = 1;
         for (; (i <= this.getWidth()); i = (i + 1))
         {
-          x.operatorAtPut_List__double(i, x.operatorAt_List__double((i + this.getRowSize())));
-          x.operatorAtPut_List__double((i + ((this.getHeight() + 1) * this.getRowSize())), x.operatorAt_List__double((i + (this.getHeight() * this.getRowSize()))));
+          x.operatorAtPut_List(i, x.operatorAt_List((i + this.getRowSize())));
+          x.operatorAtPut_List((i + ((this.getHeight() + 1) * this.getRowSize())), x.operatorAt_List((i + (this.getHeight() * this.getRowSize()))));
         }
         for (int j = 1; (j <= this.getHeight()); j = (j + 1))
         {
-          x.operatorAtPut_List__double((j * this.getRowSize()), (-x.operatorAt_List__double((1 + (j * this.getRowSize())))));
-          x.operatorAtPut_List__double(((this.getWidth() + 1) + (j * this.getRowSize())), (-x.operatorAt_List__double((this.getWidth() + (j * this.getRowSize())))));
+          x.operatorAtPut_List((j * this.getRowSize()), (-x.operatorAt_List((1 + (j * this.getRowSize())))));
+          x.operatorAtPut_List(((this.getWidth() + 1) + (j * this.getRowSize())), (-x.operatorAt_List((this.getWidth() + (j * this.getRowSize())))));
         }
       }
       else
@@ -94,38 +97,40 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
         {
           for (int i = 1; (i <= this.getWidth()); i = (i + 1))
           {
-            x.operatorAtPut_List__double(i, (-x.operatorAt_List__double((i + this.getRowSize()))));
-            x.operatorAtPut_List__double((i + ((this.getHeight() + 1) * this.getRowSize())), (-x.operatorAt_List__double((i + (this.getHeight() * this.getRowSize())))));
+            x.operatorAtPut_List(i, (-x.operatorAt_List((i + this.getRowSize()))));
+            x.operatorAtPut_List((i + ((this.getHeight() + 1) * this.getRowSize())), (-x.operatorAt_List((i + (this.getHeight() * this.getRowSize())))));
           }
           for (int j = 1; (j <= this.getHeight()); j = (j + 1))
           {
-            x.operatorAtPut_List__double((j * this.getRowSize()), x.operatorAt_List__double((1 + (j * this.getRowSize()))));
-            x.operatorAtPut_List__double(((this.getWidth() + 1) + (j * this.getRowSize())), x.operatorAt_List__double((this.getWidth() + (j * this.getRowSize()))));
+            x.operatorAtPut_List((j * this.getRowSize()), x.operatorAt_List((1 + (j * this.getRowSize()))));
+            x.operatorAtPut_List(((this.getWidth() + 1) + (j * this.getRowSize())), x.operatorAt_List((this.getWidth() + (j * this.getRowSize()))));
           }
         }
         else
         {
           for (int i = 1; (i <= this.getWidth()); i = (i + 1))
           {
-            x.operatorAtPut_List__double(i, x.operatorAt_List__double((i + this.getRowSize())));
-            x.operatorAtPut_List__double((i + ((this.getHeight() + 1) * this.getRowSize())), x.operatorAt_List__double((i + (this.getHeight() * this.getRowSize()))));
+            x.operatorAtPut_List(i, x.operatorAt_List((i + this.getRowSize())));
+            x.operatorAtPut_List((i + ((this.getHeight() + 1) * this.getRowSize())), x.operatorAt_List((i + (this.getHeight() * this.getRowSize()))));
           }
           for (int j = 1; (j <= this.getHeight()); j = (j + 1))
           {
-            x.operatorAtPut_List__double((j * this.getRowSize()), x.operatorAt_List__double((1 + (j * this.getRowSize()))));
-            x.operatorAtPut_List__double(((this.getWidth() + 1) + (j * this.getRowSize())), x.operatorAt_List__double((this.getWidth() + (j * this.getRowSize()))));
+            x.operatorAtPut_List((j * this.getRowSize()), x.operatorAt_List((1 + (j * this.getRowSize()))));
+            x.operatorAtPut_List(((this.getWidth() + 1) + (j * this.getRowSize())), x.operatorAt_List((this.getWidth() + (j * this.getRowSize()))));
           }
         }
       }
       int maxEdge = ((this.getHeight() + 1) * this.getRowSize());
-      x.operatorAtPut_List__double(0, (0.5 * (x.operatorAt_List__double(1) + x.operatorAt_List__double(this.getRowSize()))));
-      x.operatorAtPut_List__double(maxEdge, (0.5 * (x.operatorAt_List__double((1 + maxEdge)) + x.operatorAt_List__double((this.getHeight() * this.getRowSize())))));
-      x.operatorAtPut_List__double((this.getWidth() + 1), (0.5 * (x.operatorAt_List__double(this.getWidth()) + x.operatorAt_List__double(((this.getWidth() + 1) + this.getRowSize())))));
-      x.operatorAtPut_List__double(((this.getWidth() + 1) + maxEdge), (0.5 * (x.operatorAt_List__double((this.getWidth() + maxEdge)) + x.operatorAt_List__double(((this.getWidth() + 1) + (this.getHeight() * this.getRowSize()))))));
+      x.operatorAtPut_List(0, (0.5 * (x.operatorAt_List(1) + x.operatorAt_List(this.getRowSize()))));
+      x.operatorAtPut_List(maxEdge, (0.5 * (x.operatorAt_List((1 + maxEdge)) + x.operatorAt_List((this.getHeight() * this.getRowSize())))));
+      x.operatorAtPut_List((this.getWidth() + 1), (0.5 * (x.operatorAt_List(this.getWidth()) + x.operatorAt_List(((this.getWidth() + 1) + this.getRowSize())))));
+      x.operatorAtPut_List(((this.getWidth() + 1) + maxEdge), (0.5 * (x.operatorAt_List((this.getWidth() + maxEdge)) + x.operatorAt_List(((this.getWidth() + 1) + (this.getHeight() * this.getRowSize()))))));
     }
-    public void lin_solve(int b, dart.core.List_interface__double x, dart.core.List_interface__double x0, int a, int c)
+    public void lin_solve(int b, dart.core.List_interface<java.lang.Double> x, dart.core.List_interface<java.lang.Double> x0, int a, int c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
       if (((a == 0) && (c == 1)))
       {
         for (int j = 1; (j <= this.getHeight()); j = (j + 1))
@@ -134,11 +139,11 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
           currentRow = (currentRow + 1);
           for (int i = 0; (i < this.getWidth()); i = (i + 1))
           {
-            x.operatorAtPut_List__double(currentRow, x0.operatorAt_List__double(currentRow));
+            x.operatorAtPut_List(currentRow, x0.operatorAt_List(currentRow));
             currentRow = (currentRow + 1);
           }
         }
-        this.set_bnd(b, ((dart.core.List_interface__double) x));
+        this.set_bnd(b, ((dart.core.List_interface) x));
       }
       else
       {
@@ -150,28 +155,34 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
             int lastRow = ((j - 1) * this.getRowSize());
             int currentRow = (j * this.getRowSize());
             int nextRow = ((j + 1) * this.getRowSize());
-            double lastX = x.operatorAt_List__double(currentRow);
+            double lastX = x.operatorAt_List(currentRow);
             currentRow = (currentRow + 1);
             for (int i = 1; (i <= this.getWidth()); i = (i + 1))
             {
-              double tmp1 = ((x0.operatorAt_List__double(currentRow) + dart._runtime.helpers.IntegerHelper.operatorStar(a, (((lastX + x.operatorAt_List__double(currentRow = (currentRow + 1))) + x.operatorAt_List__double(lastRow = (lastRow + 1))) + x.operatorAt_List__double(nextRow = (nextRow + 1))))) * invC);
+              double tmp1 = ((x0.operatorAt_List(currentRow) + dart._runtime.helpers.IntegerHelper.operatorStar(a, (((lastX + x.operatorAt_List(currentRow = (currentRow + 1))) + x.operatorAt_List(lastRow = (lastRow + 1))) + x.operatorAt_List(nextRow = (nextRow + 1))))) * invC);
               lastX = tmp1;
-              x.operatorAtPut_List__double((currentRow - 1), tmp1);
+              x.operatorAtPut_List((currentRow - 1), tmp1);
             }
           }
-          this.set_bnd(b, ((dart.core.List_interface__double) x));
+          this.set_bnd(b, ((dart.core.List_interface) x));
         }
       }
     }
-    public void diffuse(int b, dart.core.List_interface__double x, dart.core.List_interface__double x0, double dt)
+    public void diffuse(int b, dart.core.List_interface<java.lang.Double> x, dart.core.List_interface<java.lang.Double> x0, double dt)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
       int a = 0;
-      this.lin_solve(b, ((dart.core.List_interface__double) x), ((dart.core.List_interface__double) x0), a, (1 + (4 * a)));
+      this.lin_solve(b, ((dart.core.List_interface) x), ((dart.core.List_interface) x0), a, (1 + (4 * a)));
     }
-    public void lin_solve2(dart.core.List_interface__double x, dart.core.List_interface__double x0, dart.core.List_interface__double y, dart.core.List_interface__double y0, int a, int c)
+    public void lin_solve2(dart.core.List_interface<java.lang.Double> x, dart.core.List_interface<java.lang.Double> x0, dart.core.List_interface<java.lang.Double> y, dart.core.List_interface<java.lang.Double> y0, int a, int c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(y0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(y);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
       if (((a == 0) && (c == 1)))
       {
         for (int j = 1; (j <= this.getHeight()); j = (j + 1))
@@ -180,13 +191,13 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
           currentRow = (currentRow + 1);
           for (int i = 0; (i < this.getWidth()); i = (i + 1))
           {
-            x.operatorAtPut_List__double(currentRow, x0.operatorAt_List__double(currentRow));
-            y.operatorAtPut_List__double(currentRow, y0.operatorAt_List__double(currentRow));
+            x.operatorAtPut_List(currentRow, x0.operatorAt_List(currentRow));
+            y.operatorAtPut_List(currentRow, y0.operatorAt_List(currentRow));
             currentRow = (currentRow + 1);
           }
         }
-        this.set_bnd(1, ((dart.core.List_interface__double) x));
-        this.set_bnd(2, ((dart.core.List_interface__double) y));
+        this.set_bnd(1, ((dart.core.List_interface) x));
+        this.set_bnd(2, ((dart.core.List_interface) y));
       }
       else
       {
@@ -198,33 +209,40 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
             int lastRow = ((j - 1) * this.getRowSize());
             int currentRow = (j * this.getRowSize());
             int nextRow = ((j + 1) * this.getRowSize());
-            double lastX = x.operatorAt_List__double(currentRow);
-            double lastY = y.operatorAt_List__double(currentRow);
+            double lastX = x.operatorAt_List(currentRow);
+            double lastY = y.operatorAt_List(currentRow);
             currentRow = (currentRow + 1);
             for (int i = 1; (i <= this.getWidth()); i = (i + 1))
             {
-              double tmp2 = ((x0.operatorAt_List__double(currentRow) + dart._runtime.helpers.IntegerHelper.operatorStar(a, (((lastX + x.operatorAt_List__double(currentRow)) + x.operatorAt_List__double(lastRow)) + x.operatorAt_List__double(nextRow)))) * invC);
+              double tmp2 = ((x0.operatorAt_List(currentRow) + dart._runtime.helpers.IntegerHelper.operatorStar(a, (((lastX + x.operatorAt_List(currentRow)) + x.operatorAt_List(lastRow)) + x.operatorAt_List(nextRow)))) * invC);
               lastX = tmp2;
-              x.operatorAtPut_List__double(currentRow, tmp2);
-              double tmp3 = ((y0.operatorAt_List__double(currentRow) + dart._runtime.helpers.IntegerHelper.operatorStar(a, (((lastY + y.operatorAt_List__double(currentRow = (currentRow + 1))) + y.operatorAt_List__double(lastRow = (lastRow + 1))) + y.operatorAt_List__double(nextRow = (nextRow + 1))))) * invC);
+              x.operatorAtPut_List(currentRow, tmp2);
+              double tmp3 = ((y0.operatorAt_List(currentRow) + dart._runtime.helpers.IntegerHelper.operatorStar(a, (((lastY + y.operatorAt_List(currentRow = (currentRow + 1))) + y.operatorAt_List(lastRow = (lastRow + 1))) + y.operatorAt_List(nextRow = (nextRow + 1))))) * invC);
               lastY = tmp3;
-              y.operatorAtPut_List__double((currentRow - 1), tmp3);
+              y.operatorAtPut_List((currentRow - 1), tmp3);
             }
           }
-          this.set_bnd(1, ((dart.core.List_interface__double) x));
-          this.set_bnd(2, ((dart.core.List_interface__double) y));
+          this.set_bnd(1, ((dart.core.List_interface) x));
+          this.set_bnd(2, ((dart.core.List_interface) y));
         }
       }
     }
-    public void diffuse2(dart.core.List_interface__double x, dart.core.List_interface__double x0, java.lang.Object y, dart.core.List_interface__double y0, double dt)
+    public void diffuse2(dart.core.List_interface<java.lang.Double> x, dart.core.List_interface<java.lang.Double> x0, java.lang.Object y, dart.core.List_interface<java.lang.Double> y0, double dt)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(y0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
       int a = 0;
-      this.lin_solve2(((dart.core.List_interface__double) x), ((dart.core.List_interface__double) x0), ((dart.core.List_interface__double) ((dart.core.List_interface__double) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(y))), ((dart.core.List_interface__double) y0), a, (1 + (4 * a)));
+      this.lin_solve2(((dart.core.List_interface) x), ((dart.core.List_interface) x0), ((dart.core.List_interface) ((dart.core.List_interface<java.lang.Double>) dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(y))), ((dart.core.List_interface) y0), a, (1 + (4 * a)));
     }
-    public void advect(int b, dart.core.List_interface__double d, dart.core.List_interface__double d0, dart.core.List_interface__double u, dart.core.List_interface__double v, double dt)
+    public void advect(int b, dart.core.List_interface<java.lang.Double> d, dart.core.List_interface<java.lang.Double> d0, dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v, double dt)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(v);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(u);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(d0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(d);
       double Wdt0 = dart._runtime.helpers.DoubleHelper.operatorStar(dt, this.getWidth());
       double Hdt0 = dart._runtime.helpers.DoubleHelper.operatorStar(dt, this.getHeight());
       double Wp5 = dart._runtime.helpers.IntegerHelper.operatorPlus(this.getWidth(), 0.5);
@@ -234,8 +252,8 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
         int pos = (j * this.getRowSize());
         for (int i = 1; (i <= this.getWidth()); i = (i + 1))
         {
-          double x = dart._runtime.helpers.IntegerHelper.operatorMinus(i, (Wdt0 * u.operatorAt_List__double(pos = (pos + 1))));
-          double y = dart._runtime.helpers.IntegerHelper.operatorMinus(j, (Hdt0 * v.operatorAt_List__double(pos)));
+          double x = dart._runtime.helpers.IntegerHelper.operatorMinus(i, (Wdt0 * u.operatorAt_List(pos = (pos + 1))));
+          double y = dart._runtime.helpers.IntegerHelper.operatorMinus(j, (Hdt0 * v.operatorAt_List(pos)));
           if ((x < 0.5))
           {
             x = 0.5;
@@ -268,14 +286,18 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
           double t0 = dart._runtime.helpers.IntegerHelper.operatorMinus(1, t1);
           int row1 = (j0 * this.getRowSize());
           int row2 = (j1 * this.getRowSize());
-          d.operatorAtPut_List__double(pos, ((s0 * ((t0 * d0.operatorAt_List__double((i0 + row1))) + (t1 * d0.operatorAt_List__double((i0 + row2))))) + (s1 * ((t0 * d0.operatorAt_List__double((i1 + row1))) + (t1 * d0.operatorAt_List__double((i1 + row2)))))));
+          d.operatorAtPut_List(pos, ((s0 * ((t0 * d0.operatorAt_List((i0 + row1))) + (t1 * d0.operatorAt_List((i0 + row2))))) + (s1 * ((t0 * d0.operatorAt_List((i1 + row1))) + (t1 * d0.operatorAt_List((i1 + row2)))))));
         }
       }
-      this.set_bnd(b, ((dart.core.List_interface__double) d));
+      this.set_bnd(b, ((dart.core.List_interface) d));
     }
-    public void project(dart.core.List_interface__double u, dart.core.List_interface__double v, dart.core.List_interface__double p, dart.core.List_interface__double div)
+    public void project(dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v, dart.core.List_interface<java.lang.Double> p, dart.core.List_interface<java.lang.Double> div)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(div);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(p);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(v);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(u);
       double h = ((-0.5) / dart.math.__TopLevel.sqrt((this.getWidth() * this.getHeight())));
       for (int j = 1; (j <= this.getHeight()); j = (j + 1))
       {
@@ -287,13 +309,13 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
         int nextRow = ((j + 1) * this.getRowSize());
         for (int i = 1; (i <= this.getWidth()); i = (i + 1))
         {
-          div.operatorAtPut_List__double(currentRow = (currentRow + 1), (h * (((u.operatorAt_List__double(nextValue = (nextValue + 1)) - u.operatorAt_List__double(prevValue = (prevValue + 1))) + v.operatorAt_List__double(nextRow = (nextRow + 1))) - v.operatorAt_List__double(previousRow = (previousRow + 1)))));
-          p.operatorAtPut_List__double(currentRow, 0.0);
+          div.operatorAtPut_List(currentRow = (currentRow + 1), (h * (((u.operatorAt_List(nextValue = (nextValue + 1)) - u.operatorAt_List(prevValue = (prevValue + 1))) + v.operatorAt_List(nextRow = (nextRow + 1))) - v.operatorAt_List(previousRow = (previousRow + 1)))));
+          p.operatorAtPut_List(currentRow, 0.0);
         }
       }
-      this.set_bnd(0, ((dart.core.List_interface__double) div));
-      this.set_bnd(0, ((dart.core.List_interface__double) p));
-      this.lin_solve(0, ((dart.core.List_interface__double) p), ((dart.core.List_interface__double) div), 1, 4);
+      this.set_bnd(0, ((dart.core.List_interface) div));
+      this.set_bnd(0, ((dart.core.List_interface) p));
+      this.lin_solve(0, ((dart.core.List_interface) p), ((dart.core.List_interface) div), 1, 4);
       double wScale = dart._runtime.helpers.DoubleHelper.operatorStar(0.5, this.getWidth());
       double hScale = dart._runtime.helpers.DoubleHelper.operatorStar(0.5, this.getHeight());
       for (int j = 1; (j <= this.getHeight()); j = (j + 1))
@@ -306,60 +328,71 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
         int nextRow = ((j + 1) * this.getRowSize());
         for (int i = 1; (i <= this.getWidth()); i = (i + 1))
         {
-          u.operatorAtPut_List__double(currentPos = (currentPos + 1), (u.operatorAt_List__double(currentPos) - (wScale * (p.operatorAt_List__double(nextPos = (nextPos + 1)) - p.operatorAt_List__double(prevPos = (prevPos + 1))))));
-          v.operatorAtPut_List__double(currentPos, (v.operatorAt_List__double(currentPos) - (hScale * (p.operatorAt_List__double(nextRow = (nextRow + 1)) - p.operatorAt_List__double(prevRow = (prevRow + 1))))));
+          u.operatorAtPut_List(currentPos = (currentPos + 1), (u.operatorAt_List(currentPos) - (wScale * (p.operatorAt_List(nextPos = (nextPos + 1)) - p.operatorAt_List(prevPos = (prevPos + 1))))));
+          v.operatorAtPut_List(currentPos, (v.operatorAt_List(currentPos) - (hScale * (p.operatorAt_List(nextRow = (nextRow + 1)) - p.operatorAt_List(prevRow = (prevRow + 1))))));
         }
       }
-      this.set_bnd(1, ((dart.core.List_interface__double) u));
-      this.set_bnd(2, ((dart.core.List_interface__double) v));
+      this.set_bnd(1, ((dart.core.List_interface) u));
+      this.set_bnd(2, ((dart.core.List_interface) v));
     }
-    public void dens_step(dart.core.List_interface__double x, dart.core.List_interface__double x0, dart.core.List_interface__double u, dart.core.List_interface__double v, double dt)
+    public void dens_step(dart.core.List_interface<java.lang.Double> x, dart.core.List_interface<java.lang.Double> x0, dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v, double dt)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.addFields(((dart.core.List_interface__double) x), ((dart.core.List_interface__double) x0), dt);
-      this.diffuse(0, ((dart.core.List_interface__double) x0), ((dart.core.List_interface__double) x), dt);
-      this.advect(0, ((dart.core.List_interface__double) x), ((dart.core.List_interface__double) x0), ((dart.core.List_interface__double) u), ((dart.core.List_interface__double) v), dt);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(v);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(u);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(x);
+      this.addFields(((dart.core.List_interface) x), ((dart.core.List_interface) x0), dt);
+      this.diffuse(0, ((dart.core.List_interface) x0), ((dart.core.List_interface) x), dt);
+      this.advect(0, ((dart.core.List_interface) x), ((dart.core.List_interface) x0), ((dart.core.List_interface) u), ((dart.core.List_interface) v), dt);
     }
-    public void vel_step(dart.core.List_interface__double u, dart.core.List_interface__double v, dart.core.List_interface__double u0, dart.core.List_interface__double v0, double dt)
+    public void vel_step(dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v, dart.core.List_interface<java.lang.Double> u0, dart.core.List_interface<java.lang.Double> v0, double dt)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.addFields(((dart.core.List_interface__double) u), ((dart.core.List_interface__double) u0), dt);
-      this.addFields(((dart.core.List_interface__double) v), ((dart.core.List_interface__double) v0), dt);
-      dart.core.List_interface__double temp = ((dart.core.List_interface__double) u0);
-      u0 = ((dart.core.List_interface__double) u);
-      u = ((dart.core.List_interface__double) temp);
-      temp = ((dart.core.List_interface__double) v0);
-      v0 = ((dart.core.List_interface__double) v);
-      v = ((dart.core.List_interface__double) temp);
-      this.diffuse2(((dart.core.List_interface__double) u), ((dart.core.List_interface__double) u0), v, ((dart.core.List_interface__double) v0), dt);
-      this.project(((dart.core.List_interface__double) u), ((dart.core.List_interface__double) v), ((dart.core.List_interface__double) u0), ((dart.core.List_interface__double) v0));
-      temp = ((dart.core.List_interface__double) u0);
-      u0 = ((dart.core.List_interface__double) u);
-      u = ((dart.core.List_interface__double) temp);
-      temp = ((dart.core.List_interface__double) v0);
-      v0 = ((dart.core.List_interface__double) v);
-      v = ((dart.core.List_interface__double) temp);
-      this.advect(1, ((dart.core.List_interface__double) u), ((dart.core.List_interface__double) u0), ((dart.core.List_interface__double) u0), ((dart.core.List_interface__double) v0), dt);
-      this.advect(2, ((dart.core.List_interface__double) v), ((dart.core.List_interface__double) v0), ((dart.core.List_interface__double) u0), ((dart.core.List_interface__double) v0), dt);
-      this.project(((dart.core.List_interface__double) u), ((dart.core.List_interface__double) v), ((dart.core.List_interface__double) u0), ((dart.core.List_interface__double) v0));
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(v0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(u0);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(v);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(u);
+      this.addFields(((dart.core.List_interface) u), ((dart.core.List_interface) u0), dt);
+      this.addFields(((dart.core.List_interface) v), ((dart.core.List_interface) v0), dt);
+      dart.core.List_interface<java.lang.Double> temp = ((dart.core.List_interface) u0);
+      u0 = ((dart.core.List_interface) u);
+      u = ((dart.core.List_interface) temp);
+      temp = ((dart.core.List_interface) v0);
+      v0 = ((dart.core.List_interface) v);
+      v = ((dart.core.List_interface) temp);
+      this.diffuse2(((dart.core.List_interface) u), ((dart.core.List_interface) u0), v, ((dart.core.List_interface) v0), dt);
+      this.project(((dart.core.List_interface) u), ((dart.core.List_interface) v), ((dart.core.List_interface) u0), ((dart.core.List_interface) v0));
+      temp = ((dart.core.List_interface) u0);
+      u0 = ((dart.core.List_interface) u);
+      u = ((dart.core.List_interface) temp);
+      temp = ((dart.core.List_interface) v0);
+      v0 = ((dart.core.List_interface) v);
+      v = ((dart.core.List_interface) temp);
+      this.advect(1, ((dart.core.List_interface) u), ((dart.core.List_interface) u0), ((dart.core.List_interface) u0), ((dart.core.List_interface) v0), dt);
+      this.advect(2, ((dart.core.List_interface) v), ((dart.core.List_interface) v0), ((dart.core.List_interface) u0), ((dart.core.List_interface) v0), dt);
+      this.project(((dart.core.List_interface) u), ((dart.core.List_interface) v), ((dart.core.List_interface) u0), ((dart.core.List_interface) v0));
     }
-    public void queryUI(dart.core.List_interface__double d, dart.core.List_interface__double u, dart.core.List_interface__double v)
+    public void queryUI(dart.core.List_interface<java.lang.Double> d, dart.core.List_interface<java.lang.Double> u, dart.core.List_interface<java.lang.Double> v)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(v);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(u);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdouble$0$gt).check(d);
       for (int i = 0; (i < this.getSize()); i = (i + 1))
       {
-        u.operatorAtPut_List__double(i, 0.0);
-        v.operatorAtPut_List__double(i, 0.0);
-        d.operatorAtPut_List__double(i, 0.0);
+        u.operatorAtPut_List(i, 0.0);
+        v.operatorAtPut_List(i, 0.0);
+        d.operatorAtPut_List(i, 0.0);
       }
-      fluidmotion.FluidMotion.prepareFrame(fluidmotion.Field._new_Field$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Field), ((dart.core.List_interface__double) d), ((dart.core.List_interface__double) u), ((dart.core.List_interface__double) v), this.getRowSize()));
+      fluidmotion.FluidMotion.prepareFrame(fluidmotion.Field._new_Field$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Field), ((dart.core.List_interface) d), ((dart.core.List_interface) u), ((dart.core.List_interface) v), this.getRowSize()));
     }
     public void update()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.queryUI(((dart.core.List_interface__double) this.getDens_prev()), ((dart.core.List_interface__double) this.getU_prev()), ((dart.core.List_interface__double) this.getV_prev()));
-      this.vel_step(((dart.core.List_interface__double) this.getU()), ((dart.core.List_interface__double) this.getV()), ((dart.core.List_interface__double) this.getU_prev()), ((dart.core.List_interface__double) this.getV_prev()), this.getDt());
-      this.dens_step(((dart.core.List_interface__double) this.getDens()), ((dart.core.List_interface__double) this.getDens_prev()), ((dart.core.List_interface__double) this.getU()), ((dart.core.List_interface__double) this.getV()), this.getDt());
+      this.queryUI(((dart.core.List_interface) this.getDens_prev()), ((dart.core.List_interface) this.getU_prev()), ((dart.core.List_interface) this.getV_prev()));
+      this.vel_step(((dart.core.List_interface) this.getU()), ((dart.core.List_interface) this.getV()), ((dart.core.List_interface) this.getU_prev()), ((dart.core.List_interface) this.getV_prev()), this.getDt());
+      this.dens_step(((dart.core.List_interface) this.getDens()), ((dart.core.List_interface) this.getDens_prev()), ((dart.core.List_interface) this.getU()), ((dart.core.List_interface) this.getV()), this.getDt());
     }
     public void _constructor(java.lang.Object canvas, int hRes, int wRes, int iterations)
     {
@@ -390,27 +423,27 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
     {
       return this.size;
     }
-    public dart.core.List_interface__double getDens()
+    public dart.core.List_interface<java.lang.Double> getDens()
     {
       return this.dens;
     }
-    public dart.core.List_interface__double getDens_prev()
+    public dart.core.List_interface<java.lang.Double> getDens_prev()
     {
       return this.dens_prev;
     }
-    public dart.core.List_interface__double getU()
+    public dart.core.List_interface<java.lang.Double> getU()
     {
       return this.u;
     }
-    public dart.core.List_interface__double getU_prev()
+    public dart.core.List_interface<java.lang.Double> getU_prev()
     {
       return this.u_prev;
     }
-    public dart.core.List_interface__double getV()
+    public dart.core.List_interface<java.lang.Double> getV()
     {
       return this.v;
     }
-    public dart.core.List_interface__double getV_prev()
+    public dart.core.List_interface<java.lang.Double> getV_prev()
     {
       return this.v_prev;
     }
@@ -430,32 +463,32 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
     {
       return fluidmotion.FluidField._lastCreated;
     }
-    public dart.core.List_interface__double setDens(dart.core.List_interface__double value)
+    public dart.core.List_interface<java.lang.Double> setDens(dart.core.List_interface<java.lang.Double> value)
     {
       this.dens = value;
       return value;
     }
-    public dart.core.List_interface__double setDens_prev(dart.core.List_interface__double value)
+    public dart.core.List_interface<java.lang.Double> setDens_prev(dart.core.List_interface<java.lang.Double> value)
     {
       this.dens_prev = value;
       return value;
     }
-    public dart.core.List_interface__double setU(dart.core.List_interface__double value)
+    public dart.core.List_interface<java.lang.Double> setU(dart.core.List_interface<java.lang.Double> value)
     {
       this.u = value;
       return value;
     }
-    public dart.core.List_interface__double setU_prev(dart.core.List_interface__double value)
+    public dart.core.List_interface<java.lang.Double> setU_prev(dart.core.List_interface<java.lang.Double> value)
     {
       this.u_prev = value;
       return value;
     }
-    public dart.core.List_interface__double setV(dart.core.List_interface__double value)
+    public dart.core.List_interface<java.lang.Double> setV(dart.core.List_interface<java.lang.Double> value)
     {
       this.v = value;
       return value;
     }
-    public dart.core.List_interface__double setV_prev(dart.core.List_interface__double value)
+    public dart.core.List_interface<java.lang.Double> setV_prev(dart.core.List_interface<java.lang.Double> value)
     {
       this.v_prev = value;
       return value;

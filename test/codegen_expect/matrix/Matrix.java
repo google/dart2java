@@ -18,27 +18,27 @@ public class Matrix extends matrix.BenchmarkBase implements matrix.Matrix_interf
     public void run()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      int size = 50;
-      dart.core.List_interface<dart.core.List_interface__int> left = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface__int>) dart.core.List.<dart.core.List_interface__int>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)}), size)));
+      int size = 35;
+      dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> left = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface<java.lang.Integer>>) dart.core.List.<dart.core.List_interface<java.lang.Integer>>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)}), size)));
       for (int i = 0; (i < left.getLength_List()); i = (i + 1))
       {
-        left.operatorAtPut_List(i, ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart.core.List.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}), size))));
+        left.operatorAtPut_List(i, ((dart.core.List_interface) ((dart.core.List_interface<java.lang.Integer>) dart.core.List.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}), size))));
       }
-      dart.core.List_interface<dart.core.List_interface__int> right = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface__int>) dart.core.List.<dart.core.List_interface__int>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)}), size)));
+      dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> right = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface<java.lang.Integer>>) dart.core.List.<dart.core.List_interface<java.lang.Integer>>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)}), size)));
       for (int i = 0; (i < right.getLength_List()); i = (i + 1))
       {
-        right.operatorAtPut_List(i, ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart.core.List.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}), size))));
+        right.operatorAtPut_List(i, ((dart.core.List_interface) ((dart.core.List_interface<java.lang.Integer>) dart.core.List.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}), size))));
       }
-      dart.core.List_interface<dart.core.List_interface__int> result = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface__int>) dart.core.List.<dart.core.List_interface__int>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)}), size)));
+      dart.core.List_interface<dart.core.List_interface<java.lang.Integer>> result = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface<java.lang.Integer>>) dart.core.List.<dart.core.List_interface<java.lang.Integer>>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)}), size)));
       for (int i = 0; (i < result.getLength_List()); i = (i + 1))
       {
-        result.operatorAtPut_List(i, ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart.core.List.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}), size))));
+        result.operatorAtPut_List(i, ((dart.core.List_interface) ((dart.core.List_interface<java.lang.Integer>) dart.core.List.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}), size))));
       }
       for (int i = 0; (i < left.getLength_List()); i = (i + 1))
       {
         for (int j = 0; (j < left.getLength_List()); j = (j + 1))
         {
-          left.operatorAt_List(i).operatorAtPut_List__int(j, (i * j));
+          left.operatorAt_List(i).operatorAtPut_List(j, (i * j));
         }
       }
       for (int i = 0; (i < right.getLength_List()); i = (i + 1))
@@ -47,11 +47,11 @@ public class Matrix extends matrix.BenchmarkBase implements matrix.Matrix_interf
         {
           if ((i == j))
           {
-            right.operatorAt_List(i).operatorAtPut_List__int(j, 1);
+            right.operatorAt_List(i).operatorAtPut_List(j, 1);
           }
           else
           {
-            right.operatorAt_List(i).operatorAtPut_List__int(j, 0);
+            right.operatorAt_List(i).operatorAtPut_List(j, 0);
           }
         }
       }
@@ -59,16 +59,16 @@ public class Matrix extends matrix.BenchmarkBase implements matrix.Matrix_interf
       {
         for (int j = 0; (j < result.getLength_List()); j = (j + 1))
         {
-          result.operatorAt_List(i).operatorAtPut_List__int(j, 0);
+          result.operatorAt_List(i).operatorAtPut_List(j, 0);
         }
       }
       for (int i = 0; (i < left.getLength_List()); i = (i + 1))
       {
-        for (int j = 0; (j < left.operatorAt_List(i).getLength_List__int()); j = (j + 1))
+        for (int j = 0; (j < left.operatorAt_List(i).getLength_List()); j = (j + 1))
         {
           for (int k = 0; (k < right.getLength_List()); k = (k + 1))
           {
-            result.operatorAt_List(i).operatorAtPut_List__int(j, (result.operatorAt_List(i).operatorAt_List__int(j) + (left.operatorAt_List(i).operatorAt_List__int(k) * right.operatorAt_List(k).operatorAt_List__int(j))));
+            result.operatorAt_List(i).operatorAtPut_List(j, (result.operatorAt_List(i).operatorAt_List(j) + (left.operatorAt_List(i).operatorAt_List(k) * right.operatorAt_List(k).operatorAt_List(j))));
           }
         }
       }
@@ -76,9 +76,9 @@ public class Matrix extends matrix.BenchmarkBase implements matrix.Matrix_interf
       {
         for (int j = 0; (j < result.getLength_List()); j = (j + 1))
         {
-          if ((!(result.operatorAt_List(i).operatorAt_List__int(j) == (i * j))))
+          if ((!(result.operatorAt_List(i).operatorAt_List(j) == (i * j))))
           {
-            dart.core.__TopLevel.print((((("ERROR: Expected " + (i * j)) + ", but found ") + result.operatorAt_List(i).operatorAt_List__int(j)) + ""));
+            dart.core.__TopLevel.print((((("ERROR: Expected " + (i * j)) + ", but found ") + result.operatorAt_List(i).operatorAt_List(j)) + ""));
           }
         }
       }

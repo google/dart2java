@@ -49,7 +49,7 @@ class BenchmarkBase {
   // Empty constructor.
   const BenchmarkBase(String name) : this.name = name;
 
-  static const int iters = 1000;
+  static const int iters = 10;
 
   // The benchmark code.
   // This function is not used, if both [warmup] and [exercise] are overwritten.
@@ -109,9 +109,9 @@ class BenchmarkBase {
   double measure() {
     setup();
     // Warmup for at least 100ms. Discard result.
-    measureForWarumup(100);
+    measureForWarumup(1000);
     // Run the benchmark for at least 2000ms.
-    double result = measureForExercise(2 * 1000);
+    double result = measureForExercise(10000);
     teardown();
     return result;
   }
@@ -194,7 +194,7 @@ class BasicBlockEdge {
 // That's it.
 //
 class CFG {
-  final Map<int, BasicBlock> basicBlockMap = new Map();
+  final Map<int, BasicBlock> basicBlockMap = new Map<int, BasicBlock>();
   final List<BasicBlockEdge> edgeList = [];
   BasicBlock startNode;
 
@@ -470,13 +470,13 @@ class HavlakLoopFinder {
 
     int size = cfg.getNumNodes();
 
-    List<List<int>> nonBackPreds = new List(size);
-    List<List<int>> backPreds = new List(size);
-    List<int> number = new List(size);
-    List<int> header = new List(size);
-    List<int> types = new List(size);
-    List<int> last = new List(size);
-    List<UnionFindNode> nodes = new List(size);
+    List<List<int>> nonBackPreds = new List<List<int>>(size);
+    List<List<int>> backPreds = new List<List<int>>(size);
+    List<int> number = new List<int>(size);
+    List<int> header = new List<int>(size);
+    List<int> types = new List<int>(size);
+    List<int> last = new List<int>(size);
+    List<UnionFindNode> nodes = new List<UnionFindNode>(size);
 
     for (int i = 0; i < size; ++i) {
       nonBackPreds[i] = [];

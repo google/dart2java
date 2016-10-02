@@ -62,7 +62,7 @@ class BenchmarkBase {
   // Empty constructor.
   const BenchmarkBase(String name) : this.name = name;
 
-  static const int iters = 1000;
+  static const int iters = 750;
 
   // The benchmark code.
   // This function is not used, if both [warmup] and [exercise] are overwritten.
@@ -122,9 +122,9 @@ class BenchmarkBase {
   double measure() {
     setup();
     // Warmup for at least 100ms. Discard result.
-    measureForWarumup(100);
+    measureForWarumup(1000);
     // Run the benchmark for at least 2000ms.
-    double result = measureForExercise(2 * 1000);
+    double result = measureForExercise(10000);
     teardown();
     return result;
   }

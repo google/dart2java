@@ -1,0 +1,11 @@
+Exception in thread "main" java.lang.RuntimeException: TypeError: dart.core.Null is not a subtype of dart.core.List<int>
+	at dart._runtime.types.simple.Type.check(Type.java:92)
+	at diamondsquare.World.SetCorners(World.java:51)
+	at diamondsquare.World.SetCorners(World.java:67)
+	at diamondsquare.World.Generate(World.java:77)
+	at diamondsquare.DiamondSquare.run(DiamondSquare.java:22)
+	at diamondsquare.BenchmarkBase.warmup(BenchmarkBase.java:30)
+	at diamondsquare.BenchmarkBase.measureForWarumup(BenchmarkBase.java:58)
+	at diamondsquare.BenchmarkBase.measure(BenchmarkBase.java:84)
+	at diamondsquare.BenchmarkBase.report(BenchmarkBase.java:92)
+	at diamondsquare.__TopLevel.main(__TopLevel.java:13)

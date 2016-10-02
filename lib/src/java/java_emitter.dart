@@ -14,6 +14,7 @@
 
 import 'ast.dart';
 import 'visitor.dart';
+import 'types.dart';
 
 /// Emits the full file contents for a Java source file defining a top-level
 /// Java [Class] or [Interface].
@@ -200,6 +201,10 @@ class _JavaAstEmitter extends Visitor<String> {
 
   @override
   String visitTypeExpr(TypeExpr expr) {
+    if (expr.type is ClassOrInterfaceType) {
+      (expr.type as ClassOrInterfaceType).omitJavaGenerics = true;
+    }
+
     return "${expr.type.toString()}.class";
   }
 

@@ -76,7 +76,7 @@ class TypeSpecialization {
 
   /// Maximum number of generic type parameters for which specializations
   /// are generated.
-  static final specializationThreshold = 2;
+  static final specializationThreshold = 0;
 
   /// A list of primitive Java types for this specialization. [null] indicates
   /// an unspecialized "generic" (Object) type parameter.
@@ -114,11 +114,16 @@ class TypeSpecialization {
   }
 
   TypeSpecialization.fromBoxedTypes(Iterable<JavaType> allTypes) {
-    this.types = allTypes
-        .map((t) => specializedTypes.contains(t.toUnboxedType())
-            ? t.toUnboxedType()
-            : null)
-        .toList();
+    if (allTypes.length > specializationThreshold) {
+      this.types = new List.filled(allTypes.length, null);
+    } else {
+      this.types = allTypes
+          .map((t) => specializedTypes.contains(t.toUnboxedType())
+              ? t.toUnboxedType()
+              : null)
+          .toList();
+    }
+
     this.delegatorOverrides = new List.filled(allTypes.length, null);
   }
 

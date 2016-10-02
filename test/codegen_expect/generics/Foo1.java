@@ -94,27 +94,6 @@ public class Foo1<T> extends dart._runtime.base.DartObject implements generics.F
       dart._runtime.types.simple.Type cached_0_int = null;
       dart._runtime.types.simple.Type cached_0_boolean = null;
       dart._runtime.types.simple.Type cached_0_double = null;
-      if ((true && ((((cached_0_int == null)) ? (cached_0_int = type.env.evaluate(generics.Foo1.dart2java$typeInfo.typeVariables[0])) : (cached_0_int)) == dart._runtime.helpers.IntegerHelper.type)))
-      {
-        generics.Foo1__int result;
-        result = new generics.Foo1__int(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-        result._constructornewMe();
-        return result;
-      }
-      if ((true && ((((cached_0_boolean == null)) ? (cached_0_boolean = type.env.evaluate(generics.Foo1.dart2java$typeInfo.typeVariables[0])) : (cached_0_boolean)) == dart._runtime.helpers.BoolHelper.type)))
-      {
-        generics.Foo1__boolean result;
-        result = new generics.Foo1__boolean(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-        result._constructornewMe();
-        return result;
-      }
-      if ((true && ((((cached_0_double == null)) ? (cached_0_double = type.env.evaluate(generics.Foo1.dart2java$typeInfo.typeVariables[0])) : (cached_0_double)) == dart._runtime.helpers.DoubleHelper.type)))
-      {
-        generics.Foo1__double result;
-        result = new generics.Foo1__double(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
-        result._constructornewMe();
-        return result;
-      }
       generics.Foo1 result;
       result = new generics.Foo1(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructornewMe();

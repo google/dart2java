@@ -10,10 +10,10 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       dart.core.__TopLevel.print("Expect output 5, 7, 9");
-      dart.core.List_interface__int intList = ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), 5, 7, 9));
-      for (int i = 0; (i < intList.getLength_List__int()); i = (i + 1))
+      dart.core.List_interface<java.lang.Integer> intList = ((dart.core.List_interface) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), 5, 7, 9));
+      for (int i = 0; (i < intList.getLength_List()); i = (i + 1))
       {
-        dart.core.__TopLevel.print(intList.operatorAt_List__int(i));
+        dart.core.__TopLevel.print(intList.operatorAt_List(i));
       }
     }
 }

@@ -48,9 +48,7 @@ public class DynamicHelper {
 
     classesWithJavaInterfaces = new HashSet<Class<?>>();
     classesWithJavaInterfaces.add(dart._runtime.base.DartList.class);
-    classesWithJavaInterfaces.add(dart._runtime.base.DartList__int.class);
     classesWithJavaInterfaces.add(dart.core.List.class);
-    classesWithJavaInterfaces.add(dart.core.List__int.class);
     // classesWithJavaInterfaces.add(dart._runtime.base.DartMap.Generic.class);
   }
 

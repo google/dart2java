@@ -81,8 +81,8 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements game
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setup();
-      this.measureForWarumup(100);
-      double result = this.measureForExercise(2000);
+      this.measureForWarumup(1000);
+      double result = this.measureForExercise(10000);
       this.teardown();
       return result;
     }
