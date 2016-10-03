@@ -16,8 +16,12 @@ dependencies:
   html: ^0.12.0
   js: ^0.6.0
   kernel:
-    # Since kernel is still unpublished, use a git dependency
-    git: ssh://git@github.com/dart-lang/ddc-java-kernel.git
+    # This is an old modified version of Kernel
+    # TODO(springerm): Use newer version of Kernel, it probably has everything
+    # that we implemented in our version by now.
+    git: 
+      url: ssh://git@github.com/google/dart2java.git
+      ref: kernel
   path: ^1.3.0
   pub_semver: ^1.1.0
   source_maps: ^0.10.0

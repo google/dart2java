@@ -141,9 +141,9 @@ packages:
     version: "0.6.0"
   kernel:
     description:
-      ref: HEAD
+      ref: kernel
       resolved-ref: "38ff70727b502aa3e2faae1e3eeed723828a1c0c"
-      url: "ssh://git@github.com/dart-lang/ddc-java-kernel.git"
+      url: "ssh://git@github.com/google/dart2java.git"
     source: git
     version: "0.0.0"
   logging:
