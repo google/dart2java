@@ -10,56 +10,52 @@ public class Bar2__generic_double<A> extends dart._runtime.base.DartObject imple
       super(arg, type);
     }
   
-    public A bar__generic_double(A a, double b)
+    public A bar_Bar2__generic_double(A a, double b)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getVarA__generic_double();
+      return this.getVarA_Bar2__generic_double();
     }
-    public void _constructor__generic_double()
+    public void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public A getVarA__generic_double()
+    public A getVarA_Bar2__generic_double()
     {
       return this.varA;
     }
-    public double getVarB__generic_double()
+    public double getVarB_Bar2__generic_double()
     {
       return this.varB;
     }
-    public A setVarA__generic_double(A value)
+    public A setVarA_Bar2__generic_double(A value)
     {
       this.varA = value;
       return value;
     }
-    public double setVarB__generic_double(double value)
+    public double setVarB_Bar2__generic_double(double value)
     {
       this.varB = value;
       return value;
     }
     public A getVarA()
     {
-      return this.getVarA__generic_double();
+      return this.getVarA_Bar2__generic_double();
     }
     public java.lang.Double getVarB()
     {
-      return this.getVarB__generic_double();
+      return this.getVarB_Bar2__generic_double();
     }
     public A setVarA(A value)
     {
-      return this.setVarA__generic_double(((A) value));
+      return this.setVarA_Bar2__generic_double(((A) value));
     }
     public java.lang.Double setVarB(java.lang.Double value)
     {
-      return this.setVarB__generic_double(((double) value));
+      return this.setVarB_Bar2__generic_double(((double) value));
     }
     public A bar(A a, java.lang.Double b)
     {
-      return this.bar__generic_double(((A) a), ((double) b));
-    }
-    public void _constructor()
-    {
-      this._constructor__generic_double();
+      return this.bar_Bar2__generic_double(((A) a), ((double) b));
     }
 }

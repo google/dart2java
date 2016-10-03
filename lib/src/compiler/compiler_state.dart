@@ -21,7 +21,6 @@ import 'package:path/path.dart' as path;
 
 import '../java/types.dart' as java;
 import '../java/constants.dart' as java;
-import '../java/specialization.dart' as spzn;
 import 'compiler.dart' show CompilerOptions;
 import 'runner.dart' show CompileErrorException;
 
@@ -184,6 +183,7 @@ class CompilerState {
   dart.Class stringClass;
   dart.Class listClass;
   dart.Class iteratorClass;
+  dart.Class iterableClass;
   dart.Class mapClass;
   dart.Class numClass;
 
@@ -199,8 +199,13 @@ class CompilerState {
     stringClass = getDartClass("dart:core", "String");
     listClass = getDartClass("dart:core", "List");
     iteratorClass = getDartClass("dart:core", "Iterator");
+    iterableClass = getDartClass("dart:core", "Iterable");
     mapClass = getDartClass("dart:core", "Map");
     numClass = getDartClass("dart:core", "num");
+
+    java.JavaType.boolean.dartType = boolClass.thisType;
+    java.JavaType.int_.dartType = intClass.thisType;
+    java.JavaType.double_.dartType = doubleClass.thisType;
 
     // Keep _classImpls in sync with DynamicHelper.java!
     _classImpls.addAll({
@@ -442,7 +447,7 @@ class CompilerState {
       str[0].toUpperCase() + str.substring(1);
 
   String translatedMethodName(String methodName, dart.ProcedureKind kind,
-      [spzn.TypeSpecialization spec]) {
+      [java.JavaType ownerType]) {
     String result;
     switch (kind) {
       case dart.ProcedureKind.Method:
@@ -470,7 +475,16 @@ class CompilerState {
             "Method kind ${kind} not implemented yet.");
     }
 
-    return spec != null ? result + spec.methodSuffix : result;
+    String specializationSuffix = "";
+    if (ownerType is java.ClassOrInterfaceType) {
+      if (ownerType.typeArguments.isNotEmpty) {
+        specializationSuffix = "_" +
+            ownerType.unspecializedClassName +
+            ownerType.specialization.methodSuffix;
+      }
+    }
+
+    return result + specializationSuffix;
   }
 }
 

@@ -69,7 +69,7 @@ public class Scene extends dart._runtime.base.DartObject implements tracer.Scene
     }
     public static tracer.Scene_interface _new(dart._runtime.types.simple.Type type)
     {
-      tracer.Scene_interface result;
+      tracer.Scene result;
       result = new tracer.Scene(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

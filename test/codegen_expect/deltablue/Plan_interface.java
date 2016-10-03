@@ -7,5 +7,5 @@ public interface Plan_interface extends dart._runtime.base.DartObject_interface
   void execute();
   dart.core.List_interface<deltablue.Constraint_interface> getList();
   dart.core.List_interface<deltablue.Constraint_interface> setList(dart.core.List_interface<deltablue.Constraint_interface> value);
-  void _constructor();
+
 }

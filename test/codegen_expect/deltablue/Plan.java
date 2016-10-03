@@ -18,19 +18,19 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     public void addConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getList().add(c);
+      this.getList().add_List(c);
     }
     public int size()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getList().getLength();
+      return this.getList().getLength_List();
     }
     public void execute()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      for (int i = 0; (i < this.getList().getLength()); i = (i + 1))
+      for (int i = 0; (i < this.getList().getLength_List()); i = (i + 1))
       {
-        this.getList().operatorAt(i).execute();
+        this.getList().operatorAt_List(i).execute();
       }
     }
     public void _constructor()
@@ -50,7 +50,7 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     }
     public static deltablue.Plan_interface _new(dart._runtime.types.simple.Type type)
     {
-      deltablue.Plan_interface result;
+      deltablue.Plan result;
       result = new deltablue.Plan(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

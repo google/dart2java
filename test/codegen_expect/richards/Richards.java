@@ -200,7 +200,7 @@ public class Richards extends richards.BenchmarkBase implements richards.Richard
     }
     public static richards.Richards_interface _new(dart._runtime.types.simple.Type type)
     {
-      richards.Richards_interface result;
+      richards.Richards result;
       result = new richards.Richards(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

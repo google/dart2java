@@ -79,7 +79,7 @@ public class IsOperatorTest extends dart._runtime.base.DartObject implements is_
     }
     public static is_operator_test.IsOperatorTest_interface _new(dart._runtime.types.simple.Type type)
     {
-      is_operator_test.IsOperatorTest_interface result;
+      is_operator_test.IsOperatorTest result;
       result = new is_operator_test.IsOperatorTest(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

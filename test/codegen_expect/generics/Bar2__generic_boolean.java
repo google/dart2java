@@ -10,56 +10,52 @@ public class Bar2__generic_boolean<A> extends dart._runtime.base.DartObject impl
       super(arg, type);
     }
   
-    public A bar__generic_boolean(A a, boolean b)
+    public A bar_Bar2__generic_boolean(A a, boolean b)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getVarA__generic_boolean();
+      return this.getVarA_Bar2__generic_boolean();
     }
-    public void _constructor__generic_boolean()
+    public void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public A getVarA__generic_boolean()
+    public A getVarA_Bar2__generic_boolean()
     {
       return this.varA;
     }
-    public boolean getVarB__generic_boolean()
+    public boolean getVarB_Bar2__generic_boolean()
     {
       return this.varB;
     }
-    public A setVarA__generic_boolean(A value)
+    public A setVarA_Bar2__generic_boolean(A value)
     {
       this.varA = value;
       return value;
     }
-    public boolean setVarB__generic_boolean(boolean value)
+    public boolean setVarB_Bar2__generic_boolean(boolean value)
     {
       this.varB = value;
       return value;
     }
     public A getVarA()
     {
-      return this.getVarA__generic_boolean();
+      return this.getVarA_Bar2__generic_boolean();
     }
     public java.lang.Boolean getVarB()
     {
-      return this.getVarB__generic_boolean();
+      return this.getVarB_Bar2__generic_boolean();
     }
     public A setVarA(A value)
     {
-      return this.setVarA__generic_boolean(((A) value));
+      return this.setVarA_Bar2__generic_boolean(((A) value));
     }
     public java.lang.Boolean setVarB(java.lang.Boolean value)
     {
-      return this.setVarB__generic_boolean(((boolean) value));
+      return this.setVarB_Bar2__generic_boolean(((boolean) value));
     }
     public A bar(A a, java.lang.Boolean b)
     {
-      return this.bar__generic_boolean(((A) a), ((boolean) b));
-    }
-    public void _constructor()
-    {
-      this._constructor__generic_boolean();
+      return this.bar_Bar2__generic_boolean(((A) a), ((boolean) b));
     }
 }

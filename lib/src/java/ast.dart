@@ -120,9 +120,12 @@ class InterfaceDecl extends PackageMember {
 
   List<MethodDecl> methods;
 
+  List<MethodDef> defaultMethods;
+
   InterfaceDecl(ClassOrInterfaceType type,
       {this.access: Access.Public,
       this.methods,
+      this.defaultMethods: const <MethodDef>[],
       this.superinterfaces: const <ClassOrInterfaceType>[]})
       : super(type);
 

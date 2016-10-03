@@ -55,7 +55,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setCurrentTcb(richards.TaskControlBlock._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_TaskControlBlock), this.getList(), id, priority, queue, task));
       this.setList(this.getCurrentTcb());
-      this.getBlocks().operatorAtPut(id, this.getCurrentTcb());
+      this.getBlocks().operatorAtPut_List(id, this.getCurrentTcb());
     }
     public void schedule()
     {
@@ -77,7 +77,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     public richards.TaskControlBlock_interface release(int id)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      richards.TaskControlBlock_interface tcb = this.getBlocks().operatorAt(id);
+      richards.TaskControlBlock_interface tcb = this.getBlocks().operatorAt_List(id);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(tcb, null))
       {
         return tcb;
@@ -107,7 +107,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       richards.Scheduler_interface __tempVar_3;
-      richards.TaskControlBlock_interface t = this.getBlocks().operatorAt(packet.getId());
+      richards.TaskControlBlock_interface t = this.getBlocks().operatorAt_List(packet.getId());
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(t, null))
       {
         return t;
@@ -182,7 +182,7 @@ public class Scheduler extends dart._runtime.base.DartObject implements richards
     }
     public static richards.Scheduler_interface _new(dart._runtime.types.simple.Type type)
     {
-      richards.Scheduler_interface result;
+      richards.Scheduler result;
       result = new richards.Scheduler(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

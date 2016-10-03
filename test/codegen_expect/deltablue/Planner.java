@@ -36,9 +36,9 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
       deltablue.Strength_interface strength = deltablue.__TopLevel.REQUIRED;
       do
       {
-        for (int i = 0; (i < unsatisfied.getLength()); i = (i + 1))
+        for (int i = 0; (i < unsatisfied.getLength_List()); i = (i + 1))
         {
-          deltablue.Constraint_interface u = unsatisfied.operatorAt(i);
+          deltablue.Constraint_interface u = unsatisfied.operatorAt_List(i);
           if (dart._runtime.helpers.ObjectHelper.operatorEqual(u.getStrength(), strength))
           {
             this.incrementalAdd(u);
@@ -60,9 +60,9 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
       int mark = this.newMark();
       deltablue.Plan_interface plan = deltablue.Plan._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan));
       dart.core.List_interface<deltablue.Constraint_interface> todo = ((dart.core.List_interface) sources);
-      while ((todo.getLength() > 0))
+      while ((todo.getLength_List() > 0))
       {
-        deltablue.Constraint_interface c = todo.removeLast();
+        deltablue.Constraint_interface c = todo.removeLast_List();
         if (((!(c.output().getMark() == mark)) && c.inputsKnown(mark)))
         {
           plan.addConstraint(c);
@@ -76,12 +76,12 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       dart.core.List_interface<deltablue.Constraint_interface> sources = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Constraint_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt), deltablue.Constraint_interface.class)));
-      for (int i = 0; (i < constraints.getLength()); i = (i + 1))
+      for (int i = 0; (i < constraints.getLength_List()); i = (i + 1))
       {
-        deltablue.Constraint_interface c = constraints.operatorAt(i);
+        deltablue.Constraint_interface c = constraints.operatorAt_List(i);
         if ((c.isInput() && c.isSatisfied()))
         {
-          sources.add(c);
+          sources.add_List(c);
         }
       }
       return this.makePlan(((dart.core.List_interface) sources));
@@ -90,9 +90,9 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       dart.core.List_interface<deltablue.Constraint_interface> todo = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Constraint_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt), deltablue.Constraint_interface.class, c)));
-      while ((todo.getLength() > 0))
+      while ((todo.getLength_List() > 0))
       {
-        deltablue.Constraint_interface d = todo.removeLast();
+        deltablue.Constraint_interface d = todo.removeLast_List();
         if ((d.output().getMark() == mark))
         {
           this.incrementalRemove(c);
@@ -111,25 +111,25 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
       out.setStay(true);
       dart.core.List_interface<deltablue.Constraint_interface> unsatisfied = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Constraint_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt), deltablue.Constraint_interface.class)));
       dart.core.List_interface<deltablue.Variable_interface> todo = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Variable_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltVariable$gt), deltablue.Variable_interface.class, out)));
-      while ((todo.getLength() > 0))
+      while ((todo.getLength_List() > 0))
       {
-        deltablue.Variable_interface v = todo.removeLast();
-        for (int i = 0; (i < v.getConstraints().getLength()); i = (i + 1))
+        deltablue.Variable_interface v = todo.removeLast_List();
+        for (int i = 0; (i < v.getConstraints().getLength_List()); i = (i + 1))
         {
-          deltablue.Constraint_interface c = v.getConstraints().operatorAt(i);
+          deltablue.Constraint_interface c = v.getConstraints().operatorAt_List(i);
           if ((!c.isSatisfied()))
           {
-            unsatisfied.add(c);
+            unsatisfied.add_List(c);
           }
         }
         deltablue.Constraint_interface determining = v.getDeterminedBy();
-        for (int i = 0; (i < v.getConstraints().getLength()); i = (i + 1))
+        for (int i = 0; (i < v.getConstraints().getLength_List()); i = (i + 1))
         {
-          deltablue.Constraint_interface next = v.getConstraints().operatorAt(i);
+          deltablue.Constraint_interface next = v.getConstraints().operatorAt_List(i);
           if (((!dart._runtime.helpers.ObjectHelper.operatorEqual(next, determining)) && next.isSatisfied()))
           {
             next.recalculate();
-            todo.add(next.output());
+            todo.add_List(next.output());
           }
         }
       }
@@ -139,12 +139,12 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       deltablue.Constraint_interface determining = v.getDeterminedBy();
-      for (int i = 0; (i < v.getConstraints().getLength()); i = (i + 1))
+      for (int i = 0; (i < v.getConstraints().getLength_List()); i = (i + 1))
       {
-        deltablue.Constraint_interface c = v.getConstraints().operatorAt(i);
+        deltablue.Constraint_interface c = v.getConstraints().operatorAt_List(i);
         if (((!dart._runtime.helpers.ObjectHelper.operatorEqual(c, determining)) && c.isSatisfied()))
         {
-          coll.add(c);
+          coll.add_List(c);
         }
       }
     }
@@ -165,7 +165,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     }
     public static deltablue.Planner_interface _new(dart._runtime.types.simple.Type type)
     {
-      deltablue.Planner_interface result;
+      deltablue.Planner result;
       result = new deltablue.Planner(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

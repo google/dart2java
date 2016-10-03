@@ -68,7 +68,7 @@ public class Plane extends tracer.BaseShape implements tracer.Plane_interface
     }
     public static tracer.Plane_interface _new(dart._runtime.types.simple.Type type, java.lang.Object pos, java.lang.Object d, java.lang.Object material)
     {
-      tracer.Plane_interface result;
+      tracer.Plane result;
       result = new tracer.Plane(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(pos, d, material);
       return result;

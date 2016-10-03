@@ -2,12 +2,12 @@ package generics;
 
 public interface Foo1_interface<T> extends dart._runtime.base.DartObject_interface
 {
-  void createInnerFoo();
-  T foo(T t);
-  void writeVariable(T value);
-  T getVariable();
-  generics.Foo1_interface<T> getAnotherFoo1();
-  T setVariable(T value);
-  generics.Foo1_interface<T> setAnotherFoo1(generics.Foo1_interface<T> value);
-  void _constructornewMe();
+  void createInnerFoo_Foo1();
+  T foo_Foo1(T t);
+  void writeVariable_Foo1(T value);
+  T getVariable_Foo1();
+  generics.Foo1_interface<T> getAnotherFoo1_Foo1();
+  T setVariable_Foo1(T value);
+  generics.Foo1_interface<T> setAnotherFoo1_Foo1(generics.Foo1_interface<T> value);
+
 }

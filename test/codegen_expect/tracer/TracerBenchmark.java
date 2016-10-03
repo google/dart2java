@@ -30,7 +30,7 @@ public class TracerBenchmark extends tracer.BenchmarkBase implements tracer.Trac
     }
     public static tracer.TracerBenchmark_interface _new(dart._runtime.types.simple.Type type)
     {
-      tracer.TracerBenchmark_interface result;
+      tracer.TracerBenchmark result;
       result = new tracer.TracerBenchmark(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

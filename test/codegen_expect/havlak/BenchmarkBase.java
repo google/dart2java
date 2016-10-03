@@ -113,7 +113,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements havl
     }
     public static havlak.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      havlak.BenchmarkBase_interface result;
+      havlak.BenchmarkBase result;
       result = new havlak.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name);
       return result;

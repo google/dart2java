@@ -12,5 +12,5 @@ public interface Planner_interface extends dart._runtime.base.DartObject_interfa
   void addConstraintsConsumingTo(deltablue.Variable_interface v, dart.core.List_interface<deltablue.Constraint_interface> coll);
   int getCurrentMark();
   int setCurrentMark(int value);
-  void _constructor();
+
 }

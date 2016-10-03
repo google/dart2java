@@ -39,7 +39,7 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
           {
             v = this.getV2();
             this.setV2(this.getV2().getLink());
-            v.setA1(this.getV1().getA2().operatorAt__int(count));
+            v.setA1(this.getV1().getA2().operatorAt_List__int(count));
             this.getV1().setA1((count + 1));
             return this.getScheduler().queue(v);
           }
@@ -83,7 +83,7 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
     }
     public static richards.HandlerTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
-      richards.HandlerTask_interface result;
+      richards.HandlerTask result;
       result = new richards.HandlerTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(scheduler);
       return result;

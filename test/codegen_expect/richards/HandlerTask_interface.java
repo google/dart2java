@@ -8,5 +8,5 @@ public interface HandlerTask_interface extends richards.Task_interface
   richards.Packet_interface getV2();
   richards.Packet_interface setV1(richards.Packet_interface value);
   richards.Packet_interface setV2(richards.Packet_interface value);
-  void _constructor(richards.Scheduler_interface scheduler);
+
 }

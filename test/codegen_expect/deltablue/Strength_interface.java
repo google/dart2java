@@ -5,5 +5,5 @@ public interface Strength_interface extends dart._runtime.base.DartObject_interf
   deltablue.Strength_interface nextWeaker();
   int getValue();
   java.lang.String getName();
-  void _constructor(int value, java.lang.String name);
+
 }

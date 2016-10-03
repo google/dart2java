@@ -43,7 +43,7 @@ public class Expect extends dart._runtime.base.DartObject implements is_operator
     }
     public static is_operator_test.Expect_interface _new(dart._runtime.types.simple.Type type)
     {
-      is_operator_test.Expect_interface result;
+      is_operator_test.Expect result;
       result = new is_operator_test.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

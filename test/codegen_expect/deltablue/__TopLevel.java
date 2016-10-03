@@ -98,7 +98,7 @@ public class __TopLevel
       {
         src = deltablue.Variable._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Variable), "src", i);
         dst = deltablue.Variable._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Variable), "dst", i);
-        dests.add(dst);
+        dests.add_List(dst);
         deltablue.StayConstraint._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_StayConstraint), src, deltablue.__TopLevel.NORMAL);
         deltablue.ScaleConstraint._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_ScaleConstraint), src, scale, offset, dst, deltablue.__TopLevel.REQUIRED);
       }
@@ -115,7 +115,7 @@ public class __TopLevel
       deltablue.__TopLevel.change(scale, 5);
       for (int i = 0; (i < (n - 1)); i = (i + 1))
       {
-        if ((!(dests.operatorAt(i).getValue() == ((i * 5) + 1000))))
+        if ((!(dests.operatorAt_List(i).getValue() == ((i * 5) + 1000))))
         {
           dart.core.__TopLevel.print("Projection 3 failed");
         }
@@ -123,7 +123,7 @@ public class __TopLevel
       deltablue.__TopLevel.change(offset, 2000);
       for (int i = 0; (i < (n - 1)); i = (i + 1))
       {
-        if ((!(dests.operatorAt(i).getValue() == ((i * 5) + 2000))))
+        if ((!(dests.operatorAt_List(i).getValue() == ((i * 5) + 2000))))
         {
           dart.core.__TopLevel.print("Projection 4 failed");
         }

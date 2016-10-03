@@ -113,7 +113,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements rich
     }
     public static richards.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      richards.BenchmarkBase_interface result;
+      richards.BenchmarkBase result;
       result = new richards.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name);
       return result;

@@ -24,7 +24,7 @@ public class B13 extends dart._runtime.base.DartObject implements interface_type
     }
     public static interface_type_profile.B13_interface _new(dart._runtime.types.simple.Type type)
     {
-      interface_type_profile.B13_interface result;
+      interface_type_profile.B13 result;
       result = new interface_type_profile.B13(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

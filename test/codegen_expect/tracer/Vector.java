@@ -90,7 +90,7 @@ public class Vector extends dart._runtime.base.DartObject implements tracer.Vect
     }
     public static tracer.Vector_interface _new(dart._runtime.types.simple.Type type, double x, double y, double z)
     {
-      tracer.Vector_interface result;
+      tracer.Vector result;
       result = new tracer.Vector(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(x, y, z);
       return result;

@@ -57,7 +57,7 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     }
     public static tracer.Sphere_interface _new(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
     {
-      tracer.Sphere_interface result;
+      tracer.Sphere result;
       result = new tracer.Sphere(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(pos, radius, material);
       return result;

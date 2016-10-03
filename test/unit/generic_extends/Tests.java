@@ -29,4 +29,10 @@ public class Tests {
   public void testExtends() {
     assertEquals(60, __TopLevel.testExtends());
   }
+
+  public void testMixtureGenericNonGeneric() {
+    assertEquals(30890, (int) __TopLevel.testFoo());
+    assertEquals(30890, (int) __TopLevel.testFooSuperSpec());
+    assertEquals(360, (int) __TopLevel.testBaz());
+  }
 }

@@ -4,5 +4,5 @@ public interface TracerBenchmark_interface extends tracer.BenchmarkBase_interfac
 {
   void warmup();
   void exercise();
-  void _constructor();
+
 }

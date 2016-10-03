@@ -82,7 +82,7 @@ public class ScaleConstraint extends deltablue.BinaryConstraint implements delta
     }
     public static deltablue.ScaleConstraint_interface _new(dart._runtime.types.simple.Type type, deltablue.Variable_interface src, deltablue.Variable_interface scale, deltablue.Variable_interface offset, deltablue.Variable_interface dest, deltablue.Strength_interface strength)
     {
-      deltablue.ScaleConstraint_interface result;
+      deltablue.ScaleConstraint result;
       result = new deltablue.ScaleConstraint(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(src, scale, offset, dest, strength);
       return result;

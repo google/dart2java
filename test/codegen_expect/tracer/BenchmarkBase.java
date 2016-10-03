@@ -113,7 +113,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements trac
     }
     public static tracer.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      tracer.BenchmarkBase_interface result;
+      tracer.BenchmarkBase result;
       result = new tracer.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name);
       return result;

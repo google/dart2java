@@ -4,5 +4,5 @@ public interface Expect_interface extends dart._runtime.base.DartObject_interfac
 {
   int getX();
   int setX(int value);
-  void _constructor();
+
 }

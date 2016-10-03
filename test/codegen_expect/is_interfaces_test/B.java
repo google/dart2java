@@ -20,7 +20,7 @@ public class B extends is_interfaces_test.A implements is_interfaces_test.B_inte
     }
     public static is_interfaces_test.B_interface _new(dart._runtime.types.simple.Type type)
     {
-      is_interfaces_test.B_interface result;
+      is_interfaces_test.B result;
       result = new is_interfaces_test.B(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

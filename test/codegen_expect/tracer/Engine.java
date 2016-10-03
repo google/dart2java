@@ -286,7 +286,7 @@ public class Engine extends dart._runtime.base.DartObject implements tracer.Engi
     }
     public static tracer.Engine_interface _new(dart._runtime.types.simple.Type type, int canvasWidth, int canvasHeight, int pixelWidth, int pixelHeight, boolean renderDiffuse, boolean renderShadows, boolean renderHighlights, boolean renderReflections, int rayDepth)
     {
-      tracer.Engine_interface result;
+      tracer.Engine result;
       result = new tracer.Engine(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(canvasWidth, canvasHeight, pixelWidth, pixelHeight, renderDiffuse, renderShadows, renderHighlights, renderReflections, rayDepth);
       return result;

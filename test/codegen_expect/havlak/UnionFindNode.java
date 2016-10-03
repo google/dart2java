@@ -34,13 +34,13 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       {
         if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(node.getParent(), node.getParent().getParent())))
         {
-          nodeList.add(node);
+          nodeList.add_List(node);
         }
         node = node.getParent();
       }
-      for (int iter = 0; (iter < nodeList.getLength()); iter = (iter + 1))
+      for (int iter = 0; (iter < nodeList.getLength_List()); iter = (iter + 1))
       {
-        nodeList.operatorAt(iter).setParent(node.getParent());
+        nodeList.operatorAt_List(iter).setParent(node.getParent());
       }
       return node;
     }
@@ -98,7 +98,7 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
     }
     public static havlak.UnionFindNode_interface _new(dart._runtime.types.simple.Type type)
     {
-      havlak.UnionFindNode_interface result;
+      havlak.UnionFindNode result;
       result = new havlak.UnionFindNode(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

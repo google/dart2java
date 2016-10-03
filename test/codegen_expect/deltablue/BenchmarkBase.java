@@ -113,7 +113,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements delt
     }
     public static deltablue.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      deltablue.BenchmarkBase_interface result;
+      deltablue.BenchmarkBase result;
       result = new deltablue.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name);
       return result;

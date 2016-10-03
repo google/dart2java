@@ -11,5 +11,5 @@ public interface Camera_interface extends dart._runtime.base.DartObject_interfac
   java.lang.Object getScreen();
   java.lang.Object setEquator(java.lang.Object value);
   java.lang.Object setScreen(java.lang.Object value);
-  void _constructor(java.lang.Object position, java.lang.Object lookAt, java.lang.Object up);
+
 }

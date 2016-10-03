@@ -17,5 +17,5 @@ public interface IntersectionInfo_interface extends dart._runtime.base.DartObjec
   java.lang.Object setNormal(java.lang.Object value);
   java.lang.Object setColor(java.lang.Object value);
   java.lang.Object setDistance(java.lang.Object value);
-  void _constructor();
+
 }

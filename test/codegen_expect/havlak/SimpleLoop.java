@@ -27,12 +27,12 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     public boolean addNode(havlak.BasicBlock_interface bb)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getBasicBlocks().add(bb);
+      return this.getBasicBlocks().add_List(bb);
     }
     public boolean addChildLoop(havlak.SimpleLoop_interface loop)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getChildren().add(loop);
+      return this.getChildren().add_List(loop);
     }
     public void setParent_(havlak.SimpleLoop_interface p)
     {
@@ -43,7 +43,7 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     public void setHeader_(havlak.BasicBlock_interface bb)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getBasicBlocks().add(bb);
+      this.getBasicBlocks().add_List(bb);
       this.setHeader(bb);
     }
     public void setNestingLevel_(int level)
@@ -67,14 +67,14 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
       {
         result = havlak.__TopLevel.mix(result, this.getHeader().getName());
       }
-      for (dart.core.Iterator_interface<havlak.BasicBlock_interface> __tempVar_0 = ((dart.core.Iterator_interface<havlak.BasicBlock_interface>) this.getBasicBlocks().getIterator()); __tempVar_0.moveNext(); )
+      for (dart.core.Iterator_interface<havlak.BasicBlock_interface> __tempVar_0 = ((dart.core.Iterator_interface<havlak.BasicBlock_interface>) this.getBasicBlocks().getIterator_Iterable()); __tempVar_0.moveNext_Iterator(); )
       {
-        havlak.BasicBlock_interface e = __tempVar_0.getCurrent();
+        havlak.BasicBlock_interface e = __tempVar_0.getCurrent_Iterator();
         result = havlak.__TopLevel.mix(result, e.getName());
       }
-      for (dart.core.Iterator_interface<havlak.SimpleLoop_interface> __tempVar_1 = ((dart.core.Iterator_interface<havlak.SimpleLoop_interface>) this.getChildren().getIterator()); __tempVar_1.moveNext(); )
+      for (dart.core.Iterator_interface<havlak.SimpleLoop_interface> __tempVar_1 = ((dart.core.Iterator_interface<havlak.SimpleLoop_interface>) this.getChildren().getIterator_Iterable()); __tempVar_1.moveNext_Iterator(); )
       {
-        havlak.SimpleLoop_interface e = __tempVar_1.getCurrent();
+        havlak.SimpleLoop_interface e = __tempVar_1.getCurrent_Iterator();
         result = havlak.__TopLevel.mix(result, e.checksum());
       }
       return result;
@@ -159,7 +159,7 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     }
     public static havlak.SimpleLoop_interface _new(dart._runtime.types.simple.Type type, int counter)
     {
-      havlak.SimpleLoop_interface result;
+      havlak.SimpleLoop result;
       result = new havlak.SimpleLoop(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(counter);
       return result;

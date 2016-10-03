@@ -12,5 +12,5 @@ public interface BasicBlock_interface extends dart._runtime.base.DartObject_inte
   dart.core.List_interface<havlak.BasicBlock_interface> getOutEdges();
   dart.core.List_interface<havlak.BasicBlock_interface> setInEdges(dart.core.List_interface<havlak.BasicBlock_interface> value);
   dart.core.List_interface<havlak.BasicBlock_interface> setOutEdges(dart.core.List_interface<havlak.BasicBlock_interface> value);
-  void _constructor(int name);
+
 }

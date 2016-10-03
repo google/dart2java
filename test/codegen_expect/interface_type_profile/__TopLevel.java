@@ -61,7 +61,7 @@ public class __TopLevel
     public static java.lang.Object randomFrom(dart.core.List_interface<java.lang.Object> l)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      return l.operatorAt(interface_type_profile.__TopLevel._rnd.nextInt(l.getLength()));
+      return l.operatorAt_List(interface_type_profile.__TopLevel._rnd.nextInt(l.getLength_List()));
     }
     public static java.lang.Object randomObject()
     {

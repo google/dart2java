@@ -99,7 +99,7 @@ public class IntersectionInfo extends dart._runtime.base.DartObject implements t
     }
     public static tracer.IntersectionInfo_interface _new(dart._runtime.types.simple.Type type)
     {
-      tracer.IntersectionInfo_interface result;
+      tracer.IntersectionInfo result;
       result = new tracer.IntersectionInfo(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

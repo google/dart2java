@@ -22,7 +22,7 @@ public class B extends dart._runtime.base.DartObject implements is_operator_test
     }
     public static is_operator_test.B_interface _new(dart._runtime.types.simple.Type type)
     {
-      is_operator_test.B_interface result;
+      is_operator_test.B result;
       result = new is_operator_test.B(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

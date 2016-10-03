@@ -32,7 +32,7 @@ public class Solid extends tracer.Materials implements tracer.Solid_interface
     }
     public static tracer.Solid_interface _new(dart._runtime.types.simple.Type type, tracer.Color_interface color, java.lang.Object reflection, java.lang.Object refraction, java.lang.Object transparency, java.lang.Object gloss)
     {
-      tracer.Solid_interface result;
+      tracer.Solid result;
       result = new tracer.Solid(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(color, reflection, refraction, transparency, gloss);
       return result;

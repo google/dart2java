@@ -60,13 +60,16 @@ class _JavaAstEmitter extends Visitor<String> {
   @override
   String visitInterfaceDecl(InterfaceDecl decl) {
     var methods = decl.methods.map((m) => indent(m.accept(this))).join("\n");
+    var defaultMethods = decl.defaultMethods
+        .map((m) => indent("default " + m.accept(this)))
+        .join("\n");
     var extendsClause = decl.superinterfaces.isNotEmpty
         ? ("extends " + decl.superinterfaces.join(", "))
         : "";
     var className = decl.type.toString(shouldPrintFullyQualifiedName: false);
 
     return "${decl.access} interface $className"
-        " ${extendsClause}\n{\n${methods}\n}\n";
+        " ${extendsClause}\n{\n${methods}\n${defaultMethods}\n}\n";
   }
 
   @override

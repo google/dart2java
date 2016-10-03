@@ -24,7 +24,7 @@ public class B7 extends dart._runtime.base.DartObject implements interface_type_
     }
     public static interface_type_profile.B7_interface _new(dart._runtime.types.simple.Type type)
     {
-      interface_type_profile.B7_interface result;
+      interface_type_profile.B7 result;
       result = new interface_type_profile.B7(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

@@ -22,7 +22,7 @@ public class B8 extends dart._runtime.base.DartObject implements interface_type_
     }
     public static interface_type_profile.B8_interface _new(dart._runtime.types.simple.Type type)
     {
-      interface_type_profile.B8_interface result;
+      interface_type_profile.B8 result;
       result = new interface_type_profile.B8(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

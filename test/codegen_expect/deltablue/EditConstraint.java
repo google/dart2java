@@ -29,7 +29,7 @@ public class EditConstraint extends deltablue.UnaryConstraint implements deltabl
     }
     public static deltablue.EditConstraint_interface _new(dart._runtime.types.simple.Type type, deltablue.Variable_interface v, deltablue.Strength_interface str)
     {
-      deltablue.EditConstraint_interface result;
+      deltablue.EditConstraint result;
       result = new deltablue.EditConstraint(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(v, str);
       return result;

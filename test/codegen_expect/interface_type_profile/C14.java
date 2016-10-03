@@ -23,7 +23,7 @@ public class C14 extends dart._runtime.base.DartObject implements interface_type
     }
     public static interface_type_profile.C14_interface _new(dart._runtime.types.simple.Type type)
     {
-      interface_type_profile.C14_interface result;
+      interface_type_profile.C14 result;
       result = new interface_type_profile.C14(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

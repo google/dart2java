@@ -14,5 +14,5 @@ public interface Packet_interface extends dart._runtime.base.DartObject_interfac
   int setKind(int value);
   int setA1(int value);
   dart.core.List_interface__int setA2(dart.core.List_interface__int value);
-  void _constructor(richards.Packet_interface link, int id, int kind);
+
 }

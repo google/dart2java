@@ -78,7 +78,7 @@ public class Havlak extends havlak.BenchmarkBase implements havlak.Havlak_interf
     }
     public static havlak.Havlak_interface _new(dart._runtime.types.simple.Type type)
     {
-      havlak.Havlak_interface result;
+      havlak.Havlak result;
       result = new havlak.Havlak(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

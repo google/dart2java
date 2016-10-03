@@ -40,7 +40,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
         {
           this.setV2(1);
         }
-        packet.getA2().operatorAtPut__int(i, this.getV2());
+        packet.getA2().operatorAtPut_List__int(i, this.getV2());
       }
       return this.getScheduler().queue(packet);
     }
@@ -78,7 +78,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
     }
     public static richards.WorkerTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
     {
-      richards.WorkerTask_interface result;
+      richards.WorkerTask result;
       result = new richards.WorkerTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(scheduler, v1, v2);
       return result;

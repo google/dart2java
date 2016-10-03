@@ -20,7 +20,7 @@ public class A extends dart._runtime.base.DartObject implements is_interfaces_te
     }
     public static is_interfaces_test.A_interface _new(dart._runtime.types.simple.Type type)
     {
-      is_interfaces_test.A_interface result;
+      is_interfaces_test.A result;
       result = new is_interfaces_test.A(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

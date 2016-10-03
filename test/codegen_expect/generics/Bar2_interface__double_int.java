@@ -2,28 +2,69 @@ package generics;
 
 public interface Bar2_interface__double_int extends dart._runtime.base.DartObject_interface, generics.Bar2_interface<java.lang.Double, java.lang.Integer>, generics.Bar2_interface__double_generic<java.lang.Integer>, generics.Bar2_interface__generic_int<java.lang.Double>
 {
-  double bar__double_int(double a, int b);
-  double getVarA__double_int();
-  int getVarB__double_int();
-  double setVarA__double_int(double value);
-  int setVarB__double_int(int value);
-  void _constructor__double_int();
-  java.lang.Double getVarA();
-  java.lang.Integer getVarB();
-  java.lang.Double setVarA(java.lang.Double value);
-  java.lang.Integer setVarB(java.lang.Integer value);
-  java.lang.Double bar(java.lang.Double a, java.lang.Integer b);
-  void _constructor();
-  double getVarA__double_generic();
-  java.lang.Integer getVarB__double_generic();
-  double setVarA__double_generic(double value);
-  java.lang.Integer setVarB__double_generic(java.lang.Integer value);
-  double bar__double_generic(double a, java.lang.Integer b);
-  void _constructor__double_generic();
-  java.lang.Double getVarA__generic_int();
-  int getVarB__generic_int();
-  java.lang.Double setVarA__generic_int(java.lang.Double value);
-  int setVarB__generic_int(int value);
-  java.lang.Double bar__generic_int(java.lang.Double a, int b);
-  void _constructor__generic_int();
+  double bar_Bar2__double_int(double a, int b);
+  double getVarA_Bar2__double_int();
+  int getVarB_Bar2__double_int();
+  double setVarA_Bar2__double_int(double value);
+  int setVarB_Bar2__double_int(int value);
+  default public java.lang.Double getVarA_Bar2()
+  {
+    return this.getVarA_Bar2__double_int();
+  }
+  default public java.lang.Integer getVarB_Bar2()
+  {
+    return this.getVarB_Bar2__double_int();
+  }
+  default public java.lang.Double setVarA_Bar2(java.lang.Double value)
+  {
+    return this.setVarA_Bar2__double_int(((double) value));
+  }
+  default public java.lang.Integer setVarB_Bar2(java.lang.Integer value)
+  {
+    return this.setVarB_Bar2__double_int(((int) value));
+  }
+  default public java.lang.Double bar_Bar2(java.lang.Double a, java.lang.Integer b)
+  {
+    return this.bar_Bar2__double_int(((double) a), ((int) b));
+  }
+  default public double getVarA_Bar2__double_generic()
+  {
+    return this.getVarA_Bar2__double_int();
+  }
+  default public java.lang.Integer getVarB_Bar2__double_generic()
+  {
+    return this.getVarB_Bar2__double_int();
+  }
+  default public double setVarA_Bar2__double_generic(double value)
+  {
+    return this.setVarA_Bar2__double_int(((double) value));
+  }
+  default public java.lang.Integer setVarB_Bar2__double_generic(java.lang.Integer value)
+  {
+    return this.setVarB_Bar2__double_int(((int) value));
+  }
+  default public double bar_Bar2__double_generic(double a, java.lang.Integer b)
+  {
+    return this.bar_Bar2__double_int(((double) a), ((int) b));
+  }
+  default public java.lang.Double getVarA_Bar2__generic_int()
+  {
+    return this.getVarA_Bar2__double_int();
+  }
+  default public int getVarB_Bar2__generic_int()
+  {
+    return this.getVarB_Bar2__double_int();
+  }
+  default public java.lang.Double setVarA_Bar2__generic_int(java.lang.Double value)
+  {
+    return this.setVarA_Bar2__double_int(((double) value));
+  }
+  default public int setVarB_Bar2__generic_int(int value)
+  {
+    return this.setVarB_Bar2__double_int(((int) value));
+  }
+  default public java.lang.Double bar_Bar2__generic_int(java.lang.Double a, int b)
+  {
+    return this.bar_Bar2__double_int(((double) a), ((int) b));
+  }
 }

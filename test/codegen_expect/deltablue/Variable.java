@@ -24,12 +24,12 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     public void addConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getConstraints().add(c);
+      this.getConstraints().add_List(c);
     }
     public void removeConstraint(deltablue.Constraint_interface c)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.getConstraints().remove(c);
+      this.getConstraints().remove_List(c);
       if (dart._runtime.helpers.ObjectHelper.operatorEqual(this.getDeterminedBy(), c))
       {
         this.setDeterminedBy(null);
@@ -107,7 +107,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     }
     public static deltablue.Variable_interface _new(dart._runtime.types.simple.Type type, java.lang.String name, int value)
     {
-      deltablue.Variable_interface result;
+      deltablue.Variable result;
       result = new deltablue.Variable(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name, value);
       return result;

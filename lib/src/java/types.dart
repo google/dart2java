@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:kernel/ast.dart' as dart;
+
 import 'ast.dart';
 import 'constants.dart';
 import 'specialization.dart';
@@ -200,6 +202,8 @@ class PrimitiveType extends JavaType {
 
   final ClassOrInterfaceType boxedType;
 
+  dart.DartType dartType;
+
   @override
   ClassOrInterfaceType toBoxedType() {
     return boxedType;
@@ -231,6 +235,15 @@ class ClassOrInterfaceType extends ReferenceType {
   final String package;
 
   final String unspecializedName;
+
+  String get unspecializedClassName {
+    if (isInterface) {
+      // Remove "_interface" suffix
+      return unspecializedName.substring(0, unspecializedName.length - 10);
+    } else {
+      return unspecializedName;
+    }
+  }
 
   /// Indicates whether this type is an interface type. If not, then it is
   /// a class type.

@@ -25,7 +25,7 @@ public class EqualityConstraint extends deltablue.BinaryConstraint implements de
     }
     public static deltablue.EqualityConstraint_interface _new(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
-      deltablue.EqualityConstraint_interface result;
+      deltablue.EqualityConstraint result;
       result = new deltablue.EqualityConstraint(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(v1, v2, strength);
       return result;

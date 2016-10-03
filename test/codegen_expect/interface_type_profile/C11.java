@@ -23,7 +23,7 @@ public class C11 extends dart._runtime.base.DartObject implements interface_type
     }
     public static interface_type_profile.C11_interface _new(dart._runtime.types.simple.Type type)
     {
-      interface_type_profile.C11_interface result;
+      interface_type_profile.C11 result;
       result = new interface_type_profile.C11(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

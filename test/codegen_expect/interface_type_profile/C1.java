@@ -23,7 +23,7 @@ public class C1 extends dart._runtime.base.DartObject implements interface_type_
     }
     public static interface_type_profile.C1_interface _new(dart._runtime.types.simple.Type type)
     {
-      interface_type_profile.C1_interface result;
+      interface_type_profile.C1 result;
       result = new interface_type_profile.C1(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

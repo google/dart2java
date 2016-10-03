@@ -227,7 +227,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
     }
     public static richards.TaskControlBlock_interface _new(dart._runtime.types.simple.Type type, richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
-      richards.TaskControlBlock_interface result;
+      richards.TaskControlBlock result;
       result = new richards.TaskControlBlock(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(link, id, priority, queue, task);
       return result;

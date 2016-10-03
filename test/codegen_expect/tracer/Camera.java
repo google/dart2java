@@ -75,7 +75,7 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
     }
     public static tracer.Camera_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
     {
-      tracer.Camera_interface result;
+      tracer.Camera result;
       result = new tracer.Camera(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(position, lookAt, up);
       return result;

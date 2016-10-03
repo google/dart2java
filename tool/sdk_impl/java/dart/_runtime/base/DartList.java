@@ -116,7 +116,7 @@ public class DartList<T>
       DartList__int instance = new DartList__int(type, elements.length);
 
       for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut__int(i, (Integer) elements[i]);
+        instance.operatorAtPut_List__int(i, (Integer) elements[i]);
       }
       return (dart.core.List_interface) instance;
     } else {
@@ -126,7 +126,7 @@ public class DartList<T>
         type, (Class) firstGenericType.getJavaType(), elements.length);
 
       for (int i = 0; i < elements.length; i++) {
-        instance.operatorAtPut(i, elements[i]);
+        instance.operatorAtPut_List(i, elements[i]);
       }
       return instance;
     }
@@ -144,7 +144,7 @@ public class DartList<T>
 
   // --- Methods defined in List ---
 
-  public T operatorAt(int index) {
+  public T operatorAt_List(int index) {
     if (size <= index || index < 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("RangeError: out of bounds");
@@ -153,7 +153,11 @@ public class DartList<T>
     return array[index];
   }
 
-  public void operatorAtPut(int index, T value) {
+  public T operatorAt(int index) {
+    return operatorAt_List(index);
+  }
+
+  public void operatorAtPut_List(int index, T value) {
     if (size <= index || index < 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("RangeError: out of bounds");
@@ -162,17 +166,29 @@ public class DartList<T>
     array[index] = value;
   }
 
-  public int getLength() {
+  public void operatorAtPut(int index, T value) {
+    operatorAtPut_List(index, value);
+  }
+
+  public int getLength_List() {
     return size;
   }
 
-  public void setLength(int newLength) {
+  public int getLength() {
+    return getLength_List();
+  }
+
+  public void setLength_List(int newLength) {
     // TODO(springerm): Check semantics (null values)
     size = newLength;
     array = Arrays.copyOf(array, size, genericArrayType);
   }
 
-  public boolean add(T value) {
+  public void setLength(int newLength) {
+    setLength_List(newLength);
+  }
+
+  public boolean add_List(T value) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -183,12 +199,16 @@ public class DartList<T>
     return true;
   }
 
+  public boolean add(T value) {
+    return add_List(value);
+  }
+
   // TODO(springerm): addAll
   // TODO(springerm): reversed
   // TODO(springerm): sort
   // TODO(springerm): shuffle
 
-  public int indexOf(T element, int start) {
+  public int indexOf_List(T element, int start) {
     for (int i = start; i < size; i++) {
       if (array[i].equals(element)) {
         return i;
@@ -198,14 +218,22 @@ public class DartList<T>
     return -1;
   }
 
+  public int indexOf(T element, int start) {
+    return indexOf_List(element, start);
+  }
+
   // TODO(springerm): lastIndexOf
 
-  public void clear() {
+  public void clear_List() {
     size = 0;
     array = (T[]) Array.newInstance(genericType, DEFAULT_SIZE);
   }
 
-  public void insert(int index, T element) {
+  public void clear() {
+    clear_List();
+  }
+
+  public void insert_List(int index, T element) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -217,10 +245,14 @@ public class DartList<T>
     array[index] = element;
   }
 
+  public void insert(int index, T element) {
+    insert_List(index, element);
+  }
+
   // TODO(springerm): insertAll
   // TODO(springerm): setAll
 
-  public boolean remove(Object value) {
+  public boolean remove_List(Object value) {
     int index;
     boolean found = false;
 
@@ -245,8 +277,12 @@ public class DartList<T>
     return found;
   }
 
-  public T removeAt(int index) {
-    T element = operatorAt(index);
+  public boolean remove(Object value) {
+    return remove_List(value);
+  }
+
+  public T removeAt_List(int index) {
+    T element = operatorAt_List(index);
 
     for (int i = index; i < size - 1; i++) {
       array[i] = array[i + 1];
@@ -258,7 +294,11 @@ public class DartList<T>
     return element;
   }
 
-  public T removeLast() {
+  public T removeAt(int index) {
+    return removeAt_List(index);
+  }
+
+  public T removeLast_List() {
     T element = array[size - 1];
     array[size - 1] = null;
 
@@ -266,11 +306,19 @@ public class DartList<T>
     return element;
   }
 
+  public T removeLast() {
+    return removeLast_List();
+  }
+
   // TODO(springerm): removeWhere
   // TODO(springerm): retainWhere
 
-  public DartList<T> sublist(int start, int end) {
+  public DartList<T> sublist_List(int start, int end) {
     throw new RuntimeException("Not implemented yet.");
+  }
+
+  public DartList<T> sublist(int start, int end) {
+    return sublist_List(start, end);
   }
 
   // TODO(springerm): getRange
@@ -283,7 +331,7 @@ public class DartList<T>
 
   // --- Methods defined in Iterable ---
 
-  public dart.core.Iterator_interface<T> getIterator() {
+  public dart.core.Iterator_interface<T> getIterator_Iterable() {
     Type iteratorType = dart2java$type.env.evaluate(new InterfaceTypeExpr(
       dart.core.Iterator.dart2java$typeInfo, 
       new TypeExpr[] { dart.core.List.dart2java$typeInfo.typeVariables[0] }));
@@ -292,7 +340,7 @@ public class DartList<T>
         (ConstructorHelper.EmptyConstructorMarker) null, iteratorType) {
       int nextIndex = -1;
 
-      public boolean moveNext() {
+      public boolean moveNext_Iterator() {
         if (nextIndex < size - 1) {
           nextIndex++;
           return true;
@@ -301,8 +349,16 @@ public class DartList<T>
         }
       }
 
-      public T getCurrent() {
+      public boolean moveNext() {
+        return moveNext_Iterator();
+      }
+
+      public T getCurrent_Iterator() {
         return (T) array[nextIndex];
+      }
+
+      public T getCurrent() {
+        return getCurrent_Iterator();
       }
     };
   }
@@ -311,7 +367,7 @@ public class DartList<T>
   // TODO(springerm): where
   // TODO(springerm): expand
 
-  public boolean contains(Object element) {
+  public boolean contains_Iterable(Object element) {
     for (int i = 0; i < size; i++) {
       if (array[i] == element) {
         return true;
@@ -330,11 +386,11 @@ public class DartList<T>
   // TODO(springerm): toList
   // TODO(springerm): toSet
 
-  public boolean isEmpty() {
+  public boolean isEmpty_Iterable() {
     return size == 0;
   }
 
-  public boolean isNotEmpty() {
+  public boolean isNotEmpty_Iterable() {
     return size != 0;
   }
 
@@ -343,7 +399,7 @@ public class DartList<T>
   // TODO(springerm): skip
   // TODO(springerm): skipWhile
 
-  public T getFirst() {
+  public T getFirst_Iterable() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -352,7 +408,7 @@ public class DartList<T>
     return array[0];
   }
 
-  public T getLast() {
+  public T getLast_Iterable() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -361,7 +417,7 @@ public class DartList<T>
     return array[size - 1];
   }
 
-  public T getSingle() {
+  public T getSingle_Iterable() {
     if (size != 1) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: Expected exactly one element");
@@ -381,9 +437,10 @@ public class DartList<T>
   // TODO(springerm): Proper implementations for methods defined in Object
 
 
-  // --- Methods defined in java.util.List ---
+  // --- Additional methods defined in java.util.List ---
+
   public void add(int index, T element) {
-    insert(index, element);
+    insert_List(index, element);
   }
 
   public boolean addAll(Collection<? extends T> c) {
@@ -399,6 +456,10 @@ public class DartList<T>
     return false;
   }
 
+  public boolean contains(Object element) {
+    return contains_Iterable(element);
+  }
+
   public boolean containsAll(Collection<?> c) {
     for (Object element : c) {
       if (!contains(c)) {
@@ -410,11 +471,15 @@ public class DartList<T>
   }
 
   public T get(int index) {
-    return operatorAt(index);
+    return operatorAt_List(index);
   }
 
   public int indexOf(Object element) {
-    return indexOf((T) element, 0);
+    return indexOf_List((T) element, 0);
+  }
+
+  public boolean isEmpty() {
+    return isEmpty_Iterable();
   }
 
   public Iterator<T> iterator() {
@@ -455,7 +520,7 @@ public class DartList<T>
   }
 
   public T remove(int index) {
-    return removeAt(index);
+    return removeAt_List(index);
   }
 
   public boolean removeAll(Collection<?> c) {
@@ -472,13 +537,13 @@ public class DartList<T>
   }
 
   public T set(int index, T element) {
-    T oldValue = operatorAt(index);
-    operatorAtPut(index, element);
+    T oldValue = operatorAt_List(index);
+    operatorAtPut_List(index, element);
     return oldValue;
   }
 
   public int size() {
-    return getLength();
+    return getLength_List();
   }
 
   public List<T> subList(int fromIndex, int toIndex) {

@@ -80,11 +80,11 @@ public class DartList__int
 
   // --- Methods defined in List ---
 
-  public int operatorAt__int(int index) {
+  public int operatorAt_List__int(int index) {
     return array[index];
   }
 
-  public void operatorAtPut__int(int index, int value) {
+  public void operatorAtPut_List__int(int index, int value) {
     if (size <= index || index < 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("RangeError: out of bounds");
@@ -93,17 +93,17 @@ public class DartList__int
     array[index] = value;
   }
 
-  public int getLength__int() {
+  public int getLength_List__int() {
     return size;
   }
 
-  public void setLength__int(int newLength) {
+  public void setLength_List__int(int newLength) {
     // TODO(springerm): Check semantics (null values)
     size = newLength;
     array = Arrays.copyOf(array, size);
   }
 
-  public boolean add__int(int value) {
+  public boolean add_List__int(int value) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -119,7 +119,7 @@ public class DartList__int
   // TODO(springerm): sort
   // TODO(springerm): shuffle
 
-  public int indexOf__int(int element, int start) {
+  public int indexOf_List__int(int element, int start) {
     for (int i = start; i < size; i++) {
       if (array[i] == element) {
         return i;
@@ -131,13 +131,13 @@ public class DartList__int
 
   // TODO(springerm): lastIndexOf
 
-  public void clear__int() {
+  public void clear_List__int() {
     size = 0;
     array = new int[DEFAULT_SIZE];
   }
 
 
-  public void insert__int(int index, int element) {
+  public void insert_List__int(int index, int element) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -153,7 +153,7 @@ public class DartList__int
   // TODO(springerm): setAll
 
   // Must be boxed integer here
-  public boolean remove__int(Object value) {
+  public boolean remove_List__int(Object value) {
     int index;
     boolean found = false;
 
@@ -183,8 +183,8 @@ public class DartList__int
     return found;
   }
 
-  public int removeAt__int(int index) {
-    int element = operatorAt__int(index);
+  public int removeAt_List__int(int index) {
+    int element = operatorAt_List__int(index);
 
     for (int i = index; i < size - 1; i++) {
       array[i] = array[i + 1];
@@ -196,7 +196,7 @@ public class DartList__int
     return element;
   }
 
-  public int removeLast__int() {
+  public int removeLast_List__int() {
     int element = array[size - 1];
     array[size - 1] = 0;
 
@@ -204,7 +204,7 @@ public class DartList__int
     return element;
   }
 
-  public dart.core.List_interface__int sublist__int(int start, int end) {
+  public dart.core.List_interface__int sublist_List__int(int start, int end) {
     throw new RuntimeException("Not implemented yet.");
   }
 
@@ -220,11 +220,11 @@ public class DartList__int
 
 
   // --- Methods defined in Iterable ---
-  public boolean contains(Object element) {
-    return contains__int(element);
+  public boolean contains_Iterable(Object element) {
+    return contains_Iterable__int(element);
   }
 
-  public dart.core.Iterator_interface__int getIterator__int() {
+  public dart.core.Iterator_interface__int getIterator_Iterable__int() {
     Type iteratorType = dart2java$type.env.evaluate(new InterfaceTypeExpr(
       dart.core.Iterator.dart2java$typeInfo, 
       new TypeExpr[] { dart.core.List.dart2java$typeInfo.typeVariables[0] }));
@@ -233,7 +233,7 @@ public class DartList__int
         (ConstructorHelper.EmptyConstructorMarker) null, iteratorType) {
       int nextIndex = -1;
 
-      public boolean moveNext__int() {
+      public boolean moveNext_Iterator__int() {
         if (nextIndex < size - 1) {
           nextIndex++;
           return true;
@@ -242,10 +242,14 @@ public class DartList__int
         }
       }
 
-      public int getCurrent__int() {
+      public int getCurrent_Iterator__int() {
         return array[nextIndex];
       }
     };
+  }
+
+  public dart.core.Iterator_interface__int getIterator_Iterable() {
+    return getIterator_Iterable__int();
   }
 
   // TODO(springerm): map
@@ -253,7 +257,7 @@ public class DartList__int
   // TODO(springerm): expand
 
   // Always boxed integer here
-  public boolean contains__int(Object element) {
+  public boolean contains_Iterable__int(Object element) {
     if (!(element instanceof Integer)) {
       return false;
     }
@@ -277,15 +281,11 @@ public class DartList__int
   // TODO(springerm): toList
   // TODO(springerm): toSet
 
-  public boolean isEmpty__int() {
+  public boolean isEmpty_Iterable__int() {
     return size == 0;
   }
 
-  public boolean isEmpty() {
-    return isEmpty();
-  }
-
-  public boolean isNotEmpty__int() {
+  public boolean isNotEmpty_Iterable__int() {
     return size != 0;
   }
 
@@ -294,7 +294,7 @@ public class DartList__int
   // TODO(springerm): skip
   // TODO(springerm): skipWhile
 
-  public int getFirst__int() {
+  public int getFirst_Iterable__int() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -303,7 +303,7 @@ public class DartList__int
     return array[0];
   }
 
-  public int getLast__int() {
+  public int getLast_Iterable__int() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -312,7 +312,7 @@ public class DartList__int
     return array[size - 1];
   }
 
-  public int getSingle__int() {
+  public int getSingle_Iterable__int() {
     if (size != 1) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: Expected exactly one element");
@@ -330,18 +330,19 @@ public class DartList__int
 
   // --- Methods defined in Object ---
   // TODO(springerm): Proper implementations for Object methods
-  public int getHashCode__int() {
+  public int getHashCode_Object() {
     return this.hashCode();
   }
 
-  public boolean operatorEqual__int(Object other) {
+  public boolean operatorEqual_Object(Object other) {
     return this == other;
   }
 
 
-  // --- Methods defined in java.util.List ---
+  // --- Additional methods defined in java.util.List ---
+
   public void add(int index, Integer element) {
-    insert(index, element);
+    insert_List(index, element);
   }
 
   public boolean addAll(Collection<? extends Integer> c) {
@@ -357,9 +358,13 @@ public class DartList__int
     return false;
   }
 
+  public boolean contains(Object value) {
+    return contains_Iterable__int(value);
+  }
+
   public boolean containsAll(Collection<?> c) {
     for (Object element : c) {
-      if (!contains__int(c)) {
+      if (!contains_Iterable__int(c)) {
         return false;
       }
     }
@@ -368,7 +373,7 @@ public class DartList__int
   }
 
   public Integer get(int index) {
-    return operatorAt(index);
+    return operatorAt_List(index);
   }
 
   public int indexOf(Object element) {
@@ -376,7 +381,11 @@ public class DartList__int
       return -1;
     }
 
-    return indexOf__int((Integer) element, 0);
+    return indexOf_List__int((Integer) element, 0);
+  }
+
+  public boolean isEmpty() {
+    return isEmpty_Iterable__int();
   }
 
   public Iterator<Integer> iterator() {
@@ -421,7 +430,7 @@ public class DartList__int
   }
 
   public Integer remove(int index) {
-    return removeAt(index);
+    return removeAt_List(index);
   }
 
   public boolean removeAll(Collection<?> c) {
@@ -438,13 +447,13 @@ public class DartList__int
   }
 
   public Integer set(int index, Integer element) {
-    Integer oldValue = operatorAt(index);
-    operatorAtPut(index, element);
+    Integer oldValue = operatorAt_List(index);
+    operatorAtPut_List(index, element);
     return oldValue;
   }
 
   public int size() {
-    return getLength();
+    return getLength_List();
   }
 
   public List<Integer> subList(int fromIndex, int toIndex) {
@@ -465,64 +474,68 @@ public class DartList__int
   }
 
 
-  // --- Delegator Methods ---
+  // --- Delegator Methods for Dynamic Method Calls ---
+
+  // Note: Delegator methods for fully generic specialization (ending with "_List") are no longer
+  // contained in this class but in the automatically-generated interface (as default methods).
+
   public java.lang.Integer operatorAt(int index)
   {
-    return this.operatorAt__int(index);
+    return this.operatorAt_List__int(index);
   }
 
   public void operatorAtPut(int index, java.lang.Integer value)
   {
-    this.operatorAtPut__int(index, value);
+    this.operatorAtPut_List__int(index, value);
   }
 
   public int getLength()
   {
-    return this.getLength__int();
+    return this.getLength_List__int();
   }
 
   public void setLength(int newLength)
   {
-    this.setLength__int(newLength);
+    this.setLength_List__int(newLength);
   }
 
   public boolean add(java.lang.Integer value)
   {
-    return this.add__int(value);
+    return this.add_List__int(value);
   }
 
   public int indexOf(java.lang.Integer element, int start)
   {
-    return this.indexOf__int(element, start);
+    return this.indexOf_List__int(element, start);
   }
 
   public void clear()
   {
-    this.clear__int();
+    this.clear_List__int();
   }
 
   public void insert(int index, java.lang.Integer element)
   {
-    this.insert__int(index, element);
+    this.insert_List__int(index, element);
   }
 
   public boolean remove(java.lang.Object value)
   {
-    return this.remove__int(value);
+    return this.remove_List__int(value);
   }
 
   public java.lang.Integer removeAt(int index)
   {
-    return this.removeAt__int(index);
+    return this.removeAt_List__int(index);
   }
 
   public java.lang.Integer removeLast()
   {
-    return this.removeLast__int();
+    return this.removeLast_List__int();
   }
 
   public dart.core.List_interface__int sublist(int start, int end)
   {
-    return this.sublist__int(start, end);
+    return this.sublist_List__int(start, end);
   }
 }

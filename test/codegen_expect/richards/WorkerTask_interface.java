@@ -8,5 +8,5 @@ public interface WorkerTask_interface extends richards.Task_interface
   int getV2();
   int setV1(int value);
   int setV2(int value);
-  void _constructor(richards.Scheduler_interface scheduler, int v1, int v2);
+
 }

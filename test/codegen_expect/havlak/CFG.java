@@ -23,14 +23,14 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       havlak.BasicBlock_interface node = null;
-      if ((!this.getBasicBlockMap().containsKey__int_generic(name)))
+      if ((!this.getBasicBlockMap().containsKey_Map__int_generic(name)))
       {
         node = havlak.BasicBlock._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock), name);
-        this.getBasicBlockMap().operatorAtPut__int_generic(name, node);
+        this.getBasicBlockMap().operatorAtPut_Map__int_generic(name, node);
       }
       else
       {
-        node = this.getBasicBlockMap().operatorAt__int_generic(name);
+        node = this.getBasicBlockMap().operatorAt_Map__int_generic(name);
       }
       if ((this.getNumNodes() == 1))
       {
@@ -41,12 +41,12 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
     public boolean addEdge(havlak.BasicBlockEdge_interface edge)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getEdgeList().add(edge);
+      return this.getEdgeList().add_List(edge);
     }
     public int getNumNodes()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return this.getBasicBlockMap().getLength__int_generic();
+      return this.getBasicBlockMap().getLength_Map__int_generic();
     }
     public havlak.BasicBlock_interface getDst(havlak.BasicBlockEdge_interface edge)
     {
@@ -84,7 +84,7 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
     }
     public static havlak.CFG_interface _new(dart._runtime.types.simple.Type type)
     {
-      havlak.CFG_interface result;
+      havlak.CFG result;
       result = new havlak.CFG(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

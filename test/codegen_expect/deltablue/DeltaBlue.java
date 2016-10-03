@@ -26,7 +26,7 @@ public class DeltaBlue extends deltablue.BenchmarkBase implements deltablue.Delt
     }
     public static deltablue.DeltaBlue_interface _new(dart._runtime.types.simple.Type type)
     {
-      deltablue.DeltaBlue_interface result;
+      deltablue.DeltaBlue result;
       result = new deltablue.DeltaBlue(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;
