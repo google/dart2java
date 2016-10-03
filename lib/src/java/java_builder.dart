@@ -1161,7 +1161,6 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.SuperMethodInvocation visitSuperMethodInvocation(
       dart.SuperMethodInvocation node) {
-
     // Call specialized version if superclass is specialized. This requires
     // determining the binding of the superclass's type parameters with
     // respect to the current (call site) class's type parameters.

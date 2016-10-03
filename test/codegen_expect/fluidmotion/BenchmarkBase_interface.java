@@ -1,4 +1,4 @@
-package matrix;
+package fluidmotion;
 
 public interface BenchmarkBase_interface extends dart._runtime.base.DartObject_interface
 {

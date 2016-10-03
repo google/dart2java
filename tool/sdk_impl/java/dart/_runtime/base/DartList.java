@@ -30,6 +30,10 @@ import dart._runtime.types.simple.Type;
 import dart._runtime.types.simple.TypeEnvironment;
 import dart._runtime.types.simple.TypeExpr;
 
+// TODO(springerm): Add type checks for parameters for all methods. Not
+// necessary for method that write into the array. Java will do a type
+// check for us already.
+
 /**
 * The generic implementation of DartList. 
 */
@@ -84,6 +88,9 @@ public class DartList<T>
     if (innerType == dart._runtime.helpers.IntegerHelper.type)
     {
       return (dart.core.List_interface) (new DartList__int(type, length));
+    } else if (innerType == dart._runtime.helpers.DoubleHelper.type)
+    {
+      return (dart.core.List_interface) (new DartList__double(type, length));
     } else {
       InterfaceType reifiedType = (InterfaceType) type;
       Type firstTypeArg = reifiedType.actualTypeParams[0];
@@ -104,19 +111,84 @@ public class DartList<T>
     }
   }
 
+  public static <E> dart.core.List_interface<E> filled$(
+      TypeEnvironment dart2java$localTypeEnv, int length, E value)
+  {
+    Type type = dart2java$localTypeEnv.evaluate(
+      new InterfaceTypeExpr(
+        dart.core.List.dart2java$typeInfo, 
+        new TypeExpr[] {dart.core.List.factory$filled$typeInfo.typeVariables[0]}));
+    Type innerType = type.env.evaluate(
+      dart.core.List.dart2java$typeInfo.typeVariables[0]);
+
+    // Create instance of correct specialization
+    // TODO(springerm): Specializations for bool, double missing
+    if (innerType == dart._runtime.helpers.IntegerHelper.type)
+    {
+      DartList__int result = new DartList__int(type, length);
+      int fillValue = (Integer) value;
+      for (int i = 0; i < length; i++) {
+        result.operatorAtPut_List__int(i, fillValue);
+      }
+
+      return (dart.core.List_interface) result;
+    } else if (innerType == dart._runtime.helpers.DoubleHelper.type)
+    {
+      DartList__double result = new DartList__double(type, length);
+      double fillValue = (Double) value;
+      for (int i = 0; i < length; i++) {
+        result.operatorAtPut_List__double(i, fillValue);
+      }
+
+      return (dart.core.List_interface) result;
+    } else {
+      InterfaceType reifiedType = (InterfaceType) type;
+      Type firstTypeArg = reifiedType.actualTypeParams[0];
+
+      Class javaClassObj;
+      if (firstTypeArg instanceof InterfaceType) {
+        javaClassObj = ((InterfaceType) reifiedType.actualTypeParams[0])
+          .getJavaType();
+      } else if (firstTypeArg instanceof TopType) {
+        // Type of list is "dynamic"
+        javaClassObj = Object.class;
+      } else {
+        throw new RuntimeException("Unknown generic type: " 
+          + firstTypeArg.toString());
+      }
+      
+      DartList<E> result = new DartList<E>(type, javaClassObj, length);
+      for (int i = 0; i < length; i++) {
+        result.operatorAtPut(i, value);
+      }
+
+      return result;
+    }
+  }
+
   public static <T> dart.core.List_interface<T> factory$fromArguments(
       Type type, Class<T> javaClassObj, T... elements) {
     Type innerType = type.env.evaluate(
         dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
     // Create instance of correct specialization
-    // TODO(springerm): Specializations for bool, double missing
+    // TODO(springerm): Specialization for bool
+    // TODO(springerm): Dispatch to specialized version at call site to avoid
+    // boxing
     if (innerType == dart._runtime.helpers.IntegerHelper.type)
     {
       DartList__int instance = new DartList__int(type, elements.length);
 
       for (int i = 0; i < elements.length; i++) {
         instance.operatorAtPut_List__int(i, (Integer) elements[i]);
+      }
+      return (dart.core.List_interface) instance;
+    } else if (innerType == dart._runtime.helpers.DoubleHelper.type)
+    {
+      DartList__double instance = new DartList__double(type, elements.length);
+
+      for (int i = 0; i < elements.length; i++) {
+        instance.operatorAtPut_List__double(i, (Double) elements[i]);
       }
       return (dart.core.List_interface) instance;
     } else {

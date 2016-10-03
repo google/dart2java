@@ -1,16 +1,16 @@
-package matrix;
+package fluidmotion;
 
-public class BenchmarkBase extends dart._runtime.base.DartObject implements matrix.BenchmarkBase_interface
+public class BenchmarkBase extends dart._runtime.base.DartObject implements fluidmotion.BenchmarkBase_interface
 {
-    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(matrix.BenchmarkBase.class, matrix.BenchmarkBase_interface.class);
+    public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(fluidmotion.BenchmarkBase.class, fluidmotion.BenchmarkBase_interface.class);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Stopwatch = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.Stopwatch.dart2java$typeInfo);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
-      matrix.BenchmarkBase.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
+      fluidmotion.BenchmarkBase.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
     }
     static {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      matrix.BenchmarkBase.iters = 1000;
+      fluidmotion.BenchmarkBase.iters = 1000;
     }
     public java.lang.String name;
     public static int iters;
@@ -32,7 +32,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements matr
     public void exercise()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      for (int i = 0; (i < matrix.BenchmarkBase.iters); i = (i + 1))
+      for (int i = 0; (i < fluidmotion.BenchmarkBase.iters); i = (i + 1))
       {
         this.run();
       }
@@ -59,7 +59,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements matr
         elapsed = watch.getElapsedMilliseconds();
         iter = (iter + 1);
       }
-      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), matrix.BenchmarkBase.iters);
+      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), fluidmotion.BenchmarkBase.iters);
     }
     public double measureForExercise(int timeMinimum)
     {
@@ -75,14 +75,14 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements matr
         elapsed = watch.getElapsedMilliseconds();
         iter = (iter + 1);
       }
-      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), matrix.BenchmarkBase.iters);
+      return dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorDivide(dart._runtime.helpers.DoubleHelper.operatorStar(1000.0, elapsed), iter), fluidmotion.BenchmarkBase.iters);
     }
     public double measure()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.setup();
-      this.measureForWarumup(1000);
-      double result = this.measureForExercise(5000);
+      this.measureForWarumup(100);
+      double result = this.measureForExercise((2 * 1000));
       this.teardown();
       return result;
     }
@@ -104,17 +104,17 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements matr
     }
     public static int getIters()
     {
-      return matrix.BenchmarkBase.iters;
+      return fluidmotion.BenchmarkBase.iters;
     }
     public static int setIters(int value)
     {
-      matrix.BenchmarkBase.iters = value;
+      fluidmotion.BenchmarkBase.iters = value;
       return value;
     }
-    public static matrix.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
+    public static fluidmotion.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      matrix.BenchmarkBase result;
-      result = new matrix.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
+      fluidmotion.BenchmarkBase result;
+      result = new fluidmotion.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name);
       return result;
     }

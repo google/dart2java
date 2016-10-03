@@ -53,6 +53,10 @@ class List<E> {
   @JavaCall("dart._runtime.base.DartList.<E>newInstance\$")
   external factory List([int length = 0]);
 
+  @patch
+  @JavaCall("dart._runtime.base.DartList.<E>filled\$")
+  external factory List.filled(int length, E fill);
+
   // This patch is for compatibility to java.util.List (add return type bool).
   @patch
   bool add(E value);

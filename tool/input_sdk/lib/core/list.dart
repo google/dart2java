@@ -89,6 +89,40 @@ abstract class List<E> implements Iterable<E> {
   external factory List([int length = 0]);
 
   /**
+   * Creates a fixed-length list of the given length, and initializes the
+   * value at each position with [fill]:
+   *
+   *     new List<int>.filled(3, 0); // [0, 0, 0]
+   *
+   * The [length] must be a non-negative integer.
+   *
+   * If the list is growable, changing its length will not initialize new
+   * entries with [fill]. After being created and filled, the list is
+   * no different from any other growable or fixed-length list
+   * created using [List].
+   *
+   * All entries in the returned list point to the same provided [fill] value.
+   * That all items in the list are the same object is
+   * observable when the given value is a mutable object.
+   *
+   * ```
+   * var shared = new List.filled(3, []);
+   * shared[0].add(499);
+   * print(shared);  // => [[499], [499], [499]]
+   * ```
+   *
+   * You may use [List.generate] to create a new object for each position in
+   * in the list.
+   * ```
+   * var unique = new List.generate(3, (_) => []);
+   * unique[0].add(499);
+   * print(unique); // => [[499], [], []]
+   * ```
+   */
+  // TODO(springerm): Add `growable` parameter
+  external factory List.filled(int length, E fill);
+
+  /**
    * Returns the object at the given [index] in the list
    * or throws a [RangeError] if [index] is out of bounds.
    */

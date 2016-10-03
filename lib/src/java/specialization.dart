@@ -310,7 +310,7 @@ class TypeSpecialization {
 }
 
 /// Builds a [dart.InterfaceType] for a Dart class with a type specialization.
-/// 
+///
 /// In the resulting type, all type arguments are either type variables
 /// or primitive Java types.
 dart.InterfaceType buildSpecializedDartType(
@@ -337,10 +337,10 @@ dart.InterfaceType buildSpecializedDartType(
 
 /// A builder that generates delegator methods to "super specialized" methods
 /// or methods defined in the superclass.
-/// 
+///
 /// This is our approach to implement method invocations for generic receivers.
 /// There are four call patterns that we have to keep in mind:
-/// 
+///
 /// 1. Exact class and exact specialization
 ///    List<int> object = new List<int>();
 /// 2. Exact class and super specialization
@@ -354,29 +354,29 @@ dart.InterfaceType buildSpecializedDartType(
 /// `object.method_Iterable_int()`. Therefore, there must be delegator methods
 /// in place that ensure that:
 /// * All required methods are available with respect to subtyping rules.
-/// * Calling an overridden method actually calls the overridden 
+/// * Calling an overridden method actually calls the overridden
 ///   implementation.
-/// 
-/// This builder also takes care of potential changes of type parameters in 
+///
+/// This builder also takes care of potential changes of type parameters in
 /// superclasses (e.g., a superclass might have a different number and/or
 /// binding of type parameters).
-/// 
+///
 /// Methods of Case 1 do not require delegator methods. java_builder generates
 /// these methods with the actual implementation.
-/// 
+///
 /// For methods of Case 2, this builder generates delegator methods in the Java
 /// interface ("default" methods), forwarding to the actual implementation.
-/// 
+///
 /// For methods of Case 3, this builder generates delegator methods in the
 /// Java (implementation) class. Delegator methods are generated for every
 /// superclass and implemented interface, through which the method could be
 /// invoked (i.e., the class/interface must declare that method).
-/// 
+///
 /// For methods of Case 4, no delegator methods are generated. This case is
 /// handled through methods of Case 2, which call a method with the correct
 /// specialization, which calls the correct implementation due to dynamic
 /// dispatch.
-/// 
+///
 /// More details are described in the design document.
 class DelegatorMethodsBuilder {
   /// The type factory generating types for the class/interface for which
