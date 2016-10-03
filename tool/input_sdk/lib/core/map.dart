@@ -256,8 +256,7 @@ abstract class Map<K, V> {
    * The order of iteration is defined by the individual `Map` implementation,
    * but must be consistent between changes to the map.
    */
-  // TODO(springerm): Implement
-  // Iterable<K> get keys;
+  Iterable<K> get keys;
 
   /**
    * The values of [this].
@@ -270,8 +269,7 @@ abstract class Map<K, V> {
    * [length] of the map. Its [Iterable.contains] method is based on
    * `==` comparison.
    */
-  // TODO(springerm): Implement
-  // Iterable<V> get values;
+  Iterable<V> get values;
 
   /**
    * The number of key-value pairs in the map.

@@ -70,7 +70,7 @@ external double max(num a, num b);
 abstract class Random {
   @patch
   @JavaCall("dart._runtime.helpers.MathHelper.newRandom")
-  external factory Random([int seed]);
+  external factory Random([int seed = 17]);
 
   @patch
   @JavaCall("dart._runtime.helpers.MathHelper.newSecureRandom")

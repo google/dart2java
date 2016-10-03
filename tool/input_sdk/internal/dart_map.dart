@@ -1,8 +1,8 @@
 part of dart._internal;
  
 class LinkedHashMap<K, V> implements Map<K, V> {
-  List<K> keys = new List<K>();
-  List<V> values = new List<V>();
+  List<K> _keys = new List<K>();
+  List<V> _values = new List<V>();
 
   LinkedHashMap();
 
@@ -11,17 +11,17 @@ class LinkedHashMap<K, V> implements Map<K, V> {
   }
 
   bool containsValue(Object value) {
-    return values.contains(value);
+    return _values.contains(value);
   }
 
   bool containsKey(Object key) {
-    return keys.contains(key);
+    return _keys.contains(key);
   }
 
   V operator [](Object key) {
-    for (int i = 0; i < keys.length; i++) {
-      if (keys[i] == key) {
-        return values[i];
+    for (int i = 0; i < _keys.length; i++) {
+      if (_keys[i] == key) {
+        return _values[i];
       }
     }
 
@@ -29,22 +29,22 @@ class LinkedHashMap<K, V> implements Map<K, V> {
   }
 
   void operator []=(K key, V value) {
-    for (int i = 0; i < keys.length; i++) {
-      if (keys[i] == key) {
-        values[i] = value;
+    for (int i = 0; i < _keys.length; i++) {
+      if (_keys[i] == key) {
+        _values[i] = value;
         return;
       }
     }
 
-    keys.add(key);
-    values.add(value);
+    _keys.add(key);
+    _values.add(value);
   }
 
   V remove(Object key) {
-    for (int i = 0; i < keys.length; i++) {
-      if (keys[i] == key) {
-        keys.removeAt(i);
-        return values.removeAt(i);
+    for (int i = 0; i < _keys.length; i++) {
+      if (_keys[i] == key) {
+        _keys.removeAt(i);
+        return _values.removeAt(i);
       }
     }
 
@@ -52,13 +52,17 @@ class LinkedHashMap<K, V> implements Map<K, V> {
   }
 
   void clear() {
-    keys.clear();
-    values.clear();
+    _keys.clear();
+    _values.clear();
   }
 
-  int get length => keys.length;
+  int get length => _keys.length;
 
-  bool get isEmpty => keys.isEmpty;
+  bool get isEmpty => _keys.isEmpty;
 
-  bool get isNotEmpty => keys.isNotEmpty;
+  bool get isNotEmpty => _keys.isNotEmpty;
+
+  Iterable<K> get keys => _keys;
+
+  Iterable<V> get values => _values;
 }
