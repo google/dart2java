@@ -48,7 +48,7 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
       this.list = value;
       return value;
     }
-    public static deltablue.Plan_interface _new(dart._runtime.types.simple.Type type)
+    public static deltablue.Plan_interface _new_Plan$(dart._runtime.types.simple.Type type)
     {
       deltablue.Plan result;
       result = new deltablue.Plan(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

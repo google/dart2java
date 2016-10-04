@@ -20,7 +20,7 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     public tracer.IntersectionInfo_interface intersect(tracer.Ray_interface ray)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      tracer.IntersectionInfo_interface info = tracer.IntersectionInfo._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
+      tracer.IntersectionInfo_interface info = tracer.IntersectionInfo._new_IntersectionInfo$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_IntersectionInfo));
       info.setShape(this);
       java.lang.Object dst = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", ray.getPosition(), this.getPosition());
       java.lang.Object B = dart._runtime.helpers.DynamicHelper.invoke("dot", dst, ray.getDirection());
@@ -55,7 +55,7 @@ public class Sphere extends tracer.BaseShape implements tracer.Sphere_interface
     {
       return this.radius;
     }
-    public static tracer.Sphere_interface _new(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
+    public static tracer.Sphere_interface _new_Sphere$(dart._runtime.types.simple.Type type, java.lang.Object pos, double radius, java.lang.Object material)
     {
       tracer.Sphere result;
       result = new tracer.Sphere(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

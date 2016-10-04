@@ -58,7 +58,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int mark = this.newMark();
-      deltablue.Plan_interface plan = deltablue.Plan._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan));
+      deltablue.Plan_interface plan = deltablue.Plan._new_Plan$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan));
       dart.core.List_interface<deltablue.Constraint_interface> todo = ((dart.core.List_interface) sources);
       while ((todo.getLength_List() > 0))
       {
@@ -163,7 +163,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
       this.currentMark = value;
       return value;
     }
-    public static deltablue.Planner_interface _new(dart._runtime.types.simple.Type type)
+    public static deltablue.Planner_interface _new_Planner$(dart._runtime.types.simple.Type type)
     {
       deltablue.Planner result;
       result = new deltablue.Planner(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

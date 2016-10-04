@@ -157,7 +157,7 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
       this.depthLevel = value;
       return value;
     }
-    public static havlak.SimpleLoop_interface _new(dart._runtime.types.simple.Type type, int counter)
+    public static havlak.SimpleLoop_interface _new_SimpleLoop$(dart._runtime.types.simple.Type type, int counter)
     {
       havlak.SimpleLoop result;
       result = new havlak.SimpleLoop(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

@@ -20,5 +20,5 @@ public interface Cell_interface extends dart._runtime.base.DartObject_interface
   int setNextState(int value);
   int setAge(int value);
   int setUpdates(int value);
-  void _constructor(int x, int y, dart.core.Map_interface<java.lang.String, gameoflife.Cell_interface> Environment);
+
 }

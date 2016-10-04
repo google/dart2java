@@ -76,7 +76,7 @@ public class WorkerTask extends richards.Task implements richards.WorkerTask_int
       this.v2 = value;
       return value;
     }
-    public static richards.WorkerTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
+    public static richards.WorkerTask_interface _new_WorkerTask$(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int v2)
     {
       richards.WorkerTask result;
       result = new richards.WorkerTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

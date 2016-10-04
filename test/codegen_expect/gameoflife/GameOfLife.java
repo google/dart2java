@@ -23,9 +23,9 @@ public class GameOfLife extends gameoflife.BenchmarkBase implements gameoflife.G
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor("GameOfLife");
     }
-    public static gameoflife.GameOfLife_interface _new(dart._runtime.types.simple.Type type)
+    public static gameoflife.GameOfLife_interface _new_GameOfLife$(dart._runtime.types.simple.Type type)
     {
-      gameoflife.GameOfLife_interface result;
+      gameoflife.GameOfLife result;
       result = new gameoflife.GameOfLife(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

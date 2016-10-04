@@ -27,16 +27,16 @@ public class Expect extends dart._runtime.base.DartObject implements barnsleyfer
     public static void listEquals(dart.core.List_interface<java.lang.Object> expected, dart.core.List_interface<java.lang.Object> actual)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      if ((!(expected.getLength() == actual.getLength())))
+      if ((!(expected.getLength_List() == actual.getLength_List())))
       {
         dart.core.__TopLevel.print("Lists have different lengths: ");
-        dart.core.__TopLevel.print(expected.getLength());
+        dart.core.__TopLevel.print(expected.getLength_List());
         dart.core.__TopLevel.print("vs ");
-        dart.core.__TopLevel.print(actual.getLength());
+        dart.core.__TopLevel.print(actual.getLength_List());
       }
-      for (int i = 0; (i < actual.getLength()); i = (i + 1))
+      for (int i = 0; (i < actual.getLength_List()); i = (i + 1))
       {
-        barnsleyfern.Expect.equals(expected.operatorAt(i), actual.operatorAt(i));
+        barnsleyfern.Expect.equals(expected.operatorAt_List(i), actual.operatorAt_List(i));
       }
     }
     public void fail(java.lang.String message)
@@ -49,9 +49,9 @@ public class Expect extends dart._runtime.base.DartObject implements barnsleyfer
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static barnsleyfern.Expect_interface _new(dart._runtime.types.simple.Type type)
+    public static barnsleyfern.Expect_interface _new_Expect$(dart._runtime.types.simple.Type type)
     {
-      barnsleyfern.Expect_interface result;
+      barnsleyfern.Expect result;
       result = new barnsleyfern.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

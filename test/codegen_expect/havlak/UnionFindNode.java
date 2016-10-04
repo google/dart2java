@@ -96,7 +96,7 @@ public class UnionFindNode extends dart._runtime.base.DartObject implements havl
       this.loop = value;
       return value;
     }
-    public static havlak.UnionFindNode_interface _new(dart._runtime.types.simple.Type type)
+    public static havlak.UnionFindNode_interface _new_UnionFindNode$(dart._runtime.types.simple.Type type)
     {
       havlak.UnionFindNode result;
       result = new havlak.UnionFindNode(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

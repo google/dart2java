@@ -17,5 +17,5 @@ public interface World_interface extends dart._runtime.base.DartObject_interface
   dart.math.Random_interface setRng(dart.math.Random_interface value);
   int setIterations(int value);
   dart.core.List_interface<dart.core.List_interface__int> setMap_data(dart.core.List_interface<dart.core.List_interface__int> value);
-  void _constructor();
+
 }

@@ -15,7 +15,7 @@ public class __TopLevel
     public static void main(String[] args)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      havlak.Havlak._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Havlak)).report();
+      havlak.Havlak._new_Havlak$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Havlak)).report();
     }
     public static int mix(int existing, int value)
     {
@@ -31,16 +31,16 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       int bb0 = start;
-      havlak.BasicBlockEdge._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, bb0, (bb0 + 1));
-      havlak.BasicBlockEdge._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, bb0, (bb0 + 2));
-      havlak.BasicBlockEdge._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, (bb0 + 1), (bb0 + 3));
-      havlak.BasicBlockEdge._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, (bb0 + 2), (bb0 + 3));
+      havlak.BasicBlockEdge._new_BasicBlockEdge$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, bb0, (bb0 + 1));
+      havlak.BasicBlockEdge._new_BasicBlockEdge$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, bb0, (bb0 + 2));
+      havlak.BasicBlockEdge._new_BasicBlockEdge$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, (bb0 + 1), (bb0 + 3));
+      havlak.BasicBlockEdge._new_BasicBlockEdge$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, (bb0 + 2), (bb0 + 3));
       return (bb0 + 3);
     }
     public static void buildConnect(havlak.CFG_interface cfg, int start, int end)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      havlak.BasicBlockEdge._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, start, end);
+      havlak.BasicBlockEdge._new_BasicBlockEdge$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlockEdge), cfg, start, end);
     }
     public static int buildStraight(havlak.CFG_interface cfg, int start, int n)
     {

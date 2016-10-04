@@ -64,7 +64,7 @@ public class IdleTask extends richards.Task implements richards.IdleTask_interfa
       this.count = value;
       return value;
     }
-    public static richards.IdleTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int count)
+    public static richards.IdleTask_interface _new_IdleTask$(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler, int v1, int count)
     {
       richards.IdleTask result;
       result = new richards.IdleTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

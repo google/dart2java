@@ -24,7 +24,7 @@ public class DeltaBlue extends deltablue.BenchmarkBase implements deltablue.Delt
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor("DeltaBlue");
     }
-    public static deltablue.DeltaBlue_interface _new(dart._runtime.types.simple.Type type)
+    public static deltablue.DeltaBlue_interface _new_DeltaBlue$(dart._runtime.types.simple.Type type)
     {
       deltablue.DeltaBlue result;
       result = new deltablue.DeltaBlue(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

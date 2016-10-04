@@ -105,7 +105,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
       this.value = value;
       return value;
     }
-    public static deltablue.Variable_interface _new(dart._runtime.types.simple.Type type, java.lang.String name, int value)
+    public static deltablue.Variable_interface _new_Variable$(dart._runtime.types.simple.Type type, java.lang.String name, int value)
     {
       deltablue.Variable result;
       result = new deltablue.Variable(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

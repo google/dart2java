@@ -49,7 +49,7 @@ public class DeviceTask extends richards.Task implements richards.DeviceTask_int
       this.v1 = value;
       return value;
     }
-    public static richards.DeviceTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
+    public static richards.DeviceTask_interface _new_DeviceTask$(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
       richards.DeviceTask result;
       result = new richards.DeviceTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

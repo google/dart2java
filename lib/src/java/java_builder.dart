@@ -1268,8 +1268,14 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     var runtimeType = ts.evaluateTypeExpr(ts.getTypeEnv(), typeExpr);
     args.insert(0, runtimeType);
 
-    return new java.MethodInvocation(new java.ClassRefExpr(javaType),
-        Constants.javaFactoryPrefix + node.name.name, args);
+    return new java.MethodInvocation(
+        new java.ClassRefExpr(javaType),
+        Constants.javaFactoryPrefix +
+            "_" +
+            (node.target.parent as dart.Class).name +
+            "\$" +
+            node.name.name,
+        args);
   }
 
   /// Returns the enclosing class type of a member or the top level class type

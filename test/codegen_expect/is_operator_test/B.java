@@ -20,7 +20,7 @@ public class B extends dart._runtime.base.DartObject implements is_operator_test
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static is_operator_test.B_interface _new(dart._runtime.types.simple.Type type)
+    public static is_operator_test.B_interface _new_B$(dart._runtime.types.simple.Type type)
     {
       is_operator_test.B result;
       result = new is_operator_test.B(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

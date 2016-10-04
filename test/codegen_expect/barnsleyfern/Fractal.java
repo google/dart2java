@@ -75,9 +75,9 @@ public class Fractal extends barnsleyfern.BenchmarkBase implements barnsleyfern.
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor("Barnsley Fern Fractal");
     }
-    public static barnsleyfern.Fractal_interface _new(dart._runtime.types.simple.Type type)
+    public static barnsleyfern.Fractal_interface _new_Fractal$(dart._runtime.types.simple.Type type)
     {
-      barnsleyfern.Fractal_interface result;
+      barnsleyfern.Fractal result;
       result = new barnsleyfern.Fractal(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

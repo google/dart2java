@@ -29,21 +29,21 @@ public class Culture extends dart._runtime.base.DartObject implements gameoflife
     public void add(java.lang.Object x, java.lang.Object y)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      gameoflife.Cell_interface c = this.getCellDish().operatorAt((((("" + x.toString()) + "-") + y.toString()) + ""));
+      gameoflife.Cell_interface c = this.getCellDish().operatorAt_Map((((("" + x.toString()) + "-") + y.toString()) + ""));
       c.setState(1);
     }
     public void update()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      for (dart.core.Iterator_interface<java.lang.String> __tempVar_0 = ((dart.core.Iterator_interface<java.lang.String>) this.getCellDish().getKeys().getIterator()); __tempVar_0.moveNext(); )
+      for (dart.core.Iterator_interface<java.lang.String> __tempVar_0 = ((dart.core.Iterator_interface<java.lang.String>) this.getCellDish().getKeys_Map().getIterator_Iterable()); __tempVar_0.moveNext_Iterator(); )
       {
-        java.lang.String k = __tempVar_0.getCurrent();
-        this.getCellDish().operatorAt(k).update();
+        java.lang.String k = __tempVar_0.getCurrent_Iterator();
+        this.getCellDish().operatorAt_Map(k).update();
       }
-      for (dart.core.Iterator_interface<java.lang.String> __tempVar_1 = ((dart.core.Iterator_interface<java.lang.String>) this.getCellDish().getKeys().getIterator()); __tempVar_1.moveNext(); )
+      for (dart.core.Iterator_interface<java.lang.String> __tempVar_1 = ((dart.core.Iterator_interface<java.lang.String>) this.getCellDish().getKeys_Map().getIterator_Iterable()); __tempVar_1.moveNext_Iterator(); )
       {
-        java.lang.String k = __tempVar_1.getCurrent();
-        this.getCellDish().operatorAt(k).commit();
+        java.lang.String k = __tempVar_1.getCurrent_Iterator();
+        this.getCellDish().operatorAt_Map(k).commit();
       }
     }
     public void _constructor()
@@ -57,7 +57,7 @@ public class Culture extends dart._runtime.base.DartObject implements gameoflife
       {
         for (int y = 0; (y < this.getWidth()); y = (y + 1))
         {
-          this.getCellDish().operatorAtPut((((("" + x) + "-") + y) + ""), gameoflife.Cell._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Cell), x, y, ((dart.core.Map_interface) this.getCellDish())));
+          this.getCellDish().operatorAtPut_Map((((("" + x) + "-") + y) + ""), gameoflife.Cell._new_Cell$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Cell), x, y, ((dart.core.Map_interface) this.getCellDish())));
         }
       }
     }
@@ -88,9 +88,9 @@ public class Culture extends dart._runtime.base.DartObject implements gameoflife
       this.rng = value;
       return value;
     }
-    public static gameoflife.Culture_interface _new(dart._runtime.types.simple.Type type)
+    public static gameoflife.Culture_interface _new_Culture$(dart._runtime.types.simple.Type type)
     {
-      gameoflife.Culture_interface result;
+      gameoflife.Culture result;
       result = new gameoflife.Culture(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

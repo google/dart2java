@@ -84,11 +84,11 @@ public class Cell extends dart._runtime.base.DartObject implements gameoflife.Ce
     public boolean isNeighbourPopulated(int nx, int ny)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      if ((!this.getEnvironment().containsKey((((("" + nx) + "-") + ny) + ""))))
+      if ((!this.getEnvironment().containsKey_Map((((("" + nx) + "-") + ny) + ""))))
       {
         return false;
       }
-      gameoflife.Cell_interface t = this.getEnvironment().operatorAt((((("" + nx) + "-") + ny) + ""));
+      gameoflife.Cell_interface t = this.getEnvironment().operatorAt_Map((((("" + nx) + "-") + ny) + ""));
       if ((t.getState() == 1))
       {
         return true;
@@ -175,9 +175,9 @@ public class Cell extends dart._runtime.base.DartObject implements gameoflife.Ce
       this.updates = value;
       return value;
     }
-    public static gameoflife.Cell_interface _new(dart._runtime.types.simple.Type type, int x, int y, dart.core.Map_interface<java.lang.String, gameoflife.Cell_interface> Environment)
+    public static gameoflife.Cell_interface _new_Cell$(dart._runtime.types.simple.Type type, int x, int y, dart.core.Map_interface<java.lang.String, gameoflife.Cell_interface> Environment)
     {
-      gameoflife.Cell_interface result;
+      gameoflife.Cell result;
       result = new gameoflife.Cell(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(x, y, Environment);
       return result;

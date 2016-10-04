@@ -84,7 +84,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
         header.operatorAtPut_List__int(i, 0);
         types.operatorAtPut_List__int(i, havlak.HavlakLoopFinder.BB_NONHEADER);
         last.operatorAtPut_List__int(i, 0);
-        nodes.operatorAtPut_List(i, havlak.UnionFindNode._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_UnionFindNode)));
+        nodes.operatorAtPut_List(i, havlak.UnionFindNode._new_UnionFindNode$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_UnionFindNode)));
       }
       this.DFS(this.getCfg().getStartNode(), ((dart.core.List_interface) nodes), ((dart.core.List_interface__int) number), ((dart.core.List_interface__int) last), 0);
       for (int w = 0; (w < size); w = (w + 1))
@@ -306,7 +306,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
       havlak.HavlakLoopFinder.MAXNONBACKPREDS = value;
       return value;
     }
-    public static havlak.HavlakLoopFinder_interface _new(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, havlak.LSG_interface lsg)
+    public static havlak.HavlakLoopFinder_interface _new_HavlakLoopFinder$(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, havlak.LSG_interface lsg)
     {
       havlak.HavlakLoopFinder result;
       result = new havlak.HavlakLoopFinder(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

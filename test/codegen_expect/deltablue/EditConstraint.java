@@ -27,7 +27,7 @@ public class EditConstraint extends deltablue.UnaryConstraint implements deltabl
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(v, str);
     }
-    public static deltablue.EditConstraint_interface _new(dart._runtime.types.simple.Type type, deltablue.Variable_interface v, deltablue.Strength_interface str)
+    public static deltablue.EditConstraint_interface _new_EditConstraint$(dart._runtime.types.simple.Type type, deltablue.Variable_interface v, deltablue.Strength_interface str)
     {
       deltablue.EditConstraint result;
       result = new deltablue.EditConstraint(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

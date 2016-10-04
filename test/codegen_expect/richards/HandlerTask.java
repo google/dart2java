@@ -81,7 +81,7 @@ public class HandlerTask extends richards.Task implements richards.HandlerTask_i
       this.v2 = value;
       return value;
     }
-    public static richards.HandlerTask_interface _new(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
+    public static richards.HandlerTask_interface _new_HandlerTask$(dart._runtime.types.simple.Type type, richards.Scheduler_interface scheduler)
     {
       richards.HandlerTask result;
       result = new richards.HandlerTask(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

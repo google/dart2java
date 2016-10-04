@@ -29,9 +29,9 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
         row = ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), java.lang.Integer.class)));
         for (int x = 0; (x < this.getWidth()); x = (x + 1))
         {
-          row.add__int(0);
+          row.add_List__int(0);
         }
-        this.getMap_data().add(((dart.core.List_interface__int) row));
+        this.getMap_data().add_List(((dart.core.List_interface__int) row));
       }
     }
     public void Base()
@@ -41,7 +41,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       {
         for (int x = 0; (x < this.getWidth()); x = (x + 1))
         {
-          this.getMap_data().operatorAt(x).operatorAtPut__int(y, (this.getRng().nextInt(55) + 200));
+          this.getMap_data().operatorAt_List(x).operatorAtPut_List__int(y, (this.getRng().nextInt(55) + 200));
         }
       }
     }
@@ -54,15 +54,15 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       }
       if ((!dart._runtime.helpers.ObjectHelper.operatorEqual(v, null)))
       {
-        this.getMap_data().operatorAt(x).operatorAtPut__int(y, v.operatorAt__int(0));
-        this.getMap_data().operatorAt((x + w)).operatorAtPut__int(y, v.operatorAt__int(1));
-        this.getMap_data().operatorAt(x).operatorAtPut__int((y + h), v.operatorAt__int(2));
-        this.getMap_data().operatorAt((x + w)).operatorAtPut__int((y + h), v.operatorAt__int(3));
+        this.getMap_data().operatorAt_List(x).operatorAtPut_List__int(y, v.operatorAt_List__int(0));
+        this.getMap_data().operatorAt_List((x + w)).operatorAtPut_List__int(y, v.operatorAt_List__int(1));
+        this.getMap_data().operatorAt_List(x).operatorAtPut_List__int((y + h), v.operatorAt_List__int(2));
+        this.getMap_data().operatorAt_List((x + w)).operatorAtPut_List__int((y + h), v.operatorAt_List__int(3));
       }
       int hw = dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(w, 2));
       int hh = dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(h, 2));
-      int total = (((((this.getMap_data().operatorAt(x).operatorAt__int(y) + this.getMap_data().operatorAt((x + w)).operatorAt__int(y)) + this.getMap_data().operatorAt(x).operatorAt__int((y + h))) + this.getMap_data().operatorAt((x + w)).operatorAt__int((y + h))) + this.getRng().nextInt((4 + h))) + 4);
-      this.getMap_data().operatorAt((x + hw)).operatorAtPut__int((y + hh), dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(total, 4.0)));
+      int total = (((((this.getMap_data().operatorAt_List(x).operatorAt_List__int(y) + this.getMap_data().operatorAt_List((x + w)).operatorAt_List__int(y)) + this.getMap_data().operatorAt_List(x).operatorAt_List__int((y + h))) + this.getMap_data().operatorAt_List((x + w)).operatorAt_List__int((y + h))) + this.getRng().nextInt((4 + h))) + 4);
+      this.getMap_data().operatorAt_List((x + hw)).operatorAtPut_List__int((y + hh), dart._runtime.helpers.DoubleHelper.floor(dart._runtime.helpers.IntegerHelper.operatorDivide(total, 4.0)));
       this.SetCorners(x, y, hw, hh, null);
       this.SetCorners((x + hw), y, hw, hh, null);
       this.SetCorners(x, (y + hh), hw, hh, null);
@@ -84,14 +84,14 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       {
         for (int xl = 1; (xl < (this.getWidth() - 1)); xl = (xl + 1))
         {
-          average = dart._runtime.helpers.DoubleHelper.floor((1.1 * dart._runtime.helpers.IntegerHelper.operatorDivide((((this.getMap_data().operatorAt(xl).operatorAt__int(yl) + this.getMap_data().operatorAt((xl + 1)).operatorAt__int(yl)) + this.getMap_data().operatorAt(xl).operatorAt__int((yl + 1))) + this.getMap_data().operatorAt((xl + 1)).operatorAt__int((yl + 1))), 4)));
-          this.getMap_data().operatorAt(xl).operatorAtPut__int(yl, average);
-          this.getMap_data().operatorAt((xl + 1)).operatorAtPut__int(yl, average);
-          this.getMap_data().operatorAt((xl + 1)).operatorAtPut__int((yl + 1), average);
-          this.getMap_data().operatorAt(xl).operatorAtPut__int((yl + 1), average);
-          this.getMap_data().operatorAt((xl - 1)).operatorAtPut__int(yl, average);
-          this.getMap_data().operatorAt((xl - 1)).operatorAtPut__int((yl - 1), average);
-          this.getMap_data().operatorAt(xl).operatorAtPut__int((yl - 1), average);
+          average = dart._runtime.helpers.DoubleHelper.floor((1.1 * dart._runtime.helpers.IntegerHelper.operatorDivide((((this.getMap_data().operatorAt_List(xl).operatorAt_List__int(yl) + this.getMap_data().operatorAt_List((xl + 1)).operatorAt_List__int(yl)) + this.getMap_data().operatorAt_List(xl).operatorAt_List__int((yl + 1))) + this.getMap_data().operatorAt_List((xl + 1)).operatorAt_List__int((yl + 1))), 4)));
+          this.getMap_data().operatorAt_List(xl).operatorAtPut_List__int(yl, average);
+          this.getMap_data().operatorAt_List((xl + 1)).operatorAtPut_List__int(yl, average);
+          this.getMap_data().operatorAt_List((xl + 1)).operatorAtPut_List__int((yl + 1), average);
+          this.getMap_data().operatorAt_List(xl).operatorAtPut_List__int((yl + 1), average);
+          this.getMap_data().operatorAt_List((xl - 1)).operatorAtPut_List__int(yl, average);
+          this.getMap_data().operatorAt_List((xl - 1)).operatorAtPut_List__int((yl - 1), average);
+          this.getMap_data().operatorAt_List(xl).operatorAtPut_List__int((yl - 1), average);
         }
       }
     }
@@ -151,9 +151,9 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       this.map_data = value;
       return value;
     }
-    public static diamondsquare.World_interface _new(dart._runtime.types.simple.Type type)
+    public static diamondsquare.World_interface _new_World$(dart._runtime.types.simple.Type type)
     {
-      diamondsquare.World_interface result;
+      diamondsquare.World result;
       result = new diamondsquare.World(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

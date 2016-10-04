@@ -20,7 +20,7 @@ public class C extends dart._runtime.base.DartObject implements is_interfaces_te
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static is_interfaces_test.C_interface _new(dart._runtime.types.simple.Type type)
+    public static is_interfaces_test.C_interface _new_C$(dart._runtime.types.simple.Type type)
     {
       is_interfaces_test.C result;
       result = new is_interfaces_test.C(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

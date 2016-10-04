@@ -352,7 +352,7 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
         v.operatorAtPut_List__double(i, 0.0);
         d.operatorAtPut_List__double(i, 0.0);
       }
-      fluidmotion.FluidMotion.prepareFrame(fluidmotion.Field._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Field), ((dart.core.List_interface__double) d), ((dart.core.List_interface__double) u), ((dart.core.List_interface__double) v), this.getRowSize()));
+      fluidmotion.FluidMotion.prepareFrame(fluidmotion.Field._new_Field$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Field), ((dart.core.List_interface__double) d), ((dart.core.List_interface__double) u), ((dart.core.List_interface__double) v), this.getRowSize()));
     }
     public void update()
     {
@@ -471,18 +471,18 @@ public class FluidField extends dart._runtime.base.DartObject implements fluidmo
       final int res = (wRes * hRes);
       if (((res > 0) && (res < 1000000)))
       {
-        fluidmotion.FluidField._lastCreated = fluidmotion.FluidField._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_FluidField), canvas, hRes, wRes, iterations);
+        fluidmotion.FluidField._lastCreated = fluidmotion.FluidField._new_FluidField$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_FluidField), canvas, hRes, wRes, iterations);
       }
       else
       {
         if (dart._runtime.helpers.ObjectHelper.operatorEqual(fluidmotion.FluidField._lastCreated, null))
         {
-          fluidmotion.FluidField._lastCreated = fluidmotion.FluidField._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_FluidField), canvas, 64, 64, iterations);
+          fluidmotion.FluidField._lastCreated = fluidmotion.FluidField._new_FluidField$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_FluidField), canvas, 64, 64, iterations);
         }
       }
       return fluidmotion.FluidField._lastCreated;
     }
-    public static fluidmotion.FluidField_interface _new(dart._runtime.types.simple.Type type, java.lang.Object canvas, int hRes, int wRes, int iterations)
+    public static fluidmotion.FluidField_interface _new_FluidField$(dart._runtime.types.simple.Type type, java.lang.Object canvas, int hRes, int wRes, int iterations)
     {
       fluidmotion.FluidField result;
       result = new fluidmotion.FluidField(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

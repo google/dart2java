@@ -15,14 +15,14 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       dart.core.__TopLevel.print("Expecting 12, 11, 13, 14.01, 2.3, 50, 51, 50, 51");
-      generics.Foo1_interface__int fooFromConstructor = ((generics.Foo1_interface__int) generics.Foo1._newnewMe(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Foo1$ltint$0$gt)));
+      generics.Foo1_interface__int fooFromConstructor = ((generics.Foo1_interface__int) generics.Foo1._new_Foo1$newMe(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Foo1$ltint$0$gt)));
       generics.Foo1_interface__int foo = ((generics.Foo1_interface__int) ((generics.Foo1_interface__int) generics.Foo1.<java.lang.Integer>factory$(dart2java$localTypeEnv.extend(generics.Foo1.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0)}))));
       generics.Foo1_interface<java.lang.Object> fooObject = ((generics.Foo1_interface) foo);
       fooObject.setVariable_Foo1(12);
       dart.core.__TopLevel.print(foo.getVariable_Foo1__int());
       foo.setVariable_Foo1__int(11);
       dart.core.__TopLevel.print(foo.getVariable_Foo1__int());
-      generics.Bar2_interface__int_double bar = ((generics.Bar2_interface__int_double) generics.Bar2._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Bar2$ltint$0$double$0$gt)));
+      generics.Bar2_interface__int_double bar = ((generics.Bar2_interface__int_double) generics.Bar2._new_Bar2$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Bar2$ltint$0$double$0$gt)));
       generics.Bar2_interface__generic_double<java.lang.Object> barObjectDouble = ((generics.Bar2_interface__generic_double) bar);
       generics.Bar2_interface__int_generic<java.lang.Object> barIntObject = ((generics.Bar2_interface__int_generic) bar);
       barObjectDouble.setVarB_Bar2__generic_double(14.01);

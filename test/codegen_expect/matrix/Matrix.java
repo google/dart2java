@@ -88,7 +88,7 @@ public class Matrix extends matrix.BenchmarkBase implements matrix.Matrix_interf
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor("Matrix");
     }
-    public static matrix.Matrix_interface _new(dart._runtime.types.simple.Type type)
+    public static matrix.Matrix_interface _new_Matrix$(dart._runtime.types.simple.Type type)
     {
       matrix.Matrix result;
       result = new matrix.Matrix(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

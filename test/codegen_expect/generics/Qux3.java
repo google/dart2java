@@ -27,7 +27,7 @@ public class Qux3<C, D, E> extends dart._runtime.base.DartObject implements gene
     {
       return this.qux_Qux3(((C) c), ((D) d), ((E) e));
     }
-    public static generics.Qux3_interface _new(dart._runtime.types.simple.Type type)
+    public static <C, D, E> generics.Qux3_interface _new_Qux3$(dart._runtime.types.simple.Type type)
     {
       dart._runtime.types.simple.Type cached_0_int = null;
       dart._runtime.types.simple.Type cached_0_boolean = null;

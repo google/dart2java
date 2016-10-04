@@ -98,7 +98,7 @@ public class Packet extends dart._runtime.base.DartObject implements richards.Pa
       this.a2 = value;
       return value;
     }
-    public static richards.Packet_interface _new(dart._runtime.types.simple.Type type, richards.Packet_interface link, int id, int kind)
+    public static richards.Packet_interface _new_Packet$(dart._runtime.types.simple.Type type, richards.Packet_interface link, int id, int kind)
     {
       richards.Packet result;
       result = new richards.Packet(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

@@ -28,7 +28,7 @@ public class TracerBenchmark extends tracer.BenchmarkBase implements tracer.Trac
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor("Tracer");
     }
-    public static tracer.TracerBenchmark_interface _new(dart._runtime.types.simple.Type type)
+    public static tracer.TracerBenchmark_interface _new_TracerBenchmark$(dart._runtime.types.simple.Type type)
     {
       tracer.TracerBenchmark result;
       result = new tracer.TracerBenchmark(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

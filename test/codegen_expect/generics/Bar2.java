@@ -66,12 +66,12 @@ public class Bar2<A, B> extends dart._runtime.base.DartObject implements generic
     }
     public static <A, B> generics.Bar2_interface<A, B> factory$newBar(dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv, A a, B b)
     {
-      generics.Bar2_interface<A, B> result = ((generics.Bar2_interface) generics.Bar2._new(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(generics.Bar2.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {generics.Bar2.factory$newBar$typeInfo.typeVariables[0], generics.Bar2.factory$newBar$typeInfo.typeVariables[1]}))));
+      generics.Bar2_interface<A, B> result = ((generics.Bar2_interface) generics.Bar2._new_Bar2$(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(generics.Bar2.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {generics.Bar2.factory$newBar$typeInfo.typeVariables[0], generics.Bar2.factory$newBar$typeInfo.typeVariables[1]}))));
       result.setVarA_Bar2(a);
       result.setVarB_Bar2(b);
       return ((generics.Bar2_interface) result);
     }
-    public static generics.Bar2_interface _new(dart._runtime.types.simple.Type type)
+    public static <A, B> generics.Bar2_interface _new_Bar2$(dart._runtime.types.simple.Type type)
     {
       dart._runtime.types.simple.Type cached_0_int = null;
       dart._runtime.types.simple.Type cached_0_boolean = null;

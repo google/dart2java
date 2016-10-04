@@ -10,7 +10,7 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       dart.core.__TopLevel.print("Running benchmark...");
-      matrix.Matrix._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Matrix)).report();
+      matrix.Matrix._new_Matrix$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Matrix)).report();
       dart.core.__TopLevel.print("Done.");
     }
 }

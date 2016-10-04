@@ -53,7 +53,7 @@ public class Expect extends dart._runtime.base.DartObject implements is_interfac
       this.x = value;
       return value;
     }
-    public static is_interfaces_test.Expect_interface _new(dart._runtime.types.simple.Type type)
+    public static is_interfaces_test.Expect_interface _new_Expect$(dart._runtime.types.simple.Type type)
     {
       is_interfaces_test.Expect result;
       result = new is_interfaces_test.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

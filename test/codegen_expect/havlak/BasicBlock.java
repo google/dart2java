@@ -73,7 +73,7 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
       this.outEdges = value;
       return value;
     }
-    public static havlak.BasicBlock_interface _new(dart._runtime.types.simple.Type type, int name)
+    public static havlak.BasicBlock_interface _new_BasicBlock$(dart._runtime.types.simple.Type type, int name)
     {
       havlak.BasicBlock result;
       result = new havlak.BasicBlock(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

@@ -43,7 +43,7 @@ public class BasicBlockEdge extends dart._runtime.base.DartObject implements hav
       this.to = value;
       return value;
     }
-    public static havlak.BasicBlockEdge_interface _new(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, int fromName, int toName)
+    public static havlak.BasicBlockEdge_interface _new_BasicBlockEdge$(dart._runtime.types.simple.Type type, havlak.CFG_interface cfg, int fromName, int toName)
     {
       havlak.BasicBlockEdge result;
       result = new havlak.BasicBlockEdge(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

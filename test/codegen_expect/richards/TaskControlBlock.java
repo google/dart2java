@@ -225,7 +225,7 @@ public class TaskControlBlock extends dart._runtime.base.DartObject implements r
       richards.TaskControlBlock.STATE_NOT_HELD = value;
       return value;
     }
-    public static richards.TaskControlBlock_interface _new(dart._runtime.types.simple.Type type, richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
+    public static richards.TaskControlBlock_interface _new_TaskControlBlock$(dart._runtime.types.simple.Type type, richards.TaskControlBlock_interface link, int id, int priority, richards.Packet_interface queue, richards.Task_interface task)
     {
       richards.TaskControlBlock result;
       result = new richards.TaskControlBlock(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

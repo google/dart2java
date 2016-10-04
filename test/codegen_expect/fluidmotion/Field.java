@@ -68,7 +68,7 @@ public class Field extends dart._runtime.base.DartObject implements fluidmotion.
     {
       return this.rowSize;
     }
-    public static fluidmotion.Field_interface _new(dart._runtime.types.simple.Type type, dart.core.List_interface__double dens, dart.core.List_interface__double u, dart.core.List_interface__double v, int rowSize)
+    public static fluidmotion.Field_interface _new_Field$(dart._runtime.types.simple.Type type, dart.core.List_interface__double dens, dart.core.List_interface__double u, dart.core.List_interface__double v, int rowSize)
     {
       fluidmotion.Field result;
       result = new fluidmotion.Field(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

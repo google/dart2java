@@ -85,9 +85,9 @@ public class Foo1<T> extends dart._runtime.base.DartObject implements generics.F
     }
     public static <T> generics.Foo1_interface<T> factory$(dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv)
     {
-      return ((generics.Foo1_interface) generics.Foo1._newnewMe(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(generics.Foo1.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {generics.Foo1.factory$$typeInfo.typeVariables[0]}))));
+      return ((generics.Foo1_interface) generics.Foo1._new_Foo1$newMe(dart2java$localTypeEnv.evaluate(new dart._runtime.types.simple.InterfaceTypeExpr(generics.Foo1.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {generics.Foo1.factory$$typeInfo.typeVariables[0]}))));
     }
-    public static generics.Foo1_interface _newnewMe(dart._runtime.types.simple.Type type)
+    public static <T> generics.Foo1_interface _new_Foo1$newMe(dart._runtime.types.simple.Type type)
     {
       dart._runtime.types.simple.Type cached_0_int = null;
       dart._runtime.types.simple.Type cached_0_boolean = null;

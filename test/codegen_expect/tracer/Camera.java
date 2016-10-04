@@ -25,7 +25,7 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
       java.lang.Object pos = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", this.getScreen(), dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getEquator(), vx), dart._runtime.helpers.DynamicHelper.invoke("multiplyScalar", this.getUp(), vy)));
       pos = dart._runtime.helpers.DynamicHelper.invoke("negateY", pos);
       java.lang.Object dir = dart._runtime.helpers.DynamicHelper.invoke("operatorMinus", pos, this.getPosition());
-      tracer.Ray_interface ray = tracer.Ray._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), pos, dart._runtime.helpers.DynamicHelper.invoke("normalize", dir));
+      tracer.Ray_interface ray = tracer.Ray._new_Ray$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Ray), pos, dart._runtime.helpers.DynamicHelper.invoke("normalize", dir));
       return ray;
     }
     public java.lang.String toString()
@@ -73,7 +73,7 @@ public class Camera extends dart._runtime.base.DartObject implements tracer.Came
       this.screen = value;
       return value;
     }
-    public static tracer.Camera_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
+    public static tracer.Camera_interface _new_Camera$(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object lookAt, java.lang.Object up)
     {
       tracer.Camera result;
       result = new tracer.Camera(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

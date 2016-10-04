@@ -113,7 +113,7 @@ public class FluidMotion extends fluidmotion.BenchmarkBase implements fluidmotio
       fluidmotion.FluidMotion.framesBetweenAddingPoints = value;
       return value;
     }
-    public static fluidmotion.FluidMotion_interface _new(dart._runtime.types.simple.Type type)
+    public static fluidmotion.FluidMotion_interface _new_FluidMotion$(dart._runtime.types.simple.Type type)
     {
       fluidmotion.FluidMotion result;
       result = new fluidmotion.FluidMotion(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

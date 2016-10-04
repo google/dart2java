@@ -24,7 +24,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       havlak.LSG_interface __tempVar_0;
       int __tempVar_1;
       int __tempVar_2;
-      havlak.SimpleLoop_interface loop = havlak.SimpleLoop._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_0 = this, dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = __tempVar_0.getLoopCounter(), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_2 = __tempVar_0.setLoopCounter((__tempVar_1 + 1)), __tempVar_1))));
+      havlak.SimpleLoop_interface loop = havlak.SimpleLoop._new_SimpleLoop$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_0 = this, dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_1 = __tempVar_0.getLoopCounter(), dart._runtime.helpers.LetExpressionHelper.comma(__tempVar_2 = __tempVar_0.setLoopCounter((__tempVar_1 + 1)), __tempVar_1))));
       return loop;
     }
     public boolean addLoop(havlak.SimpleLoop_interface loop)
@@ -54,7 +54,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.loopCounter = 1;
       this.loops = ((dart.core.List_interface) ((dart.core.List_interface<havlak.SimpleLoop_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltSimpleLoop$gt), havlak.SimpleLoop_interface.class)));
-      this.root = havlak.SimpleLoop._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), 0);
+      this.root = havlak.SimpleLoop._new_SimpleLoop$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), 0);
       super._constructor();
       this.getRoot().setNestingLevel_(0);
       this.getLoops().add_List(this.getRoot());
@@ -76,7 +76,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
       this.loopCounter = value;
       return value;
     }
-    public static havlak.LSG_interface _new(dart._runtime.types.simple.Type type)
+    public static havlak.LSG_interface _new_LSG$(dart._runtime.types.simple.Type type)
     {
       havlak.LSG result;
       result = new havlak.LSG(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

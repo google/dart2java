@@ -35,7 +35,7 @@ public class BaseShape extends dart._runtime.base.DartObject implements tracer.B
     {
       return this.material;
     }
-    public static tracer.BaseShape_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object material)
+    public static tracer.BaseShape_interface _new_BaseShape$(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object material)
     {
       tracer.BaseShape result;
       result = new tracer.BaseShape(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

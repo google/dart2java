@@ -35,7 +35,7 @@ public class Ray extends dart._runtime.base.DartObject implements tracer.Ray_int
     {
       return this.direction;
     }
-    public static tracer.Ray_interface _new(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object direction)
+    public static tracer.Ray_interface _new_Ray$(dart._runtime.types.simple.Type type, java.lang.Object position, java.lang.Object direction)
     {
       tracer.Ray result;
       result = new tracer.Ray(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

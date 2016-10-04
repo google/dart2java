@@ -10,7 +10,7 @@ public class __TopLevel
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
       dart.core.__TopLevel.print("Running benchmark...");
-      diamondsquare.DiamondSquare._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_DiamondSquare)).report();
+      diamondsquare.DiamondSquare._new_DiamondSquare$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_DiamondSquare)).report();
       dart.core.__TopLevel.print("Done.");
     }
 }

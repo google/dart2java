@@ -50,7 +50,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements game
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch_interface watch = dart.core.Stopwatch._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
+      dart.core.Stopwatch_interface watch = dart.core.Stopwatch._new_Stopwatch$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))
@@ -66,7 +66,7 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements game
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int time = 0;
       int iter = 0;
-      dart.core.Stopwatch_interface watch = dart.core.Stopwatch._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
+      dart.core.Stopwatch_interface watch = dart.core.Stopwatch._new_Stopwatch$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Stopwatch));
       watch.start();
       int elapsed = 0;
       while ((elapsed < timeMinimum))
@@ -111,9 +111,9 @@ public class BenchmarkBase extends dart._runtime.base.DartObject implements game
       gameoflife.BenchmarkBase.iters = value;
       return value;
     }
-    public static gameoflife.BenchmarkBase_interface _new(dart._runtime.types.simple.Type type, java.lang.String name)
+    public static gameoflife.BenchmarkBase_interface _new_BenchmarkBase$(dart._runtime.types.simple.Type type, java.lang.String name)
     {
-      gameoflife.BenchmarkBase_interface result;
+      gameoflife.BenchmarkBase result;
       result = new gameoflife.BenchmarkBase(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor(name);
       return result;

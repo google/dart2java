@@ -11,5 +11,5 @@ public interface Culture_interface extends dart._runtime.base.DartObject_interfa
   dart.core.Map_interface<java.lang.String, gameoflife.Cell_interface> setCellDish(dart.core.Map_interface<java.lang.String, gameoflife.Cell_interface> value);
   int setWidth(int value);
   dart.math.Random_interface setRng(dart.math.Random_interface value);
-  void _constructor();
+
 }

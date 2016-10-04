@@ -21,7 +21,7 @@ public class C8 extends dart._runtime.base.DartObject implements interface_type_
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static interface_type_profile.C8_interface _new(dart._runtime.types.simple.Type type)
+    public static interface_type_profile.C8_interface _new_C8$(dart._runtime.types.simple.Type type)
     {
       interface_type_profile.C8 result;
       result = new interface_type_profile.C8(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

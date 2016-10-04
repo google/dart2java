@@ -49,7 +49,7 @@ public class Expect extends dart._runtime.base.DartObject implements havlak.Expe
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static havlak.Expect_interface _new(dart._runtime.types.simple.Type type)
+    public static havlak.Expect_interface _new_Expect$(dart._runtime.types.simple.Type type)
     {
       havlak.Expect result;
       result = new havlak.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

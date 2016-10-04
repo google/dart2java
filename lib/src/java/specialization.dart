@@ -730,11 +730,8 @@ java.MethodDef buildGenericFactory(dart.Class class_, TypeFactory typeFactory,
       .map((p) =>
           new java.VariableDecl(p.name, typeFactory.getLValueType(p.type)))
       .toList();
-  var constructorArgs = function.positionalParameters
-      .map((p) => new java.IdentifierExpr(p.name))
-      .toList();
-  var constructorCall = new java.MethodInvocation(
-      resultVar, Constants.constructorMethodPrefix + name, constructorArgs);
+
+  var typeParameterNames = class_.typeParameters.map((t) => t.name).toList();
 
   // Create cache variables for type checks to avoid doing redundant
   // evaluations
@@ -758,6 +755,19 @@ java.MethodDef buildGenericFactory(dart.Class class_, TypeFactory typeFactory,
       typeParam
     ]);
 
+    var specializedFactory = new TypeFactory(
+        typeFactory.compilerState, specType.specialization,
+        dartClass: class_);
+
+    // TODO(springerm): Get rid of boxing here. Call specialized constructor
+    // instead of calling this generic factory.
+    var constructorArgs = function.positionalParameters
+        .map((p) => new java.CastExpr(new java.IdentifierExpr(p.name),
+            specializedFactory.getLValueType(p.type).toBoxedType()))
+        .toList();
+    var constructorCall = new java.MethodInvocation(
+        resultVar, Constants.constructorMethodPrefix + name, constructorArgs);
+
     cases.add(new java.IfStmt(
         check,
         new java.Block([
@@ -775,6 +785,12 @@ java.MethodDef buildGenericFactory(dart.Class class_, TypeFactory typeFactory,
   ]);
 
   // Last case: fully generic specialization
+  var constructorArgs = function.positionalParameters
+      .map((p) => new java.IdentifierExpr(p.name))
+      .toList();
+  var constructorCall = new java.MethodInvocation(
+      resultVar, Constants.constructorMethodPrefix + name, constructorArgs);
+
   var genericCase = [
     new java.VariableDeclStmt(new java.VariableDecl("result", classType)),
     new java.ExpressionStmt(new java.AssignmentExpr(resultVar, newGenericExpr)),
@@ -783,9 +799,10 @@ java.MethodDef buildGenericFactory(dart.Class class_, TypeFactory typeFactory,
   ];
 
   return new java.MethodDef(
-      Constants.javaFactoryPrefix + name,
+      Constants.javaFactoryPrefix + "_" + class_.name + "\$" + name,
       new java.Block(cases..addAll(genericCase)),
       [new java.VariableDecl("type", ts.typeRepType)]..addAll(methodParams),
       returnType: interfaceType,
-      isStatic: true);
+      isStatic: true,
+      typeParameterNames: typeParameterNames);
 }

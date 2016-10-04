@@ -17,7 +17,7 @@ public class DiamondSquare extends diamondsquare.BenchmarkBase implements diamon
     public void run()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      diamondsquare.World_interface w = diamondsquare.World._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_World));
+      diamondsquare.World_interface w = diamondsquare.World._new_World$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_World));
       w.Base();
       w.Generate();
       w.Smooth();
@@ -27,9 +27,9 @@ public class DiamondSquare extends diamondsquare.BenchmarkBase implements diamon
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor("DiamondSquare");
     }
-    public static diamondsquare.DiamondSquare_interface _new(dart._runtime.types.simple.Type type)
+    public static diamondsquare.DiamondSquare_interface _new_DiamondSquare$(dart._runtime.types.simple.Type type)
     {
-      diamondsquare.DiamondSquare_interface result;
+      diamondsquare.DiamondSquare result;
       result = new diamondsquare.DiamondSquare(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

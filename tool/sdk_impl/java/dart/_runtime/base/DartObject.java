@@ -42,7 +42,7 @@ public class DartObject implements DartObject_interface {
     this.dart2java$type = (InterfaceType) type;
   }
 
-  public static DartObject_interface _new(Type type) {
+  public static DartObject_interface _new_Object$(Type type) {
     return new DartObject(type);
   }
 

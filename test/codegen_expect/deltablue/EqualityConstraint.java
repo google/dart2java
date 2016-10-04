@@ -23,7 +23,7 @@ public class EqualityConstraint extends deltablue.BinaryConstraint implements de
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor(v1, v2, strength);
     }
-    public static deltablue.EqualityConstraint_interface _new(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
+    public static deltablue.EqualityConstraint_interface _new_EqualityConstraint$(dart._runtime.types.simple.Type type, deltablue.Variable_interface v1, deltablue.Variable_interface v2, deltablue.Strength_interface strength)
     {
       deltablue.EqualityConstraint result;
       result = new deltablue.EqualityConstraint(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

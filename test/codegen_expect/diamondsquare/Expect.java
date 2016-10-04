@@ -27,16 +27,16 @@ public class Expect extends dart._runtime.base.DartObject implements diamondsqua
     public static void listEquals(dart.core.List_interface<java.lang.Object> expected, dart.core.List_interface<java.lang.Object> actual)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      if ((!(expected.getLength() == actual.getLength())))
+      if ((!(expected.getLength_List() == actual.getLength_List())))
       {
         dart.core.__TopLevel.print("Lists have different lengths: ");
-        dart.core.__TopLevel.print(expected.getLength());
+        dart.core.__TopLevel.print(expected.getLength_List());
         dart.core.__TopLevel.print("vs ");
-        dart.core.__TopLevel.print(actual.getLength());
+        dart.core.__TopLevel.print(actual.getLength_List());
       }
-      for (int i = 0; (i < actual.getLength()); i = (i + 1))
+      for (int i = 0; (i < actual.getLength_List()); i = (i + 1))
       {
-        diamondsquare.Expect.equals(expected.operatorAt(i), actual.operatorAt(i));
+        diamondsquare.Expect.equals(expected.operatorAt_List(i), actual.operatorAt_List(i));
       }
     }
     public void fail(java.lang.String message)
@@ -49,9 +49,9 @@ public class Expect extends dart._runtime.base.DartObject implements diamondsqua
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static diamondsquare.Expect_interface _new(dart._runtime.types.simple.Type type)
+    public static diamondsquare.Expect_interface _new_Expect$(dart._runtime.types.simple.Type type)
     {
-      diamondsquare.Expect_interface result;
+      diamondsquare.Expect result;
       result = new diamondsquare.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
       result._constructor();
       return result;

@@ -9,6 +9,6 @@ public class __TopLevel
     public static void main(String[] args)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
-      fluidmotion.FluidMotion._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_FluidMotion)).report();
+      fluidmotion.FluidMotion._new_FluidMotion$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_FluidMotion)).report();
     }
 }

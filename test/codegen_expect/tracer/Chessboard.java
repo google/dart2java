@@ -51,7 +51,7 @@ public class Chessboard extends tracer.Materials implements tracer.Chessboard_in
     {
       return this.density;
     }
-    public static tracer.Chessboard_interface _new(dart._runtime.types.simple.Type type, tracer.Color_interface colorEven, tracer.Color_interface colorOdd, java.lang.Object reflection, java.lang.Object transparency, java.lang.Object gloss, double density)
+    public static tracer.Chessboard_interface _new_Chessboard$(dart._runtime.types.simple.Type type, tracer.Color_interface colorEven, tracer.Color_interface colorOdd, java.lang.Object reflection, java.lang.Object transparency, java.lang.Object gloss, double density)
     {
       tracer.Chessboard result;
       result = new tracer.Chessboard(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

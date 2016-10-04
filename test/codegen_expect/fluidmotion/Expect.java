@@ -49,7 +49,7 @@ public class Expect extends dart._runtime.base.DartObject implements fluidmotion
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       super._constructor();
     }
-    public static fluidmotion.Expect_interface _new(dart._runtime.types.simple.Type type)
+    public static fluidmotion.Expect_interface _new_Expect$(dart._runtime.types.simple.Type type)
     {
       fluidmotion.Expect result;
       result = new fluidmotion.Expect(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);

@@ -25,7 +25,7 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
       havlak.BasicBlock_interface node = null;
       if ((!this.getBasicBlockMap().containsKey_Map__int_generic(name)))
       {
-        node = havlak.BasicBlock._new(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock), name);
+        node = havlak.BasicBlock._new_BasicBlock$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock), name);
         this.getBasicBlockMap().operatorAtPut_Map__int_generic(name, node);
       }
       else
@@ -82,7 +82,7 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
       this.startNode = value;
       return value;
     }
-    public static havlak.CFG_interface _new(dart._runtime.types.simple.Type type)
+    public static havlak.CFG_interface _new_CFG$(dart._runtime.types.simple.Type type)
     {
       havlak.CFG result;
       result = new havlak.CFG(((dart._runtime.helpers.ConstructorHelper.EmptyConstructorMarker) null), type);
