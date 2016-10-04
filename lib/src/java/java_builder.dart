@@ -602,6 +602,37 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
         // Insert declarations of temporary variables
         body.statements.insertAll(0, buildTempVarDecls());
 
+        // Check types of generic parameters. Exclude specialized parameters
+        // (no check necessary in that case because Java cast will ensure type)
+        //
+        // Checks are added if one of these two cases applies:
+        // 1. Parameter is if type "a type variable"
+        // 2. Parameter's type is generic with at least one unspecialized
+        //    type variable (might depend on the current class).
+        var genericParameters = procedure.function.positionalParameters;
+        for (var paramDecl in genericParameters) {
+          var paramJavaType = typeFactory.getLValueType(paramDecl.type);
+          var paramIsTypeVariable = paramJavaType is java.TypeVariable;
+          var paramIsInterfaceType = paramJavaType is java.ClassOrInterfaceType;
+
+          var insertCheck = paramIsTypeVariable ||
+              (paramIsInterfaceType &&
+                  (paramJavaType as java.ClassOrInterfaceType)
+                          .specialization
+                          .numUnspecializedTypes >
+                      0);
+
+          if (insertCheck) {
+            body.statements.insert(
+                0,
+                new java.ExpressionStmt(ts.makeTypeCheck(
+                    new java.IdentifierExpr(paramDecl.name),
+                    paramDecl.type,
+                    typeSystemState,
+                    assertOnly: true)));
+          }
+        }
+
         // Insert variable required by type system
         java.Statement typeEnvVarDeclStmt =
             ts.makeMethodEnvVar(procedure, typeFactory);
@@ -1622,13 +1653,17 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   java.Expression visitListLiteral(dart.ListLiteral node) {
     var args = <java.Expression>[];
 
-    var typeArguments = <java.JavaType>[
-      typeFactory.getTypeArgument(node.typeArgument)
-    ];
+    java.JavaType typeArg;
+    typeArg = typeFactory.getTypeArgument(node.typeArgument);
+
+    if (typeArg is java.ClassOrInterfaceType) {
+      typeArg = (typeArg as java.ClassOrInterfaceType).withoutJavaGenerics();
+    }
+
     // Calling convention: Type argument as first argument
     // for static invocations, then positional arguments
     // Class<T> object inserted only to get type inference right
-    args.addAll(typeArguments.map((t) => new java.TypeExpr(t)));
+    args.add(new java.TypeExpr(typeArg));
     args.addAll(node.expressions
         .map((e) => buildCastedExpression(e, node.typeArgument)));
 

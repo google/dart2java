@@ -57,6 +57,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     public deltablue.Plan_interface makePlan(dart.core.List_interface<deltablue.Constraint_interface> sources)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt).check(sources);
       int mark = this.newMark();
       deltablue.Plan_interface plan = deltablue.Plan._new_Plan$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Plan));
       dart.core.List_interface<deltablue.Constraint_interface> todo = ((dart.core.List_interface) sources);
@@ -75,6 +76,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     public deltablue.Plan_interface extractPlanFromConstraints(dart.core.List_interface<deltablue.Constraint_interface> constraints)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt).check(constraints);
       dart.core.List_interface<deltablue.Constraint_interface> sources = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Constraint_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt), deltablue.Constraint_interface.class)));
       for (int i = 0; (i < constraints.getLength_List()); i = (i + 1))
       {
@@ -138,6 +140,7 @@ public class Planner extends dart._runtime.base.DartObject implements deltablue.
     public void addConstraintsConsumingTo(deltablue.Variable_interface v, dart.core.List_interface<deltablue.Constraint_interface> coll)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt).check(coll);
       deltablue.Constraint_interface determining = v.getDeterminedBy();
       for (int i = 0; (i < v.getConstraints().getLength_List()); i = (i + 1))
       {

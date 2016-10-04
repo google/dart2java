@@ -528,19 +528,27 @@ Expression makeTypeCast(
 
 /// Create an expression that checks that [operand] has the given [type].
 Expression makeTypeCheck(
-    Expression operand, dart.DartType type, ClassState state) {
-  return _makeCast(operand, type, state, "check");
+    Expression operand, dart.DartType type, ClassState state,
+    {bool assertOnly: false}) {
+  return _makeCast(operand, type, state, "check", assertOnly: assertOnly);
 }
 
 /// Common code for [makeTypeCast] and [makeTypeCheck].
-Expression _makeCast(Expression operand, dart.DartType type, ClassState state,
-    String castMethod) {
+Expression _makeCast(
+    Expression operand, dart.DartType type, ClassState state, String castMethod,
+    {bool assertOnly: false}) {
   var expr = makeTypeExpr(type, state);
   var rep = evaluateTypeExpr(getTypeEnv(), expr);
   var javaType = state._typeFactory.getLValueType(type);
   // `(javaType) rep.<method>(operand);`
-  return new CastExpr(
-      new MethodInvocation(rep, castMethod, [operand]), javaType);
+
+  var tsCheck = new MethodInvocation(rep, castMethod, [operand]);
+
+  if (assertOnly) {
+    return tsCheck;
+  } else {
+    return new CastExpr(tsCheck, javaType);
+  }
 }
 
 /// Returns the name of the Java method that implements the given

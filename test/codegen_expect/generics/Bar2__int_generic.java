@@ -2,6 +2,7 @@ package generics;
 
 public class Bar2__int_generic<B> extends dart._runtime.base.DartObject implements generics.Bar2_interface__int_generic<B>
 {
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_Bar2$B = generics.Bar2.dart2java$typeInfo.typeVariables[1];
     public int varA;
     public B varB;
   
@@ -13,6 +14,7 @@ public class Bar2__int_generic<B> extends dart._runtime.base.DartObject implemen
     public int bar_Bar2__int_generic(int a, B b)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Bar2$B).check(b);
       return this.getVarA_Bar2__int_generic();
     }
     public void _constructor()

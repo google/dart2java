@@ -3,10 +3,10 @@ package havlak;
 public class HavlakLoopFinder extends dart._runtime.base.DartObject implements havlak.HavlakLoopFinder_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(havlak.HavlakLoopFinder.class, havlak.HavlakLoopFinder_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltUnionFindNode$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltint$0$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.IntegerHelper.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_int$0 = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.IntegerHelper.dart2java$typeInfo);
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_UnionFindNode = new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo);
-    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltUnionFindNode$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {new dart._runtime.types.simple.InterfaceTypeExpr(havlak.UnionFindNode.dart2java$typeInfo)});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       havlak.HavlakLoopFinder.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -48,6 +48,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
     public int DFS(havlak.BasicBlock_interface currentNode, dart.core.List_interface<havlak.UnionFindNode_interface> nodes, dart.core.List_interface__int number, dart.core.List_interface__int last, int current)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltUnionFindNode$gt).check(nodes);
       nodes.operatorAt_List(current).initNode(currentNode, current);
       number.operatorAtPut_List__int(currentNode.getName(), current);
       int lastid = current;

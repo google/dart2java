@@ -3,6 +3,9 @@ package generics;
 public class Qux3<C, D, E> extends dart._runtime.base.DartObject implements generics.Qux3_interface<C, D, E>
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(new java.lang.String[] {"C", "D", "E"}, generics.Qux3.class, generics.Qux3_interface.class);
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_Qux3$C = generics.Qux3.dart2java$typeInfo.typeVariables[0];
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_Qux3$D = generics.Qux3.dart2java$typeInfo.typeVariables[1];
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_Qux3$E = generics.Qux3.dart2java$typeInfo.typeVariables[2];
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       generics.Qux3.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -16,6 +19,9 @@ public class Qux3<C, D, E> extends dart._runtime.base.DartObject implements gene
     public C qux_Qux3(C c, D d, E e)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Qux3$E).check(e);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Qux3$D).check(d);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Qux3$C).check(c);
       return c;
     }
     public void _constructor()

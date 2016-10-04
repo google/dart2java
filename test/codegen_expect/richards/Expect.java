@@ -3,6 +3,7 @@ package richards;
 public class Expect extends dart._runtime.base.DartObject implements richards.Expect_interface
 {
     public static dart._runtime.types.simple.InterfaceTypeInfo dart2java$typeInfo = new dart._runtime.types.simple.InterfaceTypeInfo(richards.Expect.class, richards.Expect_interface.class);
+    private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_List$ltdynamic$gt = new dart._runtime.types.simple.InterfaceTypeExpr(dart.core.List.dart2java$typeInfo, new dart._runtime.types.simple.TypeExpr[] {dart._runtime.types.simple.TopType.EXPR});
     private static dart._runtime.types.simple.InterfaceTypeExpr dart2java$typeExpr_Object = new dart._runtime.types.simple.InterfaceTypeExpr(dart._runtime.helpers.ObjectHelper.dart2java$typeInfo);
     static {
       richards.Expect.dart2java$typeInfo.superclass = dart2java$typeExpr_Object;
@@ -27,6 +28,8 @@ public class Expect extends dart._runtime.base.DartObject implements richards.Ex
     public static void listEquals(dart.core.List_interface<java.lang.Object> expected, dart.core.List_interface<java.lang.Object> actual)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = dart._runtime.types.simple.TypeEnvironment.ROOT;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdynamic$gt).check(actual);
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltdynamic$gt).check(expected);
       if ((!(expected.getLength_List() == actual.getLength_List())))
       {
         dart.core.__TopLevel.print("Lists have different lengths: ");

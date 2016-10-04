@@ -25,11 +25,13 @@ public class Foo1<T> extends dart._runtime.base.DartObject implements generics.F
     public T foo_Foo1(T t)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Foo1$T).check(t);
       return t;
     }
     public void writeVariable_Foo1(T value)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Foo1$T).check(value);
       this.setVariable_Foo1(value);
     }
     public void _constructornewMe()

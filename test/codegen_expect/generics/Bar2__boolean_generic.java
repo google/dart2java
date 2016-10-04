@@ -2,6 +2,7 @@ package generics;
 
 public class Bar2__boolean_generic<B> extends dart._runtime.base.DartObject implements generics.Bar2_interface__boolean_generic<B>
 {
+    private static dart._runtime.types.simple.TypeExpr dart2java$typeExpr_Bar2$B = generics.Bar2.dart2java$typeInfo.typeVariables[1];
     public boolean varA;
     public B varB;
   
@@ -13,6 +14,7 @@ public class Bar2__boolean_generic<B> extends dart._runtime.base.DartObject impl
     public boolean bar_Bar2__boolean_generic(boolean a, B b)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
+      dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Bar2$B).check(b);
       return this.getVarA_Bar2__boolean_generic();
     }
     public void _constructor()
