@@ -89,6 +89,8 @@ public class DartList<T>
       return (dart.core.List_interface) (new DartList__int(type, length));
     } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
       return (dart.core.List_interface) (new DartList__double(type, length));
+    } else if (innerType == dart._runtime.helpers.BoolHelper.type) {
+      return (dart.core.List_interface) (new DartList__boolean(type, length));
     } else {
       InterfaceType reifiedType = (InterfaceType) type;
       Type firstTypeArg = reifiedType.actualTypeParams[0];
@@ -134,6 +136,14 @@ public class DartList<T>
       double fillValue = (Double) value;
       for (int i = 0; i < length; i++) {
         result.operatorAtPut_List__double(i, fillValue);
+      }
+
+      return (dart.core.List_interface) result;
+    } else if (innerType == dart._runtime.helpers.BoolHelper.type) {
+      DartList__boolean result = new DartList__boolean(type, length);
+      boolean fillValue = (Boolean) value;
+      for (int i = 0; i < length; i++) {
+        result.operatorAtPut_List__boolean(i, fillValue);
       }
 
       return (dart.core.List_interface) result;
@@ -186,6 +196,13 @@ public class DartList<T>
 
       for (int i = 0; i < elements.length; i++) {
         instance.operatorAtPut_List__double(i, (Double) elements[i]);
+      }
+      return (dart.core.List_interface) instance;
+    } else if (innerType == dart._runtime.helpers.BoolHelper.type) {
+      DartList__boolean instance = new DartList__boolean(type, elements.length);
+
+      for (int i = 0; i < elements.length; i++) {
+        instance.operatorAtPut_List__boolean(i, (Boolean) elements[i]);
       }
       return (dart.core.List_interface) instance;
     } else {
@@ -327,7 +344,7 @@ public class DartList<T>
 
     // find
     for (index = 0; index < size; index++) {
-      if (array[index] == value) {
+      if (array[index].equals(value)) {
         found = true;
         break;
       }
@@ -438,7 +455,7 @@ public class DartList<T>
 
   public boolean contains_Iterable(Object element) {
     for (int i = 0; i < size; i++) {
-      if (array[i] == element) {
+      if (array[i].equals(element)) {
         return true;
       }
     }
@@ -570,7 +587,7 @@ public class DartList<T>
 
   public int lastIndexOf(Object o) {
     for (int i = size - 1; i > -1; i--) {
-      if (array[i] == o) {
+      if (array[i].equals(o)) {
         return i;
       }
     }

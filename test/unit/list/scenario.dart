@@ -89,3 +89,23 @@ String testListListString() {
 String testInlineReturn() {
   return ["Hello", " ", "Dart"][2];
 }
+
+double testDoubleList() {
+  var list = new List<double>(3);
+  list[0] = 1.9;
+  list[1] = 2.3;
+  list[2] = 3.4;
+  return list[0] + list[1] + list[2];
+}
+
+String testBoolList() {
+  var list = new List<bool>.filled(3, true);
+  list[1] = false;
+  String result = "";
+
+  for (bool element in list) {
+    result += element.toString();
+  }
+
+  return result;
+}

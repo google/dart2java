@@ -54,4 +54,14 @@ public class Tests {
   public void testInlineReturn() {
     assertEquals("Dart", __TopLevel.testInlineReturn());
   }
+
+  @Test
+  public void testBoolList() {
+    assertEquals("truefalsetrue", __TopLevel.testBoolList());
+  }
+
+  @Test
+  public void testDoubleList() {
+    assertEquals(7.6, (double) __TopLevel.testDoubleList(), 0.01);
+  }
 }

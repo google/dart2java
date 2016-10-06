@@ -31,37 +31,37 @@ import dart._runtime.types.simple.TypeEnvironment;
 import dart._runtime.types.simple.TypeExpr;
 
 /**
-* A specialized implementation of DartList for doubles. 
+* A specialized implementation of DartList for bools. 
 *
-* This implementation avoids boxing Doubles and is more efficient. It
+* This implementation avoids boxing Booleans and is more efficient. It
 * implements DartList, but references should be statically typed to the
-* specialized implementation and __double methods should then be used
+* specialized implementation and __boolean methods should then be used
 * instead of interface methods for efficiency reasons.
 */
-public class DartList__double 
-    extends dart.core.Iterable__double 
-    implements dart.core.List_interface__double, List<Double> {
+public class DartList__boolean 
+    extends dart.core.Iterable__boolean 
+    implements dart.core.List_interface__boolean, List<Boolean> {
   static final int DEFAULT_SIZE = 16;
   static final float GROW_FACTOR = 1.5F;
 
   int size;
 
-  double[] array;
+  boolean[] array;
 
-  public DartList__double(ConstructorHelper.EmptyConstructorMarker arg, Type type)
+  public DartList__boolean(ConstructorHelper.EmptyConstructorMarker arg, Type type)
   {
     super(arg, type);
   }
 
-  DartList__double(Type type, int parameterSize) {
+  DartList__boolean(Type type, int parameterSize) {
     super((ConstructorHelper.EmptyConstructorMarker) null, type);
 
     if (parameterSize == 0) {
       // No parameter given ("null")
-      this.array = new double[DEFAULT_SIZE];
+      this.array = new boolean[DEFAULT_SIZE];
       this.size = 0;
     } else {
-      this.array = new double[parameterSize];
+      this.array = new boolean[parameterSize];
       this.size = parameterSize;
     }
   }
@@ -74,17 +74,17 @@ public class DartList__double
     return size == array.length;
   }
 
-  public void _constructor__double() {
+  public void _constructor__boolean() {
 
   }
 
   // --- Methods defined in List ---
 
-  public double operatorAt_List__double(int index) {
+  public boolean operatorAt_List__boolean(int index) {
     return array[index];
   }
 
-  public void operatorAtPut_List__double(int index, double value) {
+  public void operatorAtPut_List__boolean(int index, boolean value) {
     if (size <= index || index < 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("RangeError: out of bounds");
@@ -93,17 +93,17 @@ public class DartList__double
     array[index] = value;
   }
 
-  public int getLength_List__double() {
+  public int getLength_List__boolean() {
     return size;
   }
 
-  public void setLength_List__double(int newLength) {
+  public void setLength_List__boolean(int newLength) {
     // TODO(springerm): Check semantics (null values)
     size = newLength;
     array = Arrays.copyOf(array, size);
   }
 
-  public boolean add_List__double(double value) {
+  public boolean add_List__boolean(boolean value) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -119,7 +119,7 @@ public class DartList__double
   // TODO(springerm): sort
   // TODO(springerm): shuffle
 
-  public int indexOf_List__double(double element, int start) {
+  public int indexOf_List__boolean(boolean element, int start) {
     for (int i = start; i < size; i++) {
       if (array[i] == element) {
         return i;
@@ -131,13 +131,13 @@ public class DartList__double
 
   // TODO(springerm): lastIndexOf
 
-  public void clear_List__double() {
+  public void clear_List__boolean() {
     size = 0;
-    array = new double[DEFAULT_SIZE];
+    array = new boolean[DEFAULT_SIZE];
   }
 
 
-  public void insert_List__double(int index, double element) {
+  public void insert_List__boolean(int index, boolean element) {
     if (isArrayFull()) {
       increaseSize();
     }
@@ -152,19 +152,19 @@ public class DartList__double
   // TODO(springerm): insertAll
   // TODO(springerm): setAll
 
-  // Must be boxed Double here
-  public boolean remove_List__double(Object value) {
+  // Must be boxed Boolean here
+  public boolean remove_List__boolean(Object value) {
     int index;
     boolean found = false;
 
-    if (!(value instanceof Double)) {
+    if (!(value instanceof Boolean)) {
       return false;
     }
-    double doubleValue = (Double) value;
+    boolean booleanValue = (Boolean) value;
 
     // find
     for (index = 0; index < size; index++) {
-      if (array[index] == doubleValue) {
+      if (array[index] == booleanValue) {
         found = true;
         break;
       }
@@ -177,34 +177,34 @@ public class DartList__double
       }
 
       size--;
-      array[size] = 0;
+      array[size] = false;
     }
 
     return found;
   }
 
-  public double removeAt_List__double(int index) {
-    double element = operatorAt_List__double(index);
+  public boolean removeAt_List__boolean(int index) {
+    boolean element = operatorAt_List__boolean(index);
 
     for (int i = index; i < size - 1; i++) {
       array[i] = array[i + 1];
     }
 
     size--;
-    array[size] = 0;
+    array[size] = false;
 
     return element;
   }
 
-  public double removeLast_List__double() {
-    double element = array[size - 1];
-    array[size - 1] = 0;
+  public boolean removeLast_List__boolean() {
+    boolean element = array[size - 1];
+    array[size - 1] = false;
 
     size--;
     return element;
   }
 
-  public dart.core.List_interface__double sublist_List__double(int start, int end) {
+  public dart.core.List_interface__boolean sublist_List__boolean(int start, int end) {
     throw new RuntimeException("Not implemented yet.");
   }
 
@@ -221,19 +221,19 @@ public class DartList__double
 
   // --- Methods defined in Iterable ---
   public boolean contains_Iterable(Object element) {
-    return contains_Iterable__double(element);
+    return contains_Iterable__boolean(element);
   }
 
-  public dart.core.Iterator_interface__double getIterator_Iterable__double() {
+  public dart.core.Iterator_interface__boolean getIterator_Iterable__boolean() {
     Type iteratorType = dart2java$type.env.evaluate(new InterfaceTypeExpr(
       dart.core.Iterator.dart2java$typeInfo, 
       new TypeExpr[] { dart.core.List.dart2java$typeInfo.typeVariables[0] }));
 
-    return new dart.core.Iterator__double(
+    return new dart.core.Iterator__boolean(
         (ConstructorHelper.EmptyConstructorMarker) null, iteratorType) {
       int nextIndex = -1;
 
-      public boolean moveNext_Iterator__double() {
+      public boolean moveNext_Iterator__boolean() {
         if (nextIndex < size - 1) {
           nextIndex++;
           return true;
@@ -242,29 +242,29 @@ public class DartList__double
         }
       }
 
-      public double getCurrent_Iterator__double() {
+      public boolean getCurrent_Iterator__boolean() {
         return array[nextIndex];
       }
     };
   }
 
-  public dart.core.Iterator_interface__double getIterator_Iterable() {
-    return getIterator_Iterable__double();
+  public dart.core.Iterator_interface__boolean getIterator_Iterable() {
+    return getIterator_Iterable__boolean();
   }
 
   // TODO(springerm): map
   // TODO(springerm): where
   // TODO(springerm): expand
 
-  // Always boxed Double here
-  public boolean contains_Iterable__double(Object element) {
-    if (!(element instanceof Double)) {
+  // Always boxed Boolean here
+  public boolean contains_Iterable__boolean(Object element) {
+    if (!(element instanceof Boolean)) {
       return false;
     }
-    double doubleValue = (Double) element;
+    boolean booleanValue = (Boolean) element;
     
     for (int i = 0; i < size; i++) {
-      if (array[i] == doubleValue) {
+      if (array[i] == booleanValue) {
         return true;
       }
     }
@@ -281,11 +281,11 @@ public class DartList__double
   // TODO(springerm): toList
   // TODO(springerm): toSet
 
-  public boolean isEmpty_Iterable__double() {
+  public boolean isEmpty_Iterable__boolean() {
     return size == 0;
   }
 
-  public boolean isNotEmpty_Iterable__double() {
+  public boolean isNotEmpty_Iterable__boolean() {
     return size != 0;
   }
 
@@ -294,7 +294,7 @@ public class DartList__double
   // TODO(springerm): skip
   // TODO(springerm): skipWhile
 
-  public double getFirst_Iterable__double() {
+  public boolean getFirst_Iterable__boolean() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -303,7 +303,7 @@ public class DartList__double
     return array[0];
   }
 
-  public double getLast_Iterable__double() {
+  public boolean getLast_Iterable__boolean() {
     if (size == 0) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: List is empty");
@@ -312,7 +312,7 @@ public class DartList__double
     return array[size - 1];
   }
 
-  public double getSingle_Iterable__double() {
+  public boolean getSingle_Iterable__boolean() {
     if (size != 1) {
       // TODO(springerm): Dart exceptions
       throw new RuntimeException("StateError: Expected exactly one element");
@@ -340,26 +340,26 @@ public class DartList__double
 
 
   // --- Methods defined in java.util.List ---
-  public void add(int index, Double element) {
+  public void add(int index, Boolean element) {
     insert(index, element);
   }
 
-  public boolean addAll(Collection<? extends Double> c) {
-    for (Double element : c) {
+  public boolean addAll(Collection<? extends Boolean> c) {
+    for (Boolean element : c) {
       add(element);
     }
 
     return true;
   }
 
-  public boolean addAll(int index, Collection<? extends Double> c) {
+  public boolean addAll(int index, Collection<? extends Boolean> c) {
     // TODO(springerm): Implement
     return false;
   }
 
   public boolean containsAll(Collection<?> c) {
     for (Object element : c) {
-      if (!contains_Iterable__double(c)) {
+      if (!contains_Iterable__boolean(c)) {
         return false;
       }
     }
@@ -367,23 +367,23 @@ public class DartList__double
     return true;
   }
 
-  public Double get(int index) {
+  public Boolean get(int index) {
     return operatorAt(index);
   }
 
   public int indexOf(Object element) {
-    if (!(element instanceof Double)) {
+    if (!(element instanceof Boolean)) {
       return -1;
     }
 
-    return indexOf_List__double((Double) element, 0);
+    return indexOf_List__boolean((Boolean) element, 0);
   }
 
   public boolean isEmpty() {
-    return isEmpty_Iterable__double();
+    return isEmpty_Iterable__boolean();
   }
 
-  public Iterator<Double> iterator() {
+  public Iterator<Boolean> iterator() {
     return new Iterator() {
       int nextIndex = 0;
 
@@ -391,7 +391,7 @@ public class DartList__double
         return nextIndex < size;
       }
 
-      public Double next() {
+      public Boolean next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
@@ -401,12 +401,12 @@ public class DartList__double
   }
 
   public int lastIndexOf(Object o) {
-    if (!(o instanceof Double)) {
+    if (!(o instanceof Boolean)) {
       return -1;
     }
 
     for (int i = size - 1; i > -1; i--) {
-      if (array[i] == (Double) o) {
+      if (array[i] == (Boolean) o) {
         return i;
       }
     }
@@ -414,17 +414,17 @@ public class DartList__double
     return -1;
   }
 
-  public ListIterator<Double> listIterator() {
+  public ListIterator<Boolean> listIterator() {
     // TODO(springerm): Implement
     return null;
   }
 
-  public ListIterator<Double> listIterator(int index) {
+  public ListIterator<Boolean> listIterator(int index) {
     // TODO(springerm): Implement
     return null;
   }
 
-  public Double remove(int index) {
+  public Boolean remove(int index) {
     return removeAt(index);
   }
 
@@ -441,8 +441,8 @@ public class DartList__double
     return false;
   }
 
-  public Double set(int index, Double element) {
-    Double oldValue = operatorAt(index);
+  public Boolean set(int index, Boolean element) {
+    Boolean oldValue = operatorAt(index);
     operatorAtPut(index, element);
     return oldValue;
   }
@@ -451,7 +451,7 @@ public class DartList__double
     return getLength();
   }
 
-  public List<Double> subList(int fromIndex, int toIndex) {
+  public List<Boolean> subList(int fromIndex, int toIndex) {
     // TODO(springerm): Implement
     return null;
   }
@@ -470,63 +470,63 @@ public class DartList__double
 
 
   // --- Delegator Methods ---
-  public java.lang.Double operatorAt(int index)
+  public java.lang.Boolean operatorAt(int index)
   {
-    return this.operatorAt_List__double(index);
+    return this.operatorAt_List__boolean(index);
   }
 
-  public void operatorAtPut(int index, java.lang.Double value)
+  public void operatorAtPut(int index, java.lang.Boolean value)
   {
-    this.operatorAtPut_List__double(index, value);
+    this.operatorAtPut_List__boolean(index, value);
   }
 
   public int getLength()
   {
-    return this.getLength_List__double();
+    return this.getLength_List__boolean();
   }
 
   public void setLength(int newLength)
   {
-    this.setLength_List__double(newLength);
+    this.setLength_List__boolean(newLength);
   }
 
-  public boolean add(java.lang.Double value)
+  public boolean add(java.lang.Boolean value)
   {
-    return this.add_List__double(value);
+    return this.add_List__boolean(value);
   }
 
-  public int indexOf(java.lang.Double element, int start)
+  public int indexOf(java.lang.Boolean element, int start)
   {
-    return this.indexOf_List__double(element, start);
+    return this.indexOf_List__boolean(element, start);
   }
 
   public void clear()
   {
-    this.clear_List__double();
+    this.clear_List__boolean();
   }
 
-  public void insert(int index, java.lang.Double element)
+  public void insert(int index, java.lang.Boolean element)
   {
-    this.insert_List__double(index, element);
+    this.insert_List__boolean(index, element);
   }
 
   public boolean remove(java.lang.Object value)
   {
-    return this.remove_List__double(value);
+    return this.remove_List__boolean(value);
   }
 
-  public java.lang.Double removeAt(int index)
+  public java.lang.Boolean removeAt(int index)
   {
-    return this.removeAt_List__double(index);
+    return this.removeAt_List__boolean(index);
   }
 
-  public java.lang.Double removeLast()
+  public java.lang.Boolean removeLast()
   {
-    return this.removeLast_List__double();
+    return this.removeLast_List__boolean();
   }
 
-  public dart.core.List_interface__double sublist(int start, int end)
+  public dart.core.List_interface__boolean sublist(int start, int end)
   {
-    return this.sublist_List__double(start, end);
+    return this.sublist_List__boolean(start, end);
   }
 }
