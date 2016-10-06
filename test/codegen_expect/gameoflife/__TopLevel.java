@@ -26,7 +26,7 @@ public class __TopLevel
       gameoflife.Culture_interface greenCells = gameoflife.Culture._new_Culture$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Culture));
       gameoflife.Culture_interface blueCells = gameoflife.Culture._new_Culture$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Culture));
       gameoflife.Culture_interface yellowCells = gameoflife.Culture._new_Culture$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_Culture));
-      dart.core.List_interface<gameoflife.Culture_interface> cultures = ((dart.core.List_interface) ((dart.core.List_interface<gameoflife.Culture_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltCulture$gt), gameoflife.Culture_interface.class, redCells, greenCells, blueCells, yellowCells)));
+      dart.core.List_interface<gameoflife.Culture_interface> cultures = ((dart.core.List_interface) dart._runtime.base.DartList.<gameoflife.Culture_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltCulture$gt), redCells, greenCells, blueCells, yellowCells));
       int cells = (699 + rng.nextInt(99));
       redCells.initPopulation(cells);
       greenCells.initPopulation(dart._runtime.helpers.IntegerHelper.operatorTruncatedDivide(cells, 1.1));

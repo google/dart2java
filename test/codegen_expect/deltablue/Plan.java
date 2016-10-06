@@ -36,7 +36,7 @@ public class Plan extends dart._runtime.base.DartObject implements deltablue.Pla
     public void _constructor()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.list = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Constraint_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt), deltablue.Constraint_interface.class)));
+      this.list = ((dart.core.List_interface) dart._runtime.base.DartList.<deltablue.Constraint_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt)));
       super._constructor();
     }
     public dart.core.List_interface<deltablue.Constraint_interface> getList()

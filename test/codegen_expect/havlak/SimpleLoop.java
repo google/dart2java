@@ -82,8 +82,8 @@ public class SimpleLoop extends dart._runtime.base.DartObject implements havlak.
     public void _constructor(int counter)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.basicBlocks = ((dart.core.List_interface) ((dart.core.List_interface<havlak.BasicBlock_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt), havlak.BasicBlock_interface.class)));
-      this.children = ((dart.core.List_interface) ((dart.core.List_interface<havlak.SimpleLoop_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltSimpleLoop$gt), havlak.SimpleLoop_interface.class)));
+      this.basicBlocks = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.BasicBlock_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt)));
+      this.children = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.SimpleLoop_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltSimpleLoop$gt)));
       this.isRoot = false;
       this.isReducible = true;
       this.nestingLevel = 0;

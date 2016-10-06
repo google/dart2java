@@ -38,7 +38,7 @@ public class Variable extends dart._runtime.base.DartObject implements deltablue
     public void _constructor(java.lang.String name, int value)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.constraints = ((dart.core.List_interface) ((dart.core.List_interface<deltablue.Constraint_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt), deltablue.Constraint_interface.class)));
+      this.constraints = ((dart.core.List_interface) dart._runtime.base.DartList.<deltablue.Constraint_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltConstraint$gt)));
       this.mark = 0;
       this.walkStrength = deltablue.__TopLevel.WEAKEST;
       this.stay = true;

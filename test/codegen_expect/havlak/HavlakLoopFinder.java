@@ -79,8 +79,8 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
       dart.core.List_interface<havlak.UnionFindNode_interface> nodes = ((dart.core.List_interface) ((dart.core.List_interface<havlak.UnionFindNode_interface>) dart.core.List.<havlak.UnionFindNode_interface>factory$(dart2java$localTypeEnv.extend(dart.core.List.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_UnionFindNode)}), size)));
       for (int i = 0; (i < size); i = (i + 1))
       {
-        nonBackPreds.operatorAtPut_List(i, ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), java.lang.Integer.class))));
-        backPreds.operatorAtPut_List(i, ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), java.lang.Integer.class))));
+        nonBackPreds.operatorAtPut_List(i, ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt))));
+        backPreds.operatorAtPut_List(i, ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt))));
         number.operatorAtPut_List__int(i, havlak.HavlakLoopFinder.UNVISITED);
         header.operatorAtPut_List__int(i, 0);
         types.operatorAtPut_List__int(i, havlak.HavlakLoopFinder.BB_NONHEADER);
@@ -121,7 +121,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
       for (int w = (size - 1); (w >= 0); w = (w - 1))
       {
         __codeLabel_0: {
-          dart.core.List_interface<havlak.UnionFindNode_interface> nodePool = ((dart.core.List_interface) ((dart.core.List_interface<havlak.UnionFindNode_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltUnionFindNode$gt), havlak.UnionFindNode_interface.class)));
+          dart.core.List_interface<havlak.UnionFindNode_interface> nodePool = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.UnionFindNode_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltUnionFindNode$gt)));
           havlak.BasicBlock_interface nodeW = nodes.operatorAt_List(w).getBb();
           if (dart._runtime.helpers.ObjectHelper.operatorEqual(nodeW, null))
           {
@@ -139,7 +139,7 @@ public class HavlakLoopFinder extends dart._runtime.base.DartObject implements h
               types.operatorAtPut_List__int(w, havlak.HavlakLoopFinder.BB_SELF);
             }
           }
-          dart.core.List_interface<havlak.UnionFindNode_interface> workList = ((dart.core.List_interface) ((dart.core.List_interface<havlak.UnionFindNode_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltUnionFindNode$gt), havlak.UnionFindNode_interface.class)));
+          dart.core.List_interface<havlak.UnionFindNode_interface> workList = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.UnionFindNode_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltUnionFindNode$gt)));
           for (int n = 0; (n < nodePool.getLength_List()); n = (n + 1))
           {
             workList.add_List(nodePool.operatorAt_List(n));

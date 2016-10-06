@@ -1652,18 +1652,8 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
   @override
   java.Expression visitListLiteral(dart.ListLiteral node) {
     var args = <java.Expression>[];
+    var typeArg = typeFactory.getTypeArgument(node.typeArgument);
 
-    java.JavaType typeArg;
-    typeArg = typeFactory.getTypeArgument(node.typeArgument);
-
-    if (typeArg is java.ClassOrInterfaceType) {
-      typeArg = (typeArg as java.ClassOrInterfaceType).withoutJavaGenerics();
-    }
-
-    // Calling convention: Type argument as first argument
-    // for static invocations, then positional arguments
-    // Class<T> object inserted only to get type inference right
-    args.add(new java.TypeExpr(typeArg));
     args.addAll(node.expressions
         .map((e) => buildCastedExpression(e, node.typeArgument)));
 
@@ -1674,15 +1664,11 @@ class _JavaAstBuilder extends dart.Visitor<java.Node> {
     java.ClassOrInterfaceType dartListClass =
         new java.ClassOrInterfaceType('dart._runtime.base', 'DartList');
 
-    if (!isSafeToInsertCast(node)) {
-      return new java.MethodInvocation(new java.ClassRefExpr(dartListClass),
-          Constants.listInitializerMethodName, args);
-    } else {
-      return new java.CastExpr(
-          new java.MethodInvocation(new java.ClassRefExpr(dartListClass),
-              Constants.listInitializerMethodName, args),
-          typeFactory.getLValueType(node.staticType));
-    }
+    return new java.MethodInvocation(
+        new java.ClassRefExpr(dartListClass),
+        Constants.listInitializerMethodName,
+        args,
+        [new java.ClassRefExpr(typeArg)]);
   }
 
   @override

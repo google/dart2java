@@ -77,3 +77,15 @@ int listLiteral() {
 List<int> getIntList() {
   return <int>[5, 8, 10];
 }
+
+String testListListString() {
+  var l1 = <List<String>>[<String>["Hello", "Moon"]];
+  var l2 = [new List<String>()];
+  l2[0].add("World");
+
+  return l1[0][0] + " " + l2[0][0];
+}
+
+String testInlineReturn() {
+  return ["Hello", " ", "Dart"][2];
+}

@@ -53,7 +53,7 @@ public class LSG extends dart._runtime.base.DartObject implements havlak.LSG_int
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.loopCounter = 1;
-      this.loops = ((dart.core.List_interface) ((dart.core.List_interface<havlak.SimpleLoop_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltSimpleLoop$gt), havlak.SimpleLoop_interface.class)));
+      this.loops = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.SimpleLoop_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltSimpleLoop$gt)));
       this.root = havlak.SimpleLoop._new_SimpleLoop$(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_SimpleLoop), 0);
       super._constructor();
       this.getRoot().setNestingLevel_(0);

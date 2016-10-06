@@ -23,10 +23,10 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
     public void Reset()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      dart.core.List_interface__int row = ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), java.lang.Integer.class)));
+      dart.core.List_interface__int row = ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)));
       for (int y = 0; (y < this.getLength()); y = (y + 1))
       {
-        row = ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), java.lang.Integer.class)));
+        row = ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt)));
         for (int x = 0; (x < this.getWidth()); x = (x + 1))
         {
           row.add_List__int(0);
@@ -73,7 +73,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       int w = (this.getWidth() - 1);
       int h = (this.getLength() - 1);
-      this.SetCorners(0, 0, w, h, ((dart.core.List_interface__int) ((dart.core.List_interface__int) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), java.lang.Integer.class, 155, 155, 155, 155))));
+      this.SetCorners(0, 0, w, h, ((dart.core.List_interface__int) dart._runtime.base.DartList.<java.lang.Integer>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltint$0$gt), 155, 155, 155, 155)));
       this.SetCorners((this.getRng().nextInt(5) + 14), 0, 15, 15, null);
     }
     public void Smooth()
@@ -102,7 +102,7 @@ public class World extends dart._runtime.base.DartObject implements diamondsquar
       this.Length = 64;
       this.rng = dart.math.Random.factory$(17);
       this.Iterations = 6;
-      this.map_data = ((dart.core.List_interface) ((dart.core.List_interface<dart.core.List_interface__int>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltList$ltint$0$gt$gt), dart.core.List_interface__int.class)));
+      this.map_data = ((dart.core.List_interface) dart._runtime.base.DartList.<dart.core.List_interface__int>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltList$ltint$0$gt$gt)));
       super._constructor();
       this.Reset();
     }

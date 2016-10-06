@@ -50,11 +50,11 @@ abstract class String {
 @patch
 class List<E> {
   @patch
-  @JavaCall("dart._runtime.base.DartList.<E>newInstance\$")
+  @JavaCall("dart._runtime.base.DartList.<E>factory\$newInstance")
   external factory List([int length = 0]);
 
   @patch
-  @JavaCall("dart._runtime.base.DartList.<E>filled\$")
+  @JavaCall("dart._runtime.base.DartList.<E>factory\$filled")
   external factory List.filled(int length, E fill);
 
   // This patch is for compatibility to java.util.List (add return type bool).

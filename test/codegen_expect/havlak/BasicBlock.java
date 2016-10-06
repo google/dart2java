@@ -45,8 +45,8 @@ public class BasicBlock extends dart._runtime.base.DartObject implements havlak.
     public void _constructor(int name)
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      this.inEdges = ((dart.core.List_interface) ((dart.core.List_interface<havlak.BasicBlock_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt), havlak.BasicBlock_interface.class)));
-      this.outEdges = ((dart.core.List_interface) ((dart.core.List_interface<havlak.BasicBlock_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt), havlak.BasicBlock_interface.class)));
+      this.inEdges = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.BasicBlock_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt)));
+      this.outEdges = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.BasicBlock_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlock$gt)));
       this.name = name;
       super._constructor();
       havlak.__TopLevel.numBasicBlocks = (havlak.__TopLevel.numBasicBlocks + 1);

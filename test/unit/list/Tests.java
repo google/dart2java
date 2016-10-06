@@ -44,4 +44,14 @@ public class Tests {
 
     assertEquals(5 + 8 + 10, result);
   }
+
+  @Test
+  public void testListListString() {
+    assertEquals("Hello World", __TopLevel.testListListString());
+  }
+
+  @Test
+  public void testInlineReturn() {
+    assertEquals("Dart", __TopLevel.testInlineReturn());
+  }
 }

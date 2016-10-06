@@ -19,7 +19,7 @@ public class Strength extends dart._runtime.base.DartObject implements deltablue
     public deltablue.Strength_interface nextWeaker()
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
-      return ((dart.core.List_interface<deltablue.Strength_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltStrength$gt), deltablue.Strength_interface.class, deltablue.__TopLevel.STRONG_PREFERRED, deltablue.__TopLevel.PREFERRED, deltablue.__TopLevel.STRONG_DEFAULT, deltablue.__TopLevel.NORMAL, deltablue.__TopLevel.WEAK_DEFAULT, deltablue.__TopLevel.WEAKEST)).operatorAt_List(this.getValue());
+      return dart._runtime.base.DartList.<deltablue.Strength_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltStrength$gt), deltablue.__TopLevel.STRONG_PREFERRED, deltablue.__TopLevel.PREFERRED, deltablue.__TopLevel.STRONG_DEFAULT, deltablue.__TopLevel.NORMAL, deltablue.__TopLevel.WEAK_DEFAULT, deltablue.__TopLevel.WEAKEST).operatorAt_List(this.getValue());
     }
     public static boolean stronger(deltablue.Strength_interface s1, deltablue.Strength_interface s2)
     {

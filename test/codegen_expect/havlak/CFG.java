@@ -62,7 +62,7 @@ public class CFG extends dart._runtime.base.DartObject implements havlak.CFG_int
     {
       final dart._runtime.types.simple.TypeEnvironment dart2java$localTypeEnv = this.dart2java$type.env;
       this.basicBlockMap = ((dart.core.Map_interface__int_generic) ((dart.core.Map_interface__int_generic<havlak.BasicBlock_interface>) dart.core.Map.<java.lang.Integer, havlak.BasicBlock_interface>factory$(dart2java$localTypeEnv.extend(dart.core.Map.factory$$typeInfo.typeVariables, new dart._runtime.types.simple.Type[] {dart2java$localTypeEnv.evaluate(dart2java$typeExpr_int$0), dart2java$localTypeEnv.evaluate(dart2java$typeExpr_BasicBlock)}))));
-      this.edgeList = ((dart.core.List_interface) ((dart.core.List_interface<havlak.BasicBlockEdge_interface>) dart._runtime.base.DartList.factory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlockEdge$gt), havlak.BasicBlockEdge_interface.class)));
+      this.edgeList = ((dart.core.List_interface) dart._runtime.base.DartList.<havlak.BasicBlockEdge_interface>specialfactory$fromArguments(dart2java$localTypeEnv.evaluate(dart2java$typeExpr_List$ltBasicBlockEdge$gt)));
       super._constructor();
     }
     public dart.core.Map_interface__int_generic<havlak.BasicBlock_interface> getBasicBlockMap()

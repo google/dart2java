@@ -73,7 +73,7 @@ public class DartList<T>
     }
   }
 
-  public static <E> dart.core.List_interface<E> newInstance$(
+  public static <E> dart.core.List_interface<E> factory$newInstance(
       TypeEnvironment dart2java$localTypeEnv, int length)
   {
     Type type = dart2java$localTypeEnv.evaluate(
@@ -84,12 +84,10 @@ public class DartList<T>
       dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
     // Create instance of correct specialization
-    // TODO(springerm): Specializations for bool, double missing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type)
-    {
+    // TODO(springerm): Specialization for bool missing
+    if (innerType == dart._runtime.helpers.IntegerHelper.type) {
       return (dart.core.List_interface) (new DartList__int(type, length));
-    } else if (innerType == dart._runtime.helpers.DoubleHelper.type)
-    {
+    } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
       return (dart.core.List_interface) (new DartList__double(type, length));
     } else {
       InterfaceType reifiedType = (InterfaceType) type;
@@ -111,7 +109,7 @@ public class DartList<T>
     }
   }
 
-  public static <E> dart.core.List_interface<E> filled$(
+  public static <E> dart.core.List_interface<E> factory$filled(
       TypeEnvironment dart2java$localTypeEnv, int length, E value)
   {
     Type type = dart2java$localTypeEnv.evaluate(
@@ -122,9 +120,8 @@ public class DartList<T>
       dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
     // Create instance of correct specialization
-    // TODO(springerm): Specializations for bool, double missing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type)
-    {
+    // TODO(springerm): Specialization for bool missing
+    if (innerType == dart._runtime.helpers.IntegerHelper.type) {
       DartList__int result = new DartList__int(type, length);
       int fillValue = (Integer) value;
       for (int i = 0; i < length; i++) {
@@ -132,8 +129,7 @@ public class DartList<T>
       }
 
       return (dart.core.List_interface) result;
-    } else if (innerType == dart._runtime.helpers.DoubleHelper.type)
-    {
+    } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
       DartList__double result = new DartList__double(type, length);
       double fillValue = (Double) value;
       for (int i = 0; i < length; i++) {
@@ -166,8 +162,11 @@ public class DartList<T>
     }
   }
 
-  public static <T> dart.core.List_interface<T> factory$fromArguments(
-      Type type, Class<T> javaClassObj, T... elements) {
+  public static <T> dart.core.List_interface<T> specialfactory$fromArguments(
+      Type type, T... elements) {
+    // This factory is special because it takes a fully-built type as a
+    // parameter instead of a type environment.
+
     Type innerType = type.env.evaluate(
         dart.core.List.dart2java$typeInfo.typeVariables[0]);
 
@@ -175,16 +174,14 @@ public class DartList<T>
     // TODO(springerm): Specialization for bool
     // TODO(springerm): Dispatch to specialized version at call site to avoid
     // boxing
-    if (innerType == dart._runtime.helpers.IntegerHelper.type)
-    {
+    if (innerType == dart._runtime.helpers.IntegerHelper.type) {
       DartList__int instance = new DartList__int(type, elements.length);
 
       for (int i = 0; i < elements.length; i++) {
         instance.operatorAtPut_List__int(i, (Integer) elements[i]);
       }
       return (dart.core.List_interface) instance;
-    } else if (innerType == dart._runtime.helpers.DoubleHelper.type)
-    {
+    } else if (innerType == dart._runtime.helpers.DoubleHelper.type) {
       DartList__double instance = new DartList__double(type, elements.length);
 
       for (int i = 0; i < elements.length; i++) {
