@@ -391,12 +391,15 @@ class DelegatorMethodsBuilder {
 
   String delegateeClassName;
 
+  bool isClassGeneric;
+
   /// Builds delegator methods for a class.
   List<java.MethodDef> buildForClass(dart.Class class_) {
     var result = <java.MethodDef>[];
     delegateeClassName = class_.name;
+    isClassGeneric = class_.typeParameters.isNotEmpty;
 
-    if (class_.typeParameters.isNotEmpty) {
+    if (isClassGeneric) {
       // Delegator method without any suffices (for dynamic method calls)
       var fullyGenericSpec =
           new TypeSpecialization.fullyGeneric(class_.typeParameters.length);
@@ -418,47 +421,57 @@ class DelegatorMethodsBuilder {
           .where((p) => p.kind != dart.ProcedureKind.Factory)
           .map((p) =>
               buildProcedure(p, nextFactory, nextFactory.specialization, "")));
+    }
 
-      // Delegator methods for super classes (only for generic classes)
-      dart.InterfaceType receiverType =
-          buildSpecializedDartType(class_, specialization);
+    // Delegator methods for super classes
+    dart.InterfaceType receiverType =
+        buildSpecializedDartType(class_, specialization);
 
-      for (var field in class_.fields) {
-        var lookupResult = findAllFieldsInClassHierarchy(
-            field.name.name, receiverType,
-            onlySuper: true);
-        for (var fieldDecl in lookupResult) {
-          var targetSpecialization =
-              typeFactory.getLValueType(fieldDecl.receiverType).specialization;
+    for (var field in class_.fields) {
+      var lookupResult = findAllFieldsInClassHierarchy(
+          field.name.name, receiverType,
+          onlySuper: true);
+      for (var fieldDecl in lookupResult) {
+        if (fieldDecl.receiverClass.typeParameters.isEmpty) {
+          // No delegators if not generic
+          continue;
+        }
 
-          result.add(buildGetter(field, typeFactory, targetSpecialization,
+        var targetSpecialization =
+            typeFactory.getLValueType(fieldDecl.receiverType).specialization;
+
+        result.add(buildGetter(field, typeFactory, targetSpecialization,
+            fieldDecl.receiverClass.name));
+
+        if (!fieldDecl.member.isFinal) {
+          result.add(buildSetter(field, typeFactory, targetSpecialization,
               fieldDecl.receiverClass.name));
-
-          if (!fieldDecl.member.isFinal) {
-            result.add(buildSetter(field, typeFactory, targetSpecialization,
-                fieldDecl.receiverClass.name));
-          }
         }
       }
+    }
 
-      var procsWithoutFactories =
-          class_.procedures.where((p) => p.kind != dart.ProcedureKind.Factory);
-      for (var procedure in procsWithoutFactories) {
-        // Check which superclasses/implemented interfaces also declare this
-        // method. Delegator methods must be defined for these classes.
-        var lookupResult = findAllProceduresInClassHierarchy(
-            procedure.name.name, receiverType,
-            kind: procedure.kind, onlySuper: true);
-        for (var procDef in lookupResult) {
-          // targetSpecialization: Defining dart.InterfaceType with
-          // specialization bindings in terms of "class under generation
-          // binding/unbound parameters"
-          var targetSpecialization =
-              typeFactory.getLValueType(procDef.receiverType).specialization;
-
-          result.add(buildProcedure(procedure, typeFactory,
-              targetSpecialization, procDef.receiverType.classNode.name));
+    var procsWithoutFactories =
+        class_.procedures.where((p) => p.kind != dart.ProcedureKind.Factory);
+    for (var procedure in procsWithoutFactories) {
+      // Check which superclasses/implemented interfaces also declare this
+      // method. Delegator methods must be defined for these classes.
+      var lookupResult = findAllProceduresInClassHierarchy(
+          procedure.name.name, receiverType,
+          kind: procedure.kind, onlySuper: true);
+      for (var procDef in lookupResult) {
+        if (procDef.receiverClass.typeParameters.isEmpty) {
+          // No delegators if not generic
+          continue;
         }
+
+        // targetSpecialization: Defining dart.InterfaceType with
+        // specialization bindings in terms of "class under generation
+        // binding/unbound parameters"
+        var targetSpecialization =
+            typeFactory.getLValueType(procDef.receiverType).specialization;
+
+        result.add(buildProcedure(procedure, typeFactory, targetSpecialization,
+            procDef.receiverType.classNode.name));
       }
     }
 
@@ -469,6 +482,7 @@ class DelegatorMethodsBuilder {
   List<java.MethodDef> buildForInterface(dart.Class class_) {
     var result = <java.MethodDef>[];
     delegateeClassName = class_.name;
+    isClassGeneric = class_.typeParameters.isNotEmpty;
 
     // Delegator methods for super specializations
     String delegatorClassName = class_.name;
@@ -496,7 +510,8 @@ class DelegatorMethodsBuilder {
     var delegatorName = javaMethodName(field.name.name,
         dart.ProcedureKind.Getter, delegatorSpecialization, delegatorClassName);
     var delegateeName = javaMethodName(field.name.name,
-        dart.ProcedureKind.Getter, specialization, delegateeClassName);
+        dart.ProcedureKind.Getter, specialization, delegateeClassName,
+        omitClassName: !isClassGeneric);
 
     var body = new java.Block([
       new java.ReturnStmt(
@@ -524,7 +539,8 @@ class DelegatorMethodsBuilder {
     var delegatorName = javaMethodName(field.name.name,
         dart.ProcedureKind.Setter, delegatorSpecialization, delegatorClassName);
     var delegateeName = javaMethodName(field.name.name,
-        dart.ProcedureKind.Setter, specialization, delegateeClassName);
+        dart.ProcedureKind.Setter, specialization, delegateeClassName,
+        omitClassName: !isClassGeneric);
 
     var body = new java.Block([
       new java.ReturnStmt(
@@ -566,7 +582,8 @@ class DelegatorMethodsBuilder {
     var delegatorName = javaMethodName(
         node.name.name, node.kind, delegatorSpecialization, delegatorClassName);
     var delegateeName = javaMethodName(
-        node.name.name, node.kind, specialization, delegateeClassName);
+        node.name.name, node.kind, specialization, delegateeClassName,
+        omitClassName: !isClassGeneric);
 
     // TODO(springerm): Handle named parameters and type parameters
     var invocationArgs = node.function.positionalParameters
@@ -617,7 +634,8 @@ class DelegatorMethodsBuilder {
 
   // TODO(springerm): Remove code duplication
   String javaMethodName(String methodName, dart.ProcedureKind kind,
-      TypeSpecialization specialization, String className) {
+      TypeSpecialization specialization, String className,
+      {bool omitClassName: false}) {
     String result;
 
     switch (kind) {
@@ -643,7 +661,10 @@ class DelegatorMethodsBuilder {
             "Method kind ${kind} not implemented yet.");
     }
 
-    String suffix = className + specialization.methodSuffix;
+    String suffix = omitClassName
+        ? specialization.methodSuffix
+        : className + specialization.methodSuffix;
+
     return result + (suffix == "" ? "" : "_$suffix");
   }
 
