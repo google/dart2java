@@ -338,19 +338,6 @@ class ForStmt extends Statement {
   /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitForStmt(this);
 }
 
-class ForInStmt extends Statement {
-  VariableDecl variableDeclaration;
-
-  Expression iterable;
-
-  Block body;
-
-  ForInStmt(this.variableDeclaration, this.iterable, this.body);
-
-  @override
-  /*=R*/ accept/*<R>*/(Visitor/*<R>*/ v) => v.visitForInStmt(this);
-}
-
 /// A break statement for loops and switch-case statements.
 class BreakStmt extends Statement {
   String label;

@@ -230,17 +230,6 @@ class _JavaAstEmitter extends Visitor<String> {
   }
 
   @override
-  String visitForInStmt(ForInStmt stmt) {
-    var varDecl = stmt.variableDeclaration.accept(this);
-    var iterable = stmt.iterable.accept(this);
-    var body = stmt.body.accept(this);
-    // TODO(andrewkrieger): Remove once we either make dart.core.Iterable
-    // implement java.util.Iterable, or have some other method of interop.
-    return "for ($varDecl : "
-        "(java.lang.Iterable<${stmt.variableDeclaration.type}>)$iterable)\n$body";
-  }
-
-  @override
   String visitBreakStmt(BreakStmt stmt) {
     if (stmt.label != null) {
       return "break ${stmt.label};";
